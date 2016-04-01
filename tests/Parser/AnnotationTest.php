@@ -20,8 +20,12 @@
 
 namespace PSX\Api\Tests\Parser;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\Parser\Annotation as AnnotationParser;
 use PSX\Framework\Test\Environment;
+use PSX\Schema\SchemaManager;
+
 
 /**
  * AnnotationTest
@@ -32,11 +36,30 @@ use PSX\Framework\Test\Environment;
  */
 class AnnotationTest extends ParserTestCase
 {
+    /**
+     * @var \Doctrine\Common\Annotations\Reader
+     */
+    protected $annotationReader;
+
+    /**
+     * @var \PSX\Schema\SchemaManager
+     */
+    protected $schemaManager;
+
+    protected function setUp()
+    {
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Api\\Annotation');
+
+        $this->annotationReader = $reader;
+        $this->schemaManager    = new SchemaManager();
+    }
+
     protected function getResource()
     {
         $annotation = new AnnotationParser(
-            Environment::getService('annotation_reader'),
-            Environment::getService('schema_manager')
+            $this->annotationReader,
+            $this->schemaManager
         );
 
         return $annotation->parse(new Annotation\TestController(), '/foo');
@@ -48,8 +71,8 @@ class AnnotationTest extends ParserTestCase
     public function testParseInvalid()
     {
         $annotation = new AnnotationParser(
-            Environment::getService('annotation_reader'), 
-            Environment::getService('schema_manager')
+            $this->annotationReader,
+            $this->schemaManager
         );
 
         $annotation->parse('foo', '/foo');

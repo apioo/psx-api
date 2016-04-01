@@ -20,8 +20,6 @@
 
 namespace PSX\Api\Tests\Parser\Annotation;
 
-use PSX\Framework\Controller\SchemaApiAbstract;
-
 /**
  * TestController
  *
@@ -32,7 +30,7 @@ use PSX\Framework\Controller\SchemaApiAbstract;
  * @Description("Test description")
  * @PathParam(name="fooId", type="string")
  */
-class TestController extends SchemaApiAbstract
+class TestController
 {
     public function __construct()
     {

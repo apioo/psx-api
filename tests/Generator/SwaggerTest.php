@@ -20,9 +20,10 @@
 
 namespace PSX\Api\Tests\Generator;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\Generator\Swagger;
 use PSX\Data\Exporter\Popo;
-use PSX\Framework\Test\Environment;
 
 /**
  * SwaggerTest
@@ -35,7 +36,10 @@ class SwaggerTest extends GeneratorTestCase
 {
     public function testGenerate()
     {
-        $exporter  = new Popo(Environment::getService('annotation_reader'));
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+
+        $exporter  = new Popo($reader);
         $generator = new Swagger($exporter, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
         $json      = $generator->generate($this->getResource());
 

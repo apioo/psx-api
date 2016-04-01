@@ -20,9 +20,9 @@
 
 namespace PSX\Api\Tests\Generator;
 
-use PSX\Framework\Loader\Context;
-use PSX\Framework\Test\ControllerTestCase;
-use PSX\Framework\Test\Environment;
+use PSX\Api\Resource;
+use PSX\Schema\Property;
+use PSX\Schema\SchemaManager;
 
 /**
  * GeneratorTestCase
@@ -31,19 +31,55 @@ use PSX\Framework\Test\Environment;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-abstract class GeneratorTestCase extends ControllerTestCase
+abstract class GeneratorTestCase extends \PHPUnit_Framework_TestCase
 {
     protected function getResource()
     {
-        $request  = $this->getMock('PSX\Http\RequestInterface');
-        $response = $this->getMock('PSX\Http\ResponseInterface');
+        $schemaManager = new SchemaManager();
 
-        $context = new Context();
-        $context->set(Context::KEY_PATH, '/foo/bar');
+        $resource = new Resource(Resource::STATUS_ACTIVE, '/foo/bar');
+        $resource->setTitle('foo');
+        $resource->setDescription('lorem ipsum');
 
-        return Environment::getService('controller_factory')
-            ->getController('PSX\Framework\Tests\Controller\Foo\Application\TestSchemaApiController', $request, $response, $context)
-            ->getDocumentation();
+        $resource->addPathParameter(Property::getString('name')
+            ->setDescription('Name parameter')
+            ->setRequired(false)
+            ->setMinLength(0)
+            ->setMaxLength(16)
+            ->setPattern('[A-z]+'));
+        $resource->addPathParameter(Property::getString('type')
+            ->setEnumeration(['foo', 'bar']));
+
+        $resource->addMethod(Resource\Factory::getMethod('GET')
+            ->setDescription('Returns a collection')
+            ->addQueryParameter(Property::getInteger('startIndex')
+                ->setDescription('startIndex parameter')
+                ->setRequired(false)
+                ->setMin(0)
+                ->setMax(32))
+            ->addQueryParameter(Property::getFloat('float'))
+            ->addQueryParameter(Property::getBoolean('boolean'))
+            ->addQueryParameter(Property::getDate('date'))
+            ->addQueryParameter(Property::getDateTime('datetime'))
+            ->addResponse(200, $schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Collection')));
+
+        $resource->addMethod(Resource\Factory::getMethod('POST')
+            ->setRequest($schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Create'))
+            ->addResponse(201, $schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\SuccessMessage')));
+
+        $resource->addMethod(Resource\Factory::getMethod('PUT')
+            ->setRequest($schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Update'))
+            ->addResponse(200, $schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\SuccessMessage')));
+
+        $resource->addMethod(Resource\Factory::getMethod('DELETE')
+            ->setRequest($schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Delete'))
+            ->addResponse(200, $schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\SuccessMessage')));
+
+        $resource->addMethod(Resource\Factory::getMethod('PATCH')
+            ->setRequest($schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Patch'))
+            ->addResponse(200, $schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\SuccessMessage')));
+
+        return $resource;
     }
 
     protected function getPaths()
