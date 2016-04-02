@@ -24,7 +24,7 @@ use PSX\Api\GeneratorAbstract;
 use PSX\Api\Resource;
 use PSX\Api\Util\Inflection;
 use PSX\Data\ExporterInterface;
-use PSX\Data\Record;
+use PSX\Record\Record;
 use PSX\Json\Parser;
 use PSX\Model\Swagger\Api;
 use PSX\Model\Swagger\Declaration;
