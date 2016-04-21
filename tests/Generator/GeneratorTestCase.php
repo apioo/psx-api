@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Generator;
 
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\Resource;
 use PSX\Schema\Property;
 use PSX\Schema\SchemaManager;
@@ -35,7 +36,10 @@ abstract class GeneratorTestCase extends \PHPUnit_Framework_TestCase
 {
     protected function getResource()
     {
-        $schemaManager = new SchemaManager();
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Api\\Annotation');
+
+        $schemaManager = new SchemaManager($reader);
 
         $resource = new Resource(Resource::STATUS_ACTIVE, '/foo/bar');
         $resource->setTitle('foo');

@@ -52,7 +52,7 @@ class AnnotationTest extends ParserTestCase
         $reader->addNamespace('PSX\\Api\\Annotation');
 
         $this->annotationReader = $reader;
-        $this->schemaManager    = new SchemaManager();
+        $this->schemaManager    = new SchemaManager($reader);
     }
 
     protected function getResource()
