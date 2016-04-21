@@ -87,10 +87,3 @@ Generator
 * [Raml 1.0](https://github.com/raml-org/raml-spec/blob/raml-10/versions/raml-10/raml-10.md/)
 * [Swagger 2.0](http://swagger.io/specification/)
 * [WADL](https://www.w3.org/Submission/wadl/)
-
-## Remark
-
-Note the downside of this approach is that we can only support the common subset
-of all supported specification formats. In case you need a specific feature of
-a specification you probably want to use a dedicated reader/writer.
-
