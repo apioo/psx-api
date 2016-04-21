@@ -125,13 +125,12 @@ class Annotation implements ParserInterface
     {
         $schema = $annotation->getSchema();
 
-        if (is_file($basePath . '/' . $schema)) {
-            return JsonSchema::fromFile($basePath . '/' . $schema);
-        } elseif (class_exists($schema)) {
-            return $this->schemaManager->getSchema($schema);
-        } else {
-            throw new RuntimeException('Invalid schema source ' . $schema);
+        // if we have a file append base path
+        if (strpos($schema, '.') !== false) {
+            $schema = $basePath . '/' . $schema;
         }
+
+        return $this->schemaManager->getSchema($schema);
     }
 
     protected function getParameter(Anno\ParamAbstract $param)
