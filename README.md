@@ -4,30 +4,27 @@ PSX Api
 ## About
 
 Currently there are several API specification formats (RAML, Swagger, etc.)
-which describe the functionality of an API endpoint. With this project we try to
-unify the usage of different specification formats by providing model classes
-which can be used to read and write API specifications. The following parser
-classes are available to produce such model objects.
+which describe the functionality of an API endpoint. This project provides a
+data model which contains the common informations of an API endpoint. There are
+parser classes which create such models based on a specification and it is also
+possible to generate a specification from a model object.
 
-Parser | Description
------- | -----------
-RAML | Parses a [RAML 0.8](http://raml.org/) specification
-Annotation | Parses a class which contains annotations
+### Parser
 
-The following generator classes are available to generate a specific output
-based on a model object.
+- RAML ([RAML 0.8](http://raml.org/) specification)
+- Annotation (Parses a class which contains annotations)
 
-Generator | Description
---------- | -----------
-RAML | Generates a [RAML 0.8](http://raml.org/) specification
-JsonSchema | Generates a [JsonSchema](http://json-schema.org/) which contains all schemas of the specification
-Swagger | Generates a [Swagger 1.2](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/1.2.md) specification
-WSDL | Generates a [WSDL 1.1](https://www.w3.org/TR/wsdl) specification
-XSD | Generates a [XSD](https://www.w3.org/TR/xmlschema-0/) which contains all schemas of the specification
+### Generator
+
+- RAML (Generates a [RAML 0.8](http://raml.org/) specification)
+- JsonSchema (Generates a [JsonSchema](http://json-schema.org/) which contains all schemas of the specification)
+- Swagger (Generates a [Swagger 1.2](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/1.2.md) specification)
+- WSDL (Generates a [WSDL 1.1](https://www.w3.org/TR/wsdl) specification)
+- XSD (Generates a [XSD](https://www.w3.org/TR/xmlschema-0/) which contains all schemas of the specification)
 
 ## Usage
 
-The root model object is called resource which represents a specific API
+The root model object is called `resource` which represents a specific API
 endpoint. The following is a simple showcase of the resource API so you get a
 basic understanding how it is designed.
 
