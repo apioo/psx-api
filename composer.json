@@ -14,6 +14,7 @@
   "require": {
     "php": ">=5.5",
     "doctrine/annotations": "^1.2",
+    "nikic/php-parser": "^2.0",
     "psx/data": "^0.1",
     "psx/json": "^0.1",
     "psx/model": "^0.1",
