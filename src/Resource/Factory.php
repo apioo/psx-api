@@ -20,8 +20,6 @@
 
 namespace PSX\Api\Resource;
 
-use InvalidArgumentException;
-
 /**
  * Factory
  *
@@ -32,7 +30,7 @@ use InvalidArgumentException;
 class Factory
 {
     /**
-     * @param $methodName
+     * @param string $methodName
      * @return \PSX\Api\Resource\MethodAbstract
      */
     public static function getMethod($methodName)
@@ -59,7 +57,7 @@ class Factory
                 break;
 
             default:
-                throw new InvalidArgumentException('Invalid request method');
+                return null;
         }
     }
 }

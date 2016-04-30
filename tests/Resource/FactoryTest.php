@@ -45,11 +45,8 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('PUT', Factory::getMethod('PUT')->getName());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testGetMethodInvalid()
     {
-        Factory::getMethod('FOO');
+        $this->assertNull(Factory::getMethod('FOO'));
     }
 }
