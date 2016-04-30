@@ -108,7 +108,7 @@ class Raml implements ParserInterface
         }
 
         foreach ($data as $methodName => $row) {
-            if (in_array($methodName, ['get', 'post', 'put', 'delete']) && is_array($row)) {
+            if (in_array($methodName, ['get', 'post', 'put', 'delete', 'patch']) && is_array($row)) {
                 if (!empty($mergedTrait)) {
                     $row = array_merge_recursive($row, $mergedTrait);
                 }
