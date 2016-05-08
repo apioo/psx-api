@@ -15,10 +15,10 @@
     "php": ">=5.5",
     "doctrine/annotations": "^1.2",
     "nikic/php-parser": "^2.0",
-    "psx/data": "^0.1",
-    "psx/json": "^0.1",
-    "psx/model": "^0.1",
-    "psx/schema": "^0.1",
+    "psx/data": "^1.0",
+    "psx/json": "^1.0",
+    "psx/model": "^1.0",
+    "psx/schema": "^1.0",
     "symfony/yaml": "^2.8"
   },
   "require-dev": {
