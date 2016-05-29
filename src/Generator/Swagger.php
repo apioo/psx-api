@@ -29,8 +29,10 @@ use PSX\Json\Parser;
 use PSX\Model\Swagger\Api;
 use PSX\Model\Swagger\Declaration;
 use PSX\Model\Swagger\Model;
+use PSX\Model\Swagger\Models;
 use PSX\Model\Swagger\Operation;
 use PSX\Model\Swagger\Parameter;
+use PSX\Model\Swagger\Properties;
 use PSX\Model\Swagger\ResponseMessage;
 use PSX\Schema\Property;
 use PSX\Schema\PropertyInterface;
@@ -125,8 +127,8 @@ class Swagger extends GeneratorAbstract
             // path parameter
             $parameters = $resource->getPathParameters()->getDefinition();
 
-            foreach ($parameters as $parameter) {
-                $param = new Parameter('path', $parameter->getName(), $parameter->getDescription(), $parameter->isRequired());
+            foreach ($parameters as $name => $parameter) {
+                $param = new Parameter('path', $name, $parameter->getDescription(), $parameter->isRequired());
 
                 $this->setParameterType($parameter, $param);
 
@@ -136,8 +138,8 @@ class Swagger extends GeneratorAbstract
             // query parameter
             $parameters = $method->getQueryParameters()->getDefinition();
 
-            foreach ($parameters as $parameter) {
-                $param = new Parameter('query', $parameter->getName(), $parameter->getDescription(), $parameter->isRequired());
+            foreach ($parameters as $name => $parameter) {
+                $param = new Parameter('query', $name, $parameter->getDescription(), $parameter->isRequired());
 
                 $this->setParameterType($parameter, $param);
 
@@ -174,11 +176,11 @@ class Swagger extends GeneratorAbstract
     {
         $generator = new JsonSchema($this->targetNamespace);
         $data      = $generator->toArray($resource);
-        $models    = new Record();
+        $models    = new Models();
 
         if (isset($data['definitions']) && is_array($data['definitions'])) {
             foreach ($data['definitions'] as $name => $definition) {
-                $properties  = isset($definition['properties'])  ? $definition['properties']  : null;
+                $properties  = new Properties();
                 $description = isset($definition['description']) ? $definition['description'] : null;
                 $required    = isset($definition['required'])    ? $definition['required']    : null;
 
@@ -186,7 +188,10 @@ class Swagger extends GeneratorAbstract
                 if (isset($definition['$ref'])) {
                     $ref = str_replace('#/definitions/', '', $definition['$ref']);
                     if (isset($data['definitions'][$ref])) {
-                        $properties  = isset($data['definitions'][$ref]['properties'])  ? $data['definitions'][$ref]['properties']  : null;
+                        if (isset($data['definitions'][$ref]['properties'])) {
+                            $properties = new Properties($data['definitions'][$ref]['properties']);
+                        }
+
                         $description = isset($data['definitions'][$ref]['description']) ? $data['definitions'][$ref]['description'] : null;
                         $required    = isset($data['definitions'][$ref]['required'])    ? $data['definitions'][$ref]['required']    : null;
                     }
@@ -195,7 +200,7 @@ class Swagger extends GeneratorAbstract
                 $model = new Model($name, $description, $required);
                 $model->setProperties($properties);
 
-                $models->setProperty($name, $model);
+                $models[$name] = $model;
             }
         }
 

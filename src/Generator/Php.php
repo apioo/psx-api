@@ -108,8 +108,8 @@ class Php extends GeneratorAbstract
         }
 
         $parameters = $resource->getPathParameters()->getDefinition();
-        foreach ($parameters as $parameter) {
-            $comment.= ' * @PathParam(' . $this->getParam($parameter) . ')' . "\n";
+        foreach ($parameters as $name => $parameter) {
+            $comment.= ' * @PathParam(' . $this->getParam($name, $parameter) . ')' . "\n";
         }
 
         $comment.= ' */';
@@ -127,8 +127,8 @@ class Php extends GeneratorAbstract
         }
 
         $parameters = $method->getQueryParameters()->getDefinition();
-        foreach ($parameters as $parameter) {
-            $comment.= ' * @QueryParam(' . $this->getParam($parameter) . ')' . "\n";
+        foreach ($parameters as $name => $parameter) {
+            $comment.= ' * @QueryParam(' . $this->getParam($name, $parameter) . ')' . "\n";
         }
 
         $request = $method->getRequest();
@@ -150,10 +150,10 @@ class Php extends GeneratorAbstract
         return $comment;
     }
 
-    protected function getParam(PropertySimpleAbstract $property)
+    protected function getParam($name, PropertySimpleAbstract $property)
     {
         $attributes = [
-            'name' => '"' . $this->escapeString($property->getName()) . '"', 
+            'name' => '"' . $this->escapeString($name) . '"', 
             'type' => '"' . $this->escapeString($property->getTypeName()) . '"',
         ];
 

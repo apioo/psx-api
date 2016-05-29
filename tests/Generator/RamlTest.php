@@ -85,10 +85,9 @@ title: foobar
               {
                   "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
                   "id": "urn:schema.phpsx.org#",
-                  "type": "object",
-                  "title": "collection",
                   "definitions": {
                       "ref7bde1c36c5f13fd4cf10c2864f8e8a75": {
+                          "title": "item",
                           "type": "object",
                           "properties": {
                               "id": {
@@ -104,20 +103,21 @@ title: foobar
                                   "pattern": "[A-z]+"
                               },
                               "date": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "format": "date-time"
                               }
                           },
-                          "title": "item",
                           "additionalProperties": false
                       }
                   },
+                  "title": "collection",
+                  "type": "object",
                   "properties": {
                       "entry": {
                           "type": "array",
                           "items": {
                               "$ref": "#\/definitions\/ref7bde1c36c5f13fd4cf10c2864f8e8a75"
-                          },
-                          "title": "entry"
+                          }
                       }
                   },
                   "additionalProperties": false
@@ -129,8 +129,8 @@ title: foobar
           {
               "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
               "id": "urn:schema.phpsx.org#",
-              "type": "object",
               "title": "item",
+              "type": "object",
               "properties": {
                   "id": {
                       "type": "integer"
@@ -145,14 +145,15 @@ title: foobar
                       "pattern": "[A-z]+"
                   },
                   "date": {
-                      "type": "string"
+                      "type": "string",
+                      "format": "date-time"
                   }
               },
+              "additionalProperties": false,
               "required": [
                   "title",
                   "date"
-              ],
-              "additionalProperties": false
+              ]
           }
     responses:
       201:
@@ -162,8 +163,8 @@ title: foobar
               {
                   "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
                   "id": "urn:schema.phpsx.org#",
-                  "type": "object",
                   "title": "message",
+                  "type": "object",
                   "properties": {
                       "success": {
                           "type": "boolean"
@@ -181,8 +182,8 @@ title: foobar
           {
               "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
               "id": "urn:schema.phpsx.org#",
-              "type": "object",
               "title": "item",
+              "type": "object",
               "properties": {
                   "id": {
                       "type": "integer"
@@ -197,13 +198,14 @@ title: foobar
                       "pattern": "[A-z]+"
                   },
                   "date": {
-                      "type": "string"
+                      "type": "string",
+                      "format": "date-time"
                   }
               },
+              "additionalProperties": false,
               "required": [
                   "id"
-              ],
-              "additionalProperties": false
+              ]
           }
     responses:
       200:
@@ -213,8 +215,8 @@ title: foobar
               {
                   "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
                   "id": "urn:schema.phpsx.org#",
-                  "type": "object",
                   "title": "message",
+                  "type": "object",
                   "properties": {
                       "success": {
                           "type": "boolean"
@@ -232,8 +234,8 @@ title: foobar
           {
               "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
               "id": "urn:schema.phpsx.org#",
-              "type": "object",
               "title": "item",
+              "type": "object",
               "properties": {
                   "id": {
                       "type": "integer"
@@ -248,13 +250,14 @@ title: foobar
                       "pattern": "[A-z]+"
                   },
                   "date": {
-                      "type": "string"
+                      "type": "string",
+                      "format": "date-time"
                   }
               },
+              "additionalProperties": false,
               "required": [
                   "id"
-              ],
-              "additionalProperties": false
+              ]
           }
     responses:
       200:
@@ -264,8 +267,8 @@ title: foobar
               {
                   "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
                   "id": "urn:schema.phpsx.org#",
-                  "type": "object",
                   "title": "message",
+                  "type": "object",
                   "properties": {
                       "success": {
                           "type": "boolean"
@@ -283,8 +286,8 @@ title: foobar
           {
               "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
               "id": "urn:schema.phpsx.org#",
-              "type": "object",
               "title": "item",
+              "type": "object",
               "properties": {
                   "id": {
                       "type": "integer"
@@ -299,13 +302,14 @@ title: foobar
                       "pattern": "[A-z]+"
                   },
                   "date": {
-                      "type": "string"
+                      "type": "string",
+                      "format": "date-time"
                   }
               },
+              "additionalProperties": false,
               "required": [
                   "id"
-              ],
-              "additionalProperties": false
+              ]
           }
     responses:
       200:
@@ -315,8 +319,8 @@ title: foobar
               {
                   "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
                   "id": "urn:schema.phpsx.org#",
-                  "type": "object",
                   "title": "message",
+                  "type": "object",
                   "properties": {
                       "success": {
                           "type": "boolean"

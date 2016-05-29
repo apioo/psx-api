@@ -26,6 +26,7 @@ use PSX\Api\Resource\MethodAbstract;
 use PSX\Schema\Property;
 use PSX\Schema\PropertySimpleAbstract;
 use PSX\Schema\Schema;
+use InvalidArgumentException;
 
 /**
  * A resource describes the capabilities of an API endpoint
@@ -142,9 +143,9 @@ class Resource implements IteratorAggregate
         return $this->description;
     }
 
-    public function addPathParameter(PropertySimpleAbstract $property)
+    public function addPathParameter($name, PropertySimpleAbstract $property = null)
     {
-        $this->pathParameters->add($property);
+        $this->pathParameters->add($name, $property);
 
         return $this;
     }

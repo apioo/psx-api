@@ -25,6 +25,7 @@ use PSX\Schema\PropertySimpleAbstract;
 use PSX\Schema\Schema;
 use PSX\Schema\SchemaInterface;
 use RuntimeException;
+use InvalidArgumentException;
 
 /**
  * MethodAbstract
@@ -73,9 +74,9 @@ abstract class MethodAbstract
         return $this->description;
     }
 
-    public function addQueryParameter(PropertySimpleAbstract $property)
+    public function addQueryParameter($name, PropertySimpleAbstract $property = null)
     {
-        $this->queryParameters->add($property);
+        $this->queryParameters->add($name, $property);
 
         return $this;
     }

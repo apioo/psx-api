@@ -67,7 +67,7 @@ class Annotation implements ParserInterface
             } elseif ($annotation instanceof Anno\Description) {
                 $resource->setDescription($annotation->getDescription());
             } elseif ($annotation instanceof Anno\PathParam) {
-                $resource->addPathParameter($this->getParameter($annotation));
+                $resource->addPathParameter($annotation->getName(), $this->getParameter($annotation));
             }
         }
 
@@ -100,7 +100,7 @@ class Annotation implements ParserInterface
                 if ($annotation instanceof Anno\Description) {
                     $method->setDescription($annotation->getDescription());
                 } elseif ($annotation instanceof Anno\QueryParam) {
-                    $method->addQueryParameter($this->getParameter($annotation));
+                    $method->addQueryParameter($annotation->getName(), $this->getParameter($annotation));
                 } elseif ($annotation instanceof Anno\Incoming) {
                     $schema = $this->getBodySchema($annotation, $basePath);
                     if ($schema instanceof SchemaInterface) {
@@ -135,7 +135,7 @@ class Annotation implements ParserInterface
 
     protected function getParameter(Anno\ParamAbstract $param)
     {
-        $property = $this->getPropertyType($param->getType(), $param->getName());
+        $property = $this->getPropertyType($param->getType());
 
         $description = $param->getDescription();
         if ($description !== null) {
@@ -160,24 +160,24 @@ class Annotation implements ParserInterface
         return $property;
     }
 
-    protected function getPropertyType($type, $name)
+    protected function getPropertyType($type)
     {
         switch ($type) {
             case 'integer':
-                return Property::getInteger($name);
+                return Property::getInteger();
 
             case 'number':
-                return Property::getFloat($name);
+                return Property::getFloat();
 
             case 'date':
-                return Property::getDateTime($name);
+                return Property::getDateTime();
 
             case 'boolean':
-                return Property::getBoolean($name);
+                return Property::getBoolean();
 
             case 'string':
             default:
-                return Property::getString($name);
+                return Property::getString();
         }
     }
 }

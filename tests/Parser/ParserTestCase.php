@@ -50,13 +50,13 @@ abstract class ParserTestCase extends \PHPUnit_Framework_TestCase
 
         $query = $methods['GET']->getQueryParameters();
 
-        $this->assertEquals('foo', $query->getDefinition()->get('foo')->getName());
+        $this->assertInstanceOf('PSX\Schema\Property\StringType', $query->getDefinition()->get('foo'));
         $this->assertEquals('Test', $query->getDefinition()->get('foo')->getDescription());
-        $this->assertEquals('bar', $query->getDefinition()->get('bar')->getName());
+        $this->assertInstanceOf('PSX\Schema\Property\StringType', $query->getDefinition()->get('bar'));
         $this->assertEquals(true, $query->getDefinition()->get('bar')->isRequired());
-        $this->assertEquals('baz', $query->getDefinition()->get('baz')->getName());
+        $this->assertInstanceOf('PSX\Schema\Property\StringType', $query->getDefinition()->get('baz'));
         $this->assertEquals(['foo', 'bar'], $query->getDefinition()->get('baz')->getEnumeration());
-        $this->assertEquals('boz', $query->getDefinition()->get('boz')->getName());
+        $this->assertInstanceOf('PSX\Schema\Property\StringType', $query->getDefinition()->get('boz'));
         $this->assertEquals('[A-z]+', $query->getDefinition()->get('boz')->getPattern());
         $this->assertInstanceOf('PSX\Schema\Property\ComplexType', $query->getDefinition());
         $this->assertInstanceOf('PSX\Schema\Property\IntegerType', $query->getDefinition()->get('integer'));

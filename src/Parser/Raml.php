@@ -161,7 +161,7 @@ class Raml implements ParserInterface
         if (isset($data['uriParameters']) && is_array($data['uriParameters'])) {
             foreach ($data['uriParameters'] as $name => $definition) {
                 if (!empty($name) && is_array($definition)) {
-                    $resource->addPathParameter($this->getParameter($name, $definition));
+                    $resource->addPathParameter($name, $this->getParameter($definition));
                 }
             }
         }
@@ -172,16 +172,16 @@ class Raml implements ParserInterface
         if (isset($data['queryParameters']) && is_array($data['queryParameters'])) {
             foreach ($data['queryParameters'] as $name => $definition) {
                 if (!empty($name) && is_array($definition)) {
-                    $method->addQueryParameter($this->getParameter($name, $definition));
+                    $method->addQueryParameter($name, $this->getParameter($definition));
                 }
             }
         }
     }
 
-    protected function getParameter($name, array $definition)
+    protected function getParameter(array $definition)
     {
         $type     = isset($definition['type']) ? $definition['type'] : 'string';
-        $property = $this->getPropertyType($type, $name);
+        $property = $this->getPropertyType($type);
 
         if (isset($definition['description'])) {
             $property->setDescription($definition['description']);
@@ -306,24 +306,24 @@ class Raml implements ParserInterface
         }
     }
 
-    protected function getPropertyType($type, $name)
+    protected function getPropertyType($type)
     {
         switch ($type) {
             case 'integer':
-                return Property::getInteger($name);
+                return Property::getInteger();
 
             case 'number':
-                return Property::getFloat($name);
+                return Property::getFloat();
 
             case 'date':
-                return Property::getDateTime($name);
+                return Property::getDateTime();
 
             case 'boolean':
-                return Property::getBoolean($name);
+                return Property::getBoolean();
 
             case 'string':
             default:
-                return Property::getString($name);
+                return Property::getString();
         }
     }
 

@@ -57,7 +57,7 @@ class Endpoint extends SchemaApiAbstract
      * @QueryParam(name="boolean", type="boolean")
      * @QueryParam(name="date", type="date")
      * @QueryParam(name="datetime", type="dateTime")
-     * @Outgoing(code=200, schema="PSX\Generation\Complexae7d4b56")
+     * @Outgoing(code=200, schema="PSX\Generation\Complexc6491059")
      */
     public function doGet($record)
     {

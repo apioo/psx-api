@@ -72,8 +72,8 @@ class Raml extends GeneratorAbstract
         if (count($parameters) > 0) {
             $raml.= '  uriParameters:' . "\n";
 
-            foreach ($parameters as $parameter) {
-                $raml.= '    ' . $parameter->getName() . ':' . "\n";
+            foreach ($parameters as $name => $parameter) {
+                $raml.= '    ' . $name . ':' . "\n";
 
                 $this->setParameterType($parameter, $raml, 6);
             }
@@ -97,8 +97,8 @@ class Raml extends GeneratorAbstract
             if (count($parameters) > 0) {
                 $raml.= '    queryParameters:' . "\n";
 
-                foreach ($parameters as $parameter) {
-                    $raml.= '      ' . $parameter->getName() . ':' . "\n";
+                foreach ($parameters as $name => $parameter) {
+                    $raml.= '      ' . $name . ':' . "\n";
 
                     $this->setParameterType($parameter, $raml, 8);
                 }

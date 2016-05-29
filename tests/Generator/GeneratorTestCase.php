@@ -45,26 +45,26 @@ abstract class GeneratorTestCase extends \PHPUnit_Framework_TestCase
         $resource->setTitle('foo');
         $resource->setDescription('lorem ipsum');
 
-        $resource->addPathParameter(Property::getString('name')
+        $resource->addPathParameter('name', Property::getString()
             ->setDescription('Name parameter')
             ->setRequired(false)
             ->setMinLength(0)
             ->setMaxLength(16)
             ->setPattern('[A-z]+'));
-        $resource->addPathParameter(Property::getString('type')
+        $resource->addPathParameter('type', Property::getString()
             ->setEnumeration(['foo', 'bar']));
 
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')
-            ->addQueryParameter(Property::getInteger('startIndex')
+            ->addQueryParameter('startIndex', Property::getInteger()
                 ->setDescription('startIndex parameter')
                 ->setRequired(false)
                 ->setMin(0)
                 ->setMax(32))
-            ->addQueryParameter(Property::getFloat('float'))
-            ->addQueryParameter(Property::getBoolean('boolean'))
-            ->addQueryParameter(Property::getDate('date'))
-            ->addQueryParameter(Property::getDateTime('datetime'))
+            ->addQueryParameter('float', Property::getFloat())
+            ->addQueryParameter('boolean', Property::getBoolean())
+            ->addQueryParameter('date', Property::getDate())
+            ->addQueryParameter('datetime', Property::getDateTime())
             ->addResponse(200, $schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Collection')));
 
         $resource->addMethod(Resource\Factory::getMethod('POST')
