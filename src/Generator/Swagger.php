@@ -24,6 +24,7 @@ use PSX\Api\GeneratorAbstract;
 use PSX\Api\Resource;
 use PSX\Api\Util\Inflection;
 use PSX\Data\ExporterInterface;
+use PSX\Model\Swagger\Items;
 use PSX\Record\Record;
 use PSX\Json\Parser;
 use PSX\Model\Swagger\Api;
@@ -180,33 +181,95 @@ class Swagger extends GeneratorAbstract
 
         if (isset($data['definitions']) && is_array($data['definitions'])) {
             foreach ($data['definitions'] as $name => $definition) {
-                $properties  = new Properties();
-                $description = isset($definition['description']) ? $definition['description'] : null;
-                $required    = isset($definition['required'])    ? $definition['required']    : null;
-
-                // if the property has an ref to an definition resolve the ref
-                if (isset($definition['$ref'])) {
+                $method = strstr($name, '-', true);
+                if (in_array($method, ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])) {
                     $ref = str_replace('#/definitions/', '', $definition['$ref']);
                     if (isset($data['definitions'][$ref])) {
-                        if (isset($data['definitions'][$ref]['properties'])) {
-                            $properties = new Properties($data['definitions'][$ref]['properties']);
-                        }
+                        $definition = $data['definitions'][$ref];
 
-                        $description = isset($data['definitions'][$ref]['description']) ? $data['definitions'][$ref]['description'] : null;
-                        $required    = isset($data['definitions'][$ref]['required'])    ? $data['definitions'][$ref]['required']    : null;
+                        if (isset($models[$name])) {
+                            unset($models[$name]);
+                        }
                     }
                 }
 
-                $model = new Model($name, $description, $required);
-                $model->setProperties($properties);
+                $description = isset($definition['description']) ? $definition['description'] : null;
+                $required    = isset($definition['required'])    ? $definition['required']    : null;
 
-                $models[$name] = $model;
+                $model = new Model($name, $description, $required);
+                $props = isset($definition['properties']) ? $definition['properties'] : [];
+
+                foreach ($props as $key => $value) {
+                    $model->addProperty($key, $this->parseProperty($value));
+                }
+
+                if (!empty($props)) {
+                    $models[$name] = $model;
+                }
             }
         }
 
         return $models;
     }
 
+    protected function parseProperty(array $data)
+    {
+        $property = new \PSX\Model\Swagger\Property();
+
+        if (isset($data['$ref'])) {
+            $property->setRef($data['$ref']);
+        }
+
+        if (isset($data['type'])) {
+            $property->setType($data['type']);
+        }
+
+        if (isset($data['format'])) {
+            $property->setFormat($data['format']);
+        }
+
+        if (isset($data['description'])) {
+            $property->setDescription($data['description']);
+        }
+
+        if (isset($data['minimum'])) {
+            $property->setMinimum($data['minimum']);
+        }
+
+        if (isset($data['minLength'])) {
+            $property->setMinimum($data['minLength']);
+        }
+
+        if (isset($data['maximum'])) {
+            $property->setMaximum($data['maximum']);
+        }
+
+        if (isset($data['maxLength'])) {
+            $property->setMaximum($data['maxLength']);
+        }
+
+        if (isset($data['enum'])) {
+            $property->setEnum($data['enum']);
+        }
+
+        if (isset($data['items'])) {
+            if (isset($data['items']['$ref'])) {
+                $items = new Items();
+                $items->setRef($data['items']['$ref']);
+                $property->setItems($items);
+            } elseif (isset($data['items']['type'])) {
+                $items = new Items();
+                $items->setType($data['items']['type']);
+                if (isset($data['items']['format'])) {
+                    $items->setFormat($data['items']['format']);
+                }
+                $property->setItems($items);
+            }
+        }
+
+        return $property;
+    }
+    
     protected function setParameterType(PropertyInterface $parameter, Parameter $param)
     {
         switch (true) {
