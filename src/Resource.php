@@ -33,7 +33,7 @@ use InvalidArgumentException;
  *
  * @author  Christoph Kappestein <k42b3.x@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link	http://phpsx.org
+ * @link    http://phpsx.org
  */
 class Resource implements IteratorAggregate
 {
@@ -48,13 +48,40 @@ class Resource implements IteratorAggregate
     const CODE_CLIENT_ERROR  = 499;
     const CODE_SERVER_ERROR  = 599;
 
+    /**
+     * @var integer
+     */
     protected $status;
+
+    /**
+     * @var string
+     */
     protected $path;
+
+    /**
+     * @var string
+     */
     protected $title;
+
+    /**
+     * @var string
+     */
     protected $description;
+
+    /**
+     * @var \PSX\Schema\Property\ComplexType
+     */
     protected $pathParameters;
+
+    /**
+     * @var array
+     */
     protected $methods;
 
+    /**
+     * @param integer $status
+     * @param string $path
+     */
     public function __construct($status, $path)
     {
         $this->status          = $status;

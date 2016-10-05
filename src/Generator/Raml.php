@@ -37,11 +37,32 @@ use Symfony\Component\Yaml\Inline;
  */
 class Raml extends GeneratorAbstract
 {
+    /**
+     * @var string
+     */
     protected $title;
+
+    /**
+     * @var integer
+     */
     protected $version;
+
+    /**
+     * @var string
+     */
     protected $baseUri;
+
+    /**
+     * @var string
+     */
     protected $targetNamespace;
 
+    /**
+     * @param string $title
+     * @param integer $version
+     * @param string $baseUri
+     * @param string $targetNamespace
+     */
     public function __construct($title, $version, $baseUri, $targetNamespace)
     {
         $this->title           = $title;
@@ -50,6 +71,10 @@ class Raml extends GeneratorAbstract
         $this->targetNamespace = $targetNamespace;
     }
 
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @return string
+     */
     public function generate(Resource $resource)
     {
         $path        = Inflection::transformRoutePlaceholder($resource->getPath() ?: '/');
@@ -135,6 +160,11 @@ class Raml extends GeneratorAbstract
         return $raml;
     }
 
+    /**
+     * @param \PSX\Schema\PropertyInterface $parameter
+     * @param string $raml
+     * @param string $indent
+     */
     protected function setParameterType(PropertyInterface $parameter, &$raml, $indent)
     {
         $indent = str_repeat(' ', $indent);

@@ -36,18 +36,32 @@ use PSX\Schema\SchemaInterface;
  */
 class JsonSchema extends GeneratorAbstract
 {
+    /**
+     * @var string
+     */
     protected $targetNamespace;
 
+    /**
+     * @param string $targetNamespace
+     */
     public function __construct($targetNamespace)
     {
         $this->targetNamespace = $targetNamespace;
     }
 
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @return string
+     */
     public function generate(Resource $resource)
     {
         return Parser::encode($this->toArray($resource), JSON_PRETTY_PRINT);
     }
 
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @return array
+     */
     public function toArray(Resource $resource)
     {
         $definitions = array();

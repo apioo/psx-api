@@ -37,13 +37,23 @@ use PSX\Schema\SchemaInterface;
  */
 class Xsd extends GeneratorAbstract
 {
+    /**
+     * @var string
+     */
     protected $targetNamespace;
 
+    /**
+     * @param string $targetNamespace
+     */
     public function __construct($targetNamespace)
     {
         $this->targetNamespace = $targetNamespace;
     }
 
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @return string
+     */
     public function generate(Resource $resource)
     {
         $dom = new DOMDocument('1.0', 'UTF-8');
@@ -61,6 +71,10 @@ class Xsd extends GeneratorAbstract
         return $dom->saveXML();
     }
 
+    /**
+     * @param \DOMElement $element
+     * @param \PSX\Api\Resource $resource
+     */
     public function appendSchema(DOMElement $element, Resource $resource)
     {
         $methods = $resource->getMethods();
@@ -96,6 +110,11 @@ class Xsd extends GeneratorAbstract
         $this->appendDefaultSchema($element);
     }
 
+    /**
+     * @param \PSX\Schema\SchemaInterface $schema
+     * @param \DOMElement $element
+     * @param string $elementName
+     */
     protected function appendSchemaElement(SchemaInterface $schema, DOMElement $element, $elementName)
     {
         $xsdGenerator = new Generator\Xsd($this->targetNamespace);
@@ -133,6 +152,9 @@ class Xsd extends GeneratorAbstract
         }
     }
 
+    /**
+     * @param \DOMElement $element
+     */
     protected function appendDefaultSchema(DOMElement $element)
     {
         // fault element

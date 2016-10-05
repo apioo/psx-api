@@ -39,6 +39,10 @@ abstract class HtmlAbstract implements GeneratorInterface
     const TYPE_REQUEST  = 0x3;
     const TYPE_RESPONSE = 0x4;
 
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @return string
+     */
     public function generate(Resource $resource)
     {
         $class = strtolower(str_replace('\\', '-', get_class($this)));

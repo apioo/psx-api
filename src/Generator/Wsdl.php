@@ -36,10 +36,26 @@ use PSX\Schema\SchemaInterface;
  */
 class Wsdl extends GeneratorAbstract
 {
+    /**
+     * @var string
+     */
     protected $name;
+
+    /**
+     * @var string
+     */
     protected $endpoint;
+
+    /**
+     * @var string
+     */
     protected $targetNamespace;
 
+    /**
+     * @param string $name
+     * @param string $endpoint
+     * @param string $targetNamespace
+     */
     public function __construct($name, $endpoint, $targetNamespace)
     {
         $this->name            = $name;
@@ -47,6 +63,10 @@ class Wsdl extends GeneratorAbstract
         $this->targetNamespace = $targetNamespace;
     }
 
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @return string
+     */
     public function generate(Resource $resource)
     {
         $dom = new DOMDocument('1.0', 'UTF-8');
@@ -72,6 +92,10 @@ class Wsdl extends GeneratorAbstract
         return $dom->saveXML();
     }
 
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @return array
+     */
     protected function getOperations(Resource $resource)
     {
         $operations = array();
@@ -107,6 +131,10 @@ class Wsdl extends GeneratorAbstract
         return $operations;
     }
 
+    /**
+     * @param \DOMElement $element
+     * @param \PSX\Api\Resource $resource
+     */
     protected function appendTypes(DOMElement $element, Resource $resource)
     {
         $types  = $element->ownerDocument->createElement('wsdl:types');
@@ -123,6 +151,10 @@ class Wsdl extends GeneratorAbstract
         $element->appendChild($types);
     }
 
+    /**
+     * @param \DOMElement $element
+     * @param array $operations
+     */
     public function appendMessages(DOMElement $element, array $operations)
     {
         foreach ($operations as $operation) {
@@ -164,6 +196,10 @@ class Wsdl extends GeneratorAbstract
         $element->appendChild($interface);
     }
 
+    /**
+     * @param \DOMElement $element
+     * @param array $operations
+     */
     public function appendPortTypes(DOMElement $element, array $operations)
     {
         $portType = $element->ownerDocument->createElement('wsdl:portType');
@@ -197,6 +233,10 @@ class Wsdl extends GeneratorAbstract
         $element->appendChild($portType);
     }
 
+    /**
+     * @param \DOMElement $element
+     * @param array $operations
+     */
     public function appendBindings(DOMElement $element, array $operations)
     {
         $binding = $element->ownerDocument->createElement('wsdl:binding');
@@ -253,6 +293,9 @@ class Wsdl extends GeneratorAbstract
         $element->appendChild($binding);
     }
 
+    /**
+     * @param \DOMElement $element
+     */
     public function appendServices(DOMElement $element)
     {
         $service = $element->ownerDocument->createElement('wsdl:service');

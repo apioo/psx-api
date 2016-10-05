@@ -54,6 +54,9 @@ class Php extends GeneratorAbstract
      */
     protected $namespace;
 
+    /**
+     * @param string|null $namespace
+     */
     public function __construct($namespace = null)
     {
         $this->factory   = new BuilderFactory();
@@ -117,6 +120,10 @@ class Php extends GeneratorAbstract
         return $comment;
     }
 
+    /**
+     * @param \PSX\Api\Resource\MethodAbstract $method
+     * @return string
+     */
     protected function getDocCommentForMethod(Resource\MethodAbstract $method)
     {
         $comment = '/**' . "\n";
@@ -150,6 +157,11 @@ class Php extends GeneratorAbstract
         return $comment;
     }
 
+    /**
+     * @param string $name
+     * @param \PSX\Schema\PropertySimpleAbstract $property
+     * @return string
+     */
     protected function getParam($name, PropertySimpleAbstract $property)
     {
         $attributes = [
@@ -189,11 +201,19 @@ class Php extends GeneratorAbstract
         return implode(', ', $param);
     }
 
+    /**
+     * @param \PSX\Schema\Property\ComplexType $property
+     * @return string
+     */
     protected function getClassNameForProperty(Property\ComplexType $property)
     {
         return $this->namespace . '\\' . ucfirst($property->getTypeName() . substr($property->getId(), 0, 8));
     }
 
+    /**
+     * @param string $data
+     * @return string
+     */
     protected function escapeString($data)
     {
         return $data;

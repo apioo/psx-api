@@ -69,6 +69,12 @@ class Swagger extends GeneratorAbstract
      */
     protected $targetNamespace;
 
+    /**
+     * @param \PSX\Data\ExporterInterface $exporter
+     * @param integer $apiVersion
+     * @param string $basePath
+     * @param string $targetNamespace
+     */
     public function __construct(ExporterInterface $exporter, $apiVersion, $basePath, $targetNamespace)
     {
         $this->exporter        = $exporter;
@@ -77,6 +83,10 @@ class Swagger extends GeneratorAbstract
         $this->targetNamespace = $targetNamespace;
     }
 
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @return string
+     */
     public function generate(Resource $resource)
     {
         $declaration = new Declaration($this->apiVersion);
@@ -95,6 +105,10 @@ class Swagger extends GeneratorAbstract
         return $swagger;
     }
 
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @return array
+     */
     protected function getApis(Resource $resource)
     {
         $api         = new Api(Inflection::transformRoutePlaceholder($resource->getPath()));
@@ -173,6 +187,10 @@ class Swagger extends GeneratorAbstract
         return array($api);
     }
 
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @return \PSX\Model\Swagger\Models
+     */
     protected function getModels(Resource $resource)
     {
         $generator = new JsonSchema($this->targetNamespace);
@@ -212,6 +230,10 @@ class Swagger extends GeneratorAbstract
         return $models;
     }
 
+    /**
+     * @param array $data
+     * @return \PSX\Model\Swagger\Property
+     */
     protected function parseProperty(array $data)
     {
         $property = new \PSX\Model\Swagger\Property();
@@ -269,7 +291,11 @@ class Swagger extends GeneratorAbstract
 
         return $property;
     }
-    
+
+    /**
+     * @param \PSX\Schema\PropertyInterface $parameter
+     * @param \PSX\Model\Swagger\Parameter $param
+     */
     protected function setParameterType(PropertyInterface $parameter, Parameter $param)
     {
         switch (true) {
