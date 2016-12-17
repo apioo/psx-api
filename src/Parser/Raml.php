@@ -156,25 +156,59 @@ class Raml implements ParserInterface
         return null;
     }
 
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @param array $data
+     */
     protected function parseUriParameters(Resource $resource, array $data)
     {
         if (isset($data['uriParameters']) && is_array($data['uriParameters'])) {
+            $required = [];
             foreach ($data['uriParameters'] as $name => $definition) {
                 if (!empty($name) && is_array($definition)) {
+                    if (isset($definition['required'])) {
+                        $isRequired = (bool) $definition['required'];
+                    } else {
+                        $isRequired = false;
+                    }
+
                     $resource->addPathParameter($name, $this->getParameter($definition));
+
+                    if ($isRequired) {
+                        $required[] = $name;
+                    }
                 }
             }
+
+            $resource->getPathParameters()->setRequired($required);
         }
     }
 
+    /**
+     * @param \PSX\Api\Resource\MethodAbstract $method
+     * @param array $data
+     */
     protected function parseQueryParameters(Resource\MethodAbstract $method, array $data)
     {
         if (isset($data['queryParameters']) && is_array($data['queryParameters'])) {
+            $required = [];
             foreach ($data['queryParameters'] as $name => $definition) {
                 if (!empty($name) && is_array($definition)) {
+                    if (isset($definition['required'])) {
+                        $isRequired = (bool) $definition['required'];
+                    } else {
+                        $isRequired = false;
+                    }
+
                     $method->addQueryParameter($name, $this->getParameter($definition));
+                    
+                    if ($isRequired) {
+                        $required[] = $name;
+                    }
                 }
             }
+
+            $method->getQueryParameters()->setRequired($required);
         }
     }
 
@@ -187,12 +221,8 @@ class Raml implements ParserInterface
             $property->setDescription($definition['description']);
         }
 
-        if (isset($definition['required'])) {
-            $property->setRequired((bool) $definition['required']);
-        }
-
         if (isset($definition['enum']) && is_array($definition['enum'])) {
-            $property->setEnumeration($definition['enum']);
+            $property->setEnum($definition['enum']);
         }
 
         if (isset($definition['pattern'])) {
@@ -208,11 +238,15 @@ class Raml implements ParserInterface
         }
 
         if (isset($definition['minimum'])) {
-            $property->setMin($definition['minimum']);
+            $property->setMinimum($definition['minimum']);
         }
 
         if (isset($definition['maximum'])) {
-            $property->setMax($definition['maximum']);
+            $property->setMaximum($definition['maximum']);
+        }
+
+        if (isset($definition['multipleOf'])) {
+            $property->setMultipleOf($definition['multipleOf']);
         }
 
         return $property;
@@ -313,10 +347,18 @@ class Raml implements ParserInterface
                 return Property::getInteger();
 
             case 'number':
-                return Property::getFloat();
+                return Property::getNumber();
 
             case 'date':
+            case 'datetime':
+            case 'datetime-only':
                 return Property::getDateTime();
+
+            case 'date-only':
+                return Property::getDate();
+
+            case 'time-only':
+                return Property::getTime();
 
             case 'boolean':
                 return Property::getBoolean();
