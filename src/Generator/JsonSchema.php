@@ -23,7 +23,7 @@ namespace PSX\Api\Generator;
 use PSX\Api\GeneratorAbstract;
 use PSX\Api\Resource;
 use PSX\Json\Parser;
-use PSX\Schema\Generator\JsonSchema as JsonSchemaGenerator;
+use PSX\Schema\Generator;
 use PSX\Schema\SchemaInterface;
 
 /**
@@ -36,6 +36,8 @@ use PSX\Schema\SchemaInterface;
  */
 class JsonSchema extends GeneratorAbstract
 {
+    use Generator\GeneratorTrait;
+
     /**
      * @var string
      */
@@ -64,103 +66,53 @@ class JsonSchema extends GeneratorAbstract
      */
     public function toArray(Resource $resource)
     {
-        $definitions = array();
-        $properties  = array();
+        $generator  = new Generator\JsonSchema($this->targetNamespace);
+        $properties = [];
+        $methods    = $resource->getMethods();
 
-        // path
-        if ($resource->hasPathParameters()) {
-            list($defs, $refs) = $this->getJsonSchema($resource->getPathParameters());
-
-            $definitions = array_merge($definitions, $defs);
-
-            if (!empty($refs)) {
-                $key = 'path';
-
-                $properties[$key] = $refs;
-            }
-        }
-
-        // methods
-        $methods = $resource->getMethods();
-        foreach ($methods as $method) {
-            // query
-            if ($method->hasQueryParameters()) {
-                list($defs, $refs) = $this->getJsonSchema($method->getQueryParameters());
-
-                $definitions = array_merge($definitions, $defs);
-
-                if (!empty($refs)) {
-                    $key = $method->getName() . '-query';
-
-                    $properties[$key] = $refs;
-                }
-            }
-
+        foreach ($methods as $name => $method) {
             // request
-            if ($method->hasRequest()) {
-                list($defs, $refs) = $this->getJsonSchema($method->getRequest());
-
-                $definitions = array_merge($definitions, $defs);
-
-                if (!empty($refs)) {
-                    $key = $method->getName() . '-request';
-
-                    $properties[$key] = $refs;
-                }
+            $request = $method->getRequest();
+            if ($request instanceof SchemaInterface) {
+                $properties[$this->getIdentifierForProperty($request->getDefinition())] = $request;
             }
 
             // response
             $responses = $method->getResponses();
             foreach ($responses as $statusCode => $response) {
-                list($defs, $refs) = $this->getJsonSchema($response);
-
-                $definitions = array_merge($definitions, $defs);
-
-                if (!empty($refs)) {
-                    $key = $method->getName() . '-' . $statusCode . '-response';
-
-                    $properties[$key] = $refs;
+                if ($response instanceof SchemaInterface) {
+                    $properties[$this->getIdentifierForProperty($response->getDefinition())] = $response;
                 }
             }
         }
 
-        $definitions = array_merge($definitions, $properties);
+        $definitions = new \stdClass();
+        foreach ($properties as $name => $property) {
+            $schema = $generator->toArray($property);
 
-        return array(
-            '$schema'     => JsonSchemaGenerator::SCHEMA,
-            'id'          => $this->targetNamespace,
-            'type'        => 'object',
-            'definitions' => $definitions,
-        );
-    }
+            if (isset($schema['definitions'])) {
+                foreach ($schema['definitions'] as $definition) {
+                    $definitions->{$name} = $definition;
+                }
 
-    protected function getJsonSchema(SchemaInterface $schema)
-    {
-        $generator   = new JsonSchemaGenerator($this->targetNamespace);
-        $data        = $generator->toArray($schema);
-        $definitions = array();
-
-        unset($data['$schema']);
-        unset($data['id']);
-
-        if (isset($data['definitions'])) {
-            $definitions = $data['definitions'];
-
-            unset($data['definitions']);
-        }
-
-        $type  = isset($data['type']) ? $data['type'] : null;
-        $props = null;
-
-        if (isset($data['properties'])) {
-            $key = 'ref' . $schema->getDefinition()->getId();
-            if (!isset($definitions[$key])) {
-                $definitions[$key] = $data;
+                unset($schema['definitions']);
             }
 
-            $props = ['$ref' => '#/definitions/' . $key];
+            if (isset($schema['$schema'])) {
+                unset($schema['$schema']);
+            }
+
+            if (isset($schema['id'])) {
+                unset($schema['id']);
+            }
+
+            $definitions->{$name} = $schema;
         }
 
-        return [$definitions, $props];
+        return array(
+            '$schema'     => Generator\JsonSchema::SCHEMA,
+            'id'          => $this->targetNamespace,
+            'definitions' => $definitions,
+        );
     }
 }

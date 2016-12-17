@@ -23,6 +23,9 @@ namespace PSX\Api\Generator;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\Resource;
 use PSX\Http\Http;
+use PSX\Schema\Generator\GeneratorTrait;
+use PSX\Schema\PropertyInterface;
+use PSX\Schema\Schema;
 use PSX\Schema\SchemaInterface;
 
 /**
@@ -34,6 +37,8 @@ use PSX\Schema\SchemaInterface;
  */
 abstract class HtmlAbstract implements GeneratorInterface
 {
+    use GeneratorTrait;
+
     const TYPE_PATH     = 0x1;
     const TYPE_QUERY    = 0x2;
     const TYPE_REQUEST  = 0x3;
@@ -66,9 +71,8 @@ abstract class HtmlAbstract implements GeneratorInterface
 
             // path parameters
             $pathParameters = $resource->getPathParameters();
-
-            if ($pathParameters instanceof SchemaInterface) {
-                $result = $this->generateHtml($pathParameters, self::TYPE_PATH, $method->getName(), $resource->getPath());
+            if ($pathParameters instanceof PropertyInterface) {
+                $result = $this->generateHtml(new Schema($pathParameters), self::TYPE_PATH, $method->getName(), $resource->getPath());
 
                 if (!empty($result)) {
                     $html.= '<div class="psx-resource-data psx-resource-query">';
@@ -80,9 +84,8 @@ abstract class HtmlAbstract implements GeneratorInterface
 
             // query parameters
             $queryParameters = $method->getQueryParameters();
-
-            if ($queryParameters instanceof SchemaInterface) {
-                $result = $this->generateHtml($queryParameters, self::TYPE_QUERY, $method->getName(), $resource->getPath());
+            if ($queryParameters instanceof PropertyInterface) {
+                $result = $this->generateHtml(new Schema($queryParameters), self::TYPE_QUERY, $method->getName(), $resource->getPath());
 
                 if (!empty($result)) {
                     $html.= '<div class="psx-resource-data psx-resource-query">';
@@ -94,7 +97,6 @@ abstract class HtmlAbstract implements GeneratorInterface
 
             // request
             $request = $method->getRequest();
-
             if ($request instanceof SchemaInterface) {
                 $result = $this->generateHtml($request, self::TYPE_REQUEST, $method->getName(), $resource->getPath());
 
@@ -108,7 +110,6 @@ abstract class HtmlAbstract implements GeneratorInterface
 
             // responses
             $responses = $method->getResponses();
-
             foreach ($responses as $statusCode => $response) {
                 $result = $this->generateHtml($response, self::TYPE_RESPONSE, $method->getName(), $resource->getPath(), $statusCode);
 

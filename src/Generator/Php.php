@@ -27,7 +27,7 @@ use PSX\Api\Resource;
 use PSX\Schema\Property;
 use PSX\Schema\Builder;
 use PSX\Schema\PropertyInterface;
-use PSX\Schema\PropertySimpleAbstract;
+use PSX\Schema\Generator;
 use PSX\Schema\SchemaInterface;
 
 /**
@@ -39,6 +39,8 @@ use PSX\Schema\SchemaInterface;
  */
 class Php extends GeneratorAbstract
 {
+    use Generator\GeneratorTrait;
+
     /**
      * @var \PhpParser\BuilderFactory
      */
@@ -110,9 +112,12 @@ class Php extends GeneratorAbstract
             $comment.= ' * @Description("' . $this->escapeString($description) . '")' . "\n";
         }
 
-        $parameters = $resource->getPathParameters()->getDefinition();
-        foreach ($parameters as $name => $parameter) {
-            $comment.= ' * @PathParam(' . $this->getParam($name, $parameter) . ')' . "\n";
+        $pathParameters = $resource->getPathParameters();
+        $properties     = $pathParameters->getProperties();
+        if (!empty($properties)) {
+            foreach ($properties as $name => $parameter) {
+                $comment.= ' * @PathParam(' . $this->getParam($name, $parameter, in_array($name, $pathParameters->getRequired())) . ')' . "\n";
+            }
         }
 
         $comment.= ' */';
@@ -133,9 +138,12 @@ class Php extends GeneratorAbstract
             $comment.= ' * @Description("' . $this->escapeString($description) . '")' . "\n";
         }
 
-        $parameters = $method->getQueryParameters()->getDefinition();
-        foreach ($parameters as $name => $parameter) {
-            $comment.= ' * @QueryParam(' . $this->getParam($name, $parameter) . ')' . "\n";
+        $queryParameters = $method->getQueryParameters();
+        $properties      = $queryParameters->getProperties();
+        if (!empty($properties)) {
+            foreach ($properties as $name => $parameter) {
+                $comment.= ' * @QueryParam(' . $this->getParam($name, $parameter, in_array($name, $queryParameters->getRequired())) . ')' . "\n";
+            }
         }
 
         $request = $method->getRequest();
@@ -159,24 +167,48 @@ class Php extends GeneratorAbstract
 
     /**
      * @param string $name
-     * @param \PSX\Schema\PropertySimpleAbstract $property
+     * @param \PSX\Schema\PropertyInterface $property
+     * @param boolean $required
      * @return string
      */
-    protected function getParam($name, PropertySimpleAbstract $property)
+    protected function getParam($name, PropertyInterface $property, $required)
     {
         $attributes = [
-            'name' => '"' . $this->escapeString($name) . '"', 
-            'type' => '"' . $this->escapeString($property->getTypeName()) . '"',
+            'name' => '"' . $this->escapeString($name) . '"'
         ];
+
+        $type = $property->getType();
+        if (!empty($type)) {
+            $attributes['description'] = '"' . $this->escapeString($type) . '"';
+        }
 
         $description = $property->getDescription();
         if (!empty($description)) {
             $attributes['description'] = '"' . $this->escapeString($description) . '"';
         }
 
-        $required = $property->isRequired();
-        if ($required !== null) {
-            $attributes['required'] = $required ? 'true' : 'false';
+        if ($required) {
+            $attributes['required'] = 'true';
+        }
+
+        $enum = $property->getEnum();
+        if (!empty($enum)) {
+            $vals = [];
+            foreach ($enum as $value) {
+                $vals[] = '"' . $this->escapeString($value) . '"';
+            }
+            $attributes['enum'] = '{' . implode(', ', $vals) . '}';
+        }
+
+        // string
+        $minLength = $property->getMinLength();
+        if ($minLength !== null) {
+            $attributes['minLength'] = (int) $minLength;
+        }
+
+        $maxLength = $property->getMaxLength();
+        if ($maxLength !== null) {
+            $attributes['maxLength'] = (int) $maxLength;
         }
 
         $pattern = $property->getPattern();
@@ -184,13 +216,25 @@ class Php extends GeneratorAbstract
             $attributes['pattern'] = '"' . $this->escapeString($pattern) . '"';
         }
 
-        $enum = $property->getEnumeration();
-        if (!empty($enum)) {
-            $vals = [];
-            foreach ($enum as $value) {
-                $vals[] = '"' . $this->escapeString($value) . '"';
-            }
-            $attributes['enum'] = '{' . implode(', ', $vals) . '}';
+        $format = $property->getFormat();
+        if (!empty($format)) {
+            $attributes['format'] = '"' . $this->escapeString($format) . '"';
+        }
+
+        // number
+        $minimum = $property->getMinimum();
+        if ($minimum !== null) {
+            $attributes['minimum'] = (int) $minimum;
+        }
+
+        $maximum = $property->getMaximum();
+        if ($maximum !== null) {
+            $attributes['maximum'] = (int) $maximum;
+        }
+
+        $multipleOf = $property->getMultipleOf();
+        if ($multipleOf !== null) {
+            $attributes['multipleOf'] = (int) $multipleOf;
         }
 
         $param = [];
@@ -202,12 +246,12 @@ class Php extends GeneratorAbstract
     }
 
     /**
-     * @param \PSX\Schema\Property\ComplexType $property
+     * @param \PSX\Schema\PropertyInterface $property
      * @return string
      */
-    protected function getClassNameForProperty(Property\ComplexType $property)
+    protected function getClassNameForProperty(PropertyInterface $property)
     {
-        return $this->namespace . '\\' . ucfirst($property->getTypeName() . substr($property->getId(), 0, 8));
+        return $this->namespace . '\\' . $this->getIdentifierForProperty($property);
     }
 
     /**
