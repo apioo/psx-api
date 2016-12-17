@@ -1,4 +1,11 @@
 
+### 2.0.0
+
+* Generate Swagger 2.0 and RAML 1.0 specification
+* Removed xsd and wsdl generator
+* Extended api annotations
+* Update psx schema to 2.0
+
 ### 1.0.3 (2016-10-30)
 
 * Allow symfony 3.0 components
