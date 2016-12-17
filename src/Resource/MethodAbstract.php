@@ -21,7 +21,7 @@
 namespace PSX\Api\Resource;
 
 use PSX\Schema\Property;
-use PSX\Schema\PropertySimpleAbstract;
+use PSX\Schema\PropertyInterface;
 use PSX\Schema\Schema;
 use PSX\Schema\SchemaInterface;
 use RuntimeException;
@@ -42,7 +42,7 @@ abstract class MethodAbstract
     protected $description;
 
     /**
-     * @var \PSX\Schema\Property\ComplexType
+     * @var \PSX\Schema\PropertyInterface
      */
     protected $queryParameters;
 
@@ -58,8 +58,8 @@ abstract class MethodAbstract
 
     public function __construct()
     {
-        $this->queryParameters = Property::getComplex('query')->setAdditionalProperties(true);
-        $this->responses       = array();
+        $this->queryParameters = Property::getObject()->setTitle('query');
+        $this->responses       = [];
     }
 
     public function setDescription($description)
@@ -74,21 +74,21 @@ abstract class MethodAbstract
         return $this->description;
     }
 
-    public function addQueryParameter($name, PropertySimpleAbstract $property = null)
+    public function addQueryParameter($name, PropertyInterface $property = null)
     {
-        $this->queryParameters->add($name, $property);
+        $this->queryParameters->addProperty($name, $property);
 
         return $this;
     }
 
     public function getQueryParameters()
     {
-        return new Schema($this->queryParameters);
+        return $this->queryParameters;
     }
 
     public function hasQueryParameters()
     {
-        return count($this->queryParameters) > 0;
+        return count($this->queryParameters->getProperties()) > 0;
     }
 
     public function setRequest(SchemaInterface $schema)

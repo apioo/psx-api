@@ -28,7 +28,7 @@ use PSX\Schema\Parser\JsonSchema;
 use PSX\Schema\Property;
 use PSX\Schema\SchemaInterface;
 use PSX\Schema\SchemaManagerInterface;
-use ReflectionObject;
+use ReflectionClass;
 use RuntimeException;
 
 /**
@@ -57,8 +57,9 @@ class Annotation implements ParserInterface
         }
 
         $resource    = new Resource(Resource::STATUS_ACTIVE, $path);
-        $controller  = new ReflectionObject($schema);
+        $controller  = new ReflectionClass(get_class($schema));
         $basePath    = dirname($controller->getFileName());
+        $required    = [];
         $annotations = $this->annotationReader->getClassAnnotations($controller);
 
         foreach ($annotations as $annotation) {
@@ -67,16 +68,20 @@ class Annotation implements ParserInterface
             } elseif ($annotation instanceof Anno\Description) {
                 $resource->setDescription($annotation->getDescription());
             } elseif ($annotation instanceof Anno\PathParam) {
+                $required[] = $annotation->getName();
+
                 $resource->addPathParameter($annotation->getName(), $this->getParameter($annotation));
             }
         }
+
+        $resource->getPathParameters()->setRequired($required);
 
         $this->parseMethods($controller, $resource, $basePath);
 
         return $resource;
     }
 
-    protected function parseMethods(ReflectionObject $controller, Resource $resource, $basePath)
+    protected function parseMethods(ReflectionClass $controller, Resource $resource, $basePath)
     {
         $methods = [
             'GET'    => 'doGet', 
@@ -94,12 +99,17 @@ class Annotation implements ParserInterface
 
             $method      = Resource\Factory::getMethod($httpMethod);
             $reflection  = $controller->getMethod($methodName);
+            $required    = [];
             $annotations = $this->annotationReader->getMethodAnnotations($reflection);
 
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof Anno\Description) {
                     $method->setDescription($annotation->getDescription());
                 } elseif ($annotation instanceof Anno\QueryParam) {
+                    if ($annotation->isRequired()) {
+                        $required[] = $annotation->getName();
+                    }
+
                     $method->addQueryParameter($annotation->getName(), $this->getParameter($annotation));
                 } elseif ($annotation instanceof Anno\Incoming) {
                     $schema = $this->getBodySchema($annotation, $basePath);
@@ -116,6 +126,8 @@ class Annotation implements ParserInterface
                     continue 2;
                 }
             }
+
+            $method->getQueryParameters()->setRequired($required);
 
             $resource->addMethod($method);
         }
@@ -135,21 +147,47 @@ class Annotation implements ParserInterface
 
     protected function getParameter(Anno\ParamAbstract $param)
     {
-        $property = $this->getPropertyType($param->getType());
+        switch ($param->getType()) {
+            case 'integer':
+                $property = Property::getInteger();
+                break;
+
+            case 'number':
+                $property = Property::getNumber();
+                break;
+
+            case 'boolean':
+                $property = Property::getBoolean();
+                break;
+
+            case 'null':
+                $property = Property::getNull();
+                break;
+
+            case 'string':
+            default:
+                $property = Property::getString();
+                break;
+        }
 
         $description = $param->getDescription();
         if ($description !== null) {
             $property->setDescription($description);
         }
 
-        $required = $param->getRequired();
-        if ($required !== null) {
-            $property->setRequired((bool) $required);
-        }
-
         $enum = $param->getEnum();
         if ($enum !== null && is_array($enum)) {
-            $property->setEnumeration($enum);
+            $property->setEnum($enum);
+        }
+
+        $minLength = $param->getMinLength();
+        if ($minLength !== null) {
+            $property->setMinLength($minLength);
+        }
+
+        $maxLength = $param->getMaxLength();
+        if ($maxLength !== null) {
+            $property->setMaxLength($maxLength);
         }
 
         $pattern = $param->getPattern();
@@ -157,27 +195,26 @@ class Annotation implements ParserInterface
             $property->setPattern($pattern);
         }
 
-        return $property;
-    }
-
-    protected function getPropertyType($type)
-    {
-        switch ($type) {
-            case 'integer':
-                return Property::getInteger();
-
-            case 'number':
-                return Property::getFloat();
-
-            case 'date':
-                return Property::getDateTime();
-
-            case 'boolean':
-                return Property::getBoolean();
-
-            case 'string':
-            default:
-                return Property::getString();
+        $format = $param->getFormat();
+        if ($format !== null) {
+            $property->setFormat($format);
         }
+
+        $minimum = $param->getMinimum();
+        if ($minimum !== null) {
+            $property->setMinimum($minimum);
+        }
+
+        $maximum = $param->getMaximum();
+        if ($maximum !== null) {
+            $property->setMaximum($maximum);
+        }
+
+        $multipleOf = $param->getMultipleOf();
+        if ($multipleOf !== null) {
+            $property->setMultipleOf($multipleOf);
+        }
+
+        return $property;
     }
 }

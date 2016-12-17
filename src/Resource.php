@@ -24,6 +24,7 @@ use ArrayIterator;
 use IteratorAggregate;
 use PSX\Api\Resource\MethodAbstract;
 use PSX\Schema\Property;
+use PSX\Schema\PropertyInterface;
 use PSX\Schema\PropertySimpleAbstract;
 use PSX\Schema\Schema;
 use InvalidArgumentException;
@@ -69,7 +70,7 @@ class Resource implements IteratorAggregate
     protected $description;
 
     /**
-     * @var \PSX\Schema\Property\ComplexType
+     * @var \PSX\Schema\PropertyInterface
      */
     protected $pathParameters;
 
@@ -86,8 +87,8 @@ class Resource implements IteratorAggregate
     {
         $this->status          = $status;
         $this->path            = $path;
-        $this->pathParameters  = Property::getComplex('path')->setAdditionalProperties(true);
-        $this->methods         = array();
+        $this->pathParameters  = Property::getObject()->setTitle('path');
+        $this->methods         = [];
     }
 
     /**
@@ -170,21 +171,21 @@ class Resource implements IteratorAggregate
         return $this->description;
     }
 
-    public function addPathParameter($name, PropertySimpleAbstract $property = null)
+    public function addPathParameter($name, PropertyInterface $property = null)
     {
-        $this->pathParameters->add($name, $property);
+        $this->pathParameters->addProperty($name, $property);
 
         return $this;
     }
 
     public function getPathParameters()
     {
-        return new Schema($this->pathParameters);
+        return $this->pathParameters;
     }
 
     public function hasPathParameters()
     {
-        return count($this->pathParameters) > 0;
+        return count($this->pathParameters->getProperties()) > 0;
     }
 
     public function addMethod(MethodAbstract $method)
