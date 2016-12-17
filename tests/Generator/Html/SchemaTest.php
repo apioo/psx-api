@@ -37,8 +37,8 @@ class SchemaTest extends GeneratorTestCase
     {
         $generator = new Schema(new GeneratorHtml());
 
-        $html = $generator->generate($this->getResource());
-        $html = preg_replace('/psx_model_(\w{14})/iUms', '[id]', $html);
+        $actual = $generator->generate($this->getResource());
+        $actual = preg_replace('/psx_model_Object([0-9A-Fa-f]{8})/', '[dynamic_id]', $actual);
 
         $expect = <<<XML
 <?xml version="1.0"?>
@@ -1253,6 +1253,6 @@ class SchemaTest extends GeneratorTestCase
 </div>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expect, $html, $html);
+        $this->assertXmlStringEqualsXmlString($expect, $actual, $actual);
     }
 }

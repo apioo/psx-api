@@ -35,8 +35,8 @@ class SampleTest extends GeneratorTestCase
     public function testGenerate()
     {
         $generator = new Sample(new Sample\Loader\XmlFile(__DIR__ . '/Sample/Loader/sample.xml'));
-        $html      = $generator->generate($this->getResource());
 
+        $actual = $generator->generate($this->getResource());
         $expect = <<<XML
 <div class="psx-resource psx-api-generator-html-sample" data-path="/foo/:name/:type" data-status="1">
 	<h4>Example</h4>
@@ -142,6 +142,6 @@ class SampleTest extends GeneratorTestCase
 </div>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expect, $html);
+        $this->assertXmlStringEqualsXmlString($expect, $actual, $actual);
     }
 }
