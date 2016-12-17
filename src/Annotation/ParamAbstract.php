@@ -48,14 +48,44 @@ abstract class ParamAbstract
     protected $required;
 
     /**
+     * @var array
+     */
+    protected $enum;
+
+    /**
+     * @var integer
+     */
+    protected $minLength;
+
+    /**
+     * @var integer
+     */
+    protected $maxLength;
+
+    /**
      * @var string
      */
     protected $pattern;
 
     /**
-     * @var array
+     * @var string
      */
-    protected $enumeration;
+    protected $format;
+
+    /**
+     * @var integer
+     */
+    protected $minimum;
+
+    /**
+     * @var integer
+     */
+    protected $maximum;
+
+    /**
+     * @var integer
+     */
+    protected $multipleOf;
 
     public function __construct(array $values)
     {
@@ -63,37 +93,207 @@ abstract class ParamAbstract
         $this->type        = isset($values['type'])        ? $values['type']        : null;
         $this->description = isset($values['description']) ? $values['description'] : null;
         $this->required    = isset($values['required'])    ? $values['required']    : null;
-        $this->pattern     = isset($values['pattern'])     ? $values['pattern']     : null;
         $this->enum        = isset($values['enum'])        ? $values['enum']        : null;
+        
+        $this->minLength   = isset($values['minLength'])   ? $values['minLength']   : null;
+        $this->maxLength   = isset($values['maxLength'])   ? $values['maxLength']   : null;
+        $this->pattern     = isset($values['pattern'])     ? $values['pattern']     : null;
+        $this->format      = isset($values['format'])      ? $values['format']      : null;
+
+        $this->minimum     = isset($values['minimum'])     ? $values['minimum']     : null;
+        $this->maximum     = isset($values['maximum'])     ? $values['maximum']     : null;
+        $this->multipleOf  = isset($values['multipleOf'])  ? $values['multipleOf']  : null;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
     public function getType()
     {
         return $this->type;
     }
 
+    /**
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return string
+     */
     public function getDescription()
     {
         return $this->description;
     }
 
-    public function getRequired()
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isRequired()
     {
         return $this->required;
     }
 
+    /**
+     * @param boolean $required
+     */
+    public function setRequired($required)
+    {
+        $this->required = $required;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEnum()
+    {
+        return $this->enum;
+    }
+
+    /**
+     * @param array $enum
+     */
+    public function setEnum($enum)
+    {
+        $this->enum = $enum;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMinLength()
+    {
+        return $this->minLength;
+    }
+
+    /**
+     * @param int $minLength
+     */
+    public function setMinLength($minLength)
+    {
+        $this->minLength = $minLength;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxLength()
+    {
+        return $this->maxLength;
+    }
+
+    /**
+     * @param int $maxLength
+     */
+    public function setMaxLength($maxLength)
+    {
+        $this->maxLength = $maxLength;
+    }
+
+    /**
+     * @return string
+     */
     public function getPattern()
     {
         return $this->pattern;
     }
 
-    public function getEnum()
+    /**
+     * @param string $pattern
+     */
+    public function setPattern($pattern)
     {
-        return $this->enum;
+        $this->pattern = $pattern;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormat()
+    {
+        return $this->format;
+    }
+
+    /**
+     * @param string $format
+     */
+    public function setFormat($format)
+    {
+        $this->format = $format;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMinimum()
+    {
+        return $this->minimum;
+    }
+
+    /**
+     * @param int $minimum
+     */
+    public function setMinimum($minimum)
+    {
+        $this->minimum = $minimum;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaximum()
+    {
+        return $this->maximum;
+    }
+
+    /**
+     * @param int $maximum
+     */
+    public function setMaximum($maximum)
+    {
+        $this->maximum = $maximum;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMultipleOf()
+    {
+        return $this->multipleOf;
+    }
+
+    /**
+     * @param int $multipleOf
+     */
+    public function setMultipleOf($multipleOf)
+    {
+        $this->multipleOf = $multipleOf;
     }
 }
