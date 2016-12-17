@@ -24,17 +24,23 @@ use PSX\Api\GeneratorAbstract;
 use PSX\Api\Resource;
 use PSX\Api\Util\Inflection;
 use PSX\Data\ExporterInterface;
+use PSX\Model\Swagger\Info;
 use PSX\Model\Swagger\Items;
+use PSX\Model\Swagger\Path;
+use PSX\Model\Swagger\Paths;
+use PSX\Model\Swagger\Response;
+use PSX\Model\Swagger\Responses;
 use PSX\Record\Record;
 use PSX\Json\Parser;
-use PSX\Model\Swagger\Api;
-use PSX\Model\Swagger\Declaration;
+use PSX\Model\Swagger\Swagger as Declaration;
 use PSX\Model\Swagger\Model;
 use PSX\Model\Swagger\Models;
 use PSX\Model\Swagger\Operation;
 use PSX\Model\Swagger\Parameter;
 use PSX\Model\Swagger\Properties;
 use PSX\Model\Swagger\ResponseMessage;
+use PSX\Schema\Generator\GeneratorTrait;
+use PSX\Schema\Generator;
 use PSX\Schema\Property;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\SchemaInterface;
@@ -49,6 +55,8 @@ use PSX\Schema\SchemaInterface;
  */
 class Swagger extends GeneratorAbstract
 {
+    use GeneratorTrait;
+
     /**
      * @var \PSX\Data\ExporterInterface
      */
@@ -89,253 +97,203 @@ class Swagger extends GeneratorAbstract
      */
     public function generate(Resource $resource)
     {
-        $declaration = new Declaration($this->apiVersion);
-        $declaration->setBasePath($this->basePath);
-        $declaration->setApis($this->getApis($resource));
-        $declaration->setModels($this->getModels($resource));
-        $declaration->setResourcePath(Inflection::transformRoutePlaceholder($resource->getPath()));
+        $info = new Info();
+        $info->setTitle('PSX');
+        $info->setVersion($this->apiVersion);
 
-        $swagger = $this->exporter->export($declaration);
+        $swagger = new Declaration();
+        $swagger->setInfo($info);
+        $swagger->setBasePath($this->basePath);
+        $swagger->setPaths($this->getPaths($resource));
+        $swagger->setDefinitions($this->getDefinitions($resource));
+
+        $swagger = $this->exporter->export($swagger);
         $swagger = Parser::encode($swagger, JSON_PRETTY_PRINT);
-
-        // since swagger does not fully support the json schema spec we must
-        // remove the $ref fragments
-        $swagger = str_replace('#\/definitions\/', '', $swagger);
 
         return $swagger;
     }
 
     /**
      * @param \PSX\Api\Resource $resource
-     * @return array
+     * @return \PSX\Model\Swagger\Paths
      */
-    protected function getApis(Resource $resource)
+    protected function getPaths(Resource $resource)
     {
-        $api         = new Api(Inflection::transformRoutePlaceholder($resource->getPath()));
-        $description = $resource->getDescription();
-        $methods     = $resource->getMethods();
+        $paths = new Paths();
+        $path  = new Path();
 
-        if (!empty($description)) {
-            $api->setDescription($description);
+        // path parameter
+        $pathParameters = $resource->getPathParameters();
+        $parameters     = [];
+        $properties     = $pathParameters->getProperties() ?: [];
+        foreach ($properties as $name => $parameter) {
+            $param = $this->getParameter($parameter, true);
+            $param->setName($name);
+            $param->setIn('path');
+
+            $parameters[] = $param;
         }
 
+        $path->setParameters($parameters);
+
+        $methods = $resource->getMethods();
         foreach ($methods as $method) {
             // get operation name
             $request     = $method->getRequest();
             $response    = $this->getSuccessfulResponse($method);
             $description = $method->getDescription();
-            $entityName  = '';
+            $operationId = null;
 
             if ($request instanceof SchemaInterface) {
-                $entityName = $request->getDefinition()->getName();
+                $operationId = strtolower($method->getName()) . ucfirst($this->getIdentifierForProperty($request->getDefinition()));
             } elseif ($response instanceof SchemaInterface) {
-                $entityName = $response->getDefinition()->getName();
+                $operationId = strtolower($method->getName()) . ucfirst($this->getIdentifierForProperty($response->getDefinition()));
             }
 
             // create new operation
-            $operation = new Operation($method->getName(), strtolower($method->getName()) . ucfirst($entityName));
+            $operation = new Operation();
+            $operation->setOperationId($operationId);
 
             if (!empty($description)) {
-                $operation->setSummary($description);
-            }
-
-            // path parameter
-            $parameters = $resource->getPathParameters()->getDefinition();
-
-            foreach ($parameters as $name => $parameter) {
-                $param = new Parameter('path', $name, $parameter->getDescription(), $parameter->isRequired());
-
-                $this->setParameterType($parameter, $param);
-
-                $operation->addParameter($param);
+                $operation->setDescription($description);
             }
 
             // query parameter
-            $parameters = $method->getQueryParameters()->getDefinition();
+            $queryParameters = $method->getQueryParameters();
+            $parameters      = [];
+            $properties      = $queryParameters->getProperties() ?: [];
+            foreach ($properties as $name => $parameter) {
+                $param = $this->getParameter($parameter, in_array($name, $queryParameters->getRequired() ?: []));
+                $param->setName($name);
+                $param->setIn('query');
 
-            foreach ($parameters as $name => $parameter) {
-                $param = new Parameter('query', $name, $parameter->getDescription(), $parameter->isRequired());
-
-                $this->setParameterType($parameter, $param);
-
-                $operation->addParameter($param);
+                $parameters[] = $param;
             }
 
             // request body
             if ($request instanceof SchemaInterface) {
-                $description = $request->getDefinition()->getDescription();
-                $type        = $method->getName() . '-request';
-                $parameter   = new Parameter('body', 'body', $description, true);
-                $parameter->setType($type);
+                $property = $request->getDefinition();
 
-                $operation->addParameter($parameter);
+                $param = new Parameter();
+                $param->setName('body');
+                $param->setIn('body');
+                $param->setDescription($property->getDescription() ?: $method->getName() . ' request');
+                $param->setRequired(true);
+                $param->setSchema((object) ['$ref' => '#/definitions/' . $this->getIdentifierForProperty($property)]);
+
+                $parameters[] = $param;
             }
+
+            $operation->setParameters($parameters);
 
             // response body
             $responses = $method->getResponses();
+            $resps     = new Responses();
 
             foreach ($responses as $statusCode => $response) {
-                $type    = $method->getName() . '-' . $statusCode . '-response';
-                $message = $response->getDefinition()->getDescription() ?: $statusCode . ' response';
+                /** @var \PSX\Schema\SchemaInterface $response */
+                $property = $response->getDefinition();
 
-                $operation->addResponseMessage(new ResponseMessage($statusCode, $message, $type));
+                $resp = new Response();
+                $resp->setDescription($property->getDescription() ?: $method->getName() . ' ' . $statusCode . ' response');
+                $resp->setSchema((object) ['$ref' => '#/definitions/' . $this->getIdentifierForProperty($property)]);
+
+                $resps["" . $statusCode] = $resp; 
             }
 
-            $api->addOperation($operation);
+            $operation->setResponses($resps);
+
+            if ($method->getName() === 'GET') {
+                $path->setGet($operation);
+            } elseif ($method->getName() === 'POST') {
+                $path->setPost($operation);
+            } elseif ($method->getName() === 'PUT') {
+                $path->setPut($operation);
+            } elseif ($method->getName() === 'DELETE') {
+                $path->setDelete($operation);
+            } elseif ($method->getName() === 'PATCH') {
+                $path->setPatch($operation);
+            }
         }
 
-        return array($api);
+        $paths[Inflection::transformRoutePlaceholder($resource->getPath())] = $path;
+
+        return $paths;
     }
 
     /**
      * @param \PSX\Api\Resource $resource
-     * @return \PSX\Model\Swagger\Models
+     * @return \stdClass
      */
-    protected function getModels(Resource $resource)
+    protected function getDefinitions(Resource $resource)
     {
-        $generator = new JsonSchema($this->targetNamespace);
-        $data      = $generator->toArray($resource);
-        $models    = new Models();
+        $generator  = new Generator\JsonSchema($this->targetNamespace);
+        $properties = [];
+        $methods    = $resource->getMethods();
 
-        if (isset($data['definitions']) && is_array($data['definitions'])) {
-            foreach ($data['definitions'] as $name => $definition) {
-                $method = strstr($name, '-', true);
-                if (in_array($method, ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])) {
-                    $ref = str_replace('#/definitions/', '', $definition['$ref']);
-                    if (isset($data['definitions'][$ref])) {
-                        $definition = $data['definitions'][$ref];
+        foreach ($methods as $name => $method) {
+            // request
+            $request = $method->getRequest();
+            if ($request instanceof SchemaInterface) {
+                $properties[$this->getIdentifierForProperty($request->getDefinition())] = $request;
+            }
 
-                        if (isset($models[$name])) {
-                            unset($models[$name]);
-                        }
-                    }
-                }
-
-                $description = isset($definition['description']) ? $definition['description'] : null;
-                $required    = isset($definition['required'])    ? $definition['required']    : null;
-
-                $model = new Model($name, $description, $required);
-                $props = isset($definition['properties']) ? $definition['properties'] : [];
-
-                foreach ($props as $key => $value) {
-                    $model->addProperty($key, $this->parseProperty($value));
-                }
-
-                if (!empty($props)) {
-                    $models[$name] = $model;
+            // response
+            $responses = $method->getResponses();
+            foreach ($responses as $statusCode => $response) {
+                if ($response instanceof SchemaInterface) {
+                    $properties[$this->getIdentifierForProperty($response->getDefinition())] = $response;
                 }
             }
         }
 
-        return $models;
-    }
+        $definitions = new \stdClass();
+        foreach ($properties as $name => $property) {
+            $schema = $generator->toArray($property);
 
-    /**
-     * @param array $data
-     * @return \PSX\Model\Swagger\Property
-     */
-    protected function parseProperty(array $data)
-    {
-        $property = new \PSX\Model\Swagger\Property();
-
-        if (isset($data['$ref'])) {
-            $property->setRef($data['$ref']);
-        }
-
-        if (isset($data['type'])) {
-            $property->setType($data['type']);
-        }
-
-        if (isset($data['format'])) {
-            $property->setFormat($data['format']);
-        }
-
-        if (isset($data['description'])) {
-            $property->setDescription($data['description']);
-        }
-
-        if (isset($data['minimum'])) {
-            $property->setMinimum($data['minimum']);
-        }
-
-        if (isset($data['minLength'])) {
-            $property->setMinimum($data['minLength']);
-        }
-
-        if (isset($data['maximum'])) {
-            $property->setMaximum($data['maximum']);
-        }
-
-        if (isset($data['maxLength'])) {
-            $property->setMaximum($data['maxLength']);
-        }
-
-        if (isset($data['enum'])) {
-            $property->setEnum($data['enum']);
-        }
-
-        if (isset($data['items'])) {
-            if (isset($data['items']['$ref'])) {
-                $items = new Items();
-                $items->setRef($data['items']['$ref']);
-                $property->setItems($items);
-            } elseif (isset($data['items']['type'])) {
-                $items = new Items();
-                $items->setType($data['items']['type']);
-                if (isset($data['items']['format'])) {
-                    $items->setFormat($data['items']['format']);
+            if (isset($schema['definitions'])) {
+                foreach ($schema['definitions'] as $definition) {
+                    $definitions->{$name} = $definition;
                 }
-                $property->setItems($items);
+
+                unset($schema['definitions']);
             }
+
+            if (isset($schema['$schema'])) {
+                unset($schema['$schema']);
+            }
+
+            if (isset($schema['id'])) {
+                unset($schema['id']);
+            }
+
+            $definitions->{$name} = $schema;
         }
 
-        return $property;
+        return $definitions;
     }
 
     /**
      * @param \PSX\Schema\PropertyInterface $parameter
-     * @param \PSX\Model\Swagger\Parameter $param
+     * @return \PSX\Model\Swagger\Parameter $param
      */
-    protected function setParameterType(PropertyInterface $parameter, Parameter $param)
+    protected function getParameter(PropertyInterface $parameter, $required)
     {
-        switch (true) {
-            case $parameter instanceof Property\IntegerType:
-                $param->setType('integer');
-                break;
-
-            case $parameter instanceof Property\FloatType:
-                $param->setType('number');
-                break;
-
-            case $parameter instanceof Property\BooleanType:
-                $param->setType('boolean');
-                break;
-
-            case $parameter instanceof Property\DateType:
-                $param->setType('string');
-                $param->setFormat('date');
-                break;
-
-            case $parameter instanceof Property\DateTimeType:
-                $param->setType('string');
-                $param->setFormat('date-time');
-                break;
-
-            default:
-                $param->setType('string');
-                break;
-        }
-
+        $param = new Parameter();
         $param->setDescription($parameter->getDescription());
-        $param->setRequired($parameter->isRequired());
+        $param->setRequired($required);
+        $param->setType($parameter->getType());
+        $param->setEnum($parameter->getEnum());
 
-        if ($parameter instanceof Property\DecimalType) {
-            $param->setMinimum($parameter->getMin());
-            $param->setMaximum($parameter->getMax());
-        } elseif ($parameter instanceof Property\StringType) {
-            $param->setMinimum($parameter->getMinLength());
-            $param->setMaximum($parameter->getMaxLength());
-            $param->setEnum($parameter->getEnumeration());
-        }
+        $param->setFormat($parameter->getFormat());
+        $param->setMinLength($parameter->getMinLength());
+        $param->setMaxLength($parameter->getMaxLength());
+        $param->setPattern($parameter->getPattern());
+
+        $param->setMinimum($parameter->getMinimum());
+        $param->setMaximum($parameter->getMaximum());
+        $param->setMultipleOf($parameter->getMultipleOf());
+
+        return $param;
     }
 }
