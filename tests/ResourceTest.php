@@ -47,7 +47,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/foo', $resource->getPath());
         $this->assertEquals('foobar', $resource->getTitle());
         $this->assertEquals('foobar', $resource->getDescription());
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $resource->getPathParameters());
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getPathParameters());
         $this->assertInstanceOf('PSX\Api\Resource\MethodAbstract', $resource->getMethod('GET'));
         $this->assertEquals(['GET' => $resource->getMethod('GET')], $resource->getMethods());
         $this->assertEquals(['GET'], $resource->getAllowedMethods());

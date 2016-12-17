@@ -36,14 +36,14 @@ class XmlFileTest extends \PHPUnit_Framework_TestCase
     {
         $loader = new XmlFile(__DIR__ . '/sample.xml');
 
-        $this->assertEquals('<pre><code class="http">get-request</code></pre>', $loader->get(HtmlAbstract::TYPE_REQUEST, 'GET', '/foo/bar'));
-        $this->assertEquals('<pre><code class="http">get-response</code></pre>', $loader->get(HtmlAbstract::TYPE_RESPONSE, 'GET', '/foo/bar', 200));
-        $this->assertEquals('<pre><code class="http">post-request</code></pre>', $loader->get(HtmlAbstract::TYPE_REQUEST, 'POST', '/foo/bar'));
-        $this->assertEquals('<pre><code class="http">post-response</code></pre>', $loader->get(HtmlAbstract::TYPE_RESPONSE, 'POST', '/foo/bar', 201));
-        $this->assertEquals('<pre><code class="http">put-request</code></pre>', $loader->get(HtmlAbstract::TYPE_REQUEST, 'PUT', '/foo/bar'));
-        $this->assertEquals('<pre><code class="http">put-response</code></pre>', $loader->get(HtmlAbstract::TYPE_RESPONSE, 'PUT', '/foo/bar', 200));
-        $this->assertEquals('<pre><code class="http">delete-request</code></pre>', $loader->get(HtmlAbstract::TYPE_REQUEST, 'DELETE', '/foo/bar'));
-        $this->assertEquals('<pre><code class="http">delete-response</code></pre>', $loader->get(HtmlAbstract::TYPE_RESPONSE, 'DELETE', '/foo/bar', 200));
+        $this->assertEquals('<pre><code class="http">get-request</code></pre>', $loader->get(HtmlAbstract::TYPE_REQUEST, 'GET', '/foo/:name/:type'));
+        $this->assertEquals('<pre><code class="http">get-response</code></pre>', $loader->get(HtmlAbstract::TYPE_RESPONSE, 'GET', '/foo/:name/:type', 200));
+        $this->assertEquals('<pre><code class="http">post-request</code></pre>', $loader->get(HtmlAbstract::TYPE_REQUEST, 'POST', '/foo/:name/:type'));
+        $this->assertEquals('<pre><code class="http">post-response</code></pre>', $loader->get(HtmlAbstract::TYPE_RESPONSE, 'POST', '/foo/:name/:type', 201));
+        $this->assertEquals('<pre><code class="http">put-request</code></pre>', $loader->get(HtmlAbstract::TYPE_REQUEST, 'PUT', '/foo/:name/:type'));
+        $this->assertEquals('<pre><code class="http">put-response</code></pre>', $loader->get(HtmlAbstract::TYPE_RESPONSE, 'PUT', '/foo/:name/:type', 200));
+        $this->assertEquals('<pre><code class="http">delete-request</code></pre>', $loader->get(HtmlAbstract::TYPE_REQUEST, 'DELETE', '/foo/:name/:type'));
+        $this->assertEquals('<pre><code class="http">delete-response</code></pre>', $loader->get(HtmlAbstract::TYPE_RESPONSE, 'DELETE', '/foo/:name/:type', 200));
 
         $this->assertEquals('<pre><code class="http">get-request-detail</code></pre>', $loader->get(HtmlAbstract::TYPE_REQUEST, 'GET', '/population/:id'));
         $this->assertEquals('<pre><code class="http">get-response-detail</code></pre>', $loader->get(HtmlAbstract::TYPE_RESPONSE, 'GET', '/population/:id', 500));
@@ -53,15 +53,15 @@ class XmlFileTest extends \PHPUnit_Framework_TestCase
     {
         $loader = new XmlFile(__DIR__ . '/sample.xml');
 
-        $this->assertEmpty($loader->get(0, 'GET', '/foo/bar'));
-        $this->assertEmpty($loader->get('', 'GET', '/foo/bar'));
+        $this->assertEmpty($loader->get(0, 'GET', '/foo/:name/:type'));
+        $this->assertEmpty($loader->get('', 'GET', '/foo/:name/:type'));
     }
 
     public function testGetUnknownRequestMethod()
     {
         $loader = new XmlFile(__DIR__ . '/sample.xml');
 
-        $this->assertEmpty($loader->get(HtmlAbstract::TYPE_REQUEST, 'FOO', '/foo/bar'));
+        $this->assertEmpty($loader->get(HtmlAbstract::TYPE_REQUEST, 'FOO', '/foo/:name/:type'));
     }
 
     public function testGetUnknownPath()

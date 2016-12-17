@@ -35,7 +35,7 @@ class Collection extends SchemaAbstract
     {
         $sb = $this->getSchemaBuilder('collection');
         $sb->arrayType('entry')
-            ->setPrototype($this->getSchema('PSX\Api\Tests\Generator\Schema\Entry'));
+            ->setItems($this->getSchema('PSX\Api\Tests\Generator\Schema\Entry'));
 
         return $sb->getProperty();
     }

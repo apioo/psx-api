@@ -34,7 +34,7 @@ class Patch extends SchemaAbstract
     public function getDefinition()
     {
         $entry = $this->getSchema('PSX\Api\Tests\Generator\Schema\Entry');
-        $entry->get('id')->setRequired(true);
+        $entry->setRequired(['id']);
 
         return $entry;
     }

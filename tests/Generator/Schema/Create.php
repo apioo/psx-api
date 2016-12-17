@@ -34,8 +34,7 @@ class Create extends SchemaAbstract
     public function getDefinition()
     {
         $entry = $this->getSchema('PSX\Api\Tests\Generator\Schema\Entry');
-        $entry->get('title')->setRequired(true);
-        $entry->get('date')->setRequired(true);
+        $entry->setRequired(['title', 'date']);
 
         return $entry;
     }

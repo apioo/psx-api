@@ -39,8 +39,8 @@ abstract class ParserTestCase extends \PHPUnit_Framework_TestCase
 
         $path = $resource->getPathParameters();
 
-        $this->assertInstanceOf('PSX\Schema\Property\ComplexType', $path->getDefinition());
-        $this->assertInstanceOf('PSX\Schema\Property\StringType', $path->getDefinition()->get('fooId'));
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $path);
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $path->getProperty('fooId'));
 
         $methods = $resource->getMethods();
 
@@ -50,20 +50,19 @@ abstract class ParserTestCase extends \PHPUnit_Framework_TestCase
 
         $query = $methods['GET']->getQueryParameters();
 
-        $this->assertInstanceOf('PSX\Schema\Property\StringType', $query->getDefinition()->get('foo'));
-        $this->assertEquals('Test', $query->getDefinition()->get('foo')->getDescription());
-        $this->assertInstanceOf('PSX\Schema\Property\StringType', $query->getDefinition()->get('bar'));
-        $this->assertEquals(true, $query->getDefinition()->get('bar')->isRequired());
-        $this->assertInstanceOf('PSX\Schema\Property\StringType', $query->getDefinition()->get('baz'));
-        $this->assertEquals(['foo', 'bar'], $query->getDefinition()->get('baz')->getEnumeration());
-        $this->assertInstanceOf('PSX\Schema\Property\StringType', $query->getDefinition()->get('boz'));
-        $this->assertEquals('[A-z]+', $query->getDefinition()->get('boz')->getPattern());
-        $this->assertInstanceOf('PSX\Schema\Property\ComplexType', $query->getDefinition());
-        $this->assertInstanceOf('PSX\Schema\Property\IntegerType', $query->getDefinition()->get('integer'));
-        $this->assertInstanceOf('PSX\Schema\Property\FloatType', $query->getDefinition()->get('number'));
-        $this->assertInstanceOf('PSX\Schema\Property\DateTimeType', $query->getDefinition()->get('date'));
-        $this->assertInstanceOf('PSX\Schema\Property\BooleanType', $query->getDefinition()->get('boolean'));
-        $this->assertInstanceOf('PSX\Schema\Property\StringType', $query->getDefinition()->get('string'));
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $query->getProperty('foo'));
+        $this->assertEquals('Test', $query->getProperty('foo')->getDescription());
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $query->getProperty('bar'));
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $query->getProperty('baz'));
+        $this->assertEquals(['foo', 'bar'], $query->getProperty('baz')->getEnum());
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $query->getProperty('boz'));
+        $this->assertEquals('[A-z]+', $query->getProperty('boz')->getPattern());
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $query);
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $query->getProperty('integer'));
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $query->getProperty('number'));
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $query->getProperty('date'));
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $query->getProperty('boolean'));
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $query->getProperty('string'));
 
         $request = $methods['GET']->getRequest();
 

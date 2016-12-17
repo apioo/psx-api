@@ -45,47 +45,47 @@ use PSX\Framework\Controller\SchemaApiAbstract;
 /**
  * @Title("foo")
  * @Description("lorem ipsum")
- * @PathParam(name="name", type="string", description="Name parameter", required=false, pattern="[A-z]+")
- * @PathParam(name="type", type="string", enum={"foo", "bar"})
+ * @PathParam(name="name", description="Name parameter", required=true, minLength=0, maxLength=16, pattern="[A-z]+")
+ * @PathParam(name="type", description="string", enum={"foo", "bar"})
  */
 class Endpoint extends SchemaApiAbstract
 {
     /**
      * @Description("Returns a collection")
-     * @QueryParam(name="startIndex", type="integer", description="startIndex parameter", required=false)
-     * @QueryParam(name="float", type="float")
-     * @QueryParam(name="boolean", type="boolean")
-     * @QueryParam(name="date", type="date")
-     * @QueryParam(name="datetime", type="dateTime")
-     * @Outgoing(code=200, schema="PSX\Generation\Complexc6491059")
+     * @QueryParam(name="startIndex", description="startIndex parameter", required=true, minimum=0, maximum=32)
+     * @QueryParam(name="float", description="number")
+     * @QueryParam(name="boolean", description="boolean")
+     * @QueryParam(name="date", description="string", format="date")
+     * @QueryParam(name="datetime", description="string", format="date-time")
+     * @Outgoing(code=200, schema="PSX\Generation\Collection")
      */
     public function doGet($record)
     {
     }
     /**
-     * @Incoming(schema="PSX\Generation\Complex70152cdf")
-     * @Outgoing(code=201, schema="PSX\Generation\Complex31ead4d2")
+     * @Incoming(schema="PSX\Generation\Item")
+     * @Outgoing(code=201, schema="PSX\Generation\Message")
      */
     public function doPost($record)
     {
     }
     /**
-     * @Incoming(schema="PSX\Generation\Complex774a7a4e")
-     * @Outgoing(code=200, schema="PSX\Generation\Complex31ead4d2")
+     * @Incoming(schema="PSX\Generation\Item")
+     * @Outgoing(code=200, schema="PSX\Generation\Message")
      */
     public function doPut($record)
     {
     }
     /**
-     * @Incoming(schema="PSX\Generation\Complex774a7a4e")
-     * @Outgoing(code=200, schema="PSX\Generation\Complex31ead4d2")
+     * @Incoming(schema="PSX\Generation\Item")
+     * @Outgoing(code=200, schema="PSX\Generation\Message")
      */
     public function doDelete($record)
     {
     }
     /**
-     * @Incoming(schema="PSX\Generation\Complex774a7a4e")
-     * @Outgoing(code=200, schema="PSX\Generation\Complex31ead4d2")
+     * @Incoming(schema="PSX\Generation\Item")
+     * @Outgoing(code=200, schema="PSX\Generation\Message")
      */
     public function doPatch($record)
     {

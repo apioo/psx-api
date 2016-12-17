@@ -41,31 +41,33 @@ abstract class GeneratorTestCase extends \PHPUnit_Framework_TestCase
 
         $schemaManager = new SchemaManager($reader);
 
-        $resource = new Resource(Resource::STATUS_ACTIVE, '/foo/bar');
+        $resource = new Resource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
         $resource->setTitle('foo');
         $resource->setDescription('lorem ipsum');
 
         $resource->addPathParameter('name', Property::getString()
             ->setDescription('Name parameter')
-            ->setRequired(false)
             ->setMinLength(0)
             ->setMaxLength(16)
             ->setPattern('[A-z]+'));
         $resource->addPathParameter('type', Property::getString()
-            ->setEnumeration(['foo', 'bar']));
+            ->setEnum(['foo', 'bar']));
 
+        $resource->getPathParameters()->setRequired(['name']);
+        
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')
             ->addQueryParameter('startIndex', Property::getInteger()
                 ->setDescription('startIndex parameter')
-                ->setRequired(false)
-                ->setMin(0)
-                ->setMax(32))
-            ->addQueryParameter('float', Property::getFloat())
+                ->setMinimum(0)
+                ->setMaximum(32))
+            ->addQueryParameter('float', Property::getNumber())
             ->addQueryParameter('boolean', Property::getBoolean())
             ->addQueryParameter('date', Property::getDate())
             ->addQueryParameter('datetime', Property::getDateTime())
             ->addResponse(200, $schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Collection')));
+
+        $resource->getMethod('GET')->getQueryParameters()->setRequired(['startIndex']);
 
         $resource->addMethod(Resource\Factory::getMethod('POST')
             ->setRequest($schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Create'))

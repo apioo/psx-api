@@ -38,7 +38,7 @@ class SampleTest extends GeneratorTestCase
         $html      = $generator->generate($this->getResource());
 
         $expect = <<<XML
-<div class="psx-resource psx-api-generator-html-sample" data-path="/foo/bar" data-status="1">
+<div class="psx-resource psx-api-generator-html-sample" data-path="/foo/:name/:type" data-status="1">
 	<h4>Example</h4>
 	<div class="psx-resource-description">lorem ipsum</div>
 	<div class="psx-resource-method" data-method="GET">

@@ -42,7 +42,7 @@ class MethodAbstractTest extends \PHPUnit_Framework_TestCase
         $method->addResponse(200, new Schema(Property::getString()));
 
         $this->assertEquals('foobar', $method->getDescription());
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $method->getQueryParameters());
+        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $method->getQueryParameters());
         $this->assertTrue($method->hasRequest());
         $this->assertInstanceOf('PSX\Schema\SchemaInterface', $method->getRequest());
         $this->assertInstanceOf('PSX\Schema\SchemaInterface', $method->getResponse(200));
