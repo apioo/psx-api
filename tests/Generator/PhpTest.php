@@ -45,18 +45,18 @@ use PSX\Framework\Controller\SchemaApiAbstract;
 /**
  * @Title("foo")
  * @Description("lorem ipsum")
- * @PathParam(name="name", description="Name parameter", required=true, minLength=0, maxLength=16, pattern="[A-z]+")
- * @PathParam(name="type", description="string", enum={"foo", "bar"})
+ * @PathParam(name="name", type="string", description="Name parameter", required=true, minLength=0, maxLength=16, pattern="[A-z]+")
+ * @PathParam(name="type", type="string", enum={"foo", "bar"})
  */
 class Endpoint extends SchemaApiAbstract
 {
     /**
      * @Description("Returns a collection")
-     * @QueryParam(name="startIndex", description="startIndex parameter", required=true, minimum=0, maximum=32)
-     * @QueryParam(name="float", description="number")
-     * @QueryParam(name="boolean", description="boolean")
-     * @QueryParam(name="date", description="string", format="date")
-     * @QueryParam(name="datetime", description="string", format="date-time")
+     * @QueryParam(name="startIndex", type="integer", description="startIndex parameter", required=true, minimum=0, maximum=32)
+     * @QueryParam(name="float", type="number")
+     * @QueryParam(name="boolean", type="boolean")
+     * @QueryParam(name="date", type="string", format="date")
+     * @QueryParam(name="datetime", type="string", format="date-time")
      * @Outgoing(code=200, schema="PSX\Generation\Collection")
      */
     public function doGet($record)
