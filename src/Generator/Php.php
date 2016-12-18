@@ -179,7 +179,7 @@ class Php extends GeneratorAbstract
 
         $type = $property->getType();
         if (!empty($type)) {
-            $attributes['description'] = '"' . $this->escapeString($type) . '"';
+            $attributes['type'] = '"' . $this->escapeString($type) . '"';
         }
 
         $description = $property->getDescription();
