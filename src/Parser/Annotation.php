@@ -52,12 +52,12 @@ class Annotation implements ParserInterface
 
     public function parse($schema, $path)
     {
-        if (!is_object($schema)) {
-            throw new RuntimeException('Schema must be an object');
+        if (!is_string($schema)) {
+            throw new RuntimeException('Schema must be a class name');
         }
 
         $resource    = new Resource(Resource::STATUS_ACTIVE, $path);
-        $controller  = new ReflectionClass(get_class($schema));
+        $controller  = new ReflectionClass($schema);
         $basePath    = dirname($controller->getFileName());
         $required    = [];
         $annotations = $this->annotationReader->getClassAnnotations($controller);
