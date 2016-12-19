@@ -20,12 +20,12 @@
 
 namespace PSX\Api\Generator;
 
+use Doctrine\Common\Annotations\Reader;
 use PSX\Api\GeneratorAbstract;
 use PSX\Api\Resource;
 use PSX\Api\Util\Inflection;
 use PSX\Data\ExporterInterface;
 use PSX\Model\Swagger\Info;
-use PSX\Model\Swagger\Items;
 use PSX\Model\Swagger\Path;
 use PSX\Model\Swagger\Paths;
 use PSX\Model\Swagger\Response;
@@ -33,14 +33,11 @@ use PSX\Model\Swagger\Responses;
 use PSX\Record\Record;
 use PSX\Json\Parser;
 use PSX\Model\Swagger\Swagger as Declaration;
-use PSX\Model\Swagger\Model;
-use PSX\Model\Swagger\Models;
 use PSX\Model\Swagger\Operation;
 use PSX\Model\Swagger\Parameter;
-use PSX\Model\Swagger\Properties;
-use PSX\Model\Swagger\ResponseMessage;
 use PSX\Schema\Generator\GeneratorTrait;
 use PSX\Schema\Generator;
+use PSX\Schema\Parser\Popo\Dumper;
 use PSX\Schema\Property;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\SchemaInterface;
@@ -58,9 +55,9 @@ class Swagger extends GeneratorAbstract
     use GeneratorTrait;
 
     /**
-     * @var \PSX\Data\ExporterInterface
+     * @var \Doctrine\Common\Annotations\Reader
      */
-    protected $exporter;
+    protected $dumper;
 
     /**
      * @var string
@@ -78,14 +75,14 @@ class Swagger extends GeneratorAbstract
     protected $targetNamespace;
 
     /**
-     * @param \PSX\Data\ExporterInterface $exporter
+     * @param \Doctrine\Common\Annotations\Reader $reader
      * @param integer $apiVersion
      * @param string $basePath
      * @param string $targetNamespace
      */
-    public function __construct(ExporterInterface $exporter, $apiVersion, $basePath, $targetNamespace)
+    public function __construct(Reader $reader, $apiVersion, $basePath, $targetNamespace)
     {
-        $this->exporter        = $exporter;
+        $this->dumper          = new Dumper($reader);
         $this->apiVersion      = $apiVersion;
         $this->basePath        = $basePath;
         $this->targetNamespace = $targetNamespace;
@@ -107,10 +104,10 @@ class Swagger extends GeneratorAbstract
         $swagger->setPaths($this->getPaths($resource));
         $swagger->setDefinitions($this->getDefinitions($resource));
 
-        $swagger = $this->exporter->export($swagger);
-        $swagger = Parser::encode($swagger, JSON_PRETTY_PRINT);
+        $data = $this->dumper->dump($swagger);
+        $data = Parser::encode($data, JSON_PRETTY_PRINT);
 
-        return $swagger;
+        return $data;
     }
 
     /**

@@ -39,8 +39,7 @@ class SwaggerTest extends GeneratorTestCase
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
 
-        $exporter  = new Popo($reader);
-        $generator = new Swagger($exporter, 1, '/', 'http://foo.phpsx.org');
+        $generator = new Swagger($reader, 1, '/', 'http://foo.phpsx.org');
         $json      = $generator->generate($this->getResource());
 
         $expect = <<<'JSON'
