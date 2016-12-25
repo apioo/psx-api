@@ -233,6 +233,12 @@ RAML;
                 "title",
                 "artist"
             ]
+        },
+        "GET-request": {
+            "$ref": "#\/definitions\/ObjectId"
+        },
+        "GET-200-response": {
+            "$ref": "#\/definitions\/ObjectId"
         }
     }
 }

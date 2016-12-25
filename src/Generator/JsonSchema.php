@@ -68,20 +68,31 @@ class JsonSchema extends GeneratorAbstract
     {
         $generator  = new Generator\JsonSchema($this->targetNamespace);
         $properties = [];
+        $refs       = [];
         $methods    = $resource->getMethods();
 
         foreach ($methods as $name => $method) {
             // request
             $request = $method->getRequest();
             if ($request instanceof SchemaInterface) {
-                $properties[$this->getIdentifierForProperty($request->getDefinition())] = $request;
+                $ref = $this->getIdentifierForProperty($request->getDefinition());
+
+                $properties[$ref] = $request;
+                $refs[$method->getName() . '-request'] = (object) [
+                    '$ref' => '#/definitions/' . $ref,
+                ];
             }
 
             // response
             $responses = $method->getResponses();
             foreach ($responses as $statusCode => $response) {
                 if ($response instanceof SchemaInterface) {
-                    $properties[$this->getIdentifierForProperty($response->getDefinition())] = $response;
+                    $ref = $this->getIdentifierForProperty($response->getDefinition());
+
+                    $properties[$ref] = $response;
+                    $refs[$method->getName() . '-' . $statusCode . '-response'] = (object) [
+                        '$ref' => '#/definitions/' . $ref,
+                    ];
                 }
             }
         }
@@ -107,6 +118,10 @@ class JsonSchema extends GeneratorAbstract
             }
 
             $definitions->{$name} = $schema;
+        }
+
+        foreach ($refs as $name => $ref) {
+            $definitions->{$name} = $ref;
         }
 
         return array(
