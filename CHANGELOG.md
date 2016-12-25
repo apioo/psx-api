@@ -1,4 +1,8 @@
 
+### 2.0.4 (2016-12-25)
+
+* Fix jsonschema generator dont overwrite definition
+
 ### 2.0.3 (2016-12-25)
 
 * Added http verbs to the json schema generator
