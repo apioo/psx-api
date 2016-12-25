@@ -102,8 +102,8 @@ class JsonSchema extends GeneratorAbstract
             $schema = $generator->toArray($property);
 
             if (isset($schema['definitions'])) {
-                foreach ($schema['definitions'] as $definition) {
-                    $definitions->{$name} = $definition;
+                foreach ($schema['definitions'] as $defName => $definition) {
+                    $definitions->{$defName} = $definition;
                 }
 
                 unset($schema['definitions']);
