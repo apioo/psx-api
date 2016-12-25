@@ -1,5 +1,19 @@
 
-### 2.0.0
+### 2.0.3 (2016-12-25)
+
+* Added http verbs to the json schema generator
+
+### 2.0.2 (2016-12-22)
+
+* Use nikic parser 3.0
+
+### 2.0.1 (2016-12-19)
+
+* Fix php generator type attribute
+* Add api manager
+* Add bin script
+
+### 2.0.0 (2016-12-17)
 
 * Generate Swagger 2.0 and RAML 1.0 specification
 * Removed xsd and wsdl generator
