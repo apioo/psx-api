@@ -38,7 +38,10 @@ class Inflection
      */
     public static function transformRoutePlaceholder($path)
     {
-        return preg_replace('/(\:|\*)(\w+)/i', '{$2}', $path);
+        $path = preg_replace('/(\:|\*)(\w+)/i', '{$2}', $path);
+        $path = preg_replace('/(\$)(\w+)(\<(.*)\>)/iU', '{$2}', $path);
+
+        return $path;
     }
 
     /**
@@ -49,7 +52,8 @@ class Inflection
      */
     public static function generateTitleFromRoute($path)
     {
-        $path = str_replace(':', '', $path);
+        $path = str_replace([':', '*', '$'], '', $path);
+        $path = preg_replace('/\<(.*)\>/iU', '', $path);
         $path = str_replace(' ', '', ucwords(str_replace('/', ' ', $path)));
 
         return $path;

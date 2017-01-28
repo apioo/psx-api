@@ -31,15 +31,61 @@ use PSX\Api\Util\Inflection;
  */
 class InflectionTest extends \PHPUnit_Framework_TestCase
 {
-    public function testTransformRoutePlaceholder()
+    /**
+     * @param string $expect
+     * @param string $route
+     * @dataProvider transformRoutePlaceholderProvider
+     */
+    public function testTransformRoutePlaceholder($expect, $route)
     {
-        $this->assertEquals('/foo/{bar}', Inflection::transformRoutePlaceholder('/foo/:bar'));
-        $this->assertEquals('/foo', Inflection::transformRoutePlaceholder('/foo'));
+        $this->assertEquals($expect, Inflection::transformRoutePlaceholder($route));
     }
 
-    public function testGenerateTitleFromRoute()
+    public function transformRoutePlaceholderProvider()
     {
-        $this->assertEquals('FooBar', Inflection::generateTitleFromRoute('/foo/:bar'));
-        $this->assertEquals('Foo', Inflection::generateTitleFromRoute('/foo'));
+        return [
+            ['/foo', '/foo'],
+            ['/foo/{bar}', '/foo/:bar'],
+            ['/foo/{bar}', '/foo/*bar'],
+            ['/foo/{bar}', '/foo/$bar<[0-9]+>'],
+            ['/foo/{bar}/foo', '/foo/:bar/foo'],
+            ['/foo/{bar}/foo', '/foo/*bar/foo'],
+            ['/foo/{bar}/foo', '/foo/$bar<[0-9]+>/foo'],
+            ['/foo/{bar}/foo/{baz}', '/foo/:bar/foo/:baz'],
+            ['/foo/{bar}/foo/{baz}', '/foo/*bar/foo/*baz'],
+            ['/foo/{bar}/foo/{baz}', '/foo/$bar<[0-9]+>/foo/$baz<[0-9]+>'],
+            ['/foo/{bar}/foo/{baz}/foo', '/foo/:bar/foo/:baz/foo'],
+            ['/foo/{bar}/foo/{baz}/foo', '/foo/*bar/foo/*baz/foo'],
+            ['/foo/{bar}/foo/{baz}/foo', '/foo/$bar<[0-9]+>/foo/$baz<[0-9]+>/foo'],
+        ];
+    }
+
+    /**
+     * @param string $expect
+     * @param string $route
+     * @dataProvider generateTitleFromRouteProvider
+     */
+    public function testGenerateTitleFromRoute($expect, $route)
+    {
+        $this->assertEquals($expect, Inflection::generateTitleFromRoute($route));
+    }
+
+    public function generateTitleFromRouteProvider()
+    {
+        return [
+            ['Foo', '/foo'],
+            ['FooBar', '/foo/:bar'],
+            ['FooBar', '/foo/*bar'],
+            ['FooBar', '/foo/$bar<[0-9]+>'],
+            ['FooBarFoo', '/foo/:bar/foo'],
+            ['FooBarFoo', '/foo/*bar/foo'],
+            ['FooBarFoo', '/foo/$bar<[0-9]+>/foo'],
+            ['FooBarFooBaz', '/foo/:bar/foo/:baz'],
+            ['FooBarFooBaz', '/foo/*bar/foo/*baz'],
+            ['FooBarFooBaz', '/foo/$bar<[0-9]+>/foo/$baz<[0-9]+>'],
+            ['FooBarFooBazFoo', '/foo/:bar/foo/:baz/foo'],
+            ['FooBarFooBazFoo', '/foo/*bar/foo/*baz/foo'],
+            ['FooBarFooBazFoo', '/foo/$bar<[0-9]+>/foo/$baz<[0-9]+>/foo'],
+        ];
     }
 }
