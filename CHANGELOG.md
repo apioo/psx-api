@@ -1,4 +1,12 @@
 
+### 2.0.6 (2017-05-04)
+
+* Add path and query schema to json schema generator
+
+### 2.0.5 (2016-01-28)
+
+* Improve inflection
+
 ### 2.0.4 (2016-12-25)
 
 * Fix jsonschema generator dont overwrite definition
