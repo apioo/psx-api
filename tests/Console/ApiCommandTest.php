@@ -218,6 +218,60 @@ RAML;
     "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
     "id": "urn:phpsx.org:2016#",
     "definitions": {
+        "path-template": {
+            "type": "object",
+            "title": "path",
+            "properties": {
+                "fooId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "fooId"
+            ]
+        },
+        "GET-query": {
+            "type": "object",
+            "title": "query",
+            "properties": {
+                "foo": {
+                    "type": "string",
+                    "description": "Test"
+                },
+                "bar": {
+                    "type": "string"
+                },
+                "baz": {
+                    "type": "string",
+                    "enum": [
+                        "foo",
+                        "bar"
+                    ]
+                },
+                "boz": {
+                    "type": "string",
+                    "pattern": "[A-z]+"
+                },
+                "integer": {
+                    "type": "integer"
+                },
+                "number": {
+                    "type": "number"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "boolean": {
+                    "type": "boolean"
+                },
+                "string": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "bar"
+            ]
+        },
         "ObjectId": {
             "type": "object",
             "description": "A canonical song",
