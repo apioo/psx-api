@@ -24,6 +24,7 @@ use PSX\Api\GeneratorAbstract;
 use PSX\Api\Resource;
 use PSX\Json\Parser;
 use PSX\Schema\Generator;
+use PSX\Schema\Schema;
 use PSX\Schema\SchemaInterface;
 
 /**
@@ -66,39 +67,48 @@ class JsonSchema extends GeneratorAbstract
      */
     public function toArray(Resource $resource)
     {
-        $generator  = new Generator\JsonSchema($this->targetNamespace);
-        $properties = [];
-        $refs       = [];
-        $methods    = $resource->getMethods();
+        $generator = new Generator\JsonSchema($this->targetNamespace);
 
-        foreach ($methods as $name => $method) {
+        $result  = [];
+        $refs    = [];
+        $methods = $resource->getMethods();
+
+        // path parameters
+        if ($resource->hasPathParameters()) {
+            $result['path-template'] = new Schema($resource->getPathParameters());
+        }
+
+        foreach ($methods as $method) {
+            // query parameters
+            if ($method->hasQueryParameters()) {
+                $result[$method->getName() . '-query'] = new Schema($method->getQueryParameters());
+            }
+
             // request
             $request = $method->getRequest();
             if ($request instanceof SchemaInterface) {
-                $ref = $this->getIdentifierForProperty($request->getDefinition());
+                $name = $this->getIdentifierForProperty($request->getDefinition());
+                $refs[$method->getName() . '-request'] = (object) ['$ref' => '#/definitions/' . $name];
 
-                $properties[$ref] = $request;
-                $refs[$method->getName() . '-request'] = (object) [
-                    '$ref' => '#/definitions/' . $ref,
-                ];
+                $result[$name] = $request;
             }
 
             // response
             $responses = $method->getResponses();
             foreach ($responses as $statusCode => $response) {
                 if ($response instanceof SchemaInterface) {
-                    $ref = $this->getIdentifierForProperty($response->getDefinition());
-
-                    $properties[$ref] = $response;
+                    $name = $this->getIdentifierForProperty($response->getDefinition());
                     $refs[$method->getName() . '-' . $statusCode . '-response'] = (object) [
-                        '$ref' => '#/definitions/' . $ref,
+                        '$ref' => '#/definitions/' . $name,
                     ];
+
+                    $result[$name] = $response;
                 }
             }
         }
 
         $definitions = new \stdClass();
-        foreach ($properties as $name => $property) {
+        foreach ($result as $name => $property) {
             $schema = $generator->toArray($property);
 
             if (isset($schema['definitions'])) {
