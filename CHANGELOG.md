@@ -3,7 +3,7 @@
 
 * Add path and query schema to json schema generator
 
-### 2.0.5 (2016-01-28)
+### 2.0.5 (2017-01-28)
 
 * Improve inflection
 
