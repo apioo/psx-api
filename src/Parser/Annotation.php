@@ -24,7 +24,6 @@ use Doctrine\Common\Annotations\Reader;
 use PSX\Api\Annotation as Anno;
 use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
-use PSX\Schema\Parser\JsonSchema;
 use PSX\Schema\Property;
 use PSX\Schema\SchemaInterface;
 use PSX\Schema\SchemaManagerInterface;

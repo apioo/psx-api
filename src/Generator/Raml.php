@@ -24,7 +24,6 @@ use PSX\Api\GeneratorAbstract;
 use PSX\Api\Resource;
 use PSX\Api\Util\Inflection;
 use PSX\Schema\Generator;
-use PSX\Schema\Property;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\PropertyType;
 use Symfony\Component\Yaml\Inline;

@@ -20,11 +20,9 @@
 
 namespace PSX\Api\Tests\Parser;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\Parser\Annotation as AnnotationParser;
 use PSX\Api\Tests\Parser\Annotation\TestController;
-use PSX\Framework\Test\Environment;
 use PSX\Schema\SchemaManager;
 
 

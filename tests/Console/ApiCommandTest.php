@@ -20,15 +20,10 @@
 
 namespace PSX\Api\Tests\Console;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\ApiManager;
-use PSX\Api\Tests\Parser\Annotation\TestController;
 use PSX\Api\Console\ApiCommand;
-use PSX\Schema\Console\SchemaCommand;
-use PSX\Schema\Parser\Popo;
-use PSX\Schema\SchemaInterface;
+use PSX\Api\Tests\Parser\Annotation\TestController;
 use PSX\Schema\SchemaManager;
-use PSX\Schema\Tests\Parser\Popo\News;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**

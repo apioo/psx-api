@@ -22,7 +22,6 @@ namespace PSX\Api\Tests\Parser;
 
 use PSX\Api\Parser\Raml;
 use PSX\Schema\PropertyInterface;
-use PSX\Schema\SchemaInterface;
 
 /**
  * RamlTest

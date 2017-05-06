@@ -25,7 +25,6 @@ use IteratorAggregate;
 use PSX\Api\Resource\MethodAbstract;
 use PSX\Schema\Property;
 use PSX\Schema\PropertyInterface;
-use PSX\Schema\Schema;
 
 /**
  * A resource describes the capabilities of an API endpoint

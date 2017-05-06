@@ -24,10 +24,8 @@ use PhpParser\BuilderFactory;
 use PhpParser\PrettyPrinter;
 use PSX\Api\GeneratorAbstract;
 use PSX\Api\Resource;
-use PSX\Schema\Property;
-use PSX\Schema\Builder;
-use PSX\Schema\PropertyInterface;
 use PSX\Schema\Generator;
+use PSX\Schema\PropertyInterface;
 use PSX\Schema\SchemaInterface;
 
 /**

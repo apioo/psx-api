@@ -20,10 +20,8 @@
 
 namespace PSX\Api\Tests\Generator;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\Generator\Swagger;
-use PSX\Data\Exporter\Popo;
 
 /**
  * SwaggerTest
