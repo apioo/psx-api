@@ -111,6 +111,10 @@ class JsonSchema extends GeneratorAbstract
         foreach ($result as $name => $property) {
             $schema = $generator->toArray($property);
 
+            // @TODO if a property contains a self reference i.e. # we should
+            // adjust the reference to the concrete definition since after the
+            // merge # is not valid anymore 
+            
             if (isset($schema['definitions'])) {
                 foreach ($schema['definitions'] as $defName => $definition) {
                     $definitions->{$defName} = $definition;
