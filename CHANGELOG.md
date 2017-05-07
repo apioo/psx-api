@@ -1,4 +1,8 @@
 
+### 2.0.7
+
+* Description annotation add option to include a file
+
 ### 2.0.6 (2017-05-04)
 
 * Add path and query schema to json schema generator
