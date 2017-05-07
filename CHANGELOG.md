@@ -1,6 +1,8 @@
 
-### 2.0.7
+### 2.1.0 (2017-05-07)
 
+* Added api manager interface and type parameter to explicit define the parser
+* Fixed bin command
 * Description annotation add option to include a file
 
 ### 2.0.6 (2017-05-04)
