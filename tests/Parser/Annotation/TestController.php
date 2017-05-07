@@ -42,7 +42,7 @@ class TestController
     }
 
     /**
-     * @Description("Test description")
+     * @Description("!include description.md")
      * @QueryParam(name="foo", type="string", description="Test")
      * @QueryParam(name="bar", type="string", required=true)
      * @QueryParam(name="baz", type="string", enum={"foo", "bar"})

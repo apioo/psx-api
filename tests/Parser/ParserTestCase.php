@@ -46,7 +46,7 @@ abstract class ParserTestCase extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(['GET'], array_keys($methods));
 
-        $this->assertEquals('Test description', $methods['GET']->getDescription());
+        $this->assertEquals('A long **Test** description', $methods['GET']->getDescription());
 
         $query = $methods['GET']->getQueryParameters();
 

@@ -65,7 +65,7 @@ class Annotation implements ParserInterface
             if ($annotation instanceof Anno\Title) {
                 $resource->setTitle($annotation->getTitle());
             } elseif ($annotation instanceof Anno\Description) {
-                $resource->setDescription($annotation->getDescription());
+                $resource->setDescription($this->getDescription($annotation, $basePath));
             } elseif ($annotation instanceof Anno\PathParam) {
                 $required[] = $annotation->getName();
 
@@ -103,7 +103,7 @@ class Annotation implements ParserInterface
 
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof Anno\Description) {
-                    $method->setDescription($annotation->getDescription());
+                    $method->setDescription($this->getDescription($annotation, $basePath));
                 } elseif ($annotation instanceof Anno\QueryParam) {
                     if ($annotation->isRequired()) {
                         $required[] = $annotation->getName();
@@ -142,6 +142,21 @@ class Annotation implements ParserInterface
         }
 
         return $this->schemaManager->getSchema($schema);
+    }
+
+    protected function getDescription(Anno\Description $annotation, $basePath)
+    {
+        $description = $annotation->getDescription();
+        if (substr($description, 0, 8) === '!include') {
+            $file = $basePath . '/' . trim(substr($description, 9));
+            if (is_file($file)) {
+                return file_get_contents($file);
+            } else {
+                throw new RuntimeException('Could not include file ' . $file);
+            }
+        } else {
+            return $description;
+        }
     }
 
     protected function getParameter(Anno\ParamAbstract $param)
