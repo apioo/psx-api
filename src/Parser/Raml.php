@@ -38,16 +38,34 @@ use Symfony\Component\Yaml\Parser;
  */
 class Raml implements ParserInterface
 {
+    /**
+     * @var string|null
+     */
     protected $basePath;
+
+    /**
+     * @var \Symfony\Component\Yaml\Parser
+     */
     protected $parser;
+
+    /**
+     * @var array
+     */
     protected $data;
 
+    /**
+     * @param string $basePath
+     * @param \Symfony\Component\Yaml\Parser|null $parser
+     */
     public function __construct($basePath = null, Parser $parser = null)
     {
         $this->basePath = $basePath;
         $this->parser   = $parser ?: new Parser();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function parse($schema, $path)
     {
         $this->data = $this->parser->parse($schema);
