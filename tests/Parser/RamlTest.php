@@ -34,7 +34,7 @@ class RamlTest extends ParserTestCase
 {
     protected function getResource()
     {
-        return Raml::fromFile(__DIR__ . '/raml/simple.raml', '/foo');
+        return $this->apiManager->getApi(__DIR__ . '/raml/simple.raml', '/foo');
     }
 
     public function testParseComplex()

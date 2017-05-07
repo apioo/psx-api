@@ -18,39 +18,29 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests\Parser;
+namespace PSX\Api;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use PSX\Api\Parser\Annotation as AnnotationParser;
-use PSX\Api\Tests\Parser\Annotation\TestController;
-use PSX\Schema\SchemaManager;
-
+use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Cache\ArrayCache;
+use Psr\Cache\CacheItemPoolInterface;
+use PSX\Api\Parser\Raml;
+use PSX\Cache\Pool;
+use PSX\Schema\SchemaManagerInterface;
 
 /**
- * AnnotationTest
+ * ApiManagerInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class AnnotationTest extends ParserTestCase
+interface ApiManagerInterface
 {
-    protected function getResource()
-    {
-        return $this->apiManager->getApi(TestController::class, '/foo');
-    }
-
     /**
-     * @expectedException \ReflectionException
+     * @param string $source
+     * @param string $path
+     * @param string $type
+     * @return mixed
      */
-    public function testParseInvalid()
-    {
-        $annotation = new AnnotationParser(
-            $this->annotationReader,
-            $this->schemaManager
-        );
-
-        $annotation->parse('foo', '/foo');
-    }
+    public function getApi($source, $path, $type = null);
 }
-

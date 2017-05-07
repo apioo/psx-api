@@ -18,39 +18,50 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests\Parser;
+namespace PSX\Api\Tests;
 
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use PSX\Api\Parser\Annotation as AnnotationParser;
+use PSX\Api\ApiManager;
+use PSX\Api\Resource;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 use PSX\Schema\SchemaManager;
 
-
 /**
- * AnnotationTest
+ * ApiManagerTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class AnnotationTest extends ParserTestCase
+class ApiManagerTest extends ApiManagerTestCase
 {
-    protected function getResource()
+    public function testGetApiAnnotation()
     {
-        return $this->apiManager->getApi(TestController::class, '/foo');
+        $resource = $this->apiManager->getApi(TestController::class, '/foo');
+
+        $this->assertInstanceOf(Resource::class, $resource);
+    }
+
+    public function testGetApiRaml()
+    {
+        $resource = $this->apiManager->getApi(__DIR__ . '/Parser/raml/test.raml', '/foo');
+
+        $this->assertInstanceOf(Resource::class, $resource);
     }
 
     /**
-     * @expectedException \ReflectionException
+     * @expectedException \InvalidArgumentException
      */
-    public function testParseInvalid()
+    public function testGetApiInvalidDataType()
     {
-        $annotation = new AnnotationParser(
-            $this->annotationReader,
-            $this->schemaManager
-        );
+        $this->apiManager->getApi([], '/foo');
+    }
 
-        $annotation->parse('foo', '/foo');
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testGetApiInvalidType()
+    {
+        $this->apiManager->getApi('', '/foo', 'foo');
     }
 }
-

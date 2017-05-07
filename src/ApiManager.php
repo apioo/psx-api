@@ -21,6 +21,7 @@
 namespace PSX\Api;
 
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\Parser\Raml;
@@ -34,20 +35,23 @@ use PSX\Schema\SchemaManagerInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ApiManager
+class ApiManager implements ApiManagerInterface
 {
+    const TYPE_ANNOTATION = 1;
+    const TYPE_RAML = 2;
+
     /**
-     * @var Reader
+     * @var \Doctrine\Common\Annotations\Reader
      */
     protected $reader;
 
     /**
-     * @var Parser\Annotation
+     * @var \PSX\Api\Parser\Annotation
      */
     protected $parser;
 
     /**
-     * @var CacheItemPoolInterface
+     * @var \Psr\Cache\CacheItemPoolInterface
      */
     protected $cache;
 
@@ -55,8 +59,14 @@ class ApiManager
      * @var boolean
      */
     protected $debug;
-    
-    public function __construct(Reader $reader = null, SchemaManagerInterface $schemaManager, CacheItemPoolInterface $cache = null, $debug = false)
+
+    /**
+     * @param \Doctrine\Common\Annotations\Reader $reader
+     * @param \PSX\Schema\SchemaManagerInterface $schemaManager
+     * @param \Psr\Cache\CacheItemPoolInterface|null $cache
+     * @param bool $debug
+     */
+    public function __construct(Reader $reader, SchemaManagerInterface $schemaManager, CacheItemPoolInterface $cache = null, $debug = false)
     {
         $this->reader = $reader;
         $this->parser = new Parser\Annotation($reader, $schemaManager);
@@ -64,7 +74,10 @@ class ApiManager
         $this->debug  = $debug;
     }
 
-    public function getApi($source, $path)
+    /**
+     * @inheritdoc
+     */
+    public function getApi($source, $path, $type = null)
     {
         if (!is_string($source)) {
             throw new \InvalidArgumentException('API name must be a string');
@@ -78,9 +91,13 @@ class ApiManager
             }
         }
 
-        if (strpos($source, '.raml') !== false) {
+        if ($type === null) {
+            $type = $this->guessTypeFromSource($source);
+        }
+
+        if ($type === self::TYPE_RAML) {
             $api = Raml::fromFile($source, $path);
-        } elseif (class_exists($source)) {
+        } elseif ($type === self::TYPE_ANNOTATION) {
             $api = $this->parser->parse($source, $path);
         } else {
             throw new \RuntimeException('Schema ' . $source . ' does not exist');
@@ -92,5 +109,16 @@ class ApiManager
         }
 
         return $api;
+    }
+
+    private function guessTypeFromSource($source)
+    {
+        if (strpos($source, '.raml') !== false) {
+            return self::TYPE_RAML;
+        } elseif (class_exists($source)) {
+            return self::TYPE_ANNOTATION;
+        } else {
+            return null;
+        }
     }
 }

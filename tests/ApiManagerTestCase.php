@@ -18,39 +18,43 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests\Parser;
+namespace PSX\Api\Tests;
 
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use PSX\Api\Parser\Annotation as AnnotationParser;
-use PSX\Api\Tests\Parser\Annotation\TestController;
+use PSX\Api\ApiManager;
 use PSX\Schema\SchemaManager;
 
-
 /**
- * AnnotationTest
+ * ApiManagerTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class AnnotationTest extends ParserTestCase
+abstract class ApiManagerTestCase extends \PHPUnit_Framework_TestCase
 {
-    protected function getResource()
-    {
-        return $this->apiManager->getApi(TestController::class, '/foo');
-    }
+    /**
+     * @var \Doctrine\Common\Annotations\Reader
+     */
+    protected $annotationReader;
 
     /**
-     * @expectedException \ReflectionException
+     * @var \PSX\Schema\SchemaManager
      */
-    public function testParseInvalid()
-    {
-        $annotation = new AnnotationParser(
-            $this->annotationReader,
-            $this->schemaManager
-        );
+    protected $schemaManager;
 
-        $annotation->parse('foo', '/foo');
+    /**
+     * @var \PSX\Api\ApiManager
+     */
+    protected $apiManager;
+
+    protected function setUp()
+    {
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Api\\Annotation');
+
+        $this->annotationReader = $reader;
+        $this->schemaManager    = new SchemaManager($reader);
+        $this->apiManager       = new ApiManager($reader, $this->schemaManager);
     }
 }
-

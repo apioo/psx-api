@@ -20,6 +20,11 @@
 
 namespace PSX\Api\Tests\Parser;
 
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use PSX\Api\ApiManager;
+use PSX\Api\Tests\ApiManagerTestCase;
+use PSX\Schema\SchemaManager;
+
 /**
  * ParserTestCase
  *
@@ -27,7 +32,7 @@ namespace PSX\Api\Tests\Parser;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-abstract class ParserTestCase extends \PHPUnit_Framework_TestCase
+abstract class ParserTestCase extends ApiManagerTestCase
 {
     public function testParseSimple()
     {
@@ -73,5 +78,8 @@ abstract class ParserTestCase extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('PSX\Schema\SchemaInterface', $response);
     }
 
+    /**
+     * @return \PSX\Api\Resource
+     */
     abstract protected function getResource();
 }
