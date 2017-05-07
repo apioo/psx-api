@@ -26,6 +26,7 @@ use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
 use PSX\Schema\Property;
 use PSX\Schema\SchemaInterface;
+use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaManagerInterface;
 use ReflectionClass;
 use RuntimeException;
@@ -135,13 +136,15 @@ class Annotation implements ParserInterface
     protected function getBodySchema(Anno\SchemaAbstract $annotation, $basePath)
     {
         $schema = $annotation->getSchema();
+        $type   = $annotation->getType();
 
         // if we have a file append base path
         if (strpos($schema, '.') !== false) {
+            $type   = SchemaManager::TYPE_JSONSCHEMA;
             $schema = $basePath . '/' . $schema;
         }
 
-        return $this->schemaManager->getSchema($schema);
+        return $this->schemaManager->getSchema($schema, $type);
     }
 
     protected function getDescription(Anno\Description $annotation, $basePath)

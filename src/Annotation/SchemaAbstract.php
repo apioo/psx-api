@@ -32,13 +32,24 @@ abstract class SchemaAbstract
      */
     protected $schema;
 
+    /**
+     * @var string
+     */
+    protected $type;
+
     public function __construct(array $values)
     {
         $this->schema = isset($values['schema']) ? $values['schema'] : null;
+        $this->type   = isset($values['type'])   ? $values['type']   : null;
     }
 
     public function getSchema()
     {
         return $this->schema;
+    }
+
+    public function getType()
+    {
+        return $this->type;
     }
 }
