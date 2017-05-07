@@ -40,16 +40,29 @@ use RuntimeException;
  */
 class Annotation implements ParserInterface
 {
+    /**
+     * @var \Doctrine\Common\Annotations\Reader
+     */
     protected $annotationReader;
-    protected $schemaManager;
-    protected $resources;
 
+    /**
+     * @var \PSX\Schema\SchemaManagerInterface
+     */
+    protected $schemaManager;
+
+    /**
+     * @param \Doctrine\Common\Annotations\Reader $annotationReader
+     * @param \PSX\Schema\SchemaManagerInterface $schemaManager
+     */
     public function __construct(Reader $annotationReader, SchemaManagerInterface $schemaManager)
     {
         $this->annotationReader = $annotationReader;
         $this->schemaManager    = $schemaManager;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function parse($schema, $path)
     {
         if (!is_string($schema)) {
