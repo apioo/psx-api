@@ -61,7 +61,7 @@ use PSX\Framework\Controller\SchemaApiAbstract;
 class Endpoint extends SchemaApiAbstract
 {
     /**
-     * @Description("Test description")
+     * @Description("A long **Test** description")
      * @QueryParam(name="foo", type="string", description="Test")
      * @QueryParam(name="bar", type="string", required=true)
      * @QueryParam(name="baz", type="string", enum={"foo", "bar"})
@@ -111,7 +111,7 @@ title: psx
       type: string
       required: true
   get:
-    description: 'Test description'
+    description: 'A long **Test** description'
     queryParameters:
       foo:
         type: string
@@ -321,7 +321,7 @@ JSON;
     "paths": {
         "\/foo": {
             "get": {
-                "description": "Test description",
+                "description": "A long **Test** description",
                 "operationId": "getObjectId",
                 "parameters": [
                     {
