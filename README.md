@@ -33,7 +33,7 @@ basic understanding how it is designed.
 
 // reads the RAML specification and generates a resource object which was
 // defined under the path /foo
-$resource = Raml::fromFile('spec.raml', '/foo');
+$resource = \PSX\Api\Parser\Raml::fromFile('spec.raml', '/foo');
 
 // returns the title
 $resource->getTitle();
@@ -63,7 +63,7 @@ $resource->getMethod('POST')->hasResponse(201);
 $resource->getMethod('POST')->getResponse(201);
 
 // creates a PHP controller which consumes the deinfoed /foo resource
-$generator = new Generator\Php();
+$generator = new \PSX\Api\Generator\Php();
 
 $source = $generator->generate($resource);
 
