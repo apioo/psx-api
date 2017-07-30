@@ -12,6 +12,7 @@ possible to generate a specification from a model object.
 ### Parser
 
 - RAML ([RAML 0.8](http://raml.org/) specification)
+- OpenAPI ([OpenAPI 3.0](https://www.openapis.org/) specification)
 - Annotation (Parses a class which contains annotations)
 
 ### Generator
