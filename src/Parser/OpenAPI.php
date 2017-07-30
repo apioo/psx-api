@@ -145,8 +145,8 @@ class OpenAPI implements ParserInterface
             foreach ($data['parameters'] as $index => $definition) {
                 $this->pushPath($index);
                 
-                $name = $definition['name'] ?? null;
-                $in   = $definition['in'] ?? null;
+                $name = isset($definition['name']) ? $definition['name'] : null;
+                $in   = isset($definition['in'])   ? $definition['in']   : null;
 
                 if (!empty($name) && $in == 'path' && is_array($definition)) {
                     if (isset($definition['required'])) {
@@ -198,9 +198,9 @@ class OpenAPI implements ParserInterface
             $required = [];
             foreach ($data['parameters'] as $index => $definition) {
                 $this->pushPath($index);
-                
-                $name = $definition['name'] ?? null;
-                $in   = $definition['in'] ?? null;
+
+                $name = isset($definition['name']) ? $definition['name'] : null;
+                $in   = isset($definition['in'])   ? $definition['in']   : null;
 
                 if (!empty($name) && $in == 'query' && is_array($definition)) {
                     if (isset($definition['required'])) {
