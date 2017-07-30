@@ -24,6 +24,7 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Psr\Cache\CacheItemPoolInterface;
+use PSX\Api\Parser\OpenAPI;
 use PSX\Api\Parser\Raml;
 use PSX\Cache\Pool;
 use PSX\Schema\SchemaManagerInterface;
@@ -39,6 +40,7 @@ class ApiManager implements ApiManagerInterface
 {
     const TYPE_ANNOTATION = 1;
     const TYPE_RAML = 2;
+    const TYPE_OPENAPI = 3;
 
     /**
      * @var \Doctrine\Common\Annotations\Reader
@@ -97,6 +99,8 @@ class ApiManager implements ApiManagerInterface
 
         if ($type === self::TYPE_RAML) {
             $api = Raml::fromFile($source, $path);
+        } elseif ($type === self::TYPE_OPENAPI) {
+            $api = OpenAPI::fromFile($source, $path);
         } elseif ($type === self::TYPE_ANNOTATION) {
             $api = $this->parser->parse($source, $path);
         } else {
@@ -115,6 +119,8 @@ class ApiManager implements ApiManagerInterface
     {
         if (strpos($source, '.raml') !== false) {
             return self::TYPE_RAML;
+        } elseif (strpos($source, '.json') !== false) {
+            return self::TYPE_OPENAPI;
         } elseif (class_exists($source)) {
             return self::TYPE_ANNOTATION;
         } else {

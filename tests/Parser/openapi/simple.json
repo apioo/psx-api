@@ -1,0 +1,98 @@
+{
+  "paths": {
+    "/foo": {
+      "summary": "Test",
+      "description": "Test description",
+      "parameters": [{
+        "name": "fooId",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        }
+      }],
+      "get": {
+        "description": "A long **Test** description",
+        "parameters": [{
+          "name": "foo",
+          "in": "query",
+          "schema": {
+            "description": "Test",
+            "type": "string"
+          }
+        }, {
+          "name": "bar",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }, {
+          "name": "baz",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": ["foo", "bar"]
+          }
+        }, {
+          "name": "boz",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "pattern": "[A-z]+"
+          }
+        }, {
+          "name": "integer",
+          "in": "query",
+          "schema": {
+            "type": "integer"
+          }
+        }, {
+          "name": "number",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }, {
+          "name": "date",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        }, {
+          "name": "boolean",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        }, {
+          "name": "string",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "file:///../schema/schema.json"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "file:///../schema/schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

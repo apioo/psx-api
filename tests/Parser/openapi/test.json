@@ -1,0 +1,13 @@
+{
+  "paths": {
+    "/foo/{fooId}": {
+      "parameters": [{
+        "name": "fooId",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        }
+      }]
+    }
+  }
+}
