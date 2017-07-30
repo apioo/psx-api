@@ -70,13 +70,13 @@ class Raml implements ParserInterface
     {
         $this->data = $this->parser->parse($schema);
 
-        $path = Inflection::transformRoutePlaceholder($path);
+        $normalizedPath = Inflection::transformRoutePlaceholder($path);
 
-        if (isset($this->data[$path]) && is_array($this->data[$path])) {
-            return $this->parseResource($this->data[$path], $path);
+        if (isset($this->data[$normalizedPath]) && is_array($this->data[$normalizedPath])) {
+            return $this->parseResource($this->data[$normalizedPath], $normalizedPath);
         } else {
             // we check whether the path is nested
-            $parts = explode('/', trim($path, '/'));
+            $parts = explode('/', trim($normalizedPath, '/'));
             $data  = $this->data;
 
             foreach ($parts as $part) {
@@ -89,9 +89,9 @@ class Raml implements ParserInterface
             }
 
             if (!empty($data) && is_array($data)) {
-                return $this->parseResource($data, $path);
+                return $this->parseResource($data, $normalizedPath);
             } else {
-                throw new RuntimeException('Could not find resource definition "' . $path . '" in RAML schema');
+                throw new RuntimeException('Could not find resource definition "' . $normalizedPath . '" in RAML schema');
             }
         }
     }
