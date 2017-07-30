@@ -40,8 +40,7 @@ use PSX\Schema\PropertyInterface;
 use PSX\Schema\SchemaInterface;
 
 /**
- * Generates an Swagger 1.2 representation of an API resource. Note this does
- * not generate a resource listing only the documentation of an single resource
+ * Generates a Swagger 2.0 representation of an API resource
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
