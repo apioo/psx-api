@@ -76,7 +76,7 @@ class OpenAPI implements ParserInterface
     public function parse($schema, $path)
     {
         $data  = Parser::decode($schema, true);
-        $paths = $data['paths'] ?? [];
+        $paths = isset($data['paths']) ? $data['paths'] : [];
 
         $this->pathStack = [];
         $this->resolver  = JsonSchema\RefResolver::createDefault();
