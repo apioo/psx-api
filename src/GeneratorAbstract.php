@@ -40,10 +40,11 @@ abstract class GeneratorAbstract implements GeneratorInterface
     protected function getSuccessfulResponse(MethodAbstract $method)
     {
         $responses = $method->getResponses();
+        $codes     = [200, 201];
 
-        for ($i = 200; $i < 210; $i++) {
-            if (isset($responses[$i])) {
-                return $responses[$i];
+        foreach ($codes as $code) {
+            if (isset($responses[$code])) {
+                return $responses[$code];
             }
         }
 
