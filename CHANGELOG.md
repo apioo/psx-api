@@ -1,4 +1,8 @@
 
+### 2.1.1 (2017-07-30)
+
+* Add OpenAPI generator
+
 ### 2.1.0 (2017-05-07)
 
 * Added api manager interface and type parameter to explicit define the parser
