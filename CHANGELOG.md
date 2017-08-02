@@ -1,4 +1,8 @@
 
+### 2.1.2 (2017-08-02)
+
+* Improve OpenAPI parser
+
 ### 2.1.1 (2017-07-30)
 
 * Add OpenAPI parser and generator
