@@ -28,7 +28,6 @@ use PSX\Schema\Parser\JsonSchema;
 use PSX\Schema\Property;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\Schema;
-use PSX\Schema\SchemaInterface;
 use PSX\Uri\Uri;
 use RuntimeException;
 
@@ -63,11 +62,12 @@ class OpenAPI implements ParserInterface
 
     /**
      * @param string $basePath
-     * @param \Symfony\Component\Yaml\Parser|null $parser
+     * @param \PSX\Schema\Parser\JsonSchema\RefResolver|null $resolver
      */
-    public function __construct($basePath = null)
+    public function __construct($basePath = null, JsonSchema\RefResolver $resolver = null)
     {
         $this->basePath = $basePath;
+        $this->resolver = $resolver === null ? JsonSchema\RefResolver::createDefault() : $resolver;
     }
 
     /**
@@ -79,8 +79,8 @@ class OpenAPI implements ParserInterface
         $paths = isset($data['paths']) ? $data['paths'] : [];
 
         $this->pathStack = [];
-        $this->resolver  = JsonSchema\RefResolver::createDefault();
         $this->document  = new JsonSchema\Document($data, $this->resolver, $this->basePath);
+        $this->resolver->setRootDocument($this->document);
 
         $normalizedPath = Inflection::transformRoutePlaceholder($path);
         
