@@ -37,6 +37,11 @@ abstract class MethodAbstract
     /**
      * @var string
      */
+    protected $operationId;
+
+    /**
+     * @var string
+     */
     protected $description;
 
     /**
@@ -58,6 +63,18 @@ abstract class MethodAbstract
     {
         $this->queryParameters = Property::getObject()->setTitle('query');
         $this->responses       = [];
+    }
+
+    public function setOperationId($operationId)
+    {
+        $this->operationId = $operationId;
+
+        return $this;
+    }
+
+    public function getOperationId()
+    {
+        return $this->operationId;
     }
 
     public function setDescription($description)
