@@ -135,12 +135,14 @@ class Swagger extends GeneratorAbstract
             $request     = $method->getRequest();
             $response    = $this->getSuccessfulResponse($method);
             $description = $method->getDescription();
-            $operationId = null;
+            $operationId = $method->getOperationId();
 
-            if ($request instanceof SchemaInterface) {
-                $operationId = strtolower($method->getName()) . ucfirst($this->getIdentifierForProperty($request->getDefinition()));
-            } elseif ($response instanceof SchemaInterface) {
-                $operationId = strtolower($method->getName()) . ucfirst($this->getIdentifierForProperty($response->getDefinition()));
+            if (empty($operationId)) {
+                if ($request instanceof SchemaInterface) {
+                    $operationId = strtolower($method->getName()) . ucfirst($this->getIdentifierForProperty($request->getDefinition()));
+                } elseif ($response instanceof SchemaInterface) {
+                    $operationId = strtolower($method->getName()) . ucfirst($this->getIdentifierForProperty($response->getDefinition()));
+                }
             }
 
             // create new operation
