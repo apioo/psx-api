@@ -21,7 +21,9 @@
 namespace PSX\Api\Tests\Parser;
 
 use PSX\Api\Parser\OpenAPI;
+use PSX\Api\Resource;
 use PSX\Schema\PropertyInterface;
+use PSX\Schema\SchemaInterface;
 
 /**
  * OpenAPITest
@@ -39,55 +41,41 @@ class OpenAPITest extends ParserTestCase
 
     public function testParseComplex()
     {
-        return;
-        $resource = OpenAPI::fromFile(__DIR__ . '/openapi/test.raml', '/foo');
+        $resource = OpenAPI::fromFile(__DIR__ . '/openapi/complex.json', '/foo');
 
-        $this->assertInstanceOf('PSX\Api\Resource', $resource);
-        $this->assertEquals(array('GET', 'POST'), $resource->getAllowedMethods());
-        $this->assertEquals('Bar', $resource->getTitle());
-        $this->assertEquals('Some description', $resource->getDescription());
+        $this->assertEquals('/foo', $resource->getPath());
+        $this->assertEquals('Test', $resource->getTitle());
+        $this->assertEquals('Test description', $resource->getDescription());
 
-        // check GET
-        $this->assertEquals('Informations about the method', $resource->getMethod('GET')->getDescription());
+        $path = $resource->getPathParameters();
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters()->getProperty('pages'));
-        $this->assertEquals('The number of pages to return', $resource->getMethod('GET')->getQueryParameters()->getProperty('pages')->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters()->getProperty('param_integer'));
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters()->getProperty('param_number'));
-        $this->assertEquals('The number', $resource->getMethod('GET')->getQueryParameters()->getProperty('param_number')->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters()->getProperty('param_date'));
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters()->getProperty('param_boolean'));
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters()->getProperty('param_string'));
-        $this->assertParameters($resource->getMethod('GET')->getQueryParameters());
+        $this->assertInstanceOf(PropertyInterface::class, $path);
+        $this->assertInstanceOf(PropertyInterface::class, $path->getProperty('fooId'));
 
-        // check POST
-        $this->assertInstanceOf('PSX\Api\Resource\Post', $resource->getMethod('POST'));
+        $methods = $resource->getMethods();
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('POST')->getQueryParameters());
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $resource->getMethod('POST')->getResponse(200));
+        $this->assertEquals(['GET'], array_keys($methods));
 
-        $property = $resource->getMethod('POST')->getRequest();
+        $this->assertEquals('A long **Test** description', $methods['GET']->getDescription());
 
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $property);
-        $this->assertEquals('A canonical song', $property->getDefinition()->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $property->getDefinition()->getProperty('title'));
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $property->getDefinition()->getProperty('artist'));
+        $query = $methods['GET']->getQueryParameters();
 
-        $property = $resource->getMethod('POST')->getResponse(200);
+        $this->assertInstanceOf(PropertyInterface::class, $query->getProperty('bar'));
 
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $property);
-        $this->assertEquals('A canonical song', $property->getDefinition()->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $property->getDefinition()->getProperty('title'));
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $property->getDefinition()->getProperty('artist'));
+        $request = $methods['GET']->getRequest();
+
+        $this->assertInstanceOf(SchemaInterface::class, $request);
+
+        $response = $methods['GET']->getResponse(200);
+
+        $this->assertInstanceOf(SchemaInterface::class, $response);
     }
 
     public function testParsePath()
     {
         $resource = OpenAPI::fromFile(__DIR__ . '/openapi/test.json', '/foo/:fooId');
 
-        $this->assertInstanceOf('PSX\Api\Resource', $resource);
+        $this->assertInstanceOf(Resource::class, $resource);
     }
 
     /**
@@ -103,14 +91,14 @@ class OpenAPITest extends ParserTestCase
         $this->assertEquals(8, $parameters->getProperty('param_integer')->getMinimum());
         $this->assertEquals(16, $parameters->getProperty('param_integer')->getMaximum());
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $parameters->getProperty('param_number'));
+        $this->assertInstanceOf(PropertyInterface::class, $parameters->getProperty('param_number'));
         $this->assertEquals('The number', $parameters->getProperty('param_number')->getDescription());
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $parameters->getProperty('param_date'));
+        $this->assertInstanceOf(PropertyInterface::class, $parameters->getProperty('param_date'));
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $parameters->getProperty('param_boolean'));
+        $this->assertInstanceOf(PropertyInterface::class, $parameters->getProperty('param_boolean'));
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $parameters->getProperty('param_string'));
+        $this->assertInstanceOf(PropertyInterface::class, $parameters->getProperty('param_string'));
         $this->assertEquals(8, $parameters->getProperty('param_string')->getMinLength());
         $this->assertEquals(16, $parameters->getProperty('param_string')->getMaxLength());
         $this->assertEquals('[A-z]+', $parameters->getProperty('param_string')->getPattern());

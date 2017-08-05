@@ -138,52 +138,15 @@ class OpenAPI implements ParserInterface
      */
     private function parseUriParameters(Resource $resource, array $data)
     {
-        $this->pushPath('parameters');
+        list($properties, $required) = $this->parseParameters('path', $data);
 
-        if (isset($data['parameters']) && is_array($data['parameters'])) {
-            $required = [];
-            foreach ($data['parameters'] as $index => $definition) {
-                $this->pushPath($index);
-                
-                $name = isset($definition['name']) ? $definition['name'] : null;
-                $in   = isset($definition['in'])   ? $definition['in']   : null;
-
-                if (!empty($name) && $in == 'path' && is_array($definition)) {
-                    if (isset($definition['required'])) {
-                        $isRequired = (bool) $definition['required'];
-                    } else {
-                        $isRequired = false;
-                    }
-
-                    if (isset($definition['schema']) && is_array($definition['schema'])) {
-                        if (isset($definition['schema']['$ref'])) {
-                            $property = $this->resolver->resolve($this->document, new Uri($definition['schema']['$ref']), null, 0);
-                        } else {
-                            $this->pushPath('schema');
-
-                            $pointer  = $this->getJsonPointer();
-                            $property = $this->document->getProperty($pointer);
-
-                            $this->popPath();
-                        }
-                    } else {
-                        $property = Property::get();
-                    }
-
-                    $resource->addPathParameter($name, $property);
-
-                    if ($isRequired) {
-                        $required[] = $name;
-                    }
-                }
-                
-                $this->popPath();
-            }
-
-            $resource->getPathParameters()->setRequired($required);
+        foreach ($properties as $name => $property) {
+            $resource->addPathParameter($name, $property);
         }
 
-        $this->popPath();
+        if (!empty($required)) {
+            $resource->getPathParameters()->setRequired($required);
+        }
     }
 
     /**
@@ -192,17 +155,43 @@ class OpenAPI implements ParserInterface
      */
     private function parseQueryParameters(Resource\MethodAbstract $method, array $data)
     {
+        list($properties, $required) = $this->parseParameters('query', $data);
+        
+        foreach ($properties as $name => $property) {
+            $method->addQueryParameter($name, $property);
+        }
+
+        if (!empty($required)) {
+            $method->getQueryParameters()->setRequired($required);
+        }
+        
+    }
+
+    /**
+     * @param string $type
+     * @param array $data
+     */
+    private function parseParameters($type, array $data)
+    {
         $this->pushPath('parameters');
 
+        $required   = [];
+        $properties = [];
+
         if (isset($data['parameters']) && is_array($data['parameters'])) {
-            $required = [];
             foreach ($data['parameters'] as $index => $definition) {
                 $this->pushPath($index);
+
+                $reference = null;
+                if (isset($definition['$ref'])) {
+                    $reference  = new Uri($definition['$ref']);
+                    $definition = $this->resolver->extract($this->document, $reference);
+                }
 
                 $name = isset($definition['name']) ? $definition['name'] : null;
                 $in   = isset($definition['in'])   ? $definition['in']   : null;
 
-                if (!empty($name) && $in == 'query' && is_array($definition)) {
+                if (!empty($name) && $in == $type && is_array($definition)) {
                     if (isset($definition['required'])) {
                         $isRequired = (bool) $definition['required'];
                     } else {
@@ -215,15 +204,21 @@ class OpenAPI implements ParserInterface
                         } else {
                             $this->pushPath('schema');
 
-                            $pointer  = $this->getJsonPointer();
+                            if ($reference === null) {
+                                $pointer = $this->getJsonPointer();
+                            } else {
+                                $pointer = $reference->getFragment() . '/schema';
+                            }
+
                             $property = $this->document->getProperty($pointer);
 
-                            $this->popPath();                        }
+                            $this->popPath();
+                        }
                     } else {
                         $property = Property::get();
                     }
 
-                    $method->addQueryParameter($name, $property);
+                    $properties[$name] = $property;
 
                     if ($isRequired) {
                         $required[] = $name;
@@ -232,12 +227,18 @@ class OpenAPI implements ParserInterface
 
                 $this->popPath();
             }
-
-            $method->getQueryParameters()->setRequired($required);
         }
 
         $this->popPath();
+        
+        return [
+            $properties,
+            $required
+        ];
     }
+
+
+
 
     private function parseRequest(Resource\MethodAbstract $method, array $data)
     {

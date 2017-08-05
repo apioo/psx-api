@@ -1,0 +1,75 @@
+{
+  "paths": {
+    "/foo": {
+      "summary": "Test",
+      "description": "Test description",
+      "parameters": [{
+        "$ref": "#/components/parameters/foo"
+      }],
+      "get": {
+        "description": "A long **Test** description",
+        "parameters": [{
+          "$ref": "#/components/parameters/bar"
+        }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/models/song"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/models/song"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "models": {
+      "song": {
+        "id": "http://test.phpsx.org/schema#",
+        "description": "A canonical song",
+        "type": "object",
+        "properties": {
+          "artist": {
+            "type": "string"
+          },
+          "title": {
+            "$ref": "file:///../schema/other_schema.json#/definition/title"
+          }
+        },
+        "required": [
+          "title",
+          "artist"
+        ]
+      }
+    },
+    "parameters": {
+      "foo": {
+        "name": "fooId",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "bar": {
+        "name": "bar",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
