@@ -122,6 +122,10 @@ class OpenAPI implements ParserInterface
 
                 $method = Resource\Factory::getMethod(strtoupper($methodName));
 
+                if (isset($operation['operationId'])) {
+                    $method->setOperationId($operation['operationId']);
+                }
+
                 if (isset($operation['description'])) {
                     $method->setDescription($operation['description']);
                 }

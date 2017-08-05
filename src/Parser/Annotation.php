@@ -94,6 +94,11 @@ class Annotation implements ParserInterface
         return $resource;
     }
 
+    /**
+     * @param \ReflectionClass $controller
+     * @param \PSX\Api\Resource $resource
+     * @param string $basePath
+     */
     protected function parseMethods(ReflectionClass $controller, Resource $resource, $basePath)
     {
         $methods = [
@@ -114,6 +119,8 @@ class Annotation implements ParserInterface
             $reflection  = $controller->getMethod($methodName);
             $required    = [];
             $annotations = $this->annotationReader->getMethodAnnotations($reflection);
+
+            $method->setOperationId($reflection->getName());
 
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof Anno\Description) {
