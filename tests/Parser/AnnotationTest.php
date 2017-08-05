@@ -40,6 +40,13 @@ class AnnotationTest extends ParserTestCase
         return $this->apiManager->getApi(TestController::class, '/foo');
     }
 
+    public function testOperationId()
+    {
+        $resource = $this->apiManager->getApi(TestController::class, '/foo');
+
+        $this->assertEquals('doGet', $resource->getMethod('GET')->getOperationId());
+    }
+
     /**
      * @expectedException \ReflectionException
      */
