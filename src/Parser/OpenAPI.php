@@ -61,6 +61,11 @@ class OpenAPI implements ParserInterface
     protected $pathStack;
 
     /**
+     * @var
+     */
+    protected $stackIndex;
+
+    /**
      * @param string $basePath
      * @param \PSX\Schema\Parser\JsonSchema\RefResolver|null $resolver
      */
@@ -78,8 +83,10 @@ class OpenAPI implements ParserInterface
         $data  = Parser::decode($schema, true);
         $paths = isset($data['paths']) ? $data['paths'] : [];
 
-        $this->pathStack = [];
-        $this->document  = new JsonSchema\Document($data, $this->resolver, $this->basePath);
+        $this->pathStack  = [[]];
+        $this->stackIndex = 0;
+
+        $this->document = new JsonSchema\Document($data, $this->resolver, $this->basePath);
         $this->resolver->setRootDocument($this->document);
 
         $normalizedPath = Inflection::transformRoutePlaceholder($path);
@@ -176,52 +183,21 @@ class OpenAPI implements ParserInterface
     {
         $this->pushPath('parameters');
 
-        $required   = [];
         $properties = [];
+        $required   = [];
 
         if (isset($data['parameters']) && is_array($data['parameters'])) {
             foreach ($data['parameters'] as $index => $definition) {
                 $this->pushPath($index);
 
-                $reference = null;
-                if (isset($definition['$ref'])) {
-                    $reference  = new Uri($definition['$ref']);
-                    $definition = $this->resolver->extract($this->document, $reference);
-                }
+                list($name, $property, $isRequired) = $this->parseParameter($type, $definition);
 
-                $name = isset($definition['name']) ? $definition['name'] : null;
-                $in   = isset($definition['in'])   ? $definition['in']   : null;
-
-                if (!empty($name) && $in == $type && is_array($definition)) {
-                    if (isset($definition['required'])) {
-                        $isRequired = (bool) $definition['required'];
-                    } else {
-                        $isRequired = false;
+                if ($name !== null) {
+                    if ($property !== null) {
+                        $properties[$name] = $property;
                     }
 
-                    if (isset($definition['schema']) && is_array($definition['schema'])) {
-                        if (isset($definition['schema']['$ref'])) {
-                            $property = $this->resolver->resolve($this->document, new Uri($definition['schema']['$ref']), null, 0);
-                        } else {
-                            $this->pushPath('schema');
-
-                            if ($reference === null) {
-                                $pointer = $this->getJsonPointer();
-                            } else {
-                                $pointer = $reference->getFragment() . '/schema';
-                            }
-
-                            $property = $this->document->getProperty($pointer);
-
-                            $this->popPath();
-                        }
-                    } else {
-                        $property = Property::get();
-                    }
-
-                    $properties[$name] = $property;
-
-                    if ($isRequired) {
+                    if ($isRequired !== null && $isRequired === true) {
                         $required[] = $name;
                     }
                 }
@@ -234,6 +210,54 @@ class OpenAPI implements ParserInterface
         
         return [
             $properties,
+            $required,
+        ];
+    }
+
+    private function parseParameter($type, array $data)
+    {
+        if (isset($data['$ref'])) {
+            $ref  = new Uri($data['$ref']);
+            $data = $this->resolver->extract($this->document, $ref);
+
+            $this->pushStack($ref->getFragment());
+            $return = $this->parseParameter($type, $data);
+            $this->popStack();
+
+            return $return;
+        }
+
+        $name = isset($data['name']) ? $data['name'] : null;
+        $in   = isset($data['in'])   ? $data['in']   : null;
+
+        $property = null;
+        $required = null;
+        if (!empty($name) && $in == $type && is_array($data)) {
+            if (isset($data['required'])) {
+                $required = (bool) $data['required'];
+            } else {
+                $required = false;
+            }
+
+            if (isset($data['schema']) && is_array($data['schema'])) {
+                if (isset($data['schema']['$ref'])) {
+                    $property = $this->resolver->resolve($this->document, new Uri($data['schema']['$ref']), null, 0);
+                } else {
+                    $this->pushPath('schema');
+
+                    $pointer  = $this->getJsonPointer();
+                    $property = $this->document->getProperty($pointer);
+
+                    $this->popPath();
+                }
+            } else {
+                $property = Property::get();
+            }
+        }
+
+        return [
+            $name,
+            $property,
             $required
         ];
     }
@@ -276,7 +300,14 @@ class OpenAPI implements ParserInterface
     {
         $property = null;
         if (isset($data['$ref'])) {
-            $property = $this->resolver->resolve($this->document, new Uri($data['$ref']), null, 0);
+            $ref  = new Uri($data['$ref']);
+            $data = $this->resolver->extract($this->document, $ref);
+
+            $this->pushStack($ref->getFragment());
+            $property = $this->getPropertyFromContent($data);
+            $this->popStack();
+
+            return $property;
         } elseif (isset($data['content'])) {
             $this->pushPath('content');
             
@@ -309,11 +340,23 @@ class OpenAPI implements ParserInterface
 
     private function pushPath($path)
     {
-        array_push($this->pathStack, $path);
+        array_push($this->pathStack[$this->stackIndex], $path);
     }
 
     private function popPath()
     {
+        array_pop($this->pathStack[$this->stackIndex]);
+    }
+
+    private function pushStack($fragment)
+    {
+        $this->stackIndex++;
+        array_push($this->pathStack, array_filter(explode('/', $fragment)));
+    }
+
+    private function popStack()
+    {
+        $this->stackIndex--;
         array_pop($this->pathStack);
     }
 
@@ -321,7 +364,7 @@ class OpenAPI implements ParserInterface
     {
         return '/' . implode('/', array_map(function($path){
             return str_replace(['~', '/'], ['~0', '~1'], $path);
-        }, $this->pathStack));
+        }, $this->pathStack[$this->stackIndex]));
     }
 
     public static function fromFile($file, $path)

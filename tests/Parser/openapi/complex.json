@@ -12,13 +12,7 @@
           "$ref": "#/components/parameters/bar"
         }],
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/models/song"
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/default"
         },
         "responses": {
           "200": {
@@ -68,6 +62,17 @@
         "required": true,
         "schema": {
           "type": "string"
+        }
+      }
+    },
+    "requestBodies": {
+      "default": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/models/song"
+            }
+          }
         }
       }
     }
