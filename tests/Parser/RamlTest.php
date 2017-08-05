@@ -21,7 +21,9 @@
 namespace PSX\Api\Tests\Parser;
 
 use PSX\Api\Parser\Raml;
+use PSX\Api\Resource;
 use PSX\Schema\PropertyInterface;
+use PSX\Schema\SchemaInterface;
 
 /**
  * RamlTest
@@ -41,7 +43,7 @@ class RamlTest extends ParserTestCase
     {
         $resource = Raml::fromFile(__DIR__ . '/raml/test.raml', '/foo');
 
-        $this->assertInstanceOf('PSX\Api\Resource', $resource);
+        $this->assertInstanceOf(Resource::class, $resource);
         $this->assertEquals(array('GET', 'POST'), $resource->getAllowedMethods());
         $this->assertEquals('Bar', $resource->getTitle());
         $this->assertEquals('Some description', $resource->getDescription());
@@ -49,65 +51,65 @@ class RamlTest extends ParserTestCase
         // check GET
         $this->assertEquals('Informations about the method', $resource->getMethod('GET')->getDescription());
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters()->getProperty('pages'));
+        $this->assertInstanceOf(PropertyInterface::class, $resource->getMethod('GET')->getQueryParameters());
+        $this->assertInstanceOf(PropertyInterface::class, $resource->getMethod('GET')->getQueryParameters());
+        $this->assertInstanceOf(PropertyInterface::class, $resource->getMethod('GET')->getQueryParameters()->getProperty('pages'));
         $this->assertEquals('The number of pages to return', $resource->getMethod('GET')->getQueryParameters()->getProperty('pages')->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters()->getProperty('param_integer'));
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters()->getProperty('param_number'));
+        $this->assertInstanceOf(PropertyInterface::class, $resource->getMethod('GET')->getQueryParameters()->getProperty('param_integer'));
+        $this->assertInstanceOf(PropertyInterface::class, $resource->getMethod('GET')->getQueryParameters()->getProperty('param_number'));
         $this->assertEquals('The number', $resource->getMethod('GET')->getQueryParameters()->getProperty('param_number')->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters()->getProperty('param_date'));
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters()->getProperty('param_boolean'));
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('GET')->getQueryParameters()->getProperty('param_string'));
+        $this->assertInstanceOf(PropertyInterface::class, $resource->getMethod('GET')->getQueryParameters()->getProperty('param_date'));
+        $this->assertInstanceOf(PropertyInterface::class, $resource->getMethod('GET')->getQueryParameters()->getProperty('param_boolean'));
+        $this->assertInstanceOf(PropertyInterface::class, $resource->getMethod('GET')->getQueryParameters()->getProperty('param_string'));
         $this->assertParameters($resource->getMethod('GET')->getQueryParameters());
 
         // check POST
-        $this->assertInstanceOf('PSX\Api\Resource\Post', $resource->getMethod('POST'));
+        $this->assertInstanceOf(Resource\Post::class, $resource->getMethod('POST'));
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getMethod('POST')->getQueryParameters());
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $resource->getMethod('POST')->getResponse(200));
+        $this->assertInstanceOf(PropertyInterface::class, $resource->getMethod('POST')->getQueryParameters());
+        $this->assertInstanceOf(SchemaInterface::class, $resource->getMethod('POST')->getResponse(200));
 
         $property = $resource->getMethod('POST')->getRequest();
 
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $property);
+        $this->assertInstanceOf(SchemaInterface::class, $property);
         $this->assertEquals('A canonical song', $property->getDefinition()->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $property->getDefinition()->getProperty('title'));
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $property->getDefinition()->getProperty('artist'));
+        $this->assertInstanceOf(PropertyInterface::class, $property->getDefinition()->getProperty('title'));
+        $this->assertInstanceOf(PropertyInterface::class, $property->getDefinition()->getProperty('artist'));
 
         $property = $resource->getMethod('POST')->getResponse(200);
 
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $property);
+        $this->assertInstanceOf(SchemaInterface::class, $property);
         $this->assertEquals('A canonical song', $property->getDefinition()->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $property->getDefinition()->getProperty('title'));
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $property->getDefinition()->getProperty('artist'));
+        $this->assertInstanceOf(PropertyInterface::class, $property->getDefinition()->getProperty('title'));
+        $this->assertInstanceOf(PropertyInterface::class, $property->getDefinition()->getProperty('artist'));
     }
 
     public function testParsePath()
     {
         $resource = Raml::fromFile(__DIR__ . '/raml/test.raml', '/bar/:bar_id');
 
-        $this->assertInstanceOf('PSX\Api\Resource', $resource);
+        $this->assertInstanceOf(Resource::class, $resource);
         $this->assertEquals(array('GET'), $resource->getAllowedMethods());
         $this->assertEquals('Returns details about bar', $resource->getDescription());
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getPathParameters());
+        $this->assertInstanceOf(PropertyInterface::class, $resource->getPathParameters());
         $this->assertParameters($resource->getPathParameters());
 
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $resource->getMethod('GET')->getResponse(200));
+        $this->assertInstanceOf(SchemaInterface::class, $resource->getMethod('GET')->getResponse(200));
 
         $property = $resource->getMethod('GET')->getResponse(200)->getDefinition();
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $property);
+        $this->assertInstanceOf(PropertyInterface::class, $property);
         $this->assertEquals('A canonical song', $property->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $property->getProperty('title'));
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $property->getProperty('artist'));
+        $this->assertInstanceOf(PropertyInterface::class, $property->getProperty('title'));
+        $this->assertInstanceOf(PropertyInterface::class, $property->getProperty('artist'));
     }
 
     public function testParseNested()
     {
         $resource = Raml::fromFile(__DIR__ . '/raml/test.raml', '/foo/bar');
 
-        $this->assertInstanceOf('PSX\Api\Resource', $resource);
+        $this->assertInstanceOf(Resource::class, $resource);
         $this->assertEquals(array('GET'), $resource->getAllowedMethods());
         $this->assertEquals('Some description', $resource->getDescription());
     }
@@ -159,14 +161,14 @@ class RamlTest extends ParserTestCase
         $this->assertEquals(8, $parameters->getProperty('param_integer')->getMinimum());
         $this->assertEquals(16, $parameters->getProperty('param_integer')->getMaximum());
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $parameters->getProperty('param_number'));
+        $this->assertInstanceOf(PropertyInterface::class, $parameters->getProperty('param_number'));
         $this->assertEquals('The number', $parameters->getProperty('param_number')->getDescription());
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $parameters->getProperty('param_date'));
+        $this->assertInstanceOf(PropertyInterface::class, $parameters->getProperty('param_date'));
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $parameters->getProperty('param_boolean'));
+        $this->assertInstanceOf(PropertyInterface::class, $parameters->getProperty('param_boolean'));
 
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $parameters->getProperty('param_string'));
+        $this->assertInstanceOf(PropertyInterface::class, $parameters->getProperty('param_string'));
         $this->assertEquals(8, $parameters->getProperty('param_string')->getMinLength());
         $this->assertEquals(16, $parameters->getProperty('param_string')->getMaxLength());
         $this->assertEquals('[A-z]+', $parameters->getProperty('param_string')->getPattern());
