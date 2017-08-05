@@ -170,6 +170,7 @@ class OpenAPI implements ParserInterface
     /**
      * @param string $type
      * @param array $data
+     * @return array
      */
     private function parseParameters($type, array $data)
     {
@@ -236,9 +237,6 @@ class OpenAPI implements ParserInterface
             $required
         ];
     }
-
-
-
 
     private function parseRequest(Resource\MethodAbstract $method, array $data)
     {
