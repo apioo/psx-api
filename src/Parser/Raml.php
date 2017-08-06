@@ -20,8 +20,10 @@
 
 namespace PSX\Api\Parser;
 
+use PSX\Api\ParserCollectionInterface;
 use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 use PSX\Api\Util\Inflection;
 use PSX\Schema\Parser\JsonSchema;
 use PSX\Schema\Property;
@@ -36,22 +38,27 @@ use Symfony\Component\Yaml\Parser;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Raml implements ParserInterface
+class Raml implements ParserInterface, ParserCollectionInterface
 {
     /**
      * @var string|null
      */
-    protected $basePath;
+    private $basePath;
 
     /**
      * @var \Symfony\Component\Yaml\Parser
      */
-    protected $parser;
+    private $parser;
 
     /**
      * @var array
      */
-    protected $data;
+    private $data;
+
+    /**
+     * @var array
+     */
+    private $schemas;
 
     /**
      * @param string $basePath
@@ -68,35 +75,37 @@ class Raml implements ParserInterface
      */
     public function parse($schema, $path)
     {
-        $this->data = $this->parser->parse($schema);
+        $this->setUp($schema);
 
-        $normalizedPath = Inflection::transformRoutePlaceholder($path);
+        $paths = $this->getPaths();
+        $path  = Inflection::transformRoutePlaceholder($path);
 
-        if (isset($this->data[$normalizedPath]) && is_array($this->data[$normalizedPath])) {
-            return $this->parseResource($this->data[$normalizedPath], $normalizedPath);
+        if (isset($paths[$path])) {
+            return $this->parseResource($paths[$path], $path);
         } else {
-            // we check whether the path is nested
-            $parts = explode('/', trim($normalizedPath, '/'));
-            $data  = $this->data;
-
-            foreach ($parts as $part) {
-                if (isset($data['/' . $part])) {
-                    $data = $data['/' . $part];
-                } else {
-                    $data = null;
-                    break;
-                }
-            }
-
-            if (!empty($data) && is_array($data)) {
-                return $this->parseResource($data, $normalizedPath);
-            } else {
-                throw new RuntimeException('Could not find resource definition "' . $normalizedPath . '" in RAML schema');
-            }
+            throw new RuntimeException('Could not find resource definition "' . $path . '" in RAML schema');
         }
     }
 
-    protected function parseResource(array $data, $path)
+    /**
+     * @inheritdoc
+     */
+    public function parseAll($schema)
+    {
+        $this->setUp($schema);
+
+        $paths  = $this->getPaths();
+        $result = new ResourceCollection();
+
+        foreach ($paths as $path => $spec) {
+            $resource = $this->parseResource($spec, Inflection::transformRoutePlaceholder($path));
+            $result->set($resource);
+        }
+
+        return $result;
+    }
+
+    private function parseResource(array $data, $path)
     {
         $status = Resource::STATUS_ACTIVE;
         if (isset($this->data['status'])) {
@@ -148,7 +157,7 @@ class Raml implements ParserInterface
         return $resource;
     }
 
-    protected function getTrait($name)
+    private function getTrait($name)
     {
         if (isset($this->data['traits']) && is_array($this->data['traits'])) {
             foreach ($this->data['traits'] as $trait) {
@@ -161,43 +170,19 @@ class Raml implements ParserInterface
         return null;
     }
 
-    protected function getSchema($name)
-    {
-        if (isset($this->data['schemas']) && is_array($this->data['schemas'])) {
-            foreach ($this->data['schemas'] as $schema) {
-                if (is_array($schema) && isset($schema[$name])) {
-                    return $this->parseSchema($schema[$name]);
-                }
-            }
-        }
-
-        return null;
-    }
-
     /**
      * @param \PSX\Api\Resource $resource
      * @param array $data
      */
-    protected function parseUriParameters(Resource $resource, array $data)
+    private function parseUriParameters(Resource $resource, array $data)
     {
-        if (isset($data['uriParameters']) && is_array($data['uriParameters'])) {
-            $required = [];
-            foreach ($data['uriParameters'] as $name => $definition) {
-                if (!empty($name) && is_array($definition)) {
-                    if (isset($definition['required'])) {
-                        $isRequired = (bool) $definition['required'];
-                    } else {
-                        $isRequired = false;
-                    }
+        list($properties, $required) = $this->parseParameters('uriParameters', $data);
 
-                    $resource->addPathParameter($name, $this->getParameter($definition));
+        foreach ($properties as $name => $property) {
+            $resource->addPathParameter($name, $property);
+        }
 
-                    if ($isRequired) {
-                        $required[] = $name;
-                    }
-                }
-            }
-
+        if (!empty($required)) {
             $resource->getPathParameters()->setRequired($required);
         }
     }
@@ -206,31 +191,81 @@ class Raml implements ParserInterface
      * @param \PSX\Api\Resource\MethodAbstract $method
      * @param array $data
      */
-    protected function parseQueryParameters(Resource\MethodAbstract $method, array $data)
+    private function parseQueryParameters(Resource\MethodAbstract $method, array $data)
     {
-        if (isset($data['queryParameters']) && is_array($data['queryParameters'])) {
-            $required = [];
-            foreach ($data['queryParameters'] as $name => $definition) {
-                if (!empty($name) && is_array($definition)) {
-                    if (isset($definition['required'])) {
-                        $isRequired = (bool) $definition['required'];
-                    } else {
-                        $isRequired = false;
-                    }
+        list($properties, $required) = $this->parseParameters('queryParameters', $data);
 
-                    $method->addQueryParameter($name, $this->getParameter($definition));
-                    
-                    if ($isRequired) {
-                        $required[] = $name;
-                    }
-                }
-            }
+        foreach ($properties as $name => $property) {
+            $method->addQueryParameter($name, $property);
+        }
 
+        if (!empty($required)) {
             $method->getQueryParameters()->setRequired($required);
         }
     }
 
-    protected function getParameter(array $definition)
+    /**
+     * @param string $type
+     * @param array $data
+     */
+    private function parseParameters($type, array $data)
+    {
+        $properties = [];
+        $required   = [];
+
+        if (isset($data[$type]) && is_array($data[$type])) {
+            $required = [];
+            foreach ($data[$type] as $name => $definition) {
+                if (!empty($name) && is_array($definition)) {
+                    list($property, $isRequired) = $this->parseParameter($definition);
+
+                    if ($property !== null) {
+                        $properties[$name] = $property;
+                    }
+
+                    if ($isRequired !== null && $isRequired === true) {
+                        $required[] = $name;
+                    }
+                }
+            }
+        }
+
+        return [
+            $properties,
+            $required,
+        ];
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    private function parseParameter(array $data)
+    {
+        $property = null;
+        $required = null;
+
+        if (is_array($data)) {
+            if (isset($data['required'])) {
+                $required = (bool) $data['required'];
+            } else {
+                $required = false;
+            }
+
+            $property = $this->getParameter($data);
+        }
+
+        return [
+            $property,
+            $required
+        ];
+    }
+
+    /**
+     * @param array $definition
+     * @return \PSX\Schema\PropertyInterface
+     */
+    private function getParameter(array $definition)
     {
         $type     = isset($definition['type']) ? $definition['type'] : 'string';
         $property = $this->getPropertyType($type);
@@ -270,7 +305,7 @@ class Raml implements ParserInterface
         return $property;
     }
 
-    protected function parseRequest(Resource\MethodAbstract $method, array $data)
+    private function parseRequest(Resource\MethodAbstract $method, array $data)
     {
         if (isset($data['body']) && is_array($data['body'])) {
             $schema = $this->getBodySchema($data['body']);
@@ -281,7 +316,7 @@ class Raml implements ParserInterface
         }
     }
 
-    protected function parseResponses(Resource\MethodAbstract $method, array $data)
+    private function parseResponses(Resource\MethodAbstract $method, array $data)
     {
         if (isset($data['responses']) && is_array($data['responses'])) {
             foreach ($data['responses'] as $statusCode => $row) {
@@ -296,20 +331,19 @@ class Raml implements ParserInterface
         }
     }
 
-    protected function getBodySchema(array $body)
+    private function getBodySchema(array $body)
     {
         foreach ($body as $contentType => $row) {
-            if ($contentType == 'application/json' && isset($row['schema']) && is_string($row['schema'])) {
-                if (ctype_alnum($row['schema'])) {
-                    $schema = $this->getSchema($row['schema']);
+            if ($contentType == 'application/json' && is_array($row)) {
+                $schema = null;
+                if (isset($row['schema'])) { // 0.8
+                    $schema = $row['schema'];
+                } elseif (isset($row['type'])) { // 1.0
+                    $schema = $row['type'];
+                }
 
-                    if ($schema instanceof SchemaInterface) {
-                        return $schema;
-                    } else {
-                        throw new RuntimeException('Referenced schema "' . $row['schema'] . '" does not exist');
-                    }
-                } else {
-                    return $this->parseSchema($row['schema']);
+                if (!empty($schema)) {
+                    return $this->parseSchema($schema);
                 }
             }
         }
@@ -317,7 +351,11 @@ class Raml implements ParserInterface
         return null;
     }
 
-    protected function parseSchema($schema)
+    /**
+     * @param mixed $schema
+     * @return \PSX\Schema\SchemaInterface
+     */
+    private function parseSchema($schema)
     {
         if (is_string($schema)) {
             if (substr($schema, 0, 8) == '!include') {
@@ -327,17 +365,25 @@ class Raml implements ParserInterface
                 }
 
                 return JsonSchema::fromFile($file);
-            } else {
+            } elseif (strpos($schema, '{') !== false) {
                 $parser = new JsonSchema($this->basePath);
 
                 return $parser->parse($schema);
+            } elseif (isset($this->schemas[$schema])) {
+                return $this->parseSchema($this->schemas[$schema]);
+            } else {
+                throw new RuntimeException('Referenced schema does not exist');
             }
+        } elseif (is_array($schema)) {
+            $parser = new JsonSchema($this->basePath);
+
+            return $parser->parse(json_encode($schema));
         } else {
-            throw new RuntimeException('Schema definition must be a string');
+            throw new RuntimeException('Schema definition must be a string or object');
         }
     }
 
-    protected function parseDefinition($definition)
+    private function parseDefinition($definition)
     {
         if (is_string($definition) && substr($definition, 0, 8) == '!include') {
             $file = trim(substr($definition, 8));
@@ -350,6 +396,8 @@ class Raml implements ParserInterface
 
             if (in_array($extension, ['raml', 'yml', 'yaml'])) {
                 return $this->parser->parse(file_get_contents($file));
+            } elseif (in_array($extension, ['json'])) {
+                return json_decode(file_get_contents($file), true);
             } else {
                 return file_get_contents($file);
             }
@@ -358,7 +406,7 @@ class Raml implements ParserInterface
         }
     }
 
-    protected function getPropertyType($type)
+    private function getPropertyType($type)
     {
         switch ($type) {
             case 'integer':
@@ -387,7 +435,7 @@ class Raml implements ParserInterface
         }
     }
 
-    protected function getResourceStatus($status)
+    private function getResourceStatus($status)
     {
         if ($status === 'deprecated') {
             return Resource::STATUS_DEPRECATED;
@@ -398,6 +446,71 @@ class Raml implements ParserInterface
         } else {
             return Resource::STATUS_ACTIVE;
         }
+    }
+
+    private function setUp($schema)
+    {
+        $this->data    = $this->parser->parse($schema);
+        $this->schemas = $this->getSchemas();
+    }
+
+    private function getPaths()
+    {
+        return $this->flattenPaths($this->data);
+    }
+
+    private function flattenPaths(array $data, $basePath = null)
+    {
+        $paths = [];
+
+        foreach ($data as $path => $row) {
+            if (isset($path[0]) && $path[0] == '/') {
+                $subPaths = [];
+                $result   = [];
+                foreach ($row as $key => $value) {
+                    if (isset($key[0]) && $key[0] == '/') {
+                        $subPaths[$key] = $value;
+                    } else {
+                        $result[$key] = $value;
+                    }
+                }
+
+                $paths[$basePath . $path] = $result;
+
+                $paths = array_merge($paths, $this->flattenPaths($subPaths, $path));
+            }
+        }
+
+        return $paths;
+    }
+
+    private function getSchemas()
+    {
+        if (isset($this->data['schemas']) && is_array($this->data['schemas'])) { // 0.8
+            return $this->parseSchemas($this->data['schemas']);
+        } elseif (isset($this->data['types']) && is_array($this->data['types'])) { // 1.0
+            return $this->parseSchemas($this->data['types']);
+        }
+
+        return [];
+    }
+
+    private function parseSchemas(array $schemas)
+    {
+        // @TODO handle !include in schemas
+
+        if (isset($schemas[0])) {
+            foreach ($schemas as $subSchema) {
+                if (is_string($subSchema)) {
+                } elseif (is_array($subSchema)) {
+                    return $subSchema;
+                }
+            }
+        } else {
+            return $schemas;
+        }
+
+        return [];
     }
 
     public static function fromFile($file, $path)

@@ -20,8 +20,10 @@
 
 namespace PSX\Api\Parser;
 
+use PSX\Api\ParserCollectionInterface;
 use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
 use PSX\Schema\Parser\JsonSchema;
@@ -38,32 +40,37 @@ use RuntimeException;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class OpenAPI implements ParserInterface
+class OpenAPI implements ParserInterface, ParserCollectionInterface
 {
     /**
      * @var string|null
      */
-    protected $basePath;
+    private $basePath;
 
     /**
      * @var \PSX\Schema\Parser\JsonSchema\Document
      */
-    protected $document;
+    private $document;
 
     /**
      * @var \PSX\Schema\Parser\JsonSchema\RefResolver
      */
-    protected $resolver;
+    private $resolver;
 
     /**
      * @var array
      */
-    protected $pathStack;
+    private $pathStack;
 
     /**
-     * @var
+     * @var integer
      */
-    protected $stackIndex;
+    private $stackIndex;
+
+    /**
+     * @var array
+     */
+    private $data;
 
     /**
      * @param string $basePath
@@ -80,22 +87,34 @@ class OpenAPI implements ParserInterface
      */
     public function parse($schema, $path)
     {
-        $data  = Parser::decode($schema, true);
-        $paths = isset($data['paths']) ? $data['paths'] : [];
+        $this->setUp($schema);
 
-        $this->pathStack  = [[]];
-        $this->stackIndex = 0;
+        $paths = $this->getPaths();
+        $path  = Inflection::transformRoutePlaceholder($path);
 
-        $this->document = new JsonSchema\Document($data, $this->resolver, $this->basePath);
-        $this->resolver->setRootDocument($this->document);
-
-        $normalizedPath = Inflection::transformRoutePlaceholder($path);
-        
-        if (isset($paths[$normalizedPath])) {
-            return $this->parseResource($paths[$normalizedPath], $normalizedPath);
+        if (isset($paths[$path])) {
+            return $this->parseResource($paths[$path], $path);
         } else {
-            throw new RuntimeException('Could not find resource definition "' . $normalizedPath . '" in OpenAPI schema');
+            throw new RuntimeException('Could not find resource definition "' . $path . '" in OpenAPI schema');
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function parseAll($schema)
+    {
+        $this->setUp($schema);
+
+        $paths  = $this->getPaths();
+        $result = new ResourceCollection();
+
+        foreach ($paths as $path => $spec) {
+            $resource = $this->parseResource($spec, Inflection::transformRoutePlaceholder($path));
+            $result->set($resource);
+        }
+
+        return $result;
     }
 
     private function parseResource(array $data, $path)
@@ -167,7 +186,7 @@ class OpenAPI implements ParserInterface
     private function parseQueryParameters(Resource\MethodAbstract $method, array $data)
     {
         list($properties, $required) = $this->parseParameters('query', $data);
-        
+
         foreach ($properties as $name => $property) {
             $method->addQueryParameter($name, $property);
         }
@@ -175,7 +194,6 @@ class OpenAPI implements ParserInterface
         if (!empty($required)) {
             $method->getQueryParameters()->setRequired($required);
         }
-        
     }
 
     /**
@@ -211,7 +229,7 @@ class OpenAPI implements ParserInterface
         }
 
         $this->popPath();
-        
+
         return [
             $properties,
             $required,
@@ -369,6 +387,22 @@ class OpenAPI implements ParserInterface
         return '/' . implode('/', array_map(function($path){
             return str_replace(['~', '/'], ['~0', '~1'], $path);
         }, $this->pathStack[$this->stackIndex]));
+    }
+
+    private function setUp($schema)
+    {
+        $this->data = Parser::decode($schema, true);
+
+        $this->pathStack  = [[]];
+        $this->stackIndex = 0;
+
+        $this->document = new JsonSchema\Document($this->data, $this->resolver, $this->basePath);
+        $this->resolver->setRootDocument($this->document);
+    }
+
+    private function getPaths()
+    {
+        return isset($this->data['paths']) ? $this->data['paths'] : [];
     }
 
     public static function fromFile($file, $path)
