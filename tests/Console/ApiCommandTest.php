@@ -322,7 +322,7 @@ JSON;
         "\/foo": {
             "get": {
                 "description": "A long **Test** description",
-                "operationId": "getObjectId",
+                "operationId": "doGet",
                 "parameters": [
                     {
                         "description": "Test",
