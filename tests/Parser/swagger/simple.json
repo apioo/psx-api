@@ -1,0 +1,72 @@
+{
+  "paths": {
+    "/foo": {
+      "summary": "Test",
+      "description": "Test description",
+      "parameters": [{
+        "name": "fooId",
+        "in": "path",
+        "type": "string"
+      }],
+      "get": {
+        "summary": "Test",
+        "description": "A long **Test** description",
+        "parameters": [{
+          "name": "foo",
+          "in": "query",
+          "description": "Test",
+          "type": "string"
+        }, {
+          "name": "bar",
+          "in": "query",
+          "required": true,
+          "type": "string"
+        }, {
+          "name": "baz",
+          "in": "query",
+          "type": "string",
+          "enum": ["foo", "bar"]
+        }, {
+          "name": "boz",
+          "in": "query",
+          "type": "string",
+          "pattern": "[A-z]+"
+        }, {
+          "name": "integer",
+          "in": "query",
+          "type": "integer"
+        }, {
+          "name": "number",
+          "in": "query",
+          "type": "number"
+        }, {
+          "name": "date",
+          "in": "query",
+          "type": "string",
+          "format": "date"
+        }, {
+          "name": "boolean",
+          "in": "query",
+          "type": "boolean"
+        }, {
+          "name": "string",
+          "in": "query",
+          "type": "string"
+        }, {
+          "name": "string",
+          "in": "body",
+          "schema": {
+            "$ref": "file:///../schema/schema.json"
+          }
+        }],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "file:///../schema/schema.json"
+            }
+          }
+        }
+      }
+    }
+  }
+}
