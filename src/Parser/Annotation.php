@@ -43,12 +43,12 @@ class Annotation implements ParserInterface
     /**
      * @var \Doctrine\Common\Annotations\Reader
      */
-    protected $annotationReader;
+    private $annotationReader;
 
     /**
      * @var \PSX\Schema\SchemaManagerInterface
      */
-    protected $schemaManager;
+    private $schemaManager;
 
     /**
      * @param \Doctrine\Common\Annotations\Reader $annotationReader
@@ -99,7 +99,7 @@ class Annotation implements ParserInterface
      * @param \PSX\Api\Resource $resource
      * @param string $basePath
      */
-    protected function parseMethods(ReflectionClass $controller, Resource $resource, $basePath)
+    private function parseMethods(ReflectionClass $controller, Resource $resource, $basePath)
     {
         $methods = [
             'GET'    => 'doGet', 
@@ -153,7 +153,7 @@ class Annotation implements ParserInterface
         }
     }
 
-    protected function getBodySchema(Anno\SchemaAbstract $annotation, $basePath)
+    private function getBodySchema(Anno\SchemaAbstract $annotation, $basePath)
     {
         $schema = $annotation->getSchema();
         $type   = $annotation->getType();
@@ -167,7 +167,7 @@ class Annotation implements ParserInterface
         return $this->schemaManager->getSchema($schema, $type);
     }
 
-    protected function getDescription(Anno\Description $annotation, $basePath)
+    private function getDescription(Anno\Description $annotation, $basePath)
     {
         $description = $annotation->getDescription();
         if (substr($description, 0, 8) === '!include') {
@@ -182,7 +182,7 @@ class Annotation implements ParserInterface
         }
     }
 
-    protected function getParameter(Anno\ParamAbstract $param)
+    private function getParameter(Anno\ParamAbstract $param)
     {
         switch ($param->getType()) {
             case 'integer':
