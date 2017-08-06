@@ -20,10 +20,9 @@
 
 namespace PSX\Api\Tests\Parser;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use PSX\Api\ApiManager;
 use PSX\Api\Parser\Annotation as AnnotationParser;
 use PSX\Api\Tests\Parser\Annotation\TestController;
-use PSX\Schema\SchemaManager;
 
 
 /**
@@ -37,7 +36,7 @@ class AnnotationTest extends ParserTestCase
 {
     protected function getResource()
     {
-        return $this->apiManager->getApi(TestController::class, '/foo');
+        return $this->apiManager->getApi(TestController::class, '/foo', ApiManager::TYPE_ANNOTATION);
     }
 
     public function testOperationId()

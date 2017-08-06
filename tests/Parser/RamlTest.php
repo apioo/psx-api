@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Parser;
 
+use PSX\Api\ApiManager;
 use PSX\Api\Parser\Raml;
 use PSX\Api\Resource;
 use PSX\Schema\PropertyInterface;
@@ -36,7 +37,7 @@ class RamlTest extends ParserTestCase
 {
     protected function getResource()
     {
-        return $this->apiManager->getApi(__DIR__ . '/raml/simple.raml', '/foo');
+        return $this->apiManager->getApi(__DIR__ . '/raml/simple.raml', '/foo', ApiManager::TYPE_RAML);
     }
 
     public function testParseComplex()

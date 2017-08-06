@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Parser;
 
+use PSX\Api\ApiManager;
 use PSX\Api\Parser\OpenAPI;
 use PSX\Api\Resource;
 use PSX\Schema\PropertyInterface;
@@ -36,7 +37,7 @@ class OpenAPITest extends ParserTestCase
 {
     protected function getResource()
     {
-        return $this->apiManager->getApi(__DIR__ . '/openapi/simple.json', '/foo');
+        return $this->apiManager->getApi(__DIR__ . '/openapi/simple.json', '/foo', ApiManager::TYPE_OPENAPI);
     }
 
     public function testParseComplex()

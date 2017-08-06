@@ -20,12 +20,9 @@
 
 namespace PSX\Api\Tests\Parser;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use PSX\Api\ApiManager;
 use PSX\Api\Tests\ApiManagerTestCase;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\SchemaInterface;
-use PSX\Schema\SchemaManager;
 
 /**
  * ParserTestCase
