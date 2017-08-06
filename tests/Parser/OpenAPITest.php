@@ -88,23 +88,4 @@ class OpenAPITest extends ParserTestCase
     {
         OpenAPI::fromFile(__DIR__ . '/openapi/test.json', '/test');
     }
-
-    protected function assertParameters(PropertyInterface $parameters)
-    {
-        $this->assertEquals(8, $parameters->getProperty('param_integer')->getMinimum());
-        $this->assertEquals(16, $parameters->getProperty('param_integer')->getMaximum());
-
-        $this->assertInstanceOf(PropertyInterface::class, $parameters->getProperty('param_number'));
-        $this->assertEquals('The number', $parameters->getProperty('param_number')->getDescription());
-
-        $this->assertInstanceOf(PropertyInterface::class, $parameters->getProperty('param_date'));
-
-        $this->assertInstanceOf(PropertyInterface::class, $parameters->getProperty('param_boolean'));
-
-        $this->assertInstanceOf(PropertyInterface::class, $parameters->getProperty('param_string'));
-        $this->assertEquals(8, $parameters->getProperty('param_string')->getMinLength());
-        $this->assertEquals(16, $parameters->getProperty('param_string')->getMaxLength());
-        $this->assertEquals('[A-z]+', $parameters->getProperty('param_string')->getPattern());
-        $this->assertEquals(['foo', 'bar'], $parameters->getProperty('param_string')->getEnum());
-    }
 }

@@ -157,7 +157,7 @@ class RamlTest extends ParserTestCase
         Raml::fromFile(__DIR__ . '/raml/foo.raml', '/bar/:bar_id');
     }
 
-    protected function assertParameters(PropertyInterface $parameters)
+    private function assertParameters(PropertyInterface $parameters)
     {
         $this->assertEquals(8, $parameters->getProperty('param_integer')->getMinimum());
         $this->assertEquals(16, $parameters->getProperty('param_integer')->getMaximum());
