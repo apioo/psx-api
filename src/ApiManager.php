@@ -26,6 +26,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\Parser\OpenAPI;
 use PSX\Api\Parser\Raml;
+use PSX\Api\Parser\Swagger;
 use PSX\Cache\Pool;
 use PSX\Schema\SchemaManagerInterface;
 
@@ -41,6 +42,7 @@ class ApiManager implements ApiManagerInterface
     const TYPE_ANNOTATION = 1;
     const TYPE_RAML = 2;
     const TYPE_OPENAPI = 3;
+    const TYPE_SWAGGER = 4;
 
     /**
      * @var \Doctrine\Common\Annotations\Reader
@@ -101,6 +103,8 @@ class ApiManager implements ApiManagerInterface
             $api = Raml::fromFile($source, $path);
         } elseif ($type === self::TYPE_OPENAPI) {
             $api = OpenAPI::fromFile($source, $path);
+        } elseif ($type === self::TYPE_SWAGGER) {
+            $api = Swagger::fromFile($source, $path);
         } elseif ($type === self::TYPE_ANNOTATION) {
             $api = $this->parser->parse($source, $path);
         } else {
