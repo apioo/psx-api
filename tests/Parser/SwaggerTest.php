@@ -22,6 +22,7 @@ namespace PSX\Api\Tests\Parser;
 
 use PSX\Api\ApiManager;
 use PSX\Api\Parser\Swagger;
+use PSX\Api\Resource;
 
 /**
  * SwaggerTest
@@ -35,6 +36,13 @@ class SwaggerTest extends ParserTestCase
     protected function getResource()
     {
         return $this->apiManager->getApi(__DIR__ . '/swagger/simple.json', '/foo', ApiManager::TYPE_SWAGGER);
+    }
+
+    public function testParsePath()
+    {
+        $resource = Swagger::fromFile(__DIR__ . '/openapi/test.json', '/foo/:fooId');
+
+        $this->assertInstanceOf(Resource::class, $resource);
     }
 
     /**
