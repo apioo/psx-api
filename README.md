@@ -11,8 +11,9 @@ possible to generate a specification from a model object.
 
 ### Parser
 
-- RAML ([RAML 0.8](http://raml.org/) specification)
+- RAML ([RAML 0.8/1.0](http://raml.org/) specification)
 - OpenAPI ([OpenAPI 3.0](https://www.openapis.org/) specification)
+- Swagger ([Swagger 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) specification)
 - Annotation (Parses a class which contains annotations)
 
 ### Generator
@@ -20,7 +21,7 @@ possible to generate a specification from a model object.
 - JsonSchema (Generates a [JsonSchema](http://json-schema.org/) which contains all schemas of the specification)
 - OpenAPI (Generates a [OpenAPI 3.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md) specification)
 - PHP (Generates PHP source code which represents a controller consuming the API resource)
-- RAML (Generates a [RAML 0.8](http://raml.org/) specification)
+- RAML (Generates a [RAML 1.0](http://raml.org/) specification)
 - Swagger (Generates a [Swagger 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) specification)
 
 ## Usage
@@ -63,7 +64,7 @@ $resource->getMethod('POST')->hasResponse(201);
 // returns the response body specification as PSX\Schema\SchemaInterface
 $resource->getMethod('POST')->getResponse(201);
 
-// creates a PHP controller which consumes the deinfoed /foo resource
+// creates a PHP controller which consumes the defined /foo resource
 $generator = new \PSX\Api\Generator\Php();
 
 $source = $generator->generate($resource);
