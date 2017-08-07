@@ -23,6 +23,7 @@ namespace PSX\Api\Tests\Parser;
 use PSX\Api\ApiManager;
 use PSX\Api\Parser\OpenAPI;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\SchemaInterface;
 
@@ -87,5 +88,14 @@ class OpenAPITest extends ParserTestCase
     public function testParseInvalidPath()
     {
         OpenAPI::fromFile(__DIR__ . '/openapi/test.json', '/test');
+    }
+
+    public function testParseAll()
+    {
+        $parser = new OpenAPI(__DIR__ . '/openapi');
+        $result = $parser->parseAll(file_get_contents(__DIR__ . '/openapi/simple.json'));
+
+        $this->assertInstanceOf(ResourceCollection::class, $result);
+        $this->assertEquals(['/foo'], array_keys($result->getArrayCopy()));
     }
 }

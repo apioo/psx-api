@@ -23,6 +23,7 @@ namespace PSX\Api\Tests\Parser;
 use PSX\Api\ApiManager;
 use PSX\Api\Parser\Raml;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\SchemaInterface;
 
@@ -155,6 +156,15 @@ class RamlTest extends ParserTestCase
     public function testFromFileNotExistingFile()
     {
         Raml::fromFile(__DIR__ . '/raml/foo.raml', '/bar/:bar_id');
+    }
+
+    public function testParseAll()
+    {
+        $parser = new Raml(__DIR__ . '/raml');
+        $result = $parser->parseAll(file_get_contents(__DIR__ . '/raml/simple.raml'));
+
+        $this->assertInstanceOf(ResourceCollection::class, $result);
+        $this->assertEquals(['/foo'], array_keys($result->getArrayCopy()));
     }
 
     private function assertParameters(PropertyInterface $parameters)

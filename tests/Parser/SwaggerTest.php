@@ -23,6 +23,7 @@ namespace PSX\Api\Tests\Parser;
 use PSX\Api\ApiManager;
 use PSX\Api\Parser\Swagger;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 
 /**
  * SwaggerTest
@@ -51,5 +52,14 @@ class SwaggerTest extends ParserTestCase
     public function testParseInvalidPath()
     {
         Swagger::fromFile(__DIR__ . '/swagger/test.json', '/test');
+    }
+
+    public function testParseAll()
+    {
+        $parser = new Swagger(__DIR__ . '/swagger');
+        $result = $parser->parseAll(file_get_contents(__DIR__ . '/swagger/simple.json'));
+
+        $this->assertInstanceOf(ResourceCollection::class, $result);
+        $this->assertEquals(['/foo'], array_keys($result->getArrayCopy()));
     }
 }
