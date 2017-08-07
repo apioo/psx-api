@@ -73,6 +73,11 @@ class OpenAPITest extends ParserTestCase
 
         $this->assertInstanceOf(SchemaInterface::class, $response);
         $this->assertInstanceOf(PropertyInterface::class, $response->getDefinition()->getProperty('artist'));
+
+        $response = $methods['GET']->getResponse(500);
+
+        $this->assertInstanceOf(SchemaInterface::class, $response);
+        $this->assertInstanceOf(PropertyInterface::class, $response->getDefinition()->getProperty('success'));
     }
 
     public function testParsePath()
