@@ -1,4 +1,10 @@
 
+### 2.2.0
+
+* Added resource collection
+* Add Swagger parser
+* Improved OpenAPI parser
+
 ### 2.1.2 (2017-08-02)
 
 * Improve OpenAPI parser
