@@ -107,11 +107,7 @@ class Raml implements ParserInterface, ParserCollectionInterface
 
     private function parseResource(array $data, $path)
     {
-        $status = Resource::STATUS_ACTIVE;
-        if (isset($this->data['status'])) {
-            $status = $this->getResourceStatus($this->data['status']);
-        }
-
+        $status   = Resource::STATUS_ACTIVE;
         $resource = new Resource($status, $path);
 
         if (isset($data['displayName'])) {
@@ -432,19 +428,6 @@ class Raml implements ParserInterface, ParserCollectionInterface
             case 'string':
             default:
                 return Property::getString();
-        }
-    }
-
-    private function getResourceStatus($status)
-    {
-        if ($status === 'deprecated') {
-            return Resource::STATUS_DEPRECATED;
-        } elseif ($status === 'development') {
-            return Resource::STATUS_DEVELOPMENT;
-        } elseif ($status === 'closed') {
-            return Resource::STATUS_CLOSED;
-        } else {
-            return Resource::STATUS_ACTIVE;
         }
     }
 
