@@ -28,13 +28,13 @@ use PSX\Schema\Parser\JsonSchema\RefResolver;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * ResourceTest
+ * ResourceConversionTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ResourceTest extends ApiManagerTestCase
+class ResourceConversionTest extends ApiManagerTestCase
 {
     public function testHtml()
     {
