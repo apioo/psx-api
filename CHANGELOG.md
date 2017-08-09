@@ -1,5 +1,10 @@
 
-### 2.2.0
+### 2.2.1 (2017-08-09)
+
+* Added test cases
+* Generate also PHP schema classes
+
+### 2.2.0 (2017-08-07)
 
 * Added resource collection
 * Add Swagger parser
