@@ -91,6 +91,124 @@ class Endpoint extends SchemaApiAbstract
     {
     }
 }
+namespace PSX\Generation;
+
+/**
+ * @Title("item")
+ */
+class Item
+{
+    /**
+     * @Key("id")
+     * @Type("integer")
+     */
+    protected $id;
+    /**
+     * @Key("userId")
+     * @Type("integer")
+     */
+    protected $userId;
+    /**
+     * @Key("title")
+     * @Type("string")
+     * @MaxLength(16)
+     * @MinLength(3)
+     * @Pattern("[A-z]+")
+     */
+    protected $title;
+    /**
+     * @Key("date")
+     * @Type("string")
+     * @Format("date-time")
+     */
+    protected $date;
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+    }
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+    public function getTitle()
+    {
+        return $this->title;
+    }
+    public function setDate($date)
+    {
+        $this->date = $date;
+    }
+    public function getDate()
+    {
+        return $this->date;
+    }
+}
+/**
+ * @Title("collection")
+ */
+class Collection
+{
+    /**
+     * @Key("entry")
+     * @Type("array")
+     * @Items(@Ref("PSX\Generation\Item"))
+     */
+    protected $entry;
+    public function setEntry($entry)
+    {
+        $this->entry = $entry;
+    }
+    public function getEntry()
+    {
+        return $this->entry;
+    }
+}
+namespace PSX\Generation;
+
+/**
+ * @Title("message")
+ */
+class Message
+{
+    /**
+     * @Key("success")
+     * @Type("boolean")
+     */
+    protected $success;
+    /**
+     * @Key("message")
+     * @Type("string")
+     */
+    protected $message;
+    public function setSuccess($success)
+    {
+        $this->success = $success;
+    }
+    public function getSuccess()
+    {
+        return $this->success;
+    }
+    public function setMessage($message)
+    {
+        $this->message = $message;
+    }
+    public function getMessage()
+    {
+        return $this->message;
+    }
+}
 PHP;
 
         $this->assertEquals(str_replace(array("\r\n", "\r"), "\n", $expect), $php, $php);

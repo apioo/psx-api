@@ -7,7 +7,7 @@
         "$ref": "#/components/parameters/foo"
       }],
       "get": {
-        "description": "A long **Test** description",
+        "summary": "A long **Test** description",
         "parameters": [{
           "$ref": "#/components/parameters/bar"
         }],

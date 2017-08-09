@@ -78,6 +78,41 @@ class Endpoint extends SchemaApiAbstract
     {
     }
 }
+namespace PSX\Generation;
+
+/**
+ * @Description("A canonical song")
+ * @Required({"title", "artist"})
+ */
+class ObjectId
+{
+    /**
+     * @Key("artist")
+     * @Type("string")
+     */
+    protected $artist;
+    /**
+     * @Key("title")
+     * @Type("string")
+     */
+    protected $title;
+    public function setArtist($artist)
+    {
+        $this->artist = $artist;
+    }
+    public function getArtist()
+    {
+        return $this->artist;
+    }
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+    public function getTitle()
+    {
+        return $this->title;
+    }
+}
 TEXT;
 
         $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);

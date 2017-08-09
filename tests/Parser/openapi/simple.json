@@ -11,7 +11,7 @@
         }
       }],
       "get": {
-        "description": "A long **Test** description",
+        "summary": "A long **Test** description",
         "parameters": [{
           "name": "foo",
           "in": "query",
