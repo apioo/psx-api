@@ -145,8 +145,8 @@ class OpenAPI implements ParserInterface, ParserCollectionInterface
                     $method->setOperationId($operation['operationId']);
                 }
 
-                if (isset($operation['description'])) {
-                    $method->setDescription($operation['description']);
+                if (isset($operation['summary'])) {
+                    $method->setDescription($operation['summary']);
                 }
 
                 $this->parseQueryParameters($method, $operation);
