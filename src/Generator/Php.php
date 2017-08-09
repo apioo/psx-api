@@ -21,6 +21,7 @@
 namespace PSX\Api\Generator;
 
 use PhpParser\BuilderFactory;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\PrettyPrinter;
 use PSX\Api\GeneratorAbstract;
 use PSX\Api\Resource;
@@ -55,6 +56,11 @@ class Php extends GeneratorAbstract
     protected $namespace;
 
     /**
+     * @var array
+     */
+    protected $schemas;
+
+    /**
      * @param string|null $namespace
      */
     public function __construct($namespace = null)
@@ -62,6 +68,7 @@ class Php extends GeneratorAbstract
         $this->factory   = new BuilderFactory();
         $this->printer   = new PrettyPrinter\Standard();
         $this->namespace = $namespace === null ? 'PSX\Generation' : $namespace;
+        $this->schemas   = [];
     }
 
     /**
@@ -89,7 +96,20 @@ class Php extends GeneratorAbstract
         $root->addStmt($this->factory->use('PSX\Framework\Controller\SchemaApiAbstract'));
         $root->addStmt($class->getNode());
 
-        return $this->printer->prettyPrintFile([$root->getNode()]);
+        $nodes = [];
+        $nodes[] = $root->getNode();
+
+        $generator = new Generator\Php();
+        foreach ($this->schemas as $schema) {
+            $class = $this->getIdentifierForProperty($schema->getDefinition());
+
+            if (!$this->containsClass($nodes, $class)) {
+                $generator->generate($schema);
+                $nodes[] = $generator->getNode();
+            }
+        }
+
+        return $this->printer->prettyPrintFile($nodes);
     }
 
     /**
@@ -140,7 +160,7 @@ class Php extends GeneratorAbstract
         $properties      = $queryParameters->getProperties();
         if (!empty($properties)) {
             foreach ($properties as $name => $parameter) {
-                $comment.= ' * @QueryParam(' . $this->getParam($name, $parameter, in_array($name, $queryParameters->getRequired())) . ')' . "\n";
+                $comment.= ' * @QueryParam(' . $this->getParam($name, $parameter, in_array($name, $queryParameters->getRequired() ?: [])) . ')' . "\n";
             }
         }
 
@@ -148,6 +168,8 @@ class Php extends GeneratorAbstract
         if ($request instanceof SchemaInterface) {
             $class   = $this->getClassNameForProperty($request->getDefinition());
             $comment.= ' * @Incoming(schema="' . $class . '")' . "\n";
+
+            $this->schemas[] = $request;
         }
 
         $responses = $method->getResponses();
@@ -155,6 +177,8 @@ class Php extends GeneratorAbstract
             if ($response instanceof SchemaInterface) {
                 $class   = $this->getClassNameForProperty($response->getDefinition());
                 $comment.= ' * @Outgoing(code=' . $statusCode . ', schema="' . $class . '")' . "\n";
+
+                $this->schemas[] = $response;
             }
         }
 
@@ -259,5 +283,24 @@ class Php extends GeneratorAbstract
     protected function escapeString($data)
     {
         return $data;
+    }
+
+    /**
+     * @param array $nodes
+     * @param string $name
+     * @return boolean
+     */
+    private function containsClass(array $nodes, $name)
+    {
+        foreach ($nodes as $node) {
+            /** @var \PhpParser\Node\Stmt\Namespace_ $node */
+            foreach ($node->stmts as $stmt) {
+                if ($stmt instanceof Class_ && $stmt->name == $name) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
