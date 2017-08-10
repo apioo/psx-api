@@ -268,8 +268,8 @@ class OpenAPI extends GeneratorAbstract
             $schema = $generator->toArray($property);
 
             if (isset($schema['definitions'])) {
-                foreach ($schema['definitions'] as $definition) {
-                    $definitions->{$name} = $definition;
+                foreach ($schema['definitions'] as $key => $definition) {
+                    $definitions->{$key} = $definition;
                 }
 
                 unset($schema['definitions']);
