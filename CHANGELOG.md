@@ -1,4 +1,8 @@
 
+### 2.2.2 (2017-08-10)
+
+* Fix nested json schema definitions in OpenAPI and Swagger generator
+
 ### 2.2.1 (2017-08-09)
 
 * Added test cases
