@@ -159,6 +159,9 @@ class OpenAPI implements ParserInterface, ParserCollectionInterface
             }
         }
 
+        $this->popPath();
+        $this->popPath();
+
         return $resource;
     }
 
