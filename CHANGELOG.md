@@ -1,4 +1,8 @@
 
+### 2.2.3 (2017-08-12)
+
+* Fix OpenAPI/Swagger parser pop path
+
 ### 2.2.2 (2017-08-10)
 
 * Fix nested json schema definitions in OpenAPI and Swagger generator
