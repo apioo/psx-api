@@ -54,6 +54,15 @@ class SwaggerTest extends ParserTestCase
         Swagger::fromFile(__DIR__ . '/swagger/test.json', '/test');
     }
 
+    public function testParseDb()
+    {
+        $parser = new Swagger(__DIR__ . '/swagger');
+        $result = $parser->parseAll(file_get_contents(__DIR__ . '/swagger/db.json'));
+
+        $this->assertInstanceOf(ResourceCollection::class, $result);
+        $this->assertEquals(['/location.name', '/departureBoard', '/arrivalBoard', '/journeyDetail'], array_keys($result->getArrayCopy()));
+    }
+
     public function testParseAll()
     {
         $parser = new Swagger(__DIR__ . '/swagger');

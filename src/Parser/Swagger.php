@@ -159,6 +159,9 @@ class Swagger implements ParserInterface, ParserCollectionInterface
             }
         }
 
+        $this->popPath();
+        $this->popPath();
+
         return $resource;
     }
 
