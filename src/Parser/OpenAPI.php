@@ -307,6 +307,11 @@ class OpenAPI implements ParserInterface, ParserCollectionInterface
             $this->pushPath('responses');
             
             foreach ($data['responses'] as $statusCode => $row) {
+                $statusCode = (int) $statusCode;
+                if ($statusCode < 100) {
+                    continue;
+                }
+
                 $this->pushPath($statusCode);
 
                 $property = $this->getPropertyFromContent($row);

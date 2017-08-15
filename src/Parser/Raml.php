@@ -316,6 +316,11 @@ class Raml implements ParserInterface, ParserCollectionInterface
     {
         if (isset($data['responses']) && is_array($data['responses'])) {
             foreach ($data['responses'] as $statusCode => $row) {
+                $statusCode = (int) $statusCode;
+                if ($statusCode < 100) {
+                    continue;
+                }
+
                 if (isset($row['body']) && is_array($row['body'])) {
                     $schema = $this->getBodySchema($row['body']);
 
