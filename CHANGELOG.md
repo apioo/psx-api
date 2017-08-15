@@ -1,4 +1,8 @@
 
+### 2.2.4 (2017-08-15)
+
+* Parser Swagger and OAI ignore invalid status codes
+
 ### 2.2.3 (2017-08-12)
 
 * Fix OpenAPI/Swagger parser pop path
