@@ -18,7 +18,9 @@ possible to generate a specification from a model object.
 
 ### Generator
 
+- HTML (Generates a HTML representation of the resource)
 - JsonSchema (Generates a [JsonSchema](http://json-schema.org/) which contains all schemas of the specification)
+- Markdown (Generates a Markdown representation of the resource)
 - OpenAPI (Generates a [OpenAPI 3.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md) specification)
 - PHP (Generates PHP source code which represents a controller consuming the API resource)
 - RAML (Generates a [RAML 1.0](http://raml.org/) specification)
