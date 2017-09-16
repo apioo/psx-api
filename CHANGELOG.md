@@ -1,4 +1,8 @@
 
+### 2.2.5 (2017-09-16)
+
+* Add markdown generator
+
 ### 2.2.4 (2017-08-15)
 
 * Parser Swagger and OAI ignore invalid status codes
