@@ -1,0 +1,129 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PSX",
+    "version": "1"
+  },
+  "servers": [
+    {
+      "url": "\/"
+    }
+  ],
+  "paths": {
+    "\/pets": {
+      "get": {
+        "description": "List all pets",
+        "operationId": "listPets",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GET 200 response",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/Pets"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "GET 500 response",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a pet",
+        "operationId": "createPets",
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "$ref": "#\/components\/schemas\/Pet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "500": {
+            "description": "POST 500 response",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": []
+    }
+  },
+  "components": {
+    "schemas": {
+      "Pets": {
+        "title": "Pets",
+        "properties": {
+          "pets": {
+            "type": "array",
+            "items": {
+              "$ref": "#\/components\/schemas\/Pet"
+            }
+          }
+        }
+      },
+      "Error": {
+        "title": "Error",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "Pet": {
+        "title": "Pet",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      }
+    }
+  }
+}

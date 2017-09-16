@@ -1,0 +1,134 @@
+{
+  "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+  "id": "urn:foo:bar",
+  "definitions": {
+    "path-template": {
+      "type": "object",
+      "title": "path",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name parameter",
+          "pattern": "[A-z]+",
+          "minLength": 0,
+          "maxLength": 16
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "foo",
+            "bar"
+          ]
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "GET-query": {
+      "type": "object",
+      "title": "query",
+      "properties": {
+        "startIndex": {
+          "type": "integer",
+          "description": "startIndex parameter",
+          "minimum": 0,
+          "maximum": 32
+        },
+        "float": {
+          "type": "number"
+        },
+        "boolean": {
+          "type": "boolean"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "datetime": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "startIndex"
+      ]
+    },
+    "Item": {
+      "type": "object",
+      "title": "item",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "userId": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string",
+          "pattern": "[A-z]+",
+          "minLength": 3,
+          "maxLength": 16
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "Collection": {
+      "type": "object",
+      "title": "collection",
+      "properties": {
+        "entry": {
+          "type": "array",
+          "items": {
+            "$ref": "#\/definitions\/Item"
+          }
+        }
+      }
+    },
+    "Message": {
+      "type": "object",
+      "title": "message",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "GET-200-response": {
+      "$ref": "#\/definitions\/Collection"
+    },
+    "POST-request": {
+      "$ref": "#\/definitions\/Item"
+    },
+    "POST-201-response": {
+      "$ref": "#\/definitions\/Message"
+    },
+    "PUT-request": {
+      "$ref": "#\/definitions\/Item"
+    },
+    "PUT-200-response": {
+      "$ref": "#\/definitions\/Message"
+    },
+    "DELETE-request": {
+      "$ref": "#\/definitions\/Item"
+    },
+    "DELETE-200-response": {
+      "$ref": "#\/definitions\/Message"
+    },
+    "PATCH-request": {
+      "$ref": "#\/definitions\/Item"
+    },
+    "PATCH-200-response": {
+      "$ref": "#\/definitions\/Message"
+    }
+  }
+}

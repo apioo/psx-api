@@ -18,35 +18,28 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Generator\Html;
+namespace PSX\Api\Tests\Generator;
 
-use PSX\Api\Generator\Html\Sample\LoaderInterface;
-use PSX\Api\Generator\HtmlAbstract;
-use PSX\Schema\SchemaInterface;
+use PSX\Api\Generator\Markdown;
 
 /**
- * Sample
+ * MarkdownTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Sample extends HtmlAbstract
+class MarkdownTest extends GeneratorTestCase
 {
-    protected $loader;
-
-    public function __construct(LoaderInterface $loader)
+    public function testGenerate()
     {
-        $this->loader = $loader;
-    }
+        $generator = new Markdown();
 
-    public function getName()
-    {
-        return 'Example';
-    }
+        $actual = $generator->generate($this->getResource());
 
-    protected function generateHtml(SchemaInterface $schema, $type, $method, $path, $statusCode = null)
-    {
-        return $this->loader->get($type, $method, $path, $statusCode);
+        $expect = file_get_contents(__DIR__ . '/markdown.md');
+        $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
+
+        $this->assertEquals($expect, $actual, $actual);
     }
 }

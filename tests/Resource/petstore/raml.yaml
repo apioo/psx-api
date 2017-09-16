@@ -1,0 +1,123 @@
+#%RAML 1.0
+---
+baseUri: 'http://api.phpsx.org'
+version: v1
+title: PSX
+/pets:
+  description: foobar
+  get:
+    description: 'List all pets'
+    queryParameters:
+      limit:
+        type: integer
+        required: false
+    responses:
+      200:
+        body:
+          application/json:
+            type: |
+              {
+                  "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                  "id": "urn:schema.phpsx.org#",
+                  "definitions": {
+                      "Pet": {
+                          "title": "Pet",
+                          "properties": {
+                              "id": {
+                                  "type": "integer",
+                                  "format": "int64"
+                              },
+                              "name": {
+                                  "type": "string"
+                              },
+                              "tag": {
+                                  "type": "string"
+                              }
+                          },
+                          "required": [
+                              "id",
+                              "name"
+                          ]
+                      }
+                  },
+                  "title": "Pets",
+                  "properties": {
+                      "pets": {
+                          "type": "array",
+                          "items": {
+                              "$ref": "#\/definitions\/Pet"
+                          }
+                      }
+                  }
+              }
+      500:
+        body:
+          application/json:
+            type: |
+              {
+                  "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                  "id": "urn:schema.phpsx.org#",
+                  "title": "Error",
+                  "properties": {
+                      "code": {
+                          "type": "integer",
+                          "format": "int32"
+                      },
+                      "message": {
+                          "type": "string"
+                      }
+                  },
+                  "required": [
+                      "code",
+                      "message"
+                  ]
+              }
+  post:
+    description: 'Create a pet'
+    body:
+      application/json:
+        type: |
+          {
+              "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+              "id": "urn:schema.phpsx.org#",
+              "title": "Pet",
+              "properties": {
+                  "id": {
+                      "type": "integer",
+                      "format": "int64"
+                  },
+                  "name": {
+                      "type": "string"
+                  },
+                  "tag": {
+                      "type": "string"
+                  }
+              },
+              "required": [
+                  "id",
+                  "name"
+              ]
+          }
+    responses:
+      500:
+        body:
+          application/json:
+            type: |
+              {
+                  "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                  "id": "urn:schema.phpsx.org#",
+                  "title": "Error",
+                  "properties": {
+                      "code": {
+                          "type": "integer",
+                          "format": "int32"
+                      },
+                      "message": {
+                          "type": "string"
+                      }
+                  },
+                  "required": [
+                      "code",
+                      "message"
+                  ]
+              }

@@ -18,35 +18,28 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Generator\Html;
+namespace PSX\Api\Tests\Generator;
 
-use PSX\Api\Generator\HtmlAbstract;
-use PSX\Schema\GeneratorInterface;
-use PSX\Schema\SchemaInterface;
+use PSX\Api\Generator\Html;
 
 /**
- * Schema
+ * HtmlTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Schema extends HtmlAbstract
+class HtmlTest extends GeneratorTestCase
 {
-    protected $generator;
-
-    public function __construct(GeneratorInterface $generator)
+    public function testGenerate()
     {
-        $this->generator = $generator;
-    }
+        $generator = new Html();
 
-    public function getName()
-    {
-        return 'Schema';
-    }
+        $actual = $generator->generate($this->getResource());
+        $actual = preg_replace('/psx_model_Object([0-9A-Fa-f]{8})/', '[dynamic_id]', $actual);
 
-    protected function generateHtml(SchemaInterface $schema, $type, $method, $path, $statusCode = null)
-    {
-        return $this->generator->generate($schema);
+        $expect = file_get_contents(__DIR__ . '/html.htm');
+
+        $this->assertXmlStringEqualsXmlString('<div>' . $expect . '</div>', '<div>' . $actual . '</div>', $actual);
     }
 }
