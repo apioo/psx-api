@@ -92,6 +92,26 @@ class ApiCommand extends Command
         $basePath        = '/' . $this->dispatch;
 
         switch ($input->getArgument('format')) {
+            case 'html':
+                $generator = new Generator\Html();
+                $response  = $generator->generate($api);
+                break;
+
+            case 'jsonschema':
+                $generator = new Generator\JsonSchema($targetNamespace);
+                $response  = $generator->generate($api);
+                break;
+
+            case 'markdown':
+                $generator = new Generator\Markdown();
+                $response  = $generator->generate($api);
+                break;
+
+            case 'openapi':
+                $generator = new Generator\OpenAPI($this->reader, 1, $basePath, $targetNamespace);
+                $response  = $generator->generate($api);
+                break;
+
             case 'php':
                 $generator = new Generator\Php();
                 $response  = $generator->generate($api);
@@ -104,11 +124,6 @@ class ApiCommand extends Command
 
             case 'serialize':
                 $response = serialize($api);
-                break;
-
-            case 'jsonschema':
-                $generator = new Generator\JsonSchema($targetNamespace);
-                $response  = $generator->generate($api);
                 break;
 
             default:

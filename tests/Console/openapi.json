@@ -1,0 +1,152 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PSX",
+    "version": "1"
+  },
+  "servers": [
+    {
+      "url": "\/"
+    }
+  ],
+  "paths": {
+    "\/foo": {
+      "get": {
+        "description": "A long **Test** description",
+        "operationId": "doGet",
+        "parameters": [
+          {
+            "name": "foo",
+            "in": "query",
+            "description": "Test",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Test"
+            }
+          },
+          {
+            "name": "bar",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "baz",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "foo",
+                "bar"
+              ]
+            }
+          },
+          {
+            "name": "boz",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "[A-z]+"
+            }
+          },
+          {
+            "name": "integer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "number",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "boolean",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "string",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "$ref": "#\/components\/schemas\/ObjectId"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A canonical song",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/ObjectId"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "fooId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    }
+  },
+  "components": {
+    "schemas": {
+      "ObjectId": {
+        "type": "object",
+        "description": "A canonical song",
+        "properties": {
+          "artist": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "artist"
+        ]
+      }
+    }
+  }
+}
