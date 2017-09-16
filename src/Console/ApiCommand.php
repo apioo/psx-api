@@ -108,7 +108,7 @@ class ApiCommand extends Command
                 break;
 
             case 'openapi':
-                $generator = new Generator\OpenAPI($this->reader, 1, $basePath, $targetNamespace);
+                $generator = new Generator\OpenAPI($this->reader, 1, $baseUri, $targetNamespace);
                 $response  = $generator->generate($api);
                 break;
 
