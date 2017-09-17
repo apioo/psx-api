@@ -43,8 +43,8 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'source' => TestController::class,
-            'format' => 'html',
             'path'   => '/foo',
+            'format' => 'html',
         ));
 
         $actual = $commandTester->getDisplay();
@@ -60,8 +60,8 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'source' => TestController::class,
-            'format' => 'jsonschema',
             'path'   => '/foo',
+            'format' => 'jsonschema',
         ));
 
         $actual = $commandTester->getDisplay();
@@ -79,8 +79,8 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'source' => TestController::class,
-            'format' => 'markdown',
             'path'   => '/foo',
+            'format' => 'markdown',
         ));
 
         $actual = $commandTester->getDisplay();
@@ -99,8 +99,8 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'source' => TestController::class,
-            'format' => 'openapi',
             'path'   => '/foo',
+            'format' => 'openapi',
         ));
 
         $actual = $commandTester->getDisplay();
@@ -118,8 +118,8 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'source' => TestController::class,
-            'format' => 'php',
             'path'   => '/foo',
+            'format' => 'php',
         ));
 
         $actual = $commandTester->getDisplay();
@@ -138,8 +138,8 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'source' => TestController::class,
-            'format' => 'raml',
             'path'   => '/foo',
+            'format' => 'raml',
         ));
 
         $actual = $commandTester->getDisplay();
@@ -158,8 +158,8 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'source' => TestController::class,
-            'format' => 'serialize',
             'path'   => '/foo',
+            'format' => 'serialize',
         ));
 
         $actual   = $commandTester->getDisplay();
@@ -175,8 +175,8 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'source' => TestController::class,
-            'format' => 'swagger',
             'path'   => '/foo',
+            'format' => 'swagger',
         ));
 
         $actual = $commandTester->getDisplay();

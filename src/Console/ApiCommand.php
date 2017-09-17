@@ -79,8 +79,8 @@ class ApiCommand extends Command
             ->setName('api')
             ->setDescription('Parses an arbitrary source and outputs the schema in a specific format')
             ->addArgument('source', InputArgument::REQUIRED, 'The schema source this is either a absolute class name or schema file')
-            ->addArgument('format', InputArgument::OPTIONAL, 'Optional the output format possible values are: swagger, raml, php, serialize, jsonschema')
-            ->addArgument('path', InputArgument::OPTIONAL, 'Optional the path of the resource');
+            ->addArgument('path', InputArgument::REQUIRED, 'The path of the resource')
+            ->addArgument('format', InputArgument::OPTIONAL, 'Optional the output format possible values are: html, jsonschema, markdown, openapi, php, raml, serialize, swagger');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
