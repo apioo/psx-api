@@ -51,7 +51,7 @@ class Swagger extends GeneratorAbstract
     use GeneratorTrait;
 
     /**
-     * @var \Doctrine\Common\Annotations\Reader
+     * @var \PSX\Schema\Parser\Popo\Dumper
      */
     protected $dumper;
 
