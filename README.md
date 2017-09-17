@@ -36,9 +36,9 @@ basic understanding how it is designed.
 ```php
 <?php
 
-// reads the RAML specification and generates a resource object which was
+// reads the OpenAPI specification and generates a resource object which was
 // defined under the path /foo
-$resource = \PSX\Api\Parser\Raml::fromFile('spec.raml', '/foo');
+$resource = \PSX\Api\Parser\OpenAPI::fromFile('openapi.json', '/foo');
 
 // returns the title
 $resource->getTitle();
