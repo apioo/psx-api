@@ -22,8 +22,8 @@ namespace PSX\Api\Generator;
 
 use PSX\Api\Resource;
 use PSX\Schema\Generator;
+use PSX\Schema\GeneratorInterface;
 use PSX\Schema\PropertyInterface;
-use PSX\Schema\PropertyType;
 use PSX\Schema\Schema;
 use PSX\Schema\SchemaInterface;
 
@@ -41,9 +41,12 @@ class Markdown extends MarkupAbstract
      */
     protected $generator;
 
-    public function __construct()
+    /**
+     * @param \PSX\Schema\GeneratorInterface|null $generator
+     */
+    public function __construct(GeneratorInterface $generator = null)
     {
-        $this->generator = new Generator\Markdown(4);
+        $this->generator = $generator === null ? new Generator\Markdown(4) : $generator;
     }
 
     /**

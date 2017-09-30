@@ -21,6 +21,7 @@
 namespace PSX\Api\Generator;
 
 use PSX\Api\Resource;
+use PSX\Schema\GeneratorInterface;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\Schema;
 use PSX\Schema\Generator;
@@ -40,9 +41,12 @@ class Html extends MarkupAbstract
      */
     protected $generator;
 
-    public function __construct()
+    /**
+     * @param \PSX\Schema\GeneratorInterface|null $generator
+     */
+    public function __construct(GeneratorInterface $generator = null)
     {
-        $this->generator = new Generator\Html(4);
+        $this->generator = $generator === null ? new Generator\Html(4) : $generator;
     }
 
     /**
