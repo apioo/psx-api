@@ -1,4 +1,8 @@
 
+### 2.2.6 (2017-09-30)
+
+* Add option to pass schema generator to markup generator
+
 ### 2.2.5 (2017-09-16)
 
 * Add markdown generator
