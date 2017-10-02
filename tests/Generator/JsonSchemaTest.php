@@ -36,7 +36,7 @@ class JsonSchemaTest extends GeneratorTestCase
         $generator = new JsonSchema('urn:foo:bar', 'http://api.phpsx.org', 'http://foo.phpsx.org');
 
         $actual = $generator->generate($this->getResource());
-        $expect = file_get_contents(__DIR__ . '/jsonschema.json');
+        $expect = file_get_contents(__DIR__ . '/resource/jsonschema.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }

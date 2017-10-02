@@ -40,7 +40,7 @@ class SwaggerTest extends GeneratorTestCase
         $generator = new Swagger($reader, 1, '/', 'http://foo.phpsx.org');
 
         $actual = $generator->generate($this->getResource());
-        $expect = file_get_contents(__DIR__ . '/swagger.json');
+        $expect = file_get_contents(__DIR__ . '/resource/swagger.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }

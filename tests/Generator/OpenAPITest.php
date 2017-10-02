@@ -41,7 +41,7 @@ class OpenAPITest extends GeneratorTestCase
         $generator = new OpenAPI($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
 
         $actual = $generator->generate($this->getResource());
-        $expect = file_get_contents(__DIR__ . '/openapi.json');
+        $expect = file_get_contents(__DIR__ . '/resource/openapi.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }

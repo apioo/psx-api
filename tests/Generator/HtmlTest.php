@@ -38,7 +38,7 @@ class HtmlTest extends GeneratorTestCase
         $actual = $generator->generate($this->getResource());
         $actual = preg_replace('/psx_model_Object([0-9A-Fa-f]{8})/', '[dynamic_id]', $actual);
 
-        $expect = file_get_contents(__DIR__ . '/html.htm');
+        $expect = file_get_contents(__DIR__ . '/resource/html.htm');
 
         $this->assertXmlStringEqualsXmlString('<div>' . $expect . '</div>', '<div>' . $actual . '</div>', $actual);
     }

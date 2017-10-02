@@ -36,7 +36,7 @@ class RamlTest extends GeneratorTestCase
         $generator = new Raml('foobar', 1, 'http://api.phpsx.org', 'urn:schema.phpsx.org#');
         
         $actual = $generator->generate($this->getResource());
-        $expect = file_get_contents(__DIR__ . '/raml.yaml');
+        $expect = file_get_contents(__DIR__ . '/resource/raml.yaml');
         $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
 
         $this->assertEquals($expect, $actual, $actual);
