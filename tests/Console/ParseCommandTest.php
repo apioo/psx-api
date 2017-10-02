@@ -22,71 +22,72 @@ namespace PSX\Api\Tests\Console;
 
 use PSX\Api\ApiManager;
 use PSX\Api\Console\ApiCommand;
+use PSX\Api\Console\ParseCommand;
 use PSX\Api\Resource;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 use PSX\Schema\SchemaManager;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * ApiCommandTest
+ * ParseCommandTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ApiCommandTest extends \PHPUnit_Framework_TestCase
+class ParseCommandTest extends \PHPUnit_Framework_TestCase
 {
     public function testGenerateHtml()
     {
-        $command = $this->getApiCommand();
+        $command = $this->getParseCommand();
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
-            'source' => TestController::class,
-            'path'   => '/foo',
-            'format' => 'html',
+            'source'   => TestController::class,
+            'path'     => '/foo',
+            '--format' => 'html',
         ));
 
         $actual = $commandTester->getDisplay();
-        $expect = file_get_contents(__DIR__ . '/html.htm');
+        $expect = file_get_contents(__DIR__ . '/resource/html.htm');
 
         $this->assertXmlStringNotEqualsXmlString('<div>' . $expect . '</div>', '<div>' . $actual . '</div>', $actual);
     }
 
     public function testGenerateJsonschema()
     {
-        $command = $this->getApiCommand();
+        $command = $this->getParseCommand();
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
-            'source' => TestController::class,
-            'path'   => '/foo',
-            'format' => 'jsonschema',
+            'source'   => TestController::class,
+            'path'     => '/foo',
+            '--format' => 'jsonschema',
         ));
 
         $actual = $commandTester->getDisplay();
         $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
 
-        $expect = file_get_contents(__DIR__ . '/jsonschema.json');
+        $expect = file_get_contents(__DIR__ . '/resource/jsonschema.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
     
     public function testGenerateMarkdown()
     {
-        $command = $this->getApiCommand();
+        $command = $this->getParseCommand();
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
-            'source' => TestController::class,
-            'path'   => '/foo',
-            'format' => 'markdown',
+            'source'   => TestController::class,
+            'path'     => '/foo',
+            '--format' => 'markdown',
         ));
 
         $actual = $commandTester->getDisplay();
         $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
 
-        $expect = file_get_contents(__DIR__ . '/markdown.md');
+        $expect = file_get_contents(__DIR__ . '/resource/markdown.md');
         $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
 
         $this->assertEquals($expect, $actual, $actual);
@@ -94,38 +95,38 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateOpenAPI()
     {
-        $command = $this->getApiCommand();
+        $command = $this->getParseCommand();
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
-            'source' => TestController::class,
-            'path'   => '/foo',
-            'format' => 'openapi',
+            'source'   => TestController::class,
+            'path'     => '/foo',
+            '--format' => 'openapi',
         ));
 
         $actual = $commandTester->getDisplay();
         $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
 
-        $expect = file_get_contents(__DIR__ . '/openapi.json');
+        $expect = file_get_contents(__DIR__ . '/resource/openapi.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
     public function testGeneratePhp()
     {
-        $command = $this->getApiCommand();
+        $command = $this->getParseCommand();
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
-            'source' => TestController::class,
-            'path'   => '/foo',
-            'format' => 'php',
+            'source'   => TestController::class,
+            'path'     => '/foo',
+            '--format' => 'php',
         ));
 
         $actual = $commandTester->getDisplay();
         $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
 
-        $expect = file_get_contents(__DIR__ . '/php.php');
+        $expect = file_get_contents(__DIR__ . '/resource/php.php');
         $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
 
         $this->assertEquals($expect, $actual, $actual);
@@ -133,19 +134,19 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateRaml()
     {
-        $command = $this->getApiCommand();
+        $command = $this->getParseCommand();
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
-            'source' => TestController::class,
-            'path'   => '/foo',
-            'format' => 'raml',
+            'source'   => TestController::class,
+            'path'     => '/foo',
+            '--format' => 'raml',
         ));
 
         $actual = $commandTester->getDisplay();
         $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
 
-        $expect = file_get_contents(__DIR__ . '/raml.yaml');
+        $expect = file_get_contents(__DIR__ . '/resource/raml.yaml');
         $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
 
         $this->assertEquals($expect, $actual, $actual);
@@ -153,13 +154,13 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateSerialize()
     {
-        $command = $this->getApiCommand();
+        $command = $this->getParseCommand();
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
-            'source' => TestController::class,
-            'path'   => '/foo',
-            'format' => 'serialize',
+            'source'   => TestController::class,
+            'path'     => '/foo',
+            '--format' => 'serialize',
         ));
 
         $actual   = $commandTester->getDisplay();
@@ -170,24 +171,24 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateSwagger()
     {
-        $command = $this->getApiCommand();
+        $command = $this->getParseCommand();
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
-            'source' => TestController::class,
-            'path'   => '/foo',
-            'format' => 'swagger',
+            'source'   => TestController::class,
+            'path'     => '/foo',
+            '--format' => 'swagger',
         ));
 
         $actual = $commandTester->getDisplay();
         $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
 
-        $expect = file_get_contents(__DIR__ . '/swagger.json');
+        $expect = file_get_contents(__DIR__ . '/resource/swagger.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
-    protected function getApiCommand()
+    protected function getParseCommand()
     {
         $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
         $schemaReader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
@@ -195,11 +196,10 @@ class ApiCommandTest extends \PHPUnit_Framework_TestCase
         $apiReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
         $apiReader->addNamespace('PSX\\Api\\Annotation');
 
-        return new ApiCommand(
-            new ApiManager(
-                $apiReader, 
-                new SchemaManager($schemaReader)
-            ),
+        $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
+
+        return new ParseCommand(
+            $apiManager,
             $schemaReader, 
             'urn:phpsx.org:2016#', 
             'http://foo.com', 

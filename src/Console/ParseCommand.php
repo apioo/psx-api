@@ -22,20 +22,21 @@ namespace PSX\Api\Console;
 
 use Doctrine\Common\Annotations\Reader;
 use PSX\Api\ApiManager;
-use PSX\Api\Generator;
+use PSX\Api\GeneratorFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * ApiCommand
+ * ParseCommand
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ApiCommand extends Command
+class ParseCommand extends Command
 {
     /**
      * @var \PSX\Api\ApiManager
@@ -76,62 +77,21 @@ class ApiCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('api')
+            ->setName('api:parse')
             ->setDescription('Parses an arbitrary source and outputs the schema in a specific format')
             ->addArgument('source', InputArgument::REQUIRED, 'The schema source this is either a absolute class name or schema file')
             ->addArgument('path', InputArgument::REQUIRED, 'The path of the resource')
-            ->addArgument('format', InputArgument::OPTIONAL, 'Optional the output format possible values are: html, jsonschema, markdown, openapi, php, raml, serialize, swagger');
+            ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Optional the output format possible values are: ' . implode(', ', GeneratorFactory::getPossibleTypes()))
+            ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Optional a config value which gets passed to the generator');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $api = $this->apiManager->getApi($input->getArgument('source'), $input->getArgument('path'));
+        $resource = $this->apiManager->getApi($input->getArgument('source'), $input->getArgument('path'));
 
-        $targetNamespace = $this->namespace;
-        $baseUri         = $this->url . '/' . $this->dispatch;
-        $basePath        = '/' . $this->dispatch;
-
-        switch ($input->getArgument('format')) {
-            case 'html':
-                $generator = new Generator\Html();
-                $response  = $generator->generate($api);
-                break;
-
-            case 'jsonschema':
-                $generator = new Generator\JsonSchema($targetNamespace);
-                $response  = $generator->generate($api);
-                break;
-
-            case 'markdown':
-                $generator = new Generator\Markdown();
-                $response  = $generator->generate($api);
-                break;
-
-            case 'openapi':
-                $generator = new Generator\OpenAPI($this->reader, 1, $baseUri, $targetNamespace);
-                $response  = $generator->generate($api);
-                break;
-
-            case 'php':
-                $generator = new Generator\Php();
-                $response  = $generator->generate($api);
-                break;
-
-            case 'raml':
-                $generator = new Generator\Raml('psx', 1, $baseUri, $targetNamespace);
-                $response  = $generator->generate($api);
-                break;
-
-            case 'serialize':
-                $response = serialize($api);
-                break;
-
-            default:
-            case 'swagger':
-                $generator = new Generator\Swagger($this->reader, 1, $basePath, $targetNamespace);
-                $response  = $generator->generate($api);
-                break;
-        }
+        $factory   = new GeneratorFactory($this->reader, $this->namespace, $this->url, $this->dispatch);
+        $generator = $factory->getGenerator($input->getOption('format'), $input->getOption('config'));
+        $response  = $generator->generate($resource);
 
         $output->write($response);
     }
