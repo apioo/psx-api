@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://test.phpsx.org/other_schema#",
+  "definition": {
+    "rating": {
+      "title": "Rating",
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

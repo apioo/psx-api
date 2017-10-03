@@ -19,7 +19,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/models/song"
+                  "$ref": "#/components/schemas/song"
                 }
               }
             }
@@ -46,17 +46,27 @@
     }
   },
   "components": {
-    "models": {
+    "schemas": {
       "song": {
         "id": "http://test.phpsx.org/schema#",
+        "title": "Song",
         "description": "A canonical song",
         "type": "object",
         "properties": {
+          "title": {
+            "type": "string"
+          },
           "artist": {
             "type": "string"
           },
-          "title": {
-            "$ref": "file:///../schema/other_schema.json#/definition/title"
+          "length": {
+            "type": "integer"
+          },
+          "ratings": {
+            "type": "array",
+            "items": {
+              "$ref": "file:///../schema/rating.json#/definition/rating"
+            }
           }
         },
         "required": [
@@ -87,7 +97,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/models/song"
+              "$ref": "#/components/schemas/song"
             }
           }
         }

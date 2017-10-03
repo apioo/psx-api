@@ -1,18 +1,28 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "id": "http://test.phpsx.org/schema#",
-    "description": "A canonical song",
-    "properties": {
-        "artist": {
-            "type": "string"
-        },
-        "title": {
-            "$ref": "file:///other_schema.json#/definition/title"
-        }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://test.phpsx.org/schema#",
+  "title": "Song",
+  "description": "A canonical song",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
     },
-    "required": [
-        "title",
-        "artist"
-    ],
-    "type": "object"
+    "artist": {
+      "type": "string"
+    },
+    "length": {
+      "type": "integer"
+    },
+    "ratings": {
+      "type": "array",
+      "items": {
+        "$ref": "file:///rating.json#/definition/rating"
+      }
+    }
+  },
+  "required": [
+    "title",
+    "artist"
+  ]
 }

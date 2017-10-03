@@ -65,25 +65,25 @@ abstract class GeneratorTestCase extends \PHPUnit_Framework_TestCase
             ->addQueryParameter('boolean', Property::getBoolean())
             ->addQueryParameter('date', Property::getDate())
             ->addQueryParameter('datetime', Property::getDateTime())
-            ->addResponse(200, $schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Collection')));
+            ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class)));
 
         $resource->getMethod('GET')->getQueryParameters()->setRequired(['startIndex']);
 
         $resource->addMethod(Resource\Factory::getMethod('POST')
-            ->setRequest($schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Create'))
-            ->addResponse(201, $schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\SuccessMessage')));
+            ->setRequest($schemaManager->getSchema(Schema\Create::class))
+            ->addResponse(201, $schemaManager->getSchema(Schema\SuccessMessage::class)));
 
         $resource->addMethod(Resource\Factory::getMethod('PUT')
-            ->setRequest($schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Update'))
-            ->addResponse(200, $schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\SuccessMessage')));
+            ->setRequest($schemaManager->getSchema(Schema\Update::class))
+            ->addResponse(200, $schemaManager->getSchema(Schema\SuccessMessage::class)));
 
         $resource->addMethod(Resource\Factory::getMethod('DELETE')
-            ->setRequest($schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Delete'))
-            ->addResponse(200, $schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\SuccessMessage')));
+            ->setRequest($schemaManager->getSchema(Schema\Delete::class))
+            ->addResponse(200, $schemaManager->getSchema(Schema\SuccessMessage::class)));
 
         $resource->addMethod(Resource\Factory::getMethod('PATCH')
-            ->setRequest($schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\Patch'))
-            ->addResponse(200, $schemaManager->getSchema('PSX\Api\Tests\Generator\Schema\SuccessMessage')));
+            ->setRequest($schemaManager->getSchema(Schema\Patch::class))
+            ->addResponse(200, $schemaManager->getSchema(Schema\SuccessMessage::class)));
 
         return $resource;
     }
