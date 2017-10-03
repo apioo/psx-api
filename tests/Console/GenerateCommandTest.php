@@ -181,6 +181,27 @@ class GenerateCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
+    public function testGenerateTemplate()
+    {
+        $command = $this->getGenerateCommand();
+
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'dir'      => __DIR__ . '/output',
+            '--format' => 'template',
+            '--config' => 'markdown.md.twig',
+        ));
+
+        $actual = file_get_contents(__DIR__ . '/output/foo.md');
+        $actual = str_replace(["\r\n", "\n", "\r"], "\n", $actual);
+        $actual = preg_replace('/([0-9A-Fa-f]{32})/', 'ObjectId', $actual);
+
+        $expect = file_get_contents(__DIR__ . '/resource/template.md');
+        $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
+
+        $this->assertEquals($expect, $actual, $actual);
+    }
+
     protected function getGenerateCommand()
     {
         $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
