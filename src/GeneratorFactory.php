@@ -31,6 +31,16 @@ use Doctrine\Common\Annotations\Reader;
  */
 class GeneratorFactory
 {
+    const TYPE_HTML = 'html';
+    const TYPE_JSONSCHEMA = 'jsonschema';
+    const TYPE_MARKDOWN = 'markdown';
+    const TYPE_OPENAPI = 'openapi';
+    const TYPE_PHP = 'php';
+    const TYPE_RAML = 'raml';
+    const TYPE_SERIALIZE = 'serialize';
+    const TYPE_TEMPLATE = 'template';
+    const TYPE_SWAGGER = 'swagger';
+
     /**
      * @var \Doctrine\Common\Annotations\Reader
      */
@@ -67,48 +77,48 @@ class GeneratorFactory
     public function getGenerator($format, $config)
     {
         switch ($format) {
-            case 'html':
+            case self::TYPE_HTML:
                 return new Generator\Html();
                 break;
 
-            case 'jsonschema':
+            case self::TYPE_JSONSCHEMA:
                 $namespace = $config ?: $this->namespace;
                 
                 return new Generator\JsonSchema($namespace);
                 break;
 
-            case 'markdown':
+            case self::TYPE_MARKDOWN:
                 return new Generator\Markdown();
                 break;
 
-            case 'openapi':
+            case self::TYPE_OPENAPI:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
                 
                 return new Generator\OpenAPI($this->reader, 1, $baseUri, $namespace);
                 break;
 
-            case 'php':
+            case self::TYPE_PHP:
                 return new Generator\Php($config ?: null);
                 break;
 
-            case 'raml':
+            case self::TYPE_RAML:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
 
                 return new Generator\Raml('psx', 1, $baseUri, $namespace);
                 break;
 
-            case 'serialize':
+            case self::TYPE_SERIALIZE:
                 return new Generator\Serialize();
                 break;
 
-            case 'template':
+            case self::TYPE_TEMPLATE:
                 return new Generator\Template($config);
                 break;
 
             default:
-            case 'swagger':
+            case self::TYPE_SWAGGER:
                 $basePath  = '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
                 
@@ -120,28 +130,28 @@ class GeneratorFactory
     public function getFileExtension($format, $config)
     {
         switch ($format) {
-            case 'html':
+            case self::TYPE_HTML:
                 return 'html';
 
-            case 'markdown':
+            case self::TYPE_MARKDOWN:
                 return 'md';
 
-            case 'php':
+            case self::TYPE_PHP:
                 return 'php';
 
-            case 'raml':
+            case self::TYPE_RAML:
                 return 'raml';
 
-            case 'serialize':
+            case self::TYPE_SERIALIZE:
                 return 'ser';
 
-            case 'template':
+            case self::TYPE_TEMPLATE:
                 $ext = pathinfo(pathinfo($config, PATHINFO_FILENAME), PATHINFO_EXTENSION);
                 return !empty($ext) ? $ext : 'html';
 
-            case 'jsonschema':
-            case 'openapi':
-            case 'swagger':
+            case self::TYPE_JSONSCHEMA:
+            case self::TYPE_OPENAPI:
+            case self::TYPE_SWAGGER:
                 return 'json';
 
             default:
@@ -152,15 +162,15 @@ class GeneratorFactory
     public static function getPossibleTypes()
     {
         return [
-            'html',
-            'jsonschema',
-            'markdown',
-            'openapi',
-            'php',
-            'raml',
-            'serialize',
-            'template',
-            'swagger'
+            self::TYPE_HTML,
+            self::TYPE_JSONSCHEMA,
+            self::TYPE_MARKDOWN,
+            self::TYPE_OPENAPI,
+            self::TYPE_PHP,
+            self::TYPE_RAML,
+            self::TYPE_SERIALIZE,
+            self::TYPE_TEMPLATE,
+            self::TYPE_SWAGGER
         ];
     }
 }
