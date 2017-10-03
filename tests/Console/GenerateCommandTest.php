@@ -216,9 +216,9 @@ class GenerateCommandTest extends \PHPUnit_Framework_TestCase
 
         return new GenerateCommand(
             $listing,
-            $schemaReader, 
-            'urn:phpsx.org:2016#', 
-            'http://foo.com', 
+            $schemaReader,
+            'urn:phpsx.org:2016#',
+            'http://foo.com',
             ''
         );
     }

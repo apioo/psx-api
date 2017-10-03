@@ -102,10 +102,10 @@ class Annotation implements ParserInterface
     private function parseMethods(ReflectionClass $controller, Resource $resource, $basePath)
     {
         $methods = [
-            'GET'    => 'doGet', 
-            'POST'   => 'doPost', 
-            'PUT'    => 'doPut', 
-            'DELETE' => 'doDelete', 
+            'GET'    => 'doGet',
+            'POST'   => 'doPost',
+            'PUT'    => 'doPut',
+            'DELETE' => 'doDelete',
             'PATCH'  => 'doPatch'
         ];
 

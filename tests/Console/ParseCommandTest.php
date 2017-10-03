@@ -199,9 +199,9 @@ class ParseCommandTest extends \PHPUnit_Framework_TestCase
 
         return new ParseCommand(
             $apiManager,
-            $schemaReader, 
-            'urn:phpsx.org:2016#', 
-            'http://foo.com', 
+            $schemaReader,
+            'urn:phpsx.org:2016#',
+            'http://foo.com',
             ''
         );
     }

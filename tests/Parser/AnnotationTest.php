@@ -24,7 +24,6 @@ use PSX\Api\ApiManager;
 use PSX\Api\Parser\Annotation as AnnotationParser;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 
-
 /**
  * AnnotationTest
  *
@@ -59,4 +58,3 @@ class AnnotationTest extends ParserTestCase
         $annotation->parse('foo', '/foo');
     }
 }
-

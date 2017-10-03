@@ -214,7 +214,7 @@ class OpenAPI extends GeneratorAbstract
                 $resp->setDescription($property->getDescription() ?: $method->getName() . ' ' . $statusCode . ' response');
                 $resp->setContent($mediaTypes);
 
-                $resps->set(strval($statusCode), $resp); 
+                $resps->set(strval($statusCode), $resp);
             }
 
             $operation->setResponses($resps);

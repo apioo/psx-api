@@ -392,7 +392,7 @@ class OpenAPI implements ParserInterface, ParserCollectionInterface
 
     private function getJsonPointer()
     {
-        return '/' . implode('/', array_map(function($path){
+        return '/' . implode('/', array_map(function ($path) {
             return str_replace(['~', '/'], ['~0', '~1'], $path);
         }, $this->pathStack[$this->stackIndex]));
     }

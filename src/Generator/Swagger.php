@@ -193,7 +193,7 @@ class Swagger extends GeneratorAbstract
                 $resp->setDescription($property->getDescription() ?: $method->getName() . ' ' . $statusCode . ' response');
                 $resp->setSchema((object) ['$ref' => '#/definitions/' . $this->getIdentifierForProperty($property)]);
 
-                $resps["" . $statusCode] = $resp; 
+                $resps["" . $statusCode] = $resp;
             }
 
             $operation->setResponses($resps);
