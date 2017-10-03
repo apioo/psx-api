@@ -21,8 +21,8 @@ class Endpoint extends SchemaApiAbstract
      * @QueryParam(name="date", type="string")
      * @QueryParam(name="boolean", type="boolean")
      * @QueryParam(name="string", type="string")
-     * @Incoming(schema="PSX\Generation\ObjectId")
-     * @Outgoing(code=200, schema="PSX\Generation\ObjectId")
+     * @Incoming(schema="PSX\Generation\Song")
+     * @Outgoing(code=200, schema="PSX\Generation\Song")
      */
     public function doGet($record)
     {
@@ -31,21 +31,86 @@ class Endpoint extends SchemaApiAbstract
 namespace PSX\Generation;
 
 /**
+ * @Title("Rating")
+ */
+class Rating
+{
+    /**
+     * @Key("author")
+     * @Type("string")
+     */
+    protected $author;
+    /**
+     * @Key("rating")
+     * @Type("integer")
+     */
+    protected $rating;
+    /**
+     * @Key("text")
+     * @Type("string")
+     */
+    protected $text;
+    public function setAuthor($author)
+    {
+        $this->author = $author;
+    }
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+    public function setRating($rating)
+    {
+        $this->rating = $rating;
+    }
+    public function getRating()
+    {
+        return $this->rating;
+    }
+    public function setText($text)
+    {
+        $this->text = $text;
+    }
+    public function getText()
+    {
+        return $this->text;
+    }
+}
+/**
+ * @Title("Song")
  * @Description("A canonical song")
  * @Required({"title", "artist"})
  */
-class ObjectId
+class Song
 {
+    /**
+     * @Key("title")
+     * @Type("string")
+     */
+    protected $title;
     /**
      * @Key("artist")
      * @Type("string")
      */
     protected $artist;
     /**
-     * @Key("title")
-     * @Type("string")
+     * @Key("length")
+     * @Type("integer")
      */
-    protected $title;
+    protected $length;
+    /**
+     * @Key("ratings")
+     * @Type("array")
+     * @Items(@Ref("PSX\Generation\Rating"))
+     */
+    protected $ratings;
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+    public function getTitle()
+    {
+        return $this->title;
+    }
     public function setArtist($artist)
     {
         $this->artist = $artist;
@@ -54,12 +119,20 @@ class ObjectId
     {
         return $this->artist;
     }
-    public function setTitle($title)
+    public function setLength($length)
     {
-        $this->title = $title;
+        $this->length = $length;
     }
-    public function getTitle()
+    public function getLength()
     {
-        return $this->title;
+        return $this->length;
+    }
+    public function setRatings($ratings)
+    {
+        $this->ratings = $ratings;
+    }
+    public function getRatings()
+    {
+        return $this->ratings;
     }
 }

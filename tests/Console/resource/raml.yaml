@@ -48,14 +48,41 @@ title: psx
           {
               "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
               "id": "urn:phpsx.org:2016#",
+              "definitions": {
+                  "Rating": {
+                      "type": "object",
+                      "title": "Rating",
+                      "properties": {
+                          "author": {
+                              "type": "string"
+                          },
+                          "rating": {
+                              "type": "integer"
+                          },
+                          "text": {
+                              "type": "string"
+                          }
+                      }
+                  }
+              },
               "type": "object",
+              "title": "Song",
               "description": "A canonical song",
               "properties": {
+                  "title": {
+                      "type": "string"
+                  },
                   "artist": {
                       "type": "string"
                   },
-                  "title": {
-                      "type": "string"
+                  "length": {
+                      "type": "integer"
+                  },
+                  "ratings": {
+                      "type": "array",
+                      "items": {
+                          "$ref": "#\/definitions\/Rating"
+                      }
                   }
               },
               "required": [
@@ -71,14 +98,41 @@ title: psx
               {
                   "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
                   "id": "urn:phpsx.org:2016#",
+                  "definitions": {
+                      "Rating": {
+                          "type": "object",
+                          "title": "Rating",
+                          "properties": {
+                              "author": {
+                                  "type": "string"
+                              },
+                              "rating": {
+                                  "type": "integer"
+                              },
+                              "text": {
+                                  "type": "string"
+                              }
+                          }
+                      }
+                  },
                   "type": "object",
+                  "title": "Song",
                   "description": "A canonical song",
                   "properties": {
+                      "title": {
+                          "type": "string"
+                      },
                       "artist": {
                           "type": "string"
                       },
-                      "title": {
-                          "type": "string"
+                      "length": {
+                          "type": "integer"
+                      },
+                      "ratings": {
+                          "type": "array",
+                          "items": {
+                              "$ref": "#\/definitions\/Rating"
+                          }
                       }
                   },
                   "required": [

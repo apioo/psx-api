@@ -99,7 +99,7 @@
           "content": {
             "application\/json": {
               "schema": {
-                "$ref": "#\/components\/schemas\/ObjectId"
+                "$ref": "#\/components\/schemas\/Song"
               }
             }
           }
@@ -110,7 +110,7 @@
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/ObjectId"
+                  "$ref": "#\/components\/schemas\/Song"
                 }
               }
             }
@@ -131,15 +131,40 @@
   },
   "components": {
     "schemas": {
-      "ObjectId": {
+      "Rating": {
         "type": "object",
+        "title": "Rating",
+        "properties": {
+          "author": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "Song": {
+        "type": "object",
+        "title": "Song",
         "description": "A canonical song",
         "properties": {
+          "title": {
+            "type": "string"
+          },
           "artist": {
             "type": "string"
           },
-          "title": {
-            "type": "string"
+          "length": {
+            "type": "integer"
+          },
+          "ratings": {
+            "type": "array",
+            "items": {
+              "$ref": "#\/components\/schemas\/Rating"
+            }
           }
         },
         "required": [

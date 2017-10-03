@@ -38,25 +38,58 @@ A long **Test** description
 
 ### Request
 <a name="ObjectId"></a>
-##### Object
+##### Song
 A canonical song
 * Required: `["title","artist"]`
 * Properties:
-  * `artist`:
-    * Type: string
   * `title`:
     * Type: string
+  * `artist`:
+    * Type: string
+  * `length`:
+    * Type: integer
+  * `ratings`:
+    * Type: array
+    * Items:
+    * [Rating](#ObjectId)
+
+<a name="ObjectId"></a>
+##### Rating
+* Properties:
+  * `author`:
+    * Type: string
+  * `rating`:
+    * Type: integer
+  * `text`:
+    * Type: string
+
 
 
 ### Response - 200:
 <a name="ObjectId"></a>
-##### Object
+##### Song
 A canonical song
 * Required: `["title","artist"]`
 * Properties:
+  * `title`:
+    * Type: string
   * `artist`:
     * Type: string
-  * `title`:
+  * `length`:
+    * Type: integer
+  * `ratings`:
+    * Type: array
+    * Items:
+    * [Rating](#ObjectId)
+
+<a name="ObjectId"></a>
+##### Rating
+* Properties:
+  * `author`:
+    * Type: string
+  * `rating`:
+    * Type: integer
+  * `text`:
     * Type: string
 
 

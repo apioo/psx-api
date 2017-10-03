@@ -56,15 +56,40 @@
         "bar"
       ]
     },
-    "ObjectId": {
+    "Rating": {
       "type": "object",
+      "title": "Rating",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "Song": {
+      "type": "object",
+      "title": "Song",
       "description": "A canonical song",
       "properties": {
+        "title": {
+          "type": "string"
+        },
         "artist": {
           "type": "string"
         },
-        "title": {
-          "type": "string"
+        "length": {
+          "type": "integer"
+        },
+        "ratings": {
+          "type": "array",
+          "items": {
+            "$ref": "#\/definitions\/Rating"
+          }
         }
       },
       "required": [
@@ -73,10 +98,10 @@
       ]
     },
     "GET-request": {
-      "$ref": "#\/definitions\/ObjectId"
+      "$ref": "#\/definitions\/Song"
     },
     "GET-200-response": {
-      "$ref": "#\/definitions\/ObjectId"
+      "$ref": "#\/definitions\/Song"
     }
   }
 }

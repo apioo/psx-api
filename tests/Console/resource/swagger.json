@@ -77,7 +77,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#\/definitions\/ObjectId"
+              "$ref": "#\/definitions\/Song"
             }
           }
         ],
@@ -85,7 +85,7 @@
           "200": {
             "description": "A canonical song",
             "schema": {
-              "$ref": "#\/definitions\/ObjectId"
+              "$ref": "#\/definitions\/Song"
             }
           }
         }
@@ -101,15 +101,40 @@
     }
   },
   "definitions": {
-    "ObjectId": {
+    "Rating": {
       "type": "object",
+      "title": "Rating",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "Song": {
+      "type": "object",
+      "title": "Song",
       "description": "A canonical song",
       "properties": {
+        "title": {
+          "type": "string"
+        },
         "artist": {
           "type": "string"
         },
-        "title": {
-          "type": "string"
+        "length": {
+          "type": "integer"
+        },
+        "ratings": {
+          "type": "array",
+          "items": {
+            "$ref": "#\/definitions\/Rating"
+          }
         }
       },
       "required": [

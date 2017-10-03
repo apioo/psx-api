@@ -35,24 +35,44 @@ string | String |  |
 
 ### GET Request
 
-#### Object
+#### Song
 
 A canonical song
 
 Field | Type | Description | Constraints
 ----- | ---- | ----------- | -----------
-artist | String |  | 
 title | String |  | 
+artist | String |  | 
+length | Integer |  | 
+ratings | Array (Object ([Rating](#psx_model_Rating))) |  | 
+
+#### Rating
+
+Field | Type | Description | Constraints
+----- | ---- | ----------- | -----------
+author | String |  | 
+rating | Integer |  | 
+text | String |  | 
 
 
 ### GET Response - 200 OK
 
-#### Object
+#### Song
 
 A canonical song
 
 Field | Type | Description | Constraints
 ----- | ---- | ----------- | -----------
-artist | String |  | 
 title | String |  | 
+artist | String |  | 
+length | Integer |  | 
+ratings | Array (Object ([Rating](#psx_model_Rating))) |  | 
+
+#### Rating
+
+Field | Type | Description | Constraints
+----- | ---- | ----------- | -----------
+author | String |  | 
+rating | Integer |  | 
+text | String |  | 
 
