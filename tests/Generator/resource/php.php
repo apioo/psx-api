@@ -3,6 +3,7 @@
 namespace PSX\Generation;
 
 use PSX\Framework\Controller\SchemaApiAbstract;
+
 /**
  * @Title("foo")
  * @Description("lorem ipsum")

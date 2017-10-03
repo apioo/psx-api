@@ -21,10 +21,10 @@
 namespace PSX\Api\Generator;
 
 use PSX\Api\Resource;
+use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\Schema;
-use PSX\Schema\Generator;
 use PSX\Schema\SchemaInterface;
 
 /**

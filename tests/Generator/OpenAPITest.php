@@ -22,7 +22,6 @@ namespace PSX\Api\Tests\Generator;
 
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\Generator\OpenAPI;
-use PSX\Api\Generator\Swagger;
 
 /**
  * OpenAPITest

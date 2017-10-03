@@ -27,7 +27,6 @@ use PSX\Api\ResourceCollection;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
 use PSX\Schema\Parser\JsonSchema;
-use PSX\Schema\Property;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\Schema;
 use PSX\Uri\Uri;

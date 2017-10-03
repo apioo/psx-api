@@ -20,13 +20,6 @@
 
 namespace PSX\Api;
 
-use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Cache\ArrayCache;
-use Psr\Cache\CacheItemPoolInterface;
-use PSX\Api\Parser\Raml;
-use PSX\Cache\Pool;
-use PSX\Schema\SchemaManagerInterface;
-
 /**
  * ApiManagerInterface
  *

@@ -21,7 +21,6 @@
 namespace PSX\Api\Tests\Console;
 
 use PSX\Api\ApiManager;
-use PSX\Api\Console\ApiCommand;
 use PSX\Api\Console\ParseCommand;
 use PSX\Api\Resource;
 use PSX\Api\Tests\Parser\Annotation\TestController;

@@ -21,7 +21,6 @@
 namespace PSX\Api\Tests\Console;
 
 use PSX\Api\ApiManager;
-use PSX\Api\Console\ApiCommand;
 use PSX\Api\Console\GenerateCommand;
 use PSX\Api\Listing\MemoryListing;
 use PSX\Api\Resource;

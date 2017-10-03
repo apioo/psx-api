@@ -20,11 +20,8 @@
 
 namespace PSX\Api\Tests;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use PSX\Api\ApiManager;
 use PSX\Api\Resource;
 use PSX\Api\Tests\Parser\Annotation\TestController;
-use PSX\Schema\SchemaManager;
 
 /**
  * ApiManagerTest

@@ -21,7 +21,6 @@
 namespace PSX\Api;
 
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\Parser\OpenAPI;

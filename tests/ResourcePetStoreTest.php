@@ -23,7 +23,6 @@ namespace PSX\Api\Tests;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\Generator;
 use PSX\Api\Parser;
-use PSX\Schema\Generator\Html;
 use PSX\Schema\Parser\JsonSchema\RefResolver;
 use Symfony\Component\Yaml\Yaml;
 
