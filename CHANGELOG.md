@@ -1,4 +1,9 @@
 
+### 2.3.0 (2017-10-03)
+
+* Add template generator
+* Add generate and resource command
+
 ### 2.2.6 (2017-09-30)
 
 * Add option to pass schema generator to markup generator
