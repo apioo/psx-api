@@ -67,28 +67,14 @@
 * Additional-Properties:
 {{ me.render_object_property(property.additionalProperties) }}{% set childs = childs|merge([property.additionalProperties]) %}
 {% endif %}
-{# array properties #}
-{% if property.items %}
-* Items:
-{{ me.render_object_property(property.items) }}{% set childs = childs|merge([property.items]) %}
-{% endif %}
-{# combination properties #}
-{% if property.allOf %}
-* All-Of:
-{{ me.render_combination_property(property.allOf) }}{% set childs = childs|merge([property.allOf]) %}
-{% endif %}
-{% if property.anyOf %}
-* Any-Of:
-{{ me.render_combination_property(property.anyOf) }}{% set childs = childs|merge([property.anyOf]) %}
-{% endif %}
-{% if property.oneOf %}
-* One-Of:
-{{ me.render_combination_property(property.oneOf) }}{% set childs = childs|merge([property.oneOf]) %}
-{% endif %}
 {% if childs %}
 {% for schema in childs %}
-{% if schema.hasConstraints and (schema.type == 'object' or schema.properties or schema.patternProperties or schema.additionalProperties) %}
+{% if schema.hasConstraints %}
+{% if schema.properties or schema.patternProperties or schema.additionalProperties %}
 {{ me.render_property(schema) }}
+{% elseif schema.items %}
+{{ me.render_property(schema.items) }}
+{% endif %}
 {% endif %}
 {% endfor %}
 {% endif %}
@@ -96,12 +82,11 @@
 
 {% macro render_object_property(schema) %}
 {% import _self as me %}
-{% if schema.type == 'object' or schema.properties or schema.patternProperties or schema.additionalProperties %}
+{% if schema.properties or schema.patternProperties or schema.additionalProperties %}
 * [{{ schema.title ?: 'Object' }}](#{{ schema.constraintId }})
-{% elseif schema.type == 'array' or property.items %}
-{{ me.render_constraints(schema) }}
-* Items
-{{ me.render_object_property(property.items) }}
+{% elseif schema.items %}
+{{ me.render_constraints(schema) }}    * Items:
+    {{ me.render_object_property(schema.items) }}
 {% else %}{{ me.render_constraints(schema) }}{% endif %}
 {% endmacro %}
 
