@@ -61,6 +61,12 @@ class GeneratorFactory
      */
     protected $dispatch;
 
+    /**
+     * @param \Doctrine\Common\Annotations\Reader $reader
+     * @param string $namespace
+     * @param string $url
+     * @param string $dispatch
+     */
     public function __construct(Reader $reader, $namespace, $url, $dispatch)
     {
         $this->reader    = $reader;
@@ -127,6 +133,11 @@ class GeneratorFactory
         }
     }
 
+    /**
+     * @param string $format
+     * @param string $config
+     * @return string
+     */
     public function getFileExtension($format, $config)
     {
         switch ($format) {
@@ -159,6 +170,9 @@ class GeneratorFactory
         }
     }
 
+    /**
+     * @return array
+     */
     public static function getPossibleTypes()
     {
         return [
