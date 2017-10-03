@@ -50,7 +50,7 @@ A canonical song
     * Type: integer
   * `ratings`:
     * Type: array
-    * Items:
+    * __Items__:
     * [Rating](#ObjectId)
 
 <a name="ObjectId"></a>
@@ -79,7 +79,7 @@ A canonical song
     * Type: integer
   * `ratings`:
     * Type: array
-    * Items:
+    * __Items__:
     * [Rating](#ObjectId)
 
 <a name="ObjectId"></a>

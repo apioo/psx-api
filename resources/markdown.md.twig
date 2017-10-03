@@ -85,7 +85,7 @@
 {% if schema.properties or schema.patternProperties or schema.additionalProperties %}
 * [{{ schema.title ?: 'Object' }}](#{{ schema.constraintId }})
 {% elseif schema.items %}
-{{ me.render_constraints(schema) }}    * Items:
+{{ me.render_constraints(schema) }}    * __Items__:
     {{ me.render_object_property(schema.items) }}
 {% else %}{{ me.render_constraints(schema) }}{% endif %}
 {% endmacro %}
