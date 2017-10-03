@@ -8,14 +8,14 @@ which describe the functionality of an API endpoint. This project provides a
 data model which contains the common information of an API endpoint. There are
 parser classes which create such models based on a specification and it is also
 possible to generate a specification from a model object. We have also created 
-an [online tool](http://phpsx.org/tools/openapi) to those conversions.
+an [online tool](http://phpsx.org/tools/openapi) to test those conversions.
 
 ### Parser
 
-- RAML ([RAML 0.8/1.0](http://raml.org/) specification)
-- OpenAPI ([OpenAPI 3.0](https://www.openapis.org/) specification)
-- Swagger ([Swagger 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) specification)
 - Annotation (Parses a class which contains annotations)
+- OpenAPI ([OpenAPI 3.0](https://www.openapis.org/) specification)
+- RAML ([RAML 0.8/1.0](http://raml.org/) specification)
+- Swagger ([Swagger 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) specification)
 
 ### Generator
 
@@ -26,6 +26,7 @@ an [online tool](http://phpsx.org/tools/openapi) to those conversions.
 - PHP (Generates PHP source code which represents a controller consuming the API resource)
 - RAML (Generates a [RAML 1.0](http://raml.org/) specification)
 - Swagger (Generates a [Swagger 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) specification)
+- Template (Generates a representation based on a [Twig](https://twig.symfony.com/) template)
 
 ## Usage
 
@@ -43,7 +44,7 @@ $resource = \PSX\Api\Parser\OpenAPI::fromFile('openapi.json', '/foo');
 // returns the title
 $resource->getTitle();
 
-// returns available path parameters as PSX\Schema\SchemaInterface
+// returns available path parameters as PSX\Schema\PropertyInterface
 $resource->getPathParameters();
 
 // checks whether a specific request method is supported
@@ -52,7 +53,7 @@ $resource->hasMethod('POST');
 // returns all allowed methods
 $resource->getAllowedMethods();
 
-// returns the available query parameters per method as PSX\Schema\SchemaInterface
+// returns the available query parameters per method as PSX\Schema\PropertyInterface
 $resource->getMethod('POST')->getQueryParameters();
 
 // checks whether the method has a request specification
