@@ -46,7 +46,9 @@ class Markdown extends MarkupAbstract
      */
     public function __construct(GeneratorInterface $generator = null)
     {
-        $this->generator = $generator === null ? new Generator\Markdown(4) : $generator;
+        // by default we use the html generator since the markdown renderer uses
+        // a table syntax which is not supported everywhere
+        $this->generator = $generator === null ? new Generator\Html(4) : $generator;
     }
 
     /**
