@@ -4,7 +4,11 @@
     "title": "PSX",
     "version": "1"
   },
+  "host": "api.phpsx.org",
   "basePath": "\/",
+  "schemes": [
+    "http"
+  ],
   "paths": {
     "\/pets": {
       "get": {
@@ -61,6 +65,25 @@
     }
   },
   "definitions": {
+    "Pet": {
+      "title": "Pet",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
     "Pets": {
       "title": "Pets",
       "properties": {
@@ -86,25 +109,6 @@
       "required": [
         "code",
         "message"
-      ]
-    },
-    "Pet": {
-      "title": "Pet",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "tag": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "name"
       ]
     }
   }

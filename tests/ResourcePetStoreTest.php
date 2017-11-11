@@ -108,7 +108,7 @@ class ResourceConversionTest extends ApiManagerTestCase
         $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
 
         $resources = $this->getResources();
-        $generator = new Generator\Swagger($reader, 1, '/', 'urn:schema.phpsx.org#');
+        $generator = new Generator\Swagger($reader, 1, 'http://api.phpsx.org', 'urn:schema.phpsx.org#');
 
         $actual = $generator->generate($resources['/pets']);
         $expect = file_get_contents(__DIR__ . '/Resource/petstore/swagger.json');

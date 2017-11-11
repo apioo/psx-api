@@ -4,7 +4,11 @@
     "title": "PSX",
     "version": "1"
   },
+  "host": "foo.com",
   "basePath": "\/",
+  "schemes": [
+    "http"
+  ],
   "paths": {
     "\/foo": {
       "get": {
