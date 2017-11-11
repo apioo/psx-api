@@ -44,8 +44,16 @@ interface ListingInterface
      * resource was not found
      *
      * @param string $sourcePath
-     * @param string $version
+     * @param integer $version
      * @return \PSX\Api\Resource
      */
     public function getResource($sourcePath, $version = null);
+
+    /**
+     * Returns all available resources
+     *
+     * @param integer $version
+     * @return \PSX\Api\ResourceCollection
+     */
+    public function getResourceCollection($version = null);
 }

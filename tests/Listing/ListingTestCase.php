@@ -21,6 +21,7 @@
 namespace PSX\Api\Tests\Listing;
 
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 
 /**
  * ListingTestCase
@@ -55,6 +56,17 @@ abstract class ListingTestCase extends \PHPUnit_Framework_TestCase
         $resource = $listing->getResource('/foo');
 
         $this->assertInstanceOf(Resource::class, $resource);
+    }
+
+    public function testGetResourceCollection()
+    {
+        $listing    = $this->newListing();
+        $collection = $listing->getResourceCollection();
+
+        $this->assertInstanceOf(ResourceCollection::class, $collection);
+
+        $this->assertEquals(1, $collection->count());
+        $this->assertInstanceOf(Resource::class, $collection->get('/foo'));
     }
 
     /**

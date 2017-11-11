@@ -61,9 +61,12 @@ class CachedListing implements ListingInterface
         $this->expire  = $expire;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getResourceIndex()
     {
-        $item = $this->cache->getItem('api-resources');
+        $item = $this->cache->getItem($this->getResourceIndexKey());
 
         if ($item->isHit()) {
             return $item->get();
@@ -79,9 +82,12 @@ class CachedListing implements ListingInterface
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getResource($sourcePath, $version = null)
     {
-        $item = $this->cache->getItem('api-resource-' . substr(md5($sourcePath . $version), 0, 16));
+        $item = $this->cache->getItem($this->getResourceKey($sourcePath, $version));
 
         if ($item->isHit()) {
             return $item->get();
@@ -103,9 +109,54 @@ class CachedListing implements ListingInterface
         return null;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getResourceCollection($version = null)
+    {
+        $item = $this->cache->getItem($this->getResourceCollectionKey($version));
+
+        if ($item->isHit()) {
+            return $item->get();
+        } else {
+            $collection = $this->listing->getResourceCollection($version);
+
+            $item->set($collection);
+            $item->expiresAfter($this->expire);
+
+            $this->cache->save($item);
+
+            return $collection;
+        }
+    }
+
+    /**
+     * Invalidates the cached resource index
+     */
+    public function invalidateResourceIndex()
+    {
+        $this->cache->deleteItem($this->getResourceIndexKey());
+    }
+
+    /**
+     * Invalidates a cached resource
+     * 
+     * @param string $sourcePath
+     * @param integer|null $version
+     */
     public function invalidateResource($sourcePath, $version = null)
     {
-        $this->cache->deleteItem('api-resource-' . substr(md5($sourcePath . $version), 0, 16));
+        $this->cache->deleteItem($this->getResourceKey($sourcePath, $version));
+    }
+
+    /**
+     * Invalidates the cached resource collection
+     * 
+     * @param integer|null $version
+     */
+    public function invalidateResourceCollection($version = null)
+    {
+        $this->cache->deleteItem($this->getResourceCollectionKey($version));
     }
 
     /**
@@ -129,5 +180,32 @@ class CachedListing implements ListingInterface
                 $method->addResponse($statusCode, new Schema($response->getDefinition()));
             }
         }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getResourceIndexKey()
+    {
+        return 'api-resource-index';
+    }
+
+    /**
+     * @param string $path
+     * @param integer|null $version
+     * @return string
+     */
+    protected function getResourceKey($path, $version = null)
+    {
+        return 'api-resource-' . substr(md5($path), 0, 16) . '-' . intval($version);
+    }
+
+    /**
+     * @param integer|null $version
+     * @return string
+     */
+    protected function getResourceCollectionKey($version = null)
+    {
+        return 'api-resource-collection-' . intval($version);
     }
 }

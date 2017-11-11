@@ -22,6 +22,7 @@ namespace PSX\Api\Listing;
 
 use PSX\Api\ListingInterface;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 
 /**
  * MemoryListing
@@ -56,6 +57,17 @@ class MemoryListing implements ListingInterface
         }
 
         return null;
+    }
+
+    public function getResourceCollection($version = null)
+    {
+        $collection = new ResourceCollection();
+
+        foreach ($this->resources as $resource) {
+            $collection->set($resource);
+        }
+
+        return $collection;
     }
 
     public function addResource(Resource $resource)
