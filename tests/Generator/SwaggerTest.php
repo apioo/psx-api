@@ -44,4 +44,17 @@ class SwaggerTest extends GeneratorTestCase
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
+
+    public function testGenerateAll()
+    {
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+
+        $generator = new Swagger($reader, 1, '/', 'http://foo.phpsx.org');
+
+        $actual = $generator->generateAll($this->getResourceCollection());
+        $expect = file_get_contents(__DIR__ . '/resource/swagger_collection.json');
+
+        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
+    }
 }

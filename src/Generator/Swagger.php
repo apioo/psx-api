@@ -23,6 +23,7 @@ namespace PSX\Api\Generator;
 use Doctrine\Common\Annotations\Reader;
 use PSX\Api\GeneratorAbstract;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
 use PSX\Model\Swagger\Info;
@@ -90,6 +91,39 @@ class Swagger extends GeneratorAbstract
      */
     public function generate(Resource $resource)
     {
+        $paths   = new Paths();
+        $schemas = new \stdClass();
+
+        $this->buildDefinitions($resource, $schemas);
+        $this->buildPaths($resource, $paths);
+
+        return $this->buildDeclaration($paths, $schemas);
+    }
+
+    /**
+     * @param \PSX\Api\ResourceCollection $collection
+     * @return string
+     */
+    public function generateAll(ResourceCollection $collection)
+    {
+        $paths   = new Paths();
+        $schemas = new \stdClass();
+
+        foreach ($collection as $path => $resource) {
+            $this->buildDefinitions($resource, $schemas);
+            $this->buildPaths($resource, $paths, $this->getIdFromPath($resource->getPath()));
+        }
+
+        return $this->buildDeclaration($paths, $schemas);
+    }
+
+    /**
+     * @param \PSX\Model\Swagger\Paths $paths
+     * @param \stdClass $schemas
+     * @return string
+     */
+    protected function buildDeclaration(Paths $paths, \stdClass $schemas)
+    {
         $info = new Info();
         $info->setTitle('PSX');
         $info->setVersion($this->apiVersion);
@@ -97,8 +131,8 @@ class Swagger extends GeneratorAbstract
         $swagger = new Declaration();
         $swagger->setInfo($info);
         $swagger->setBasePath($this->basePath);
-        $swagger->setPaths($this->getPaths($resource));
-        $swagger->setDefinitions($this->getDefinitions($resource));
+        $swagger->setPaths($paths);
+        $swagger->setDefinitions($schemas);
 
         $data = $this->dumper->dump($swagger);
         $data = Parser::encode($data, JSON_PRETTY_PRINT);
@@ -108,12 +142,12 @@ class Swagger extends GeneratorAbstract
 
     /**
      * @param \PSX\Api\Resource $resource
-     * @return \PSX\Model\Swagger\Paths
+     * @param \PSX\Model\Swagger\Paths $paths
+     * @param string $operationPrefix
      */
-    protected function getPaths(Resource $resource)
+    protected function buildPaths(Resource $resource, Paths $paths, $operationPrefix = null)
     {
-        $paths = new Paths();
-        $path  = new Path();
+        $path = new Path();
 
         // path parameter
         $pathParameters = $resource->getPathParameters();
@@ -147,7 +181,11 @@ class Swagger extends GeneratorAbstract
 
             // create new operation
             $operation = new Operation();
-            $operation->setOperationId($operationId);
+            if (empty($operationPrefix)) {
+                $operation->setOperationId($operationId);
+            } else {
+                $operation->setOperationId($operationPrefix . ucfirst($operationId));
+            }
 
             if (!empty($description)) {
                 $operation->setDescription($description);
@@ -212,15 +250,13 @@ class Swagger extends GeneratorAbstract
         }
 
         $paths[Inflection::transformRoutePlaceholder($resource->getPath())] = $path;
-
-        return $paths;
     }
 
     /**
      * @param \PSX\Api\Resource $resource
-     * @return \stdClass
+     * @param \stdClass $definitions
      */
-    protected function getDefinitions(Resource $resource)
+    protected function buildDefinitions(Resource $resource, \stdClass $definitions)
     {
         $generator  = new Generator\JsonSchema($this->targetNamespace);
         $properties = [];
@@ -242,7 +278,6 @@ class Swagger extends GeneratorAbstract
             }
         }
 
-        $definitions = new \stdClass();
         foreach ($properties as $name => $property) {
             $schema = $generator->toArray($property);
 
@@ -264,8 +299,6 @@ class Swagger extends GeneratorAbstract
 
             $definitions->{$name} = $schema;
         }
-
-        return $definitions;
     }
 
     /**

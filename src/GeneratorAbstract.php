@@ -50,4 +50,20 @@ abstract class GeneratorAbstract implements GeneratorInterface
 
         return null;
     }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    protected function getIdFromPath($path)
+    {
+        $parts  = explode('/', trim($path, '/'));
+        $prefix = '';
+        foreach ($parts as $part) {
+            $part = preg_replace('/[^A-Za-z0-9]+/', '', $part);
+            $prefix.= ucfirst($part);
+        }
+
+        return lcfirst($prefix);
+    }
 }

@@ -119,7 +119,7 @@ class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
 
         foreach ($collection as $path => $resource) {
             $this->buildDefinitions($resource, $schemas);
-            $this->buildPaths($resource, $paths, $this->buildOperationPrefix($resource->getPath()));
+            $this->buildPaths($resource, $paths, $this->getIdFromPath($resource->getPath()));
         }
 
         $schemas = $this->resolveRefs($schemas);
@@ -353,21 +353,5 @@ class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
         $json = str_replace('#\/definitions\/', '#\/components\/schemas\/', $json);
 
         return json_decode($json);
-    }
-
-    /**
-     * @param string $path
-     * @return string
-     */
-    private function buildOperationPrefix($path)
-    {
-        $parts  = explode('/', trim($path, '/'));
-        $prefix = '';
-        foreach ($parts as $part) {
-            $part = preg_replace('/[^A-Za-z0-9]+/', '', $part);
-            $prefix.= ucfirst($part);
-        }
-
-        return lcfirst($prefix);
     }
 }
