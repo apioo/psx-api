@@ -64,7 +64,7 @@ class Swagger extends GeneratorAbstract
     /**
      * @var string
      */
-    protected $basePath;
+    protected $baseUri;
 
     /**
      * @var string
@@ -74,14 +74,14 @@ class Swagger extends GeneratorAbstract
     /**
      * @param \Doctrine\Common\Annotations\Reader $reader
      * @param integer $apiVersion
-     * @param string $basePath
+     * @param string $baseUri
      * @param string $targetNamespace
      */
-    public function __construct(Reader $reader, $apiVersion, $basePath, $targetNamespace)
+    public function __construct(Reader $reader, $apiVersion, $baseUri, $targetNamespace)
     {
         $this->dumper          = new Dumper($reader);
         $this->apiVersion      = $apiVersion;
-        $this->basePath        = $basePath;
+        $this->baseUri         = $baseUri;
         $this->targetNamespace = $targetNamespace;
     }
 
@@ -128,9 +128,16 @@ class Swagger extends GeneratorAbstract
         $info->setTitle('PSX');
         $info->setVersion($this->apiVersion);
 
+        $parts  = parse_url($this->baseUri);
+        $scheme = $parts['scheme'];
+        $host   = $parts['host'] . (isset($parts['port']) ? ':' . $parts['port'] : '');
+        $path   = $parts['path'] ?: '/';
+
         $swagger = new Declaration();
         $swagger->setInfo($info);
-        $swagger->setBasePath($this->basePath);
+        $swagger->setHost($host);
+        $swagger->setBasePath($path);
+        $swagger->setSchemes(!empty($scheme) ? [$scheme] : ['http', 'https']);
         $swagger->setPaths($paths);
         $swagger->setDefinitions($schemas);
 
