@@ -43,11 +43,19 @@ class MemoryListing implements ListingInterface
         $this->resources = [];
     }
 
+    /**
+     * @return \PSX\Api\Resource[]
+     */
     public function getResourceIndex()
     {
         return $this->resources;
     }
 
+    /**
+     * @param string $sourcePath
+     * @param integer|null $version
+     * @return \PSX\Api\Resource
+     */
     public function getResource($sourcePath, $version = null)
     {
         foreach ($this->resources as $resource) {
@@ -59,6 +67,10 @@ class MemoryListing implements ListingInterface
         return null;
     }
 
+    /**
+     * @param integer|null $version
+     * @return \PSX\Api\ResourceCollection
+     */
     public function getResourceCollection($version = null)
     {
         $collection = new ResourceCollection();
@@ -70,6 +82,9 @@ class MemoryListing implements ListingInterface
         return $collection;
     }
 
+    /**
+     * @param \PSX\Api\Resource $resource
+     */
     public function addResource(Resource $resource)
     {
         $this->resources[] = $resource;
