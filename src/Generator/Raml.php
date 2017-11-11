@@ -21,7 +21,9 @@
 namespace PSX\Api\Generator;
 
 use PSX\Api\GeneratorAbstract;
+use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 use PSX\Api\Util\Inflection;
 use PSX\Schema\Generator;
 use PSX\Schema\PropertyInterface;
@@ -35,7 +37,7 @@ use Symfony\Component\Yaml\Inline;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Raml extends GeneratorAbstract
+class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
 {
     use Generator\GeneratorTrait;
 
@@ -79,16 +81,51 @@ class Raml extends GeneratorAbstract
      */
     public function generate(Resource $resource)
     {
-        $path        = Inflection::transformRoutePlaceholder($resource->getPath() ?: '/');
-        $description = $resource->getDescription();
+        $raml = $this->buildDeclaration();
+        $raml.= $this->buildResource($resource);
 
+        return $raml;
+    }
+
+    /**
+     * @param \PSX\Api\ResourceCollection $collection
+     * @return string
+     */
+    public function generateAll(ResourceCollection $collection)
+    {
+        $raml = $this->buildDeclaration();
+
+        foreach ($collection as $path => $resource) {
+            $raml.= $this->buildResource($resource);
+        }
+
+        return $raml;
+    }
+
+    /**
+     * @return string
+     */
+    protected function buildDeclaration()
+    {
         $raml = '#%RAML 1.0' . "\n";
         $raml.= '---' . "\n";
         $raml.= 'baseUri: ' . Inline::dump($this->baseUri) . "\n";
         $raml.= 'version: v' . $this->version . "\n";
         $raml.= 'title: ' . Inline::dump($this->title) . "\n";
-        $raml.= $path . ':' . "\n";
 
+        return $raml;
+    }
+
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @return string
+     */
+    protected function buildResource(Resource $resource)
+    {
+        $path = Inflection::transformRoutePlaceholder($resource->getPath() ?: '/');
+        $raml = $path . ':' . "\n";
+
+        $description = $resource->getDescription();
         if (!empty($description)) {
             $raml.= '  description: ' . Inline::dump($description) . "\n";
         }
@@ -102,7 +139,7 @@ class Raml extends GeneratorAbstract
 
             foreach ($properties as $name => $parameter) {
                 $raml.= '    ' . $name . ':' . "\n";
-                $raml.= $this->getParameter($parameter, 6, in_array($name, $pathParameters->getRequired() ?: []));
+                $raml.= $this->buildParameter($parameter, 6, in_array($name, $pathParameters->getRequired() ?: []));
             }
         }
 
@@ -127,7 +164,7 @@ class Raml extends GeneratorAbstract
 
                 foreach ($properties as $name => $parameter) {
                     $raml.= '      ' . $name . ':' . "\n";
-                    $raml.= $this->getParameter($parameter, 8, in_array($name, $queryParameters->getRequired() ?: []));
+                    $raml.= $this->buildParameter($parameter, 8, in_array($name, $queryParameters->getRequired() ?: []));
                 }
             }
 
@@ -167,7 +204,7 @@ class Raml extends GeneratorAbstract
      * @param string $indent
      * @param boolean $required
      */
-    protected function getParameter(PropertyInterface $parameter, $indent, $required)
+    protected function buildParameter(PropertyInterface $parameter, $indent, $required)
     {
         $raml   = '';
         $indent = str_repeat(' ', $indent);
