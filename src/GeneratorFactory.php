@@ -100,7 +100,7 @@ class GeneratorFactory
             case self::TYPE_OPENAPI:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
-                
+
                 return new Generator\OpenAPI($this->reader, 1, $baseUri, $namespace);
                 break;
 
@@ -125,10 +125,10 @@ class GeneratorFactory
 
             default:
             case self::TYPE_SWAGGER:
-                $basePath  = '/' . $this->dispatch;
+                $baseUri   = $this->url . '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
-                
-                return new Generator\Swagger($this->reader, 1, $basePath, $namespace);
+
+                return new Generator\Swagger($this->reader, 1, $baseUri, $namespace);
                 break;
         }
     }
