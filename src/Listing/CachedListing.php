@@ -112,14 +112,14 @@ class CachedListing implements ListingInterface
     /**
      * @inheritdoc
      */
-    public function getResourceCollection($version = null)
+    public function getResourceCollection($version = null, FilterInterface $filter = null)
     {
-        $item = $this->cache->getItem($this->getResourceCollectionKey($version));
+        $item = $this->cache->getItem($this->getResourceCollectionKey($version, $filter));
 
         if ($item->isHit()) {
             return $item->get();
         } else {
-            $collection = $this->listing->getResourceCollection($version);
+            $collection = $this->listing->getResourceCollection($version, $filter);
 
             $item->set($collection);
             $item->expiresAfter($this->expire);
@@ -204,8 +204,8 @@ class CachedListing implements ListingInterface
      * @param integer|null $version
      * @return string
      */
-    protected function getResourceCollectionKey($version = null)
+    protected function getResourceCollectionKey($version = null, FilterInterface $filter = null)
     {
-        return 'api-resource-collection-' . intval($version);
+        return 'api-resource-collection-' . intval($version) . ($filter !== null ? '-' . $filter->getId() : '');
     }
 }

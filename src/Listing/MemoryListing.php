@@ -69,13 +69,20 @@ class MemoryListing implements ListingInterface
 
     /**
      * @param integer|null $version
+     * @param \PSX\Api\Listing\FilterInterface|null $filter
      * @return \PSX\Api\ResourceCollection
      */
-    public function getResourceCollection($version = null)
+    public function getResourceCollection($version = null, FilterInterface $filter = null)
     {
         $collection = new ResourceCollection();
 
         foreach ($this->resources as $resource) {
+            if ($filter !== null) {
+                if (!$filter->match($resource->getPath())) {
+                    continue;
+                }
+            }
+
             $collection->set($resource);
         }
 

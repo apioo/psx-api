@@ -20,6 +20,8 @@
 
 namespace PSX\Api;
 
+use PSX\Api\Listing\FilterInterface;
+
 /**
  * A listing knows all API endpoints in a system and can be used to get resource
  * definitions for specific endpoints or to get an index of all available
@@ -52,8 +54,9 @@ interface ListingInterface
     /**
      * Returns all available resources
      *
-     * @param integer $version
+     * @param integer|null $version
+     * @param \PSX\Api\Listing\FilterInterface|null $filter
      * @return \PSX\Api\ResourceCollection
      */
-    public function getResourceCollection($version = null);
+    public function getResourceCollection($version = null, FilterInterface $filter = null);
 }
