@@ -1,4 +1,8 @@
 
+### 2.4.1
+
+* Swagger generator set correct host, base path and schemes
+
 ### 2.4.0 (2017-11-11)
 
 * ListingInterface add getResourceCollection method
