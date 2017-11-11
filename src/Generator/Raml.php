@@ -81,8 +81,8 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
      */
     public function generate(Resource $resource)
     {
-        $raml = $this->buildDeclaration();
-        $raml.= $this->buildResource($resource);
+        $raml = $this->getDeclaration();
+        $raml.= $this->getResource($resource);
 
         return $raml;
     }
@@ -93,10 +93,10 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
      */
     public function generateAll(ResourceCollection $collection)
     {
-        $raml = $this->buildDeclaration();
+        $raml = $this->getDeclaration();
 
         foreach ($collection as $path => $resource) {
-            $raml.= $this->buildResource($resource);
+            $raml.= $this->getResource($resource);
         }
 
         return $raml;
@@ -105,7 +105,7 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
     /**
      * @return string
      */
-    protected function buildDeclaration()
+    protected function getDeclaration()
     {
         $raml = '#%RAML 1.0' . "\n";
         $raml.= '---' . "\n";
@@ -120,7 +120,7 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
      * @param \PSX\Api\Resource $resource
      * @return string
      */
-    protected function buildResource(Resource $resource)
+    protected function getResource(Resource $resource)
     {
         $path = Inflection::transformRoutePlaceholder($resource->getPath() ?: '/');
         $raml = $path . ':' . "\n";
@@ -139,7 +139,7 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
 
             foreach ($properties as $name => $parameter) {
                 $raml.= '    ' . $name . ':' . "\n";
-                $raml.= $this->buildParameter($parameter, 6, in_array($name, $pathParameters->getRequired() ?: []));
+                $raml.= $this->getParameter($parameter, 6, in_array($name, $pathParameters->getRequired() ?: []));
             }
         }
 
@@ -164,7 +164,7 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
 
                 foreach ($properties as $name => $parameter) {
                     $raml.= '      ' . $name . ':' . "\n";
-                    $raml.= $this->buildParameter($parameter, 8, in_array($name, $queryParameters->getRequired() ?: []));
+                    $raml.= $this->getParameter($parameter, 8, in_array($name, $queryParameters->getRequired() ?: []));
                 }
             }
 
@@ -204,7 +204,7 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
      * @param string $indent
      * @param boolean $required
      */
-    protected function buildParameter(PropertyInterface $parameter, $indent, $required)
+    protected function getParameter(PropertyInterface $parameter, $indent, $required)
     {
         $raml   = '';
         $indent = str_repeat(' ', $indent);
