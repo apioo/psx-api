@@ -1,6 +1,7 @@
 
 ### 2.4.0 (2017-11-11)
 
+* ListingInterface add getResourceCollection method
 * OpenAPI, Swagger and RAML implement generator collection interface
 * Add generator collection interface
 
