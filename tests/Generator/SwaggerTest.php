@@ -37,7 +37,7 @@ class SwaggerTest extends GeneratorTestCase
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
 
-        $generator = new Swagger($reader, 1, '/', 'http://foo.phpsx.org');
+        $generator = new Swagger($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
 
         $actual = $generator->generate($this->getResource());
         $expect = file_get_contents(__DIR__ . '/resource/swagger.json');
@@ -50,7 +50,7 @@ class SwaggerTest extends GeneratorTestCase
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
 
-        $generator = new Swagger($reader, 1, '/', 'http://foo.phpsx.org');
+        $generator = new Swagger($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
 
         $actual = $generator->generateAll($this->getResourceCollection());
         $expect = file_get_contents(__DIR__ . '/resource/swagger_collection.json');

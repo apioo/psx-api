@@ -129,14 +129,19 @@ class Swagger extends GeneratorAbstract
         $info->setVersion($this->apiVersion);
 
         $parts  = parse_url($this->baseUri);
-        $scheme = $parts['scheme'];
-        $host   = $parts['host'] . (isset($parts['port']) ? ':' . $parts['port'] : '');
-        $path   = $parts['path'] ?: '/';
+        $scheme = $parts['scheme'] ?? null;
+        $host   = $parts['host'] ?? null;
+        $port   = $parts['port'] ?? null;
+        $path   = $parts['path'] ?? null;
 
         $swagger = new Declaration();
         $swagger->setInfo($info);
-        $swagger->setHost($host);
-        $swagger->setBasePath($path);
+
+        if (!empty($host)) {
+            $swagger->setHost($host . (!empty($port) ? ':' . $port : ''));
+        }
+
+        $swagger->setBasePath($path ?: '/');
         $swagger->setSchemes(!empty($scheme) ? [$scheme] : ['http', 'https']);
         $swagger->setPaths($paths);
         $swagger->setDefinitions($schemas);

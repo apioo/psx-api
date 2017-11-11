@@ -4,7 +4,11 @@
     "title": "PSX",
     "version": "1"
   },
+  "host": "api.phpsx.org",
   "basePath": "\/",
+  "schemes": [
+    "http"
+  ],
   "paths": {
     "\/foo": {
       "get": {

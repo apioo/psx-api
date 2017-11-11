@@ -4,7 +4,11 @@
     "title": "PSX",
     "version": "1"
   },
+  "host": "api.phpsx.org",
   "basePath": "\/",
+  "schemes": [
+    "http"
+  ],
   "paths": {
     "\/foo\/{name}\/{type}": {
       "get": {
@@ -169,18 +173,6 @@
     }
   },
   "definitions": {
-    "Collection": {
-      "type": "object",
-      "title": "collection",
-      "properties": {
-        "entry": {
-          "type": "array",
-          "items": {
-            "$ref": "#\/definitions\/Item"
-          }
-        }
-      }
-    },
     "Item": {
       "type": "object",
       "title": "item",
@@ -205,6 +197,18 @@
       "required": [
         "id"
       ]
+    },
+    "Collection": {
+      "type": "object",
+      "title": "collection",
+      "properties": {
+        "entry": {
+          "type": "array",
+          "items": {
+            "$ref": "#\/definitions\/Item"
+          }
+        }
+      }
     },
     "Message": {
       "type": "object",
