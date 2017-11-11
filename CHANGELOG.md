@@ -1,4 +1,9 @@
 
+### 2.4.0 (2017-11-11)
+
+* OpenAPI, Swagger and RAML implement generator collection interface
+* Add generator collection interface
+
 ### 2.3.1 (2017-10-04)
 
 * Markdown generator use html renderer for schemas
