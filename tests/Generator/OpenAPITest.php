@@ -44,4 +44,17 @@ class OpenAPITest extends GeneratorTestCase
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
+
+    public function testGenerateAll()
+    {
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+
+        $generator = new OpenAPI($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
+
+        $actual = $generator->generateAll($this->getResourceCollection());
+        $expect = file_get_contents(__DIR__ . '/resource/openapi_collection.json');
+
+        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
+    }
 }

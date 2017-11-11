@@ -22,7 +22,9 @@ namespace PSX\Api\Generator;
 
 use Doctrine\Common\Annotations\Reader;
 use PSX\Api\GeneratorAbstract;
+use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
 use PSX\Model\OpenAPI\Components;
@@ -51,7 +53,7 @@ use PSX\Schema\SchemaInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class OpenAPI extends GeneratorAbstract
+class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
 {
     use GeneratorTrait;
 
@@ -95,6 +97,43 @@ class OpenAPI extends GeneratorAbstract
      */
     public function generate(Resource $resource)
     {
+        $paths   = new Paths();
+        $schemas = new \stdClass();
+
+        $this->buildDefinitions($resource, $schemas);
+        $this->buildPaths($resource, $paths);
+
+        $schemas = $this->resolveRefs($schemas);
+
+        return $this->buildDeclaration($paths, $schemas);
+    }
+
+    /**
+     * @param \PSX\Api\ResourceCollection $collection
+     * @return string
+     */
+    public function generateAll(ResourceCollection $collection)
+    {
+        $paths   = new Paths();
+        $schemas = new \stdClass();
+
+        foreach ($collection as $path => $resource) {
+            $this->buildDefinitions($resource, $schemas);
+            $this->buildPaths($resource, $paths, $this->buildOperationPrefix($resource->getPath()));
+        }
+
+        $schemas = $this->resolveRefs($schemas);
+
+        return $this->buildDeclaration($paths, $schemas);
+    }
+
+    /**
+     * @param \PSX\Model\OpenAPI\Paths $paths
+     * @param \stdClass $schemas
+     * @return string
+     */
+    protected function buildDeclaration(Paths $paths, \stdClass $schemas)
+    {
         $info = new Info();
         $info->setTitle('PSX');
         $info->setVersion($this->apiVersion);
@@ -103,12 +142,12 @@ class OpenAPI extends GeneratorAbstract
         $server->setUrl($this->baseUri);
 
         $components = new Components();
-        $components->setSchemas($this->getDefinitions($resource));
+        $components->setSchemas($schemas);
 
         $openAPI = new Declaration();
         $openAPI->setInfo($info);
         $openAPI->setServers([$server]);
-        $openAPI->setPaths($this->getPaths($resource));
+        $openAPI->setPaths($paths);
         $openAPI->setComponents($components);
 
         $data = $this->dumper->dump($openAPI);
@@ -119,12 +158,12 @@ class OpenAPI extends GeneratorAbstract
 
     /**
      * @param \PSX\Api\Resource $resource
-     * @return \PSX\Model\OpenAPI\Paths
+     * @param \PSX\Model\OpenAPI\Paths $paths
+     * @param string $operationPrefix
      */
-    protected function getPaths(Resource $resource)
+    protected function buildPaths(Resource $resource, Paths $paths, $operationPrefix = null)
     {
-        $paths = new Paths();
-        $path  = new PathItem();
+        $path = new PathItem();
 
         // path parameter
         $pathParameters = $resource->getPathParameters();
@@ -158,7 +197,11 @@ class OpenAPI extends GeneratorAbstract
 
             // create new operation
             $operation = new Operation();
-            $operation->setOperationId($operationId);
+            if (empty($operationPrefix)) {
+                $operation->setOperationId($operationId);
+            } else {
+                $operation->setOperationId($operationPrefix . ucfirst($operationId));
+            }
 
             if (!empty($description)) {
                 $operation->setDescription($description);
@@ -233,15 +276,13 @@ class OpenAPI extends GeneratorAbstract
         }
 
         $paths[Inflection::transformRoutePlaceholder($resource->getPath())] = $path;
-
-        return $paths;
     }
 
     /**
      * @param \PSX\Api\Resource $resource
-     * @return \stdClass
+     * @param \stdClass $definitions
      */
-    protected function getDefinitions(Resource $resource)
+    protected function buildDefinitions(Resource $resource, \stdClass $definitions)
     {
         $generator  = new Generator\JsonSchema($this->targetNamespace);
         $properties = [];
@@ -263,7 +304,6 @@ class OpenAPI extends GeneratorAbstract
             }
         }
 
-        $definitions = new \stdClass();
         foreach ($properties as $name => $property) {
             $schema = $generator->toArray($property);
 
@@ -285,13 +325,6 @@ class OpenAPI extends GeneratorAbstract
 
             $definitions->{$name} = $schema;
         }
-
-        // @TODO find a better way to replace the internal paths probably
-        // provide the definition path to the json schema generator
-        $json = json_encode($definitions);
-        $json = str_replace('#\/definitions\/', '#\/components\/schemas\/', $json);
-
-        return json_decode($json);
     }
 
     /**
@@ -306,5 +339,35 @@ class OpenAPI extends GeneratorAbstract
         $param->setSchema($parameter->toArray());
 
         return $param;
+    }
+
+    /**
+     * @param \stdClass $schemas
+     * @return \stdClass
+     */
+    private function resolveRefs(\stdClass $schemas)
+    {
+        // @TODO find a better way to replace the internal paths probably
+        // provide the definition path to the json schema generator
+        $json = json_encode($schemas);
+        $json = str_replace('#\/definitions\/', '#\/components\/schemas\/', $json);
+
+        return json_decode($json);
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    private function buildOperationPrefix($path)
+    {
+        $parts  = explode('/', trim($path, '/'));
+        $prefix = '';
+        foreach ($parts as $part) {
+            $part = preg_replace('/[^A-Za-z0-9]+/', '', $part);
+            $prefix.= ucfirst($part);
+        }
+
+        return lcfirst($prefix);
     }
 }

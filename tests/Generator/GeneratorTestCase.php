@@ -22,6 +22,7 @@ namespace PSX\Api\Tests\Generator;
 
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 use PSX\Schema\Property;
 use PSX\Schema\SchemaManager;
 
@@ -88,6 +89,57 @@ abstract class GeneratorTestCase extends \PHPUnit_Framework_TestCase
         return $resource;
     }
 
+    protected function getResourceCollection()
+    {
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Api\\Annotation');
+
+        $schemaManager = new SchemaManager($reader);
+
+        $collection = new ResourceCollection();
+
+        $resource = new Resource(Resource::STATUS_ACTIVE, '/foo');
+        $resource->setTitle('foo');
+
+        $resource->addMethod(Resource\Factory::getMethod('GET')
+            ->setDescription('Returns a collection')
+            ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class)));
+
+        $resource->addMethod(Resource\Factory::getMethod('POST')
+            ->setRequest($schemaManager->getSchema(Schema\Create::class))
+            ->addResponse(201, $schemaManager->getSchema(Schema\SuccessMessage::class)));
+
+        $collection->set($resource);
+
+        $resource = new Resource(Resource::STATUS_ACTIVE, '/bar/:foo');
+        $resource->setTitle('bar');
+
+        $resource->addMethod(Resource\Factory::getMethod('GET')
+            ->setDescription('Returns a collection')
+            ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class)));
+
+        $resource->addMethod(Resource\Factory::getMethod('POST')
+            ->setRequest($schemaManager->getSchema(Schema\Create::class))
+            ->addResponse(201, $schemaManager->getSchema(Schema\SuccessMessage::class)));
+
+        $collection->set($resource);
+
+        $resource = new Resource(Resource::STATUS_ACTIVE, '/bar/$year<[0-9]+>');
+        $resource->setTitle('bar');
+
+        $resource->addMethod(Resource\Factory::getMethod('GET')
+            ->setDescription('Returns a collection')
+            ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class)));
+
+        $resource->addMethod(Resource\Factory::getMethod('POST')
+            ->setRequest($schemaManager->getSchema(Schema\Create::class))
+            ->addResponse(201, $schemaManager->getSchema(Schema\SuccessMessage::class)));
+
+        $collection->set($resource);
+
+        return $collection;
+    }
+    
     protected function getPaths()
     {
         return array();
