@@ -1,5 +1,9 @@
 
-### 2.4.1
+### 2.4.2
+
+* Add resource collection filter object
+
+### 2.4.1 (2017-11-11)
 
 * Swagger generator set correct host, base path and schemes
 
