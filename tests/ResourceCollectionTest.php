@@ -18,40 +18,31 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
+namespace PSX\Api\Tests;
+
+use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 
 /**
- * ResourceCollection
+ * ResourceCollectionTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ResourceCollection extends \ArrayObject
+class ResourceCollectionTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @param \PSX\Api\Resource $resource
-     */
-    public function set(Resource $resource)
+    public function testCollection()
     {
-        $this->offsetSet($resource->getPath(), $resource);
-    }
+        $collection = new ResourceCollection();
+        $resource   = new Resource(Resource::STATUS_ACTIVE, '/foo');
 
-    /**
-     * @param string $path
-     * @return boolean
-     */
-    public function has($path)
-    {
-        return $this->offsetExists($path);
-    }
+        $this->assertNull($collection->get('/foo'));
+        $this->assertFalse($collection->has('/foo'));
+        
+        $collection->set($resource);
 
-    /**
-     * @param string $path
-     * @return \PSX\Api\Resource
-     */
-    public function get($path)
-    {
-        return $this->offsetExists($path) ? $this->offsetGet($path) : null;
+        $this->assertInstanceOf(Resource::class, $collection->get('/foo'));
+        $this->assertTrue($collection->has('/foo'));
     }
 }

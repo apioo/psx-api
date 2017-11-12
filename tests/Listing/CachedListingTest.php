@@ -56,4 +56,22 @@ class CachedListingTest extends ListingTestCase
 
         return new CachedListing($listing, $cache);
     }
+
+    public function testInvalidateResourceIndex()
+    {
+        $listing = $this->newListing();
+        $listing->invalidateResourceIndex();
+    }
+
+    public function testInvalidateResource()
+    {
+        $listing = $this->newListing();
+        $listing->invalidateResource('/foo');
+    }
+
+    public function testInvalidateResourceCollection()
+    {
+        $listing = $this->newListing();
+        $listing->invalidateResourceCollection();
+    }
 }
