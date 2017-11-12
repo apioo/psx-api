@@ -64,14 +64,14 @@ class CachedListing implements ListingInterface
     /**
      * @inheritdoc
      */
-    public function getResourceIndex()
+    public function getResourceIndex(FilterInterface $filter = null)
     {
-        $item = $this->cache->getItem($this->getResourceIndexKey());
+        $item = $this->cache->getItem($this->getResourceIndexKey($filter));
 
         if ($item->isHit()) {
             return $item->get();
         } else {
-            $result = $this->listing->getResourceIndex();
+            $result = $this->listing->getResourceIndex($filter);
 
             $item->set($result);
             $item->expiresAfter($this->expire);
@@ -133,9 +133,9 @@ class CachedListing implements ListingInterface
     /**
      * Invalidates the cached resource index
      */
-    public function invalidateResourceIndex()
+    public function invalidateResourceIndex(FilterInterface $filter = null)
     {
-        $this->cache->deleteItem($this->getResourceIndexKey());
+        $this->cache->deleteItem($this->getResourceIndexKey($filter));
     }
 
     /**
@@ -154,9 +154,9 @@ class CachedListing implements ListingInterface
      * 
      * @param integer|null $version
      */
-    public function invalidateResourceCollection($version = null)
+    public function invalidateResourceCollection($version = null, FilterInterface $filter = null)
     {
-        $this->cache->deleteItem($this->getResourceCollectionKey($version));
+        $this->cache->deleteItem($this->getResourceCollectionKey($version, $filter));
     }
 
     /**
@@ -185,9 +185,9 @@ class CachedListing implements ListingInterface
     /**
      * @return string
      */
-    protected function getResourceIndexKey()
+    protected function getResourceIndexKey(FilterInterface $filter = null)
     {
-        return 'api-resource-index';
+        return 'api-resource-index' . ($filter !== null ? '-' . $filter->getId() : '');
     }
 
     /**

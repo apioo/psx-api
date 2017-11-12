@@ -44,17 +44,21 @@ class MemoryListing implements ListingInterface
     }
 
     /**
-     * @return \PSX\Api\Resource[]
+     * @inheritdoc
      */
-    public function getResourceIndex()
+    public function getResourceIndex(FilterInterface $filter = null)
     {
-        return $this->resources;
+        if ($filter !== null) {
+            return array_values(array_filter($this->resources, function(\PSX\Api\Resource $resource) use ($filter){
+                return $filter->match($resource->getPath());
+            }));
+        } else {
+            return $this->resources;
+        }
     }
 
     /**
-     * @param string $sourcePath
-     * @param integer|null $version
-     * @return \PSX\Api\Resource
+     * @inheritdoc
      */
     public function getResource($sourcePath, $version = null)
     {
@@ -68,22 +72,15 @@ class MemoryListing implements ListingInterface
     }
 
     /**
-     * @param integer|null $version
-     * @param \PSX\Api\Listing\FilterInterface|null $filter
-     * @return \PSX\Api\ResourceCollection
+     * @inheritdoc
      */
     public function getResourceCollection($version = null, FilterInterface $filter = null)
     {
+        $resources  = $this->getResourceIndex($filter);
         $collection = new ResourceCollection();
 
-        foreach ($this->resources as $resource) {
-            if ($filter !== null) {
-                if (!$filter->match($resource->getPath())) {
-                    continue;
-                }
-            }
-
-            $collection->set($resource);
+        foreach ($resources as $resource) {
+            $collection->set($this->getResource($resource->getPath(), $version));
         }
 
         return $collection;

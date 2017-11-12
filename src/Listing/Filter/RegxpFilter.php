@@ -18,37 +18,36 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests\Listing;
+namespace PSX\Api\Listing\Filter;
 
-use PSX\Api\ApiManager;
-use PSX\Api\Listing\MemoryListing;
-use PSX\Api\Tests\Parser\Annotation\FooController;
-use PSX\Api\Tests\Parser\Annotation\TestController;
-use PSX\Schema\SchemaManager;
+use PSX\Api\Listing\FilterInterface;
 
 /**
- * MemoryListingTest
+ * RegxpFilter
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class MemoryListingTest extends ListingTestCase
+class RegxpFilter implements FilterInterface
 {
-    protected function newListing()
+    /**
+     * @var string
+     */
+    protected $pattern;
+
+    public function __construct($pattern)
     {
-        $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+        $this->pattern = $pattern;
+    }
 
-        $apiReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $apiReader->addNamespace('PSX\\Api\\Annotation');
+    public function match($path)
+    {
+        return !!preg_match('~' . $this->pattern . '~', $path);
+    }
 
-        $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
-
-        $listing = new MemoryListing();
-        $listing->addResource($apiManager->getApi(TestController::class, '/foo'));
-        $listing->addResource($apiManager->getApi(FooController::class, '/bar'));
-
-        return $listing;
+    public function getId()
+    {
+        return substr(md5($this->pattern), 0, 8);
     }
 }

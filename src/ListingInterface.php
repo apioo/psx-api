@@ -37,9 +37,10 @@ interface ListingInterface
      * Returns all available resources. Note the index does not contain any
      * documentation it contains only the path and the available request methods
      *
+     * @param \PSX\Api\Listing\FilterInterface|null $filter
      * @return \PSX\Api\Resource[]
      */
-    public function getResourceIndex();
+    public function getResourceIndex(FilterInterface $filter = null);
 
     /**
      * Returns a specific resource with complete documentation or null if the

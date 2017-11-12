@@ -18,37 +18,33 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests\Listing;
-
-use PSX\Api\ApiManager;
-use PSX\Api\Listing\MemoryListing;
-use PSX\Api\Tests\Parser\Annotation\FooController;
-use PSX\Api\Tests\Parser\Annotation\TestController;
-use PSX\Schema\SchemaManager;
+namespace PSX\Api\Tests\Parser\Annotation;
 
 /**
- * MemoryListingTest
+ * FooController
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
+ * @Title("Foo")
+ * @Description("Foo endpoint")
  */
-class MemoryListingTest extends ListingTestCase
+class FooController
 {
-    protected function newListing()
+    public function __construct()
     {
-        $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+    }
 
-        $apiReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $apiReader->addNamespace('PSX\\Api\\Annotation');
+    public function getDocumentation($version = null)
+    {
+        return null;
+    }
 
-        $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
-
-        $listing = new MemoryListing();
-        $listing->addResource($apiManager->getApi(TestController::class, '/foo'));
-        $listing->addResource($apiManager->getApi(FooController::class, '/bar'));
-
-        return $listing;
+    /**
+     * @Incoming(schema="../schema/schema.json")
+     * @Outgoing(code=200, schema="../schema/schema.json")
+     */
+    protected function doGet()
+    {
     }
 }

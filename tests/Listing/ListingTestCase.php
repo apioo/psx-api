@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Listing;
 
+use PSX\Api\Listing\Filter\RegxpFilter;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
 
@@ -37,13 +38,37 @@ abstract class ListingTestCase extends \PHPUnit_Framework_TestCase
         $listing   = $this->newListing();
         $resources = $listing->getResourceIndex();
 
-        $this->assertEquals(1, count($resources));
+        $this->assertInternalType('array', $resources);
+        $this->assertEquals(2, count($resources));
         $this->assertInstanceOf(Resource::class, $resources[0]);
+        $this->assertEquals('/foo', $resources[0]->getPath());
+        $this->assertEquals('/bar', $resources[1]->getPath());
 
         $resources = $listing->getResourceIndex();
 
+        $this->assertInternalType('array', $resources);
+        $this->assertEquals(2, count($resources));
+        $this->assertInstanceOf(Resource::class, $resources[0]);
+        $this->assertEquals('/foo', $resources[0]->getPath());
+        $this->assertEquals('/bar', $resources[1]->getPath());
+    }
+
+    public function testGetResourceIndexFilter()
+    {
+        $listing   = $this->newListing();
+        $resources = $listing->getResourceIndex(new RegxpFilter('^/foo'));
+
+        $this->assertInternalType('array', $resources);
         $this->assertEquals(1, count($resources));
         $this->assertInstanceOf(Resource::class, $resources[0]);
+        $this->assertEquals('/foo', $resources[0]->getPath());
+
+        $resources = $listing->getResourceIndex(new RegxpFilter('^/bar'));
+
+        $this->assertInternalType('array', $resources);
+        $this->assertEquals(1, count($resources));
+        $this->assertInstanceOf(Resource::class, $resources[0]);
+        $this->assertEquals('/bar', $resources[0]->getPath());
     }
 
     public function testGetResource()
@@ -52,10 +77,17 @@ abstract class ListingTestCase extends \PHPUnit_Framework_TestCase
         $resource = $listing->getResource('/foo');
 
         $this->assertInstanceOf(Resource::class, $resource);
+        $this->assertEquals('/foo', $resource->getPath());
 
         $resource = $listing->getResource('/foo');
 
         $this->assertInstanceOf(Resource::class, $resource);
+        $this->assertEquals('/foo', $resource->getPath());
+
+        $resource = $listing->getResource('/bar');
+
+        $this->assertInstanceOf(Resource::class, $resource);
+        $this->assertEquals('/bar', $resource->getPath());
     }
 
     public function testGetResourceCollection()
@@ -64,9 +96,32 @@ abstract class ListingTestCase extends \PHPUnit_Framework_TestCase
         $collection = $listing->getResourceCollection();
 
         $this->assertInstanceOf(ResourceCollection::class, $collection);
+        $this->assertEquals(2, $collection->count());
+        $this->assertInstanceOf(Resource::class, $collection->get('/foo'));
+        $this->assertInstanceOf(Resource::class, $collection->get('/bar'));
 
+        $collection = $listing->getResourceCollection();
+
+        $this->assertInstanceOf(ResourceCollection::class, $collection);
+        $this->assertEquals(2, $collection->count());
+        $this->assertInstanceOf(Resource::class, $collection->get('/foo'));
+        $this->assertInstanceOf(Resource::class, $collection->get('/bar'));
+    }
+
+    public function testGetResourceCollectionFilter()
+    {
+        $listing    = $this->newListing();
+        $collection = $listing->getResourceCollection(null, new RegxpFilter('^/foo'));
+
+        $this->assertInstanceOf(ResourceCollection::class, $collection);
         $this->assertEquals(1, $collection->count());
         $this->assertInstanceOf(Resource::class, $collection->get('/foo'));
+
+        $collection = $listing->getResourceCollection(null, new RegxpFilter('^/bar'));
+
+        $this->assertInstanceOf(ResourceCollection::class, $collection);
+        $this->assertEquals(1, $collection->count());
+        $this->assertInstanceOf(Resource::class, $collection->get('/bar'));
     }
 
     /**

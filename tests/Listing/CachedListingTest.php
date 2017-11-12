@@ -24,6 +24,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use PSX\Api\ApiManager;
 use PSX\Api\Listing\CachedListing;
 use PSX\Api\Listing\MemoryListing;
+use PSX\Api\Tests\Parser\Annotation\FooController;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 use PSX\Cache\Pool;
 use PSX\Schema\SchemaManager;
@@ -49,6 +50,7 @@ class CachedListingTest extends ListingTestCase
 
         $listing = new MemoryListing();
         $listing->addResource($apiManager->getApi(TestController::class, '/foo'));
+        $listing->addResource($apiManager->getApi(FooController::class, '/bar'));
 
         $cache = new Pool(new ArrayCache());
 
