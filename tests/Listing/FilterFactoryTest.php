@@ -60,4 +60,13 @@ class FilterFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(FilterInterface::class, $factory->getFilter('baz'));
         $this->assertEquals('a1841e70', $factory->getFilter('baz')->getId());
     }
+
+    public function testFactoryEmpty()
+    {
+        $factory = new FilterFactory();
+
+        $this->assertNull($factory->getFilter(null));
+        $this->assertNull($factory->getFilter(''));
+        $this->assertNull($factory->getFilter('foo'));
+    }
 }
