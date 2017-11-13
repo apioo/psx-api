@@ -139,7 +139,26 @@ abstract class GeneratorTestCase extends \PHPUnit_Framework_TestCase
 
         return $collection;
     }
-    
+
+    protected function getSecurityResource()
+    {
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Api\\Annotation');
+
+        $schemaManager = new SchemaManager($reader);
+
+        $resource = new Resource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
+        $resource->setTitle('foo');
+        $resource->setDescription('lorem ipsum');
+
+        $resource->addMethod(Resource\Factory::getMethod('GET')
+            ->setDescription('Returns a collection')
+            ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class))
+            ->setScopes(['foo']));
+
+        return $resource;
+    }
+
     protected function getPaths()
     {
         return array();

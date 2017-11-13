@@ -1,0 +1,93 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PSX",
+    "version": "1"
+  },
+  "servers": [
+    {
+      "url": "http:\/\/api.phpsx.org"
+    }
+  ],
+  "paths": {
+    "\/foo\/{name}\/{type}": {
+      "get": {
+        "description": "Returns a collection",
+        "operationId": "getCollection",
+        "responses": {
+          "200": {
+            "description": "GET 200 response",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/Collection"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "foo"
+            ]
+          }
+        ]
+      },
+      "parameters": []
+    }
+  },
+  "components": {
+    "schemas": {
+      "Item": {
+        "type": "object",
+        "title": "item",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "pattern": "[A-z]+",
+            "minLength": 3,
+            "maxLength": 16
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Collection": {
+        "type": "object",
+        "title": "collection",
+        "properties": {
+          "entry": {
+            "type": "array",
+            "items": {
+              "$ref": "#\/components\/schemas\/Item"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "OAuth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "http:\/\/api.phpsx.org\/authorization",
+            "tokenUrl": "http:\/\/api.phpsx.org\/token",
+            "scopes": {
+              "foo": "Foo sope",
+              "bar": "Bar scope"
+            }
+          }
+        }
+      }
+    }
+  }
+}

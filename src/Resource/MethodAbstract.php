@@ -59,6 +59,11 @@ abstract class MethodAbstract
      */
     protected $responses;
 
+    /**
+     * @var array
+     */
+    protected $scopes;
+
     public function __construct()
     {
         $this->queryParameters = Property::getObject()->setTitle('query');
@@ -147,6 +152,18 @@ abstract class MethodAbstract
     public function hasResponse($statusCode)
     {
         return isset($this->responses[$statusCode]);
+    }
+
+    public function setScopes(array $scopes)
+    {
+        $this->scopes = $scopes;
+
+        return $this;
+    }
+
+    public function getScopes()
+    {
+        return $this->scopes;
     }
 
     /**
