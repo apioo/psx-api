@@ -2,7 +2,7 @@
 ---
 baseUri: 'http://foo.com/'
 version: v1
-title: psx
+title: PSX
 /foo:
   description: 'Test description'
   uriParameters:

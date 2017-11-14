@@ -33,7 +33,7 @@ class RamlTest extends GeneratorTestCase
 {
     public function testGenerate()
     {
-        $generator = new Raml('foobar', 1, 'http://api.phpsx.org', 'urn:schema.phpsx.org#');
+        $generator = new Raml(1, 'http://api.phpsx.org', 'urn:schema.phpsx.org#');
         
         $actual = $generator->generate($this->getResource());
         $expect = file_get_contents(__DIR__ . '/resource/raml.yaml');
@@ -44,7 +44,7 @@ class RamlTest extends GeneratorTestCase
 
     public function testGenerateAll()
     {
-        $generator = new Raml('foobar', 1, 'http://api.phpsx.org', 'urn:schema.phpsx.org#');
+        $generator = new Raml(1, 'http://api.phpsx.org', 'urn:schema.phpsx.org#');
 
         $actual = $generator->generateAll($this->getResourceCollection());
         $expect = file_get_contents(__DIR__ . '/resource/raml_collection.yaml');

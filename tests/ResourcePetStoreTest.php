@@ -90,7 +90,7 @@ class ResourceConversionTest extends ApiManagerTestCase
     public function testRaml()
     {
         $resources = $this->getResources();
-        $generator = new Generator\Raml('PSX', 1, 'http://api.phpsx.org', 'urn:schema.phpsx.org#');
+        $generator = new Generator\Raml(1, 'http://api.phpsx.org', 'urn:schema.phpsx.org#');
 
         $actual = $generator->generate($resources['/pets']);
         $actual = json_encode(Yaml::parse($actual));
