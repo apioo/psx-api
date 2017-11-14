@@ -154,7 +154,7 @@ abstract class GeneratorTestCase extends \PHPUnit_Framework_TestCase
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')
             ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class))
-            ->setScopes(['foo']));
+            ->setSecurity('OAuth2', ['foo']));
 
         return $resource;
     }

@@ -60,7 +60,10 @@ use PSX\Schema\SchemaInterface;
  */
 class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
 {
-    const SECURITY_SCHEME = 'OAuth2';
+    const FLOW_AUTHORIZATION_CODE = 0;
+    const FLOW_IMPLICIT = 1;
+    const FLOW_PASSWORD = 2;
+    const FLOW_CLIENT_CREDENTIALS = 3;
 
     use GeneratorTrait;
 
@@ -92,12 +95,7 @@ class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
     /**
      * @var array
      */
-    protected $authorizationCode;
-
-    /**
-     * @var array
-     */
-    protected $password;
+    protected $authFlows;
 
     /**
      * @param \Doctrine\Common\Annotations\Reader $reader
@@ -111,6 +109,7 @@ class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
         $this->apiVersion      = $apiVersion;
         $this->baseUri         = $baseUri;
         $this->targetNamespace = $targetNamespace;
+        $this->authFlows       = [];
     }
 
     /**
@@ -122,24 +121,20 @@ class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
     }
 
     /**
+     * @param string $name
+     * @param integer $flow
      * @param string $authorizationUrl
      * @param string $tokenUrl
      * @param string|null $refreshUrl
      * @param array|null $scopes
      */
-    public function setAuthorizationCode($authorizationUrl, $tokenUrl, $refreshUrl = null, array $scopes = null)
+    public function setAuthorizationFlow($name, $flow, $authorizationUrl, $tokenUrl, $refreshUrl = null, array $scopes = null)
     {
-        $this->authorizationCode = [$authorizationUrl, $tokenUrl, $refreshUrl, $scopes];
-    }
+        if (!isset($this->authFlows[$name])) {
+            $this->authFlows[$name] = [];
+        }
 
-    /**
-     * @param string $tokenUrl
-     * @param string|null $refreshUrl
-     * @param array|null $scopes
-     */
-    public function setPassword($tokenUrl, $refreshUrl = null, array $scopes = null)
-    {
-        $this->password = [$tokenUrl, $refreshUrl, $scopes];
+        $this->authFlows[$name][] = [$flow, $authorizationUrl, $tokenUrl, $refreshUrl, $scopes];
     }
 
     /**
@@ -214,27 +209,46 @@ class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
      */
     protected function buildSecuritySchemes(Components $components)
     {
-        $flows   = new OauthFlows();
-        $hasFlow = false;
+        $schemes = [];
+        foreach ($this->authFlows as $authName => $authFlows) {
+            $flows = new OauthFlows();
+            foreach ($authFlows as $authFlow) {
+                list($flowType, $authorizationUrl, $tokenUrl, $refreshUrl, $scopes) = $authFlow;
 
-        $authorizationCodeFlow = $this->getAuthorizationCodeFlow();
-        if ($authorizationCodeFlow instanceof OauthFlow) {
-            $flows->setAuthorizationCode($authorizationCodeFlow);
-            $hasFlow = true;
-        }
+                $flow = new OauthFlow();
+                $flow->setAuthorizationUrl($authorizationUrl);
+                $flow->setTokenUrl($tokenUrl);
 
-        $passwordFlow = $this->getPasswordFlow();
-        if ($passwordFlow instanceof OauthFlow) {
-            $flows->setPassword($passwordFlow);
-            $hasFlow = true;
-        }
+                if (!empty($refreshUrl)) {
+                    $flow->setRefreshUrl($refreshUrl);
+                }
 
-        if ($hasFlow) {
+                if (!empty($scopes)) {
+                    $newScopes = new Scopes();
+                    $newScopes->exchangeArray($scopes);
+                    $flow->setScopes($newScopes);
+                }
+
+                if ($flowType == self::FLOW_AUTHORIZATION_CODE) {
+                    $flows->setAuthorizationCode($flow);
+                } elseif ($flowType == self::FLOW_IMPLICIT) {
+                    $flows->setImplicit($flow);
+                } elseif ($flowType == self::FLOW_PASSWORD) {
+                    $flows->setPassword($flow);
+                } elseif ($flowType == self::FLOW_CLIENT_CREDENTIALS) {
+                    $flows->setClientCredentials($flow);
+                }
+            }
+
             $scheme = new SecurityScheme();
             $scheme->setType('oauth2');
             $scheme->setFlows($flows);
 
-            $components->setSecuritySchemes([self::SECURITY_SCHEME => $scheme]);
+            $schemes[$authName] = $scheme;
+        }
+
+        if (!empty($schemes)) {
+            $components->setSecuritySchemes($schemes);
         }
     }
 
@@ -344,11 +358,9 @@ class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
 
             $operation->setResponses($resps);
 
-            $scopes = $method->getScopes();
-            if (!empty($scopes)) {
-                $security = new SecurityRequirement();
-                $security[self::SECURITY_SCHEME] = $scopes; 
-                $operation->setSecurity([$security]);
+            $security = $method->getSecurity();
+            if (!empty($security)) {
+                $operation->setSecurity([new SecurityRequirement($security)]);
             }
 
             if ($resource->getStatus() == Resource::STATUS_DEPRECATED) {
@@ -432,61 +444,6 @@ class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
         $param->setSchema($parameter->toArray());
 
         return $param;
-    }
-
-    /**
-     * @return \PSX\Model\OpenAPI\OauthFlow|null
-     */
-    protected function getAuthorizationCodeFlow()
-    {
-        if (!empty($this->authorizationCode)) {
-            list($authorizationUrl, $tokenUrl, $refreshUrl, $scopes) = $this->authorizationCode;
-
-            $flow = new OauthFlow();
-            $flow->setAuthorizationUrl($authorizationUrl);
-            $flow->setTokenUrl($tokenUrl);
-
-            if (!empty($refreshUrl)) {
-                $flow->setRefreshUrl($refreshUrl);
-            }
-
-            if (!empty($scopes)) {
-                $newScopes = new Scopes();
-                $newScopes->exchangeArray($scopes);
-                $flow->setScopes($newScopes);
-            }
-
-            return $flow;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * @return \PSX\Model\OpenAPI\OauthFlow|null
-     */
-    protected function getPasswordFlow()
-    {
-        if (!empty($this->password)) {
-            list($tokenUrl, $refreshUrl, $scopes) = $this->password;
-
-            $flow = new OauthFlow();
-            $flow->setTokenUrl($tokenUrl);
-
-            if (!empty($refreshUrl)) {
-                $flow->setRefreshUrl($refreshUrl);
-            }
-
-            if (!empty($scopes)) {
-                $newScopes = new Scopes();
-                $newScopes->exchangeArray($scopes);
-                $flow->setScopes($newScopes);
-            }
-
-            return $flow;
-        } else {
-            return null;
-        }
     }
 
     /**

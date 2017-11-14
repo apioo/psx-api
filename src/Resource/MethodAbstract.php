@@ -62,7 +62,7 @@ abstract class MethodAbstract
     /**
      * @var array
      */
-    protected $scopes;
+    protected $security;
 
     public function __construct()
     {
@@ -154,16 +154,16 @@ abstract class MethodAbstract
         return isset($this->responses[$statusCode]);
     }
 
-    public function setScopes(array $scopes)
+    public function setSecurity($name, array $scopes)
     {
-        $this->scopes = $scopes;
+        $this->security[$name] = $scopes;
 
         return $this;
     }
 
-    public function getScopes()
+    public function getSecurity()
     {
-        return $this->scopes;
+        return $this->security;
     }
 
     /**
