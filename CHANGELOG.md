@@ -1,5 +1,10 @@
 
-### 2.4.2
+### 2.4.3
+
+* Added generator factory interface
+* OpenAPI generator handle authentication
+
+### 2.4.2 (2017-11-12)
 
 * Add resource collection filter object
 
