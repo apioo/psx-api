@@ -22,6 +22,7 @@ namespace PSX\Api\Generator;
 
 use Doctrine\Common\Annotations\Reader;
 use PSX\Api\GeneratorAbstract;
+use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
 use PSX\Api\Util\Inflection;
@@ -47,7 +48,7 @@ use PSX\Schema\SchemaInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Swagger extends GeneratorAbstract
+class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
 {
     use GeneratorTrait;
 
