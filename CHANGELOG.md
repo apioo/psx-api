@@ -1,5 +1,10 @@
 
-### 2.4.3
+### 2.4.4 (2017-11-14)
+
+* Generator make title configurable
+* Swagger implement generator collection interface 
+
+### 2.4.3 (2017-11-14)
 
 * Added generator factory interface
 * OpenAPI generator handle authentication
