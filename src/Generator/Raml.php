@@ -42,14 +42,9 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
     use Generator\GeneratorTrait;
 
     /**
-     * @var string
-     */
-    protected $title;
-
-    /**
      * @var integer
      */
-    protected $version;
+    protected $apiVersion;
 
     /**
      * @var string
@@ -62,17 +57,28 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
     protected $targetNamespace;
 
     /**
-     * @param string $title
-     * @param integer $version
+     * @var string
+     */
+    protected $title;
+
+    /**
+     * @param integer $apiVersion
      * @param string $baseUri
      * @param string $targetNamespace
      */
-    public function __construct($title, $version, $baseUri, $targetNamespace)
+    public function __construct($apiVersion, $baseUri, $targetNamespace)
     {
-        $this->title           = $title;
-        $this->version         = $version;
+        $this->apiVersion      = $apiVersion;
         $this->baseUri         = $baseUri;
         $this->targetNamespace = $targetNamespace;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 
     /**
@@ -110,8 +116,8 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
         $raml = '#%RAML 1.0' . "\n";
         $raml.= '---' . "\n";
         $raml.= 'baseUri: ' . Inline::dump($this->baseUri) . "\n";
-        $raml.= 'version: v' . $this->version . "\n";
-        $raml.= 'title: ' . Inline::dump($this->title) . "\n";
+        $raml.= 'version: v' . $this->apiVersion . "\n";
+        $raml.= 'title: ' . Inline::dump($this->title ?: 'PSX') . "\n";
 
         return $raml;
     }

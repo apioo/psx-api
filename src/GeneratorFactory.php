@@ -97,7 +97,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
             case GeneratorFactoryInterface::TYPE_RAML:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
-                $generator = new Generator\Raml('psx', 1, $baseUri, $namespace);
+                $generator = new Generator\Raml(1, $baseUri, $namespace);
                 break;
 
             case GeneratorFactoryInterface::TYPE_SERIALIZE:

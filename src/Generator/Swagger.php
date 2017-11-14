@@ -73,6 +73,11 @@ class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
     protected $targetNamespace;
 
     /**
+     * @var string
+     */
+    protected $title;
+
+    /**
      * @param \Doctrine\Common\Annotations\Reader $reader
      * @param integer $apiVersion
      * @param string $baseUri
@@ -84,6 +89,14 @@ class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
         $this->apiVersion      = $apiVersion;
         $this->baseUri         = $baseUri;
         $this->targetNamespace = $targetNamespace;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 
     /**
@@ -126,7 +139,7 @@ class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
     protected function buildDeclaration(Paths $paths, \stdClass $schemas)
     {
         $info = new Info();
-        $info->setTitle('PSX');
+        $info->setTitle($this->title ?: 'PSX');
         $info->setVersion($this->apiVersion);
 
         $parts  = parse_url($this->baseUri);
