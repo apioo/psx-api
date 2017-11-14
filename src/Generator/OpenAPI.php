@@ -224,9 +224,7 @@ class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
                 }
 
                 if (!empty($scopes)) {
-                    $newScopes = new Scopes();
-                    $newScopes->exchangeArray($scopes);
-                    $flow->setScopes($newScopes);
+                    $flow->setScopes(new Scopes($scopes));
                 }
 
                 if ($flowType == self::FLOW_AUTHORIZATION_CODE) {
