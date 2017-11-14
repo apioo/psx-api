@@ -20,9 +20,9 @@
 
 namespace PSX\Api\Console;
 
-use Doctrine\Common\Annotations\Reader;
 use PSX\Api\ApiManager;
 use PSX\Api\GeneratorFactory;
+use PSX\Api\GeneratorFactoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,34 +44,16 @@ class ParseCommand extends Command
     protected $apiManager;
 
     /**
-     * @var \Doctrine\Common\Annotations\Reader
+     * @var \PSX\Api\GeneratorFactoryInterface
      */
-    protected $reader;
+    protected $factory;
 
-    /**
-     * @var string
-     */
-    protected $namespace;
-
-    /**
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * @var string
-     */
-    protected $dispatch;
-
-    public function __construct(ApiManager $apiManager, Reader $reader, $namespace, $url, $dispatch)
+    public function __construct(ApiManager $apiManager, GeneratorFactoryInterface $factory)
     {
         parent::__construct();
 
         $this->apiManager = $apiManager;
-        $this->reader     = $reader;
-        $this->namespace  = $namespace;
-        $this->url        = $url;
-        $this->dispatch   = $dispatch;
+        $this->factory    = $factory;
     }
 
     protected function configure()
@@ -87,10 +69,8 @@ class ParseCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $resource = $this->apiManager->getApi($input->getArgument('source'), $input->getArgument('path'));
-
-        $factory   = new GeneratorFactory($this->reader, $this->namespace, $this->url, $this->dispatch);
-        $generator = $factory->getGenerator($input->getOption('format'), $input->getOption('config'));
+        $resource  = $this->apiManager->getApi($input->getArgument('source'), $input->getArgument('path'));
+        $generator = $this->factory->getGenerator($input->getOption('format'), $input->getOption('config'));
         $response  = $generator->generate($resource);
 
         $output->write($response);

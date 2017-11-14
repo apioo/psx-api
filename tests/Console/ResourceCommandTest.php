@@ -22,6 +22,7 @@ namespace PSX\Api\Tests\Console;
 
 use PSX\Api\ApiManager;
 use PSX\Api\Console\ResourceCommand;
+use PSX\Api\GeneratorFactory;
 use PSX\Api\Listing\MemoryListing;
 use PSX\Api\Resource;
 use PSX\Api\Tests\Parser\Annotation\TestController;
@@ -193,12 +194,8 @@ class ResourceCommandTest extends \PHPUnit_Framework_TestCase
         $listing = new MemoryListing();
         $listing->addResource($apiManager->getApi(TestController::class, '/foo'));
 
-        return new ResourceCommand(
-            $listing,
-            $schemaReader,
-            'urn:phpsx.org:2016#',
-            'http://foo.com',
-            ''
-        );
+        $factory = new GeneratorFactory($schemaReader, 'urn:phpsx.org:2016#', 'http://foo.com', '');
+
+        return new ResourceCommand($listing, $factory);
     }
 }

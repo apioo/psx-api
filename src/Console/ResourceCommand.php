@@ -20,8 +20,8 @@
 
 namespace PSX\Api\Console;
 
-use Doctrine\Common\Annotations\Reader;
 use PSX\Api\GeneratorFactory;
+use PSX\Api\GeneratorFactoryInterface;
 use PSX\Api\ListingInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -44,34 +44,16 @@ class ResourceCommand extends Command
     protected $listing;
 
     /**
-     * @var \Doctrine\Common\Annotations\Reader
+     * @var \PSX\Api\GeneratorFactoryInterface
      */
-    protected $reader;
+    protected $factory;
 
-    /**
-     * @var string
-     */
-    protected $namespace;
-
-    /**
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * @var string
-     */
-    protected $dispatch;
-
-    public function __construct(ListingInterface $listing, Reader $reader, $namespace, $url, $dispatch)
+    public function __construct(ListingInterface $listing, GeneratorFactoryInterface $factory)
     {
         parent::__construct();
 
-        $this->listing   = $listing;
-        $this->reader    = $reader;
-        $this->namespace = $namespace;
-        $this->url       = $url;
-        $this->dispatch  = $dispatch;
+        $this->listing = $listing;
+        $this->factory = $factory;
     }
 
     protected function configure()
@@ -87,10 +69,8 @@ class ResourceCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $resource = $this->listing->getResource($input->getArgument('path'), $input->getOption('version'));
-
-        $factory   = new GeneratorFactory($this->reader, $this->namespace, $this->url, $this->dispatch);
-        $generator = $factory->getGenerator($input->getOption('format'), $input->getOption('config'));
+        $resource  = $this->listing->getResource($input->getArgument('path'), $input->getOption('version'));
+        $generator = $this->factory->getGenerator($input->getOption('format'), $input->getOption('config'));
         $response  = $generator->generate($resource);
 
         $output->write($response);

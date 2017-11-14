@@ -20,8 +20,8 @@
 
 namespace PSX\Api\Console;
 
-use Doctrine\Common\Annotations\Reader;
 use PSX\Api\GeneratorFactory;
+use PSX\Api\GeneratorFactoryInterface;
 use PSX\Api\ListingInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -45,34 +45,16 @@ class GenerateCommand extends Command
     protected $listing;
 
     /**
-     * @var \Doctrine\Common\Annotations\Reader
+     * @var \PSX\Api\GeneratorFactoryInterface
      */
-    protected $reader;
+    protected $factory;
 
-    /**
-     * @var string
-     */
-    protected $namespace;
-
-    /**
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * @var string
-     */
-    protected $dispatch;
-
-    public function __construct(ListingInterface $listing, Reader $reader, $namespace, $url, $dispatch)
+    public function __construct(ListingInterface $listing, GeneratorFactoryInterface $factory)
     {
         parent::__construct();
 
-        $this->listing   = $listing;
-        $this->reader    = $reader;
-        $this->namespace = $namespace;
-        $this->url       = $url;
-        $this->dispatch  = $dispatch;
+        $this->listing = $listing;
+        $this->factory = $factory;
     }
 
     protected function configure()
@@ -98,9 +80,8 @@ class GenerateCommand extends Command
 
         $filter = $input->getArgument('filter');
 
-        $factory   = new GeneratorFactory($this->reader, $this->namespace, $this->url, $this->dispatch);
-        $generator = $factory->getGenerator($input->getOption('format'), $input->getOption('config'));
-        $extension = $factory->getFileExtension($input->getOption('format'), $input->getOption('config'));
+        $generator = $this->factory->getGenerator($input->getOption('format'), $input->getOption('config'));
+        $extension = $this->factory->getFileExtension($input->getOption('format'), $input->getOption('config'));
 
         $progress->start();
 

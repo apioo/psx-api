@@ -29,18 +29,8 @@ use Doctrine\Common\Annotations\Reader;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class GeneratorFactory
+class GeneratorFactory implements GeneratorFactoryInterface
 {
-    const TYPE_HTML = 'html';
-    const TYPE_JSONSCHEMA = 'jsonschema';
-    const TYPE_MARKDOWN = 'markdown';
-    const TYPE_OPENAPI = 'openapi';
-    const TYPE_PHP = 'php';
-    const TYPE_RAML = 'raml';
-    const TYPE_SERIALIZE = 'serialize';
-    const TYPE_TEMPLATE = 'template';
-    const TYPE_SWAGGER = 'swagger';
-
     /**
      * @var \Doctrine\Common\Annotations\Reader
      */
@@ -76,32 +66,28 @@ class GeneratorFactory
     }
 
     /**
-     * @param string $format
-     * @param string $config
-     * @return \PSX\Api\GeneratorInterface
+     * @inheritdoc
      */
-    public function getGenerator($format, $config)
+    public function getGenerator($format, $config = null)
     {
         switch ($format) {
             case self::TYPE_HTML:
-                return new Generator\Html();
+                $generator = new Generator\Html();
                 break;
 
             case self::TYPE_JSONSCHEMA:
                 $namespace = $config ?: $this->namespace;
-                
-                return new Generator\JsonSchema($namespace);
+                $generator = new Generator\JsonSchema($namespace);
                 break;
 
             case self::TYPE_MARKDOWN:
-                return new Generator\Markdown();
+                $generator = new Generator\Markdown();
                 break;
 
             case self::TYPE_OPENAPI:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
-
-                return new Generator\OpenAPI($this->reader, 1, $baseUri, $namespace);
+                $generator = new Generator\OpenAPI($this->reader, 1, $baseUri, $namespace);
                 break;
 
             case self::TYPE_PHP:
@@ -111,34 +97,34 @@ class GeneratorFactory
             case self::TYPE_RAML:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
-
-                return new Generator\Raml('psx', 1, $baseUri, $namespace);
+                $generator = new Generator\Raml('psx', 1, $baseUri, $namespace);
                 break;
 
             case self::TYPE_SERIALIZE:
-                return new Generator\Serialize();
+                $generator = new Generator\Serialize();
                 break;
 
             case self::TYPE_TEMPLATE:
-                return new Generator\Template($config);
+                $generator = new Generator\Template($config);
                 break;
 
             default:
             case self::TYPE_SWAGGER:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
-
-                return new Generator\Swagger($this->reader, 1, $baseUri, $namespace);
+                $generator = new Generator\Swagger($this->reader, 1, $baseUri, $namespace);
                 break;
         }
+
+        $this->configure($generator);
+
+        return $generator;
     }
 
     /**
-     * @param string $format
-     * @param string $config
-     * @return string
+     * @inheritdoc
      */
-    public function getFileExtension($format, $config)
+    public function getFileExtension($format, $config = null)
     {
         switch ($format) {
             case self::TYPE_HTML:
@@ -168,6 +154,49 @@ class GeneratorFactory
             default:
                 return 'txt';
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMime($format, $config = null)
+    {
+        switch ($format) {
+            case self::TYPE_HTML:
+                return 'text/html';
+
+            case self::TYPE_MARKDOWN:
+                return 'text/markdown';
+
+            case self::TYPE_PHP:
+                return 'application/php';
+
+            case self::TYPE_RAML:
+                return 'application/raml+yaml';
+
+            case self::TYPE_SERIALIZE:
+                return 'application/octet-stream';
+
+            case self::TYPE_TEMPLATE:
+                return 'text/plain';
+
+            case self::TYPE_JSONSCHEMA:
+            case self::TYPE_OPENAPI:
+            case self::TYPE_SWAGGER:
+                return 'application/json';
+
+            default:
+                return 'text/plain';
+        }
+    }
+
+    /**
+     * Callback method to optional configure the created generator
+     * 
+     * @param \PSX\Api\GeneratorInterface $generator
+     */
+    protected function configure(GeneratorInterface $generator)
+    {
     }
 
     /**

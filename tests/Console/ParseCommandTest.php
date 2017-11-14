@@ -22,6 +22,7 @@ namespace PSX\Api\Tests\Console;
 
 use PSX\Api\ApiManager;
 use PSX\Api\Console\ParseCommand;
+use PSX\Api\GeneratorFactory;
 use PSX\Api\Resource;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 use PSX\Schema\SchemaManager;
@@ -196,13 +197,8 @@ class ParseCommandTest extends \PHPUnit_Framework_TestCase
         $apiReader->addNamespace('PSX\\Api\\Annotation');
 
         $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
+        $factory    = new GeneratorFactory($schemaReader, 'urn:phpsx.org:2016#', 'http://foo.com', '');
 
-        return new ParseCommand(
-            $apiManager,
-            $schemaReader,
-            'urn:phpsx.org:2016#',
-            'http://foo.com',
-            ''
-        );
+        return new ParseCommand($apiManager, $factory);
     }
 }
