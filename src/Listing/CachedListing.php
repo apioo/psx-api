@@ -23,6 +23,7 @@ namespace PSX\Api\Listing;
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\ListingInterface;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 use PSX\Schema\Schema;
 
 /**
@@ -121,13 +122,19 @@ class CachedListing implements ListingInterface
         } else {
             $collection = $this->listing->getResourceCollection($version, $filter);
 
-            $item->set($collection);
-            $item->expiresAfter($this->expire);
+            if ($collection instanceof ResourceCollection) {
+                $this->materializeCollection($collection);
 
-            $this->cache->save($item);
+                $item->set($collection);
+                $item->expiresAfter($this->expire);
 
-            return $collection;
+                $this->cache->save($item);
+
+                return $collection;
+            }
         }
+
+        return new ResourceCollection();
     }
 
     /**
@@ -157,6 +164,20 @@ class CachedListing implements ListingInterface
     public function invalidateResourceCollection($version = null, FilterInterface $filter = null)
     {
         $this->cache->deleteItem($this->getResourceCollectionKey($version, $filter));
+    }
+
+    /**
+     * A collection can contain resources which are only resolved if we actual 
+     * call the getDefinition method i.e. the schema is stored in a database.
+     * This resolves the resources inside a collection
+     *
+     * @param \PSX\Api\ResourceCollection $collection
+     */
+    protected function materializeCollection(ResourceCollection $collection)
+    {
+        foreach ($collection as $resource) {
+            $this->materializeResource($resource);
+        }
     }
 
     /**
