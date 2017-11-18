@@ -1,4 +1,8 @@
 
+### 2.4.5 (2017-11-18)
+
+* Fix cached listing materialize resource collection
+
 ### 2.4.4 (2017-11-14)
 
 * Generator make title configurable
