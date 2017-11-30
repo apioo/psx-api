@@ -1,4 +1,8 @@
 
+### 2.4.6 (2017-11-30)
+
+* Fix count
+
 ### 2.4.5 (2017-11-18)
 
 * Fix cached listing materialize resource collection
