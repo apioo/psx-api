@@ -108,7 +108,7 @@ abstract class MethodAbstract
 
     public function hasQueryParameters()
     {
-        return count($this->queryParameters->getProperties()) > 0;
+        return count($this->queryParameters->getProperties() ?: []) > 0;
     }
 
     public function setRequest(SchemaInterface $schema)

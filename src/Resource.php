@@ -182,7 +182,7 @@ class Resource implements IteratorAggregate
 
     public function hasPathParameters()
     {
-        return count($this->pathParameters->getProperties()) > 0;
+        return count($this->pathParameters->getProperties() ?: []) > 0;
     }
 
     public function addMethod(MethodAbstract $method)
