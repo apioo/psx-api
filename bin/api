@@ -46,12 +46,13 @@ if (!empty($autoloadFile)) {
     $apiManager    = new \PSX\Api\ApiManager($reader, $schemaManager);
 
     $listing = new \PSX\Api\Listing\MemoryListing();
+    $factory = new \PSX\Api\GeneratorFactory($reader, 'urn:schema.phpsx.org#', 'http://localhost', '');
 
-    $application = new Symfony\Component\Console\Application();
-    $application->add(new \PSX\Schema\Console\SchemaCommand($schemaManager));
-    $application->add(new \PSX\Api\Console\GenerateCommand($listing, $reader, 'urn:schema.phpsx.org#', 'http://localhost', ''));
-    $application->add(new \PSX\Api\Console\ParseCommand($apiManager, $reader, 'urn:schema.phpsx.org#', 'http://localhost', ''));
-    $application->add(new \PSX\Api\Console\ResourceCommand($listing, $reader, 'urn:schema.phpsx.org#', 'http://localhost', ''));
+    $application = new Symfony\Component\Console\Application('PSX API');
+    $application->add(new \PSX\Schema\Console\ParseCommand($schemaManager));
+    $application->add(new \PSX\Api\Console\GenerateCommand($listing, $factory));
+    $application->add(new \PSX\Api\Console\ParseCommand($apiManager, $factory));
+    $application->add(new \PSX\Api\Console\ResourceCommand($listing, $factory));
     $application->run();
 } else {
     die('You need to set up the project dependencies through composer');
