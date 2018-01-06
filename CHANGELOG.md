@@ -1,4 +1,8 @@
 
+### 2.4.7 (2018-01-06)
+
+* Fix api bin and add test case
+
 ### 2.4.6 (2017-11-30)
 
 * Fix count
