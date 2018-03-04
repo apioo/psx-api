@@ -3,6 +3,7 @@
 namespace PSX\Generation;
 
 use PSX\Framework\Controller\SchemaApiAbstract;
+use PSX\Http\Environment\HttpContextInterface;
 /**
  * @Title("foo")
  * @Description("lorem ipsum")
@@ -20,35 +21,35 @@ class Endpoint extends SchemaApiAbstract
      * @QueryParam(name="datetime", type="string", format="date-time")
      * @Outgoing(code=200, schema="PSX\Generation\Collection")
      */
-    public function doGet($record)
+    public function doGet(HttpContextInterface $context)
     {
     }
     /**
      * @Incoming(schema="PSX\Generation\Item")
      * @Outgoing(code=201, schema="PSX\Generation\Message")
      */
-    public function doPost($record)
+    public function doPost($record, HttpContextInterface $context)
     {
     }
     /**
      * @Incoming(schema="PSX\Generation\Item")
      * @Outgoing(code=200, schema="PSX\Generation\Message")
      */
-    public function doPut($record)
+    public function doPut($record, HttpContextInterface $context)
     {
     }
     /**
      * @Incoming(schema="PSX\Generation\Item")
      * @Outgoing(code=200, schema="PSX\Generation\Message")
      */
-    public function doDelete($record)
+    public function doDelete($record, HttpContextInterface $context)
     {
     }
     /**
      * @Incoming(schema="PSX\Generation\Item")
      * @Outgoing(code=200, schema="PSX\Generation\Message")
      */
-    public function doPatch($record)
+    public function doPatch($record, HttpContextInterface $context)
     {
     }
 }

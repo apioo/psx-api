@@ -77,7 +77,8 @@ class Php extends GeneratorAbstract
      */
     public function generate(Resource $resource)
     {
-        $root      = $this->factory->namespace($this->namespace);
+        $root = $this->factory->namespace($this->namespace);
+
         $className = 'Endpoint';
         $methods   = $resource->getMethods();
 
@@ -86,14 +87,23 @@ class Php extends GeneratorAbstract
         $class->setDocComment($this->getDocCommentForResource($resource));
 
         foreach ($methods as $methodName => $method) {
-            $class->addStmt($this->factory->method('do' . ucfirst(strtolower($methodName)))
+            
+            $phpMethod = $this->factory->method('do' . ucfirst(strtolower($methodName)))
                 ->makePublic()
-                ->setDocComment($this->getDocCommentForMethod($method))
-                ->addParam($this->factory->param('record'))
-            );
+                ->setDocComment($this->getDocCommentForMethod($method));
+
+            if ($methodName != 'GET') {
+                $phpMethod->addParam($this->factory->param('record'));
+            }
+
+            $phpMethod->addParam($this->factory->param('context')
+                ->setTypeHint('HttpContextInterface'));
+
+            $class->addStmt($phpMethod);
         }
 
         $root->addStmt($this->factory->use('PSX\Framework\Controller\SchemaApiAbstract'));
+        $root->addStmt($this->factory->use('PSX\Http\Environment\HttpContextInterface'));
         $root->addStmt($class->getNode());
 
         $nodes = [];
