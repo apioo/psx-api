@@ -3,6 +3,7 @@
 namespace PSX\Generation;
 
 use PSX\Framework\Controller\SchemaApiAbstract;
+use PSX\Http\Environment\HttpContextInterface;
 /**
  * @Title("Test")
  * @Description("Test description")
@@ -24,7 +25,7 @@ class Endpoint extends SchemaApiAbstract
      * @Incoming(schema="PSX\Generation\Song")
      * @Outgoing(code=200, schema="PSX\Generation\Song")
      */
-    public function doGet($record)
+    public function doGet(HttpContextInterface $context)
     {
     }
 }
