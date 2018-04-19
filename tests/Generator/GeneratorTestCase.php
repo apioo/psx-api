@@ -150,6 +150,8 @@ abstract class GeneratorTestCase extends \PHPUnit_Framework_TestCase
         $resource = new Resource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
         $resource->setTitle('foo');
         $resource->setDescription('lorem ipsum');
+        $resource->addPathParameter('name', Property::getString());
+        $resource->addPathParameter('type', Property::getString());
 
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')

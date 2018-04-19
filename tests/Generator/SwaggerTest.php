@@ -57,4 +57,18 @@ class SwaggerTest extends GeneratorTestCase
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
+
+    public function testGenerateSecurity()
+    {
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+
+        $generator = new Swagger($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
+        $generator->setAuthorizationFlow('OAuth2', Swagger::FLOW_AUTHORIZATION_CODE, 'http://api.phpsx.org/authorization', 'http://api.phpsx.org/token', ['foo' => 'Foo sope', 'bar' => 'Bar scope']);
+
+        $actual = $generator->generate($this->getSecurityResource());
+        $expect = file_get_contents(__DIR__ . '/resource/swagger_security.json');
+
+        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
+    }
 }
