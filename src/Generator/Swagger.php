@@ -35,6 +35,7 @@ use PSX\Model\Swagger\Paths;
 use PSX\Model\Swagger\Response;
 use PSX\Model\Swagger\Responses;
 use PSX\Model\Swagger\Scopes;
+use PSX\Model\Swagger\Security;
 use PSX\Model\Swagger\SecurityDefinitions;
 use PSX\Model\Swagger\SecurityScheme;
 use PSX\Model\Swagger\Swagger as Declaration;
@@ -293,6 +294,12 @@ class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
             }
 
             $operation->setResponses($resps);
+
+            // security
+            $security = $method->getSecurity();
+            if (!empty($security)) {
+                $operation->setSecurity([new Security($security)]);
+            }
 
             if ($method->getName() === 'GET') {
                 $path->setGet($operation);
