@@ -1,14 +1,8 @@
 
-### 2.4.10 (2018-04-19)
+### 2.4.8 (2018-04-19)
 
 * Add swagger 2.0 security support
-
-### 2.4.9 (2018-04-09)
-
 * Add symfony 4.0 support
-
-### 2.4.8 (2018-01-06)
-
 * PHP generator add HttpContextInterface argument to controller
 
 ### 2.4.7 (2018-01-06)
