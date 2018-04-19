@@ -34,6 +34,9 @@ use PSX\Model\Swagger\Path;
 use PSX\Model\Swagger\Paths;
 use PSX\Model\Swagger\Response;
 use PSX\Model\Swagger\Responses;
+use PSX\Model\Swagger\Scopes;
+use PSX\Model\Swagger\SecurityDefinitions;
+use PSX\Model\Swagger\SecurityScheme;
 use PSX\Model\Swagger\Swagger as Declaration;
 use PSX\Schema\Generator;
 use PSX\Schema\Generator\GeneratorTrait;
@@ -50,6 +53,11 @@ use PSX\Schema\SchemaInterface;
  */
 class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
 {
+    const FLOW_AUTHORIZATION_CODE = 0;
+    const FLOW_IMPLICIT = 1;
+    const FLOW_PASSWORD = 2;
+    const FLOW_CLIENT_CREDENTIALS = 3;
+
     use GeneratorTrait;
 
     /**
@@ -78,6 +86,11 @@ class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
     protected $title;
 
     /**
+     * @var array
+     */
+    protected $authFlows;
+
+    /**
      * @param \Doctrine\Common\Annotations\Reader $reader
      * @param integer $apiVersion
      * @param string $baseUri
@@ -89,6 +102,7 @@ class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
         $this->apiVersion      = $apiVersion;
         $this->baseUri         = $baseUri;
         $this->targetNamespace = $targetNamespace;
+        $this->authFlows       = [];
     }
 
     /**
@@ -97,6 +111,22 @@ class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
     public function setTitle($title)
     {
         $this->title = $title;
+    }
+
+    /**
+     * @param string $name
+     * @param integer $flow
+     * @param string $authorizationUrl
+     * @param string $tokenUrl
+     * @param array|null $scopes
+     */
+    public function setAuthorizationFlow($name, $flow, $authorizationUrl, $tokenUrl, array $scopes = null)
+    {
+        if (!isset($this->authFlows[$name])) {
+            $this->authFlows[$name] = [];
+        }
+
+        $this->authFlows[$name][] = [$flow, $authorizationUrl, $tokenUrl, $scopes];
     }
 
     /**
@@ -159,6 +189,8 @@ class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
         $swagger->setSchemes(!empty($scheme) ? [$scheme] : ['http', 'https']);
         $swagger->setPaths($paths);
         $swagger->setDefinitions($schemas);
+
+        $this->buildSecuritySchemes($swagger);
 
         $data = $this->dumper->dump($swagger);
         $data = Parser::encode($data, JSON_PRETTY_PRINT);
@@ -324,6 +356,48 @@ class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
             }
 
             $definitions->{$name} = $schema;
+        }
+    }
+
+    /**
+     * @param \PSX\Model\Swagger\Swagger $swagger
+     */
+    protected function buildSecuritySchemes(\PSX\Model\Swagger\Swagger $swagger)
+    {
+        $flows = new SecurityDefinitions();
+
+        foreach ($this->authFlows as $authName => $authFlows) {
+            foreach ($authFlows as $authFlow) {
+                list($flowType, $authorizationUrl, $tokenUrl, $scopes) = $authFlow;
+
+                $flow = new SecurityScheme();
+                $flow->setType('oauth2');
+
+                if ($flowType == self::FLOW_AUTHORIZATION_CODE) {
+                    $flow->setFlow('accessCode');
+                    $flow->setAuthorizationUrl($authorizationUrl);
+                    $flow->setTokenUrl($tokenUrl);
+                } elseif ($flowType == self::FLOW_IMPLICIT) {
+                    $flow->setFlow('implicit');
+                    $flow->setAuthorizationUrl($authorizationUrl);
+                } elseif ($flowType == self::FLOW_PASSWORD) {
+                    $flow->setFlow('password');
+                    $flow->setTokenUrl($tokenUrl);
+                } elseif ($flowType == self::FLOW_CLIENT_CREDENTIALS) {
+                    $flow->setFlow('application');
+                    $flow->setTokenUrl($tokenUrl);
+                }
+
+                if (!empty($scopes)) {
+                    $flow->setScopes(new Scopes($scopes));
+                }
+            }
+
+            $flows[$authName] = $flow;
+        }
+
+        if (count($flows) > 0) {
+            $swagger->setSecurityDefinitions($flows);
         }
     }
 
