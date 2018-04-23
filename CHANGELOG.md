@@ -1,4 +1,8 @@
 
+### 2.4.9 (2018-04-23)
+
+* Add OpenAPI and Swagger meta data 
+
 ### 2.4.8 (2018-04-19)
 
 * Add swagger 2.0 security support
