@@ -20,15 +20,14 @@
 
 namespace PSX\Api\Generator;
 
-use Doctrine\Common\Annotations\Reader;
-use PSX\Api\GeneratorAbstract;
-use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
 use PSX\Model\OpenAPI\Components;
+use PSX\Model\OpenAPI\Contact;
 use PSX\Model\OpenAPI\Info;
+use PSX\Model\OpenAPI\License;
 use PSX\Model\OpenAPI\MediaType;
 use PSX\Model\OpenAPI\MediaTypes;
 use PSX\Model\OpenAPI\OauthFlow;
@@ -47,7 +46,6 @@ use PSX\Model\OpenAPI\SecurityScheme;
 use PSX\Model\OpenAPI\Server;
 use PSX\Schema\Generator;
 use PSX\Schema\Generator\GeneratorTrait;
-use PSX\Schema\Parser\Popo\Dumper;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\SchemaInterface;
 
@@ -58,84 +56,9 @@ use PSX\Schema\SchemaInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
+class OpenAPI extends OpenAPIAbstract
 {
-    const FLOW_AUTHORIZATION_CODE = 0;
-    const FLOW_IMPLICIT = 1;
-    const FLOW_PASSWORD = 2;
-    const FLOW_CLIENT_CREDENTIALS = 3;
-
     use GeneratorTrait;
-
-    /**
-     * @var \PSX\Schema\Parser\Popo\Dumper
-     */
-    protected $dumper;
-
-    /**
-     * @var string
-     */
-    protected $apiVersion;
-
-    /**
-     * @var string
-     */
-    protected $baseUri;
-
-    /**
-     * @var string
-     */
-    protected $targetNamespace;
-
-    /**
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @var array
-     */
-    protected $authFlows;
-
-    /**
-     * @param \Doctrine\Common\Annotations\Reader $reader
-     * @param integer $apiVersion
-     * @param string $baseUri
-     * @param string $targetNamespace
-     */
-    public function __construct(Reader $reader, $apiVersion, $baseUri, $targetNamespace)
-    {
-        $this->dumper          = new Dumper($reader);
-        $this->apiVersion      = $apiVersion;
-        $this->baseUri         = $baseUri;
-        $this->targetNamespace = $targetNamespace;
-        $this->authFlows       = [];
-    }
-
-    /**
-     * @param string $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * @param string $name
-     * @param integer $flow
-     * @param string $authorizationUrl
-     * @param string $tokenUrl
-     * @param string|null $refreshUrl
-     * @param array|null $scopes
-     */
-    public function setAuthorizationFlow($name, $flow, $authorizationUrl, $tokenUrl, $refreshUrl = null, array $scopes = null)
-    {
-        if (!isset($this->authFlows[$name])) {
-            $this->authFlows[$name] = [];
-        }
-
-        $this->authFlows[$name][] = [$flow, $authorizationUrl, $tokenUrl, $refreshUrl, $scopes];
-    }
 
     /**
      * @param \PSX\Api\Resource $resource
@@ -182,6 +105,26 @@ class OpenAPI extends GeneratorAbstract implements GeneratorCollectionInterface
     {
         $info = new Info();
         $info->setTitle($this->title ?: 'PSX');
+        $info->setDescription($this->description);
+        $info->setTermsOfService($this->tos);
+
+        if (!empty($this->contactName)) {
+            $contact = new Contact();
+            $contact->setName($this->contactName);
+            $contact->setUrl($this->contactUrl);
+            $contact->setEmail($this->contactEmail);
+
+            $info->setContact($contact);
+        }
+
+        if (!empty($this->licenseName)) {
+            $license = new License();
+            $license->setName($this->licenseName);
+            $license->setUrl($this->licenseUrl);
+
+            $info->setLicense($license);
+        }
+
         $info->setVersion($this->apiVersion);
 
         $server = new Server();

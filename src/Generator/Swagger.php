@@ -20,14 +20,13 @@
 
 namespace PSX\Api\Generator;
 
-use Doctrine\Common\Annotations\Reader;
-use PSX\Api\GeneratorAbstract;
-use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
+use PSX\Model\Swagger\Contact;
 use PSX\Model\Swagger\Info;
+use PSX\Model\Swagger\License;
 use PSX\Model\Swagger\Operation;
 use PSX\Model\Swagger\Parameter;
 use PSX\Model\Swagger\Path;
@@ -41,7 +40,6 @@ use PSX\Model\Swagger\SecurityScheme;
 use PSX\Model\Swagger\Swagger as Declaration;
 use PSX\Schema\Generator;
 use PSX\Schema\Generator\GeneratorTrait;
-use PSX\Schema\Parser\Popo\Dumper;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\SchemaInterface;
 
@@ -52,83 +50,9 @@ use PSX\Schema\SchemaInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
+class Swagger extends OpenAPIAbstract
 {
-    const FLOW_AUTHORIZATION_CODE = 0;
-    const FLOW_IMPLICIT = 1;
-    const FLOW_PASSWORD = 2;
-    const FLOW_CLIENT_CREDENTIALS = 3;
-
     use GeneratorTrait;
-
-    /**
-     * @var \PSX\Schema\Parser\Popo\Dumper
-     */
-    protected $dumper;
-
-    /**
-     * @var string
-     */
-    protected $apiVersion;
-
-    /**
-     * @var string
-     */
-    protected $baseUri;
-
-    /**
-     * @var string
-     */
-    protected $targetNamespace;
-
-    /**
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @var array
-     */
-    protected $authFlows;
-
-    /**
-     * @param \Doctrine\Common\Annotations\Reader $reader
-     * @param integer $apiVersion
-     * @param string $baseUri
-     * @param string $targetNamespace
-     */
-    public function __construct(Reader $reader, $apiVersion, $baseUri, $targetNamespace)
-    {
-        $this->dumper          = new Dumper($reader);
-        $this->apiVersion      = $apiVersion;
-        $this->baseUri         = $baseUri;
-        $this->targetNamespace = $targetNamespace;
-        $this->authFlows       = [];
-    }
-
-    /**
-     * @param string $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * @param string $name
-     * @param integer $flow
-     * @param string $authorizationUrl
-     * @param string $tokenUrl
-     * @param array|null $scopes
-     */
-    public function setAuthorizationFlow($name, $flow, $authorizationUrl, $tokenUrl, array $scopes = null)
-    {
-        if (!isset($this->authFlows[$name])) {
-            $this->authFlows[$name] = [];
-        }
-
-        $this->authFlows[$name][] = [$flow, $authorizationUrl, $tokenUrl, $scopes];
-    }
 
     /**
      * @param \PSX\Api\Resource $resource
@@ -172,6 +96,23 @@ class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
         $info = new Info();
         $info->setTitle($this->title ?: 'PSX');
         $info->setVersion($this->apiVersion);
+
+        if (!empty($this->contactName)) {
+            $contact = new Contact();
+            $contact->setName($this->contactName);
+            $contact->setUrl($this->contactUrl);
+            $contact->setEmail($this->contactEmail);
+
+            $info->setContact($contact);
+        }
+
+        if (!empty($this->licenseName)) {
+            $license = new License();
+            $license->setName($this->licenseName);
+            $license->setUrl($this->licenseUrl);
+
+            $info->setLicense($license);
+        }
 
         $parts  = parse_url($this->baseUri);
         $scheme = $parts['scheme'] ?? null;
@@ -375,7 +316,7 @@ class Swagger extends GeneratorAbstract implements GeneratorCollectionInterface
 
         foreach ($this->authFlows as $authName => $authFlows) {
             foreach ($authFlows as $authFlow) {
-                list($flowType, $authorizationUrl, $tokenUrl, $scopes) = $authFlow;
+                list($flowType, $authorizationUrl, $tokenUrl, $refreshUrl, $scopes) = $authFlow;
 
                 $flow = new SecurityScheme();
                 $flow->setType('oauth2');

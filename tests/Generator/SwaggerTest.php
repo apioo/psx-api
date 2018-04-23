@@ -64,7 +64,15 @@ class SwaggerTest extends GeneratorTestCase
         $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
 
         $generator = new Swagger($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
-        $generator->setAuthorizationFlow('OAuth2', Swagger::FLOW_AUTHORIZATION_CODE, 'http://api.phpsx.org/authorization', 'http://api.phpsx.org/token', ['foo' => 'Foo sope', 'bar' => 'Bar scope']);
+        $generator->setTitle('Sample Pet Store App');
+        $generator->setDescription('This is a sample server for a pet store.');
+        $generator->setTermsOfService('http://example.com/terms/');
+        $generator->setContactName('API Support');
+        $generator->setContactUrl('http://www.example.com/support');
+        $generator->setContactEmail('support@example.com');
+        $generator->setLicenseName('Apache 2.0');
+        $generator->setLicenseUrl('https://www.apache.org/licenses/LICENSE-2.0.html');
+        $generator->setAuthorizationFlow('OAuth2', Swagger::FLOW_AUTHORIZATION_CODE, 'http://api.phpsx.org/authorization', 'http://api.phpsx.org/token', null, ['foo' => 'Foo sope', 'bar' => 'Bar scope']);
 
         $actual = $generator->generate($this->getSecurityResource());
         $expect = file_get_contents(__DIR__ . '/resource/swagger_security.json');
