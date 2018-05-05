@@ -21,6 +21,9 @@
   "paths": {
     "\/foo\/{name}\/{type}": {
       "get": {
+        "tags": [
+          "foo"
+        ],
         "description": "Returns a collection",
         "operationId": "getCollection",
         "parameters": [],
@@ -103,5 +106,15 @@
       "authorizationUrl": "http:\/\/api.phpsx.org\/authorization",
       "tokenUrl": "http:\/\/api.phpsx.org\/token"
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "foo",
+      "description": "Foo tag"
+    },
+    {
+      "name": "bar",
+      "description": "Boo tag"
+    }
+  ]
 }

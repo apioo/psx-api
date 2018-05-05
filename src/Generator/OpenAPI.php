@@ -44,6 +44,7 @@ use PSX\Model\OpenAPI\Scopes;
 use PSX\Model\OpenAPI\SecurityRequirement;
 use PSX\Model\OpenAPI\SecurityScheme;
 use PSX\Model\OpenAPI\Server;
+use PSX\Model\OpenAPI\Tag;
 use PSX\Schema\Generator;
 use PSX\Schema\Generator\GeneratorTrait;
 use PSX\Schema\PropertyInterface;
@@ -140,6 +141,10 @@ class OpenAPI extends OpenAPIAbstract
         $openAPI->setServers([$server]);
         $openAPI->setPaths($paths);
         $openAPI->setComponents($components);
+
+        if (!empty($this->tags)) {
+            $openAPI->setTags($this->tags);
+        }
 
         $data = $this->dumper->dump($openAPI);
         $data = Parser::encode($data, JSON_PRETTY_PRINT);
@@ -302,6 +307,7 @@ class OpenAPI extends OpenAPIAbstract
             $security = $method->getSecurity();
             if (!empty($security)) {
                 $operation->setSecurity([new SecurityRequirement($security)]);
+                $operation->setTags(array_shift($security));
             }
 
             if ($resource->getStatus() == Resource::STATUS_DEPRECATED) {
@@ -385,6 +391,18 @@ class OpenAPI extends OpenAPIAbstract
         $param->setSchema($parameter->toArray());
 
         return $param;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function newTag($name, $description)
+    {
+        $tag = new Tag();
+        $tag->setName($name);
+        $tag->setDescription($description);
+
+        return $tag;
     }
 
     /**

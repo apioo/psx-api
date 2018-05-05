@@ -73,6 +73,8 @@ class OpenAPITest extends GeneratorTestCase
         $generator->setLicenseName('Apache 2.0');
         $generator->setLicenseUrl('https://www.apache.org/licenses/LICENSE-2.0.html');
         $generator->setAuthorizationFlow('OAuth2', OpenAPI::FLOW_AUTHORIZATION_CODE, 'http://api.phpsx.org/authorization', 'http://api.phpsx.org/token', null, ['foo' => 'Foo sope', 'bar' => 'Bar scope']);
+        $generator->addTag('foo', 'Foo tag');
+        $generator->addTag('bar', 'Boo tag');
 
         $actual = $generator->generate($this->getSecurityResource());
         $expect = file_get_contents(__DIR__ . '/resource/openapi_security.json');

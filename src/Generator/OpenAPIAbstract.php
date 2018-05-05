@@ -105,6 +105,11 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
     protected $authFlows = [];
 
     /**
+     * @var array
+     */
+    protected $tags = [];
+
+    /**
      * @param \Doctrine\Common\Annotations\Reader $reader
      * @param integer $apiVersion
      * @param string $baseUri
@@ -203,6 +208,8 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
     }
 
     /**
+     * Configuration details for a supported OAuth Flow
+     * 
      * @param string $name
      * @param integer $flow
      * @param string $authorizationUrl
@@ -218,4 +225,24 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
 
         $this->authFlows[$name][] = [$flow, $authorizationUrl, $tokenUrl, $refreshUrl, $scopes];
     }
+
+    /**
+     * Adds metadata to a single tag that is used by the Operation Object. It is
+     * not mandatory to have a Tag Object per tag defined in the Operation 
+     * Object instances
+     * 
+     * @param string $name
+     * @param string $description
+     */
+    public function addTag($name, $description)
+    {
+        $this->tags[] = $this->newTag($name, $description);
+    }
+
+    /**
+     * @param string $name
+     * @param string $description
+     * @return object
+     */
+    abstract protected function newTag($name, $description);
 }

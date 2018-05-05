@@ -23,6 +23,9 @@
   "paths": {
     "\/foo\/{name}\/{type}": {
       "get": {
+        "tags": [
+          "foo"
+        ],
         "description": "Returns a collection",
         "operationId": "getCollection",
         "responses": {
@@ -117,5 +120,15 @@
         }
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "foo",
+      "description": "Foo tag"
+    },
+    {
+      "name": "bar",
+      "description": "Boo tag"
+    }
+  ]
 }

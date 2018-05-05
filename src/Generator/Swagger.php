@@ -38,6 +38,7 @@ use PSX\Model\Swagger\Security;
 use PSX\Model\Swagger\SecurityDefinitions;
 use PSX\Model\Swagger\SecurityScheme;
 use PSX\Model\Swagger\Swagger as Declaration;
+use PSX\Model\Swagger\Tag;
 use PSX\Schema\Generator;
 use PSX\Schema\Generator\GeneratorTrait;
 use PSX\Schema\PropertyInterface;
@@ -131,6 +132,10 @@ class Swagger extends OpenAPIAbstract
         $swagger->setSchemes(!empty($scheme) ? [$scheme] : ['http', 'https']);
         $swagger->setPaths($paths);
         $swagger->setDefinitions($schemas);
+
+        if (!empty($this->tags)) {
+            $swagger->setTags($this->tags);
+        }
 
         $this->buildSecuritySchemes($swagger);
 
@@ -240,6 +245,7 @@ class Swagger extends OpenAPIAbstract
             $security = $method->getSecurity();
             if (!empty($security)) {
                 $operation->setSecurity([new Security($security)]);
+                $operation->setTags(array_shift($security));
             }
 
             if ($method->getName() === 'GET') {
@@ -371,5 +377,17 @@ class Swagger extends OpenAPIAbstract
         $param->setMultipleOf($parameter->getMultipleOf());
 
         return $param;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function newTag($name, $description)
+    {
+        $tag = new Tag();
+        $tag->setName($name);
+        $tag->setDescription($description);
+
+        return $tag;
     }
 }
