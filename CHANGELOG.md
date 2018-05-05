@@ -1,4 +1,8 @@
 
+### 2.5.1 (2018-05-05)
+
+* Method add separate tags property
+
 ### 2.5.0 (2018-05-05)
 
 * Add tag support
