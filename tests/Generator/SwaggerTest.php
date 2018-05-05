@@ -58,7 +58,7 @@ class SwaggerTest extends GeneratorTestCase
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
-    public function testGenerateSecurity()
+    public function testGenerateComplex()
     {
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
@@ -76,8 +76,8 @@ class SwaggerTest extends GeneratorTestCase
         $generator->addTag('foo', 'Foo tag');
         $generator->addTag('bar', 'Boo tag');
 
-        $actual = $generator->generate($this->getSecurityResource());
-        $expect = file_get_contents(__DIR__ . '/resource/swagger_security.json');
+        $actual = $generator->generate($this->getResourceComplex());
+        $expect = file_get_contents(__DIR__ . '/resource/swagger_complex.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }

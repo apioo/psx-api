@@ -52,4 +52,16 @@ class RamlTest extends GeneratorTestCase
 
         $this->assertEquals($expect, $actual, $actual);
     }
+
+    public function testGenerateComplex()
+    {
+        $generator = new Raml(1, 'http://api.phpsx.org', 'urn:schema.phpsx.org#');
+        $generator->setDescription('Foobar');
+
+        $actual = $generator->generate($this->getResourceComplex());
+        $expect = file_get_contents(__DIR__ . '/resource/raml_complex.yaml');
+        $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
+
+        $this->assertEquals($expect, $actual, $actual);
+    }
 }

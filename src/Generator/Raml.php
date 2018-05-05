@@ -62,6 +62,11 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
     protected $title;
 
     /**
+     * @var string
+     */
+    protected $description;
+
+    /**
      * @param integer $apiVersion
      * @param string $baseUri
      * @param string $targetNamespace
@@ -79,6 +84,14 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
     public function setTitle($title)
     {
         $this->title = $title;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
     }
 
     /**
@@ -118,6 +131,10 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
         $raml.= 'baseUri: ' . Inline::dump($this->baseUri) . "\n";
         $raml.= 'version: v' . $this->apiVersion . "\n";
         $raml.= 'title: ' . Inline::dump($this->title ?: 'PSX') . "\n";
+
+        if (!empty($this->description)) {
+            $raml.= 'description: ' . Inline::dump($this->description) . "\n";
+        }
 
         return $raml;
     }

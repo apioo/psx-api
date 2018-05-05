@@ -140,7 +140,7 @@ abstract class GeneratorTestCase extends \PHPUnit_Framework_TestCase
         return $collection;
     }
 
-    protected function getSecurityResource()
+    protected function getResourceComplex()
     {
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\\Api\\Annotation');
