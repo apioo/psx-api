@@ -1,4 +1,9 @@
 
+### 2.5.0 (2018-05-05)
+
+* Add tag support
+* Improve test cases
+
 ### 2.4.9 (2018-04-23)
 
 * Add OpenAPI and Swagger meta data 
