@@ -245,7 +245,15 @@ class Swagger extends OpenAPIAbstract
             $security = $method->getSecurity();
             if (!empty($security)) {
                 $operation->setSecurity([new Security($security)]);
-                $operation->setTags(array_shift($security));
+            }
+
+            $tags = $method->getTags();
+            if (!empty($tags)) {
+                $operation->setTags($tags);
+            }
+
+            if ($resource->getStatus() == Resource::STATUS_DEPRECATED) {
+                $operation->setDeprecated(true);
             }
 
             if ($method->getName() === 'GET') {

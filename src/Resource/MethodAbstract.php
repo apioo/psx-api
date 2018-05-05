@@ -64,6 +64,11 @@ abstract class MethodAbstract
      */
     protected $security;
 
+    /**
+     * @var array
+     */
+    protected $tags;
+
     public function __construct()
     {
         $this->queryParameters = Property::getObject()->setTitle('query');
@@ -164,6 +169,18 @@ abstract class MethodAbstract
     public function getSecurity()
     {
         return $this->security;
+    }
+
+    public function setTags(array $tags)
+    {
+        $this->tags = $tags;
+
+        return $this;
+    }
+
+    public function getTags()
+    {
+        return $this->tags;
     }
 
     /**

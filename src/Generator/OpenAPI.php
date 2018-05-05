@@ -307,7 +307,11 @@ class OpenAPI extends OpenAPIAbstract
             $security = $method->getSecurity();
             if (!empty($security)) {
                 $operation->setSecurity([new SecurityRequirement($security)]);
-                $operation->setTags(array_shift($security));
+            }
+
+            $tags = $method->getTags();
+            if (!empty($tags)) {
+                $operation->setTags($tags);
             }
 
             if ($resource->getStatus() == Resource::STATUS_DEPRECATED) {
