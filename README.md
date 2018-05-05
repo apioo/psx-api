@@ -3,9 +3,9 @@ PSX Api
 
 ## About
 
-Currently there are several API specification formats (RAML, Swagger, etc.)
-which describe the functionality of an API endpoint. This project provides a
-data model which contains the common information of an API endpoint. There are
+Currently there are several API specification formats (OpenAPI, RAML, Swagger, 
+etc.) which describe the functionality of an API endpoint. This project provides 
+a data model which contains the common information of an API endpoint. There are
 parser classes which create such models based on a specification and it is also
 possible to generate a specification from a model object. We have also created 
 an [online tool](http://phpsx.org/tools/openapi) to test those conversions.
