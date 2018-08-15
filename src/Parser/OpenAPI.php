@@ -149,6 +149,10 @@ class OpenAPI implements ParserInterface, ParserCollectionInterface
                     $method->setDescription($operation['summary']);
                 }
 
+                if (isset($operation['tags'])) {
+                    $method->setTags($operation['tags']);
+                }
+
                 $this->parseQueryParameters($method, $operation);
                 $this->parseRequest($method, $operation);
                 $this->parseResponses($method, $operation);
