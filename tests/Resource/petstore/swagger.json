@@ -36,7 +36,10 @@
               "$ref": "#\/definitions\/Error"
             }
           }
-        }
+        },
+        "tags": [
+          "pets"
+        ]
       },
       "post": {
         "description": "Create a pet",
@@ -59,7 +62,10 @@
               "$ref": "#\/definitions\/Error"
             }
           }
-        }
+        },
+        "tags": [
+          "pets"
+        ]
       },
       "parameters": []
     }
