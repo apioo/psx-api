@@ -36,16 +36,25 @@ class RegxpFilter implements FilterInterface
      */
     protected $pattern;
 
+    /**
+     * @param string $pattern
+     */
     public function __construct($pattern)
     {
         $this->pattern = $pattern;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function match($path)
     {
         return !!preg_match('~' . $this->pattern . '~', $path);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getId()
     {
         return substr(md5($this->pattern), 0, 8);
