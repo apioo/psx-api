@@ -46,7 +46,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "pets"
+        ]
       },
       "post": {
         "description": "Create a pet",
@@ -71,7 +74,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "pets"
+        ]
       },
       "parameters": []
     }
