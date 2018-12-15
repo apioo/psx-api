@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Resource;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Api\Resource\Factory;
 
 /**
@@ -29,7 +30,7 @@ use PSX\Api\Resource\Factory;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class FactoryTest extends \PHPUnit_Framework_TestCase
+class FactoryTest extends TestCase
 {
     public function testGetMethod()
     {

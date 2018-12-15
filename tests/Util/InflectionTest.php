@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Resource\Util;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Api\Util\Inflection;
 
 /**
@@ -29,7 +30,7 @@ use PSX\Api\Util\Inflection;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class InflectionTest extends \PHPUnit_Framework_TestCase
+class InflectionTest extends TestCase
 {
     /**
      * @param string $expect

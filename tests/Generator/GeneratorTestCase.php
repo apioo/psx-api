@@ -21,6 +21,7 @@
 namespace PSX\Api\Tests\Generator;
 
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use PHPUnit\Framework\TestCase;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
 use PSX\Schema\Property;
@@ -33,7 +34,7 @@ use PSX\Schema\SchemaManager;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-abstract class GeneratorTestCase extends \PHPUnit_Framework_TestCase
+abstract class GeneratorTestCase extends TestCase
 {
     protected function getResource()
     {

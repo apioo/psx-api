@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Resource;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Api\Resource\Factory;
 use PSX\Schema\Property;
 use PSX\Schema\Schema;
@@ -31,7 +32,7 @@ use PSX\Schema\Schema;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class MethodAbstractTest extends \PHPUnit_Framework_TestCase
+class MethodAbstractTest extends TestCase
 {
     public function testMethod()
     {

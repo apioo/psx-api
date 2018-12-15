@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Console;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
 use PSX\Api\Console\GenerateCommand;
 use PSX\Api\GeneratorFactory;
@@ -36,7 +37,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class GenerateCommandTest extends \PHPUnit_Framework_TestCase
+class GenerateCommandTest extends TestCase
 {
     public function testGenerateHtml()
     {

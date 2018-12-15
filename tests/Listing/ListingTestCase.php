@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Listing;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Api\Listing\Filter\RegxpFilter;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
@@ -31,7 +32,7 @@ use PSX\Api\ResourceCollection;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-abstract class ListingTestCase extends \PHPUnit_Framework_TestCase
+abstract class ListingTestCase extends TestCase
 {
     public function testGetResourceIndex()
     {

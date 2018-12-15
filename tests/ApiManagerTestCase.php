@@ -21,6 +21,7 @@
 namespace PSX\Api\Tests;
 
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
 use PSX\Schema\SchemaManager;
 
@@ -31,7 +32,7 @@ use PSX\Schema\SchemaManager;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-abstract class ApiManagerTestCase extends \PHPUnit_Framework_TestCase
+abstract class ApiManagerTestCase extends TestCase
 {
     /**
      * @var \Doctrine\Common\Annotations\Reader

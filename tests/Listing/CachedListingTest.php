@@ -22,6 +22,7 @@ namespace PSX\Api\Tests\Listing;
 
 use Doctrine\Common\Cache\ArrayCache;
 use PSX\Api\ApiManager;
+use PSX\Api\ListingInterface;
 use PSX\Api\Listing\CachedListing;
 use PSX\Api\Listing\MemoryListing;
 use PSX\Api\Tests\Parser\Annotation\FooController;
@@ -61,17 +62,23 @@ class CachedListingTest extends ListingTestCase
     {
         $listing = $this->newListing();
         $listing->invalidateResourceIndex();
+
+        $this->assertInstanceOf(ListingInterface::class, $listing);
     }
 
     public function testInvalidateResource()
     {
         $listing = $this->newListing();
         $listing->invalidateResource('/foo');
+
+        $this->assertInstanceOf(ListingInterface::class, $listing);
     }
 
     public function testInvalidateResourceCollection()
     {
         $listing = $this->newListing();
         $listing->invalidateResourceCollection();
+
+        $this->assertInstanceOf(ListingInterface::class, $listing);
     }
 }

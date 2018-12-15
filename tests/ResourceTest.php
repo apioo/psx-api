@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Api\Resource;
 use PSX\Schema\Property;
 
@@ -30,7 +31,7 @@ use PSX\Schema\Property;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ResourceTest extends \PHPUnit_Framework_TestCase
+class ResourceTest extends TestCase
 {
     public function testResource()
     {

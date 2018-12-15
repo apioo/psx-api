@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Listing;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Api\Listing\Filter\RegxpFilter;
 use PSX\Api\Listing\FilterFactory;
 use PSX\Api\Listing\FilterInterface;
@@ -31,7 +32,7 @@ use PSX\Api\Listing\FilterInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class FilterFactoryTest extends \PHPUnit_Framework_TestCase
+class FilterFactoryTest extends TestCase
 {
     public function testFactory()
     {
