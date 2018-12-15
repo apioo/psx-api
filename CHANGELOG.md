@@ -1,4 +1,8 @@
 
+### 2.5.2 (2018-12-15)
+
+* Upgrade PHPUnit to 6.0
+
 ### 2.5.1 (2018-05-05)
 
 * Method add separate tags property
