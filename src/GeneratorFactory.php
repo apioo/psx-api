@@ -104,6 +104,10 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 $generator = new Generator\Serialize();
                 break;
 
+            case GeneratorFactoryInterface::TYPE_TYPESCRIPT:
+                $generator = new Generator\Typescript();
+                break;
+
             case GeneratorFactoryInterface::TYPE_TEMPLATE:
                 $generator = new Generator\Template($config);
                 break;
@@ -142,14 +146,17 @@ class GeneratorFactory implements GeneratorFactoryInterface
             case GeneratorFactoryInterface::TYPE_SERIALIZE:
                 return 'ser';
 
-            case GeneratorFactoryInterface::TYPE_TEMPLATE:
-                $ext = pathinfo(pathinfo($config, PATHINFO_FILENAME), PATHINFO_EXTENSION);
-                return !empty($ext) ? $ext : 'html';
-
             case GeneratorFactoryInterface::TYPE_JSONSCHEMA:
             case GeneratorFactoryInterface::TYPE_OPENAPI:
             case GeneratorFactoryInterface::TYPE_SWAGGER:
                 return 'json';
+
+            case GeneratorFactoryInterface::TYPE_TEMPLATE:
+                $ext = pathinfo(pathinfo($config, PATHINFO_FILENAME), PATHINFO_EXTENSION);
+                return !empty($ext) ? $ext : 'html';
+
+            case GeneratorFactoryInterface::TYPE_TYPESCRIPT:
+                return 'ts';
 
             default:
                 return 'txt';
@@ -177,13 +184,16 @@ class GeneratorFactory implements GeneratorFactoryInterface
             case GeneratorFactoryInterface::TYPE_SERIALIZE:
                 return 'application/octet-stream';
 
-            case GeneratorFactoryInterface::TYPE_TEMPLATE:
-                return 'text/plain';
-
             case GeneratorFactoryInterface::TYPE_JSONSCHEMA:
             case GeneratorFactoryInterface::TYPE_OPENAPI:
             case GeneratorFactoryInterface::TYPE_SWAGGER:
                 return 'application/json';
+
+            case GeneratorFactoryInterface::TYPE_TEMPLATE:
+                return 'text/plain';
+
+            case GeneratorFactoryInterface::TYPE_TYPESCRIPT:
+                return 'application/typescript';
 
             default:
                 return 'text/plain';
@@ -212,8 +222,9 @@ class GeneratorFactory implements GeneratorFactoryInterface
             GeneratorFactoryInterface::TYPE_PHP,
             GeneratorFactoryInterface::TYPE_RAML,
             GeneratorFactoryInterface::TYPE_SERIALIZE,
+            GeneratorFactoryInterface::TYPE_SWAGGER,
             GeneratorFactoryInterface::TYPE_TEMPLATE,
-            GeneratorFactoryInterface::TYPE_SWAGGER
+            GeneratorFactoryInterface::TYPE_TYPESCRIPT,
         ];
     }
 }

@@ -36,6 +36,7 @@ interface GeneratorFactoryInterface
     const TYPE_PHP = 'php';
     const TYPE_RAML = 'raml';
     const TYPE_SERIALIZE = 'serialize';
+    const TYPE_TYPESCRIPT = 'typescript';
     const TYPE_TEMPLATE = 'template';
     const TYPE_SWAGGER = 'swagger';
 
