@@ -20,10 +20,8 @@
 
 namespace PSX\Api\Generator;
 
-use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\Property;
@@ -38,7 +36,7 @@ use PSX\Schema\SchemaInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollectionInterface
+abstract class LanguageAbstract implements GeneratorInterface
 {
     use Generator\GeneratorTrait;
 
@@ -125,19 +123,6 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
     }
 
     /**
-     * @inheritdoc
-     */
-    public function generateAll(ResourceCollection $collection)
-    {
-        $result = '';
-        foreach ($collection as $path => $resource) {
-            $result.= $this->generate($resource) . "\n";
-        }
-
-        return $result;
-    }
-
-    /**
      * @param \PSX\Api\Resource $resource
      * @param array $args
      * @return string
@@ -148,12 +133,12 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
         reset($args);
         $parts = explode('/', $resource->getPath());
         foreach ($parts as $part) {
-            if (isset($part[0]) && $part[0] == ':') {
+            if (isset($part[0]) && ($part[0] == ':' || $part[0] == '$')) {
                 $pathName = key($args);
-                $result[] = $this->concat($pathName);
-                next($args);
-            } elseif (isset($part[0]) && $part[0] == '$') {
-                $pathName = key($args);
+                if ($pathName === null) {
+                    throw new \RuntimeException('Missing ' . $part . ' as path parameter');
+                }
+
                 $result[] = $this->concat($pathName);
                 next($args);
             } else {
