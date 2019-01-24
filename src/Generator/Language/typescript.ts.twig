@@ -1,0 +1,54 @@
+
+import Axios, {AxiosInstance, AxiosPromise} from "axios";
+
+export default class Resource {
+    private url: string;
+    private token: string;
+    private httpClient: AxiosInstance;
+
+{% for name, hint in properties %}
+    private {{ name }}: {{ hint }};
+{% endfor %}
+
+    public constructor({% for name, hint in properties %}{{ name }}: {{ hint }}, {% endfor %}token: string, httpClient?: AxiosInstance) {
+{% for name, hint in properties %}
+        this.{{ name }} = {{ name }};
+{% endfor %}
+
+        this.url = "{{ url|raw }}";
+        this.token = token;
+        this.httpClient = httpClient ? httpClient : Axios.create({
+            headers: {
+                'Authorization': 'Bearer ' + this.token
+            }
+        });
+    }
+
+{% for methodName, method in methods %}
+{% if method.description %}
+    /**
+     * {{ method.description }}
+     */
+{% endif %}
+    public {{ methodName }}({% for name, hint in method.args %}{{ name }}: {{ hint }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: AxiosPromise<{{ method.return }}>{% endif %} {
+        let params = {
+            method: "{{ method.httpMethod }}",
+{% if method.args.query is defined %}
+            params: query,
+{% endif %}
+        };
+
+{% if method.httpMethod == "DELETE" %}
+        return this.httpClient.{{ method.httpMethod|lower }}(this.url, params);
+{% elseif method.args.data is defined %}
+        return this.httpClient.{{ method.httpMethod|lower }}<{{ method.return }}>(this.url, data, params);
+{% else %}
+        return this.httpClient.{{ method.httpMethod|lower }}<{{ method.return }}>(this.url, params);
+{% endif %}
+    }
+
+{% endfor %}
+}
+
+{{ schemas|raw }}
+

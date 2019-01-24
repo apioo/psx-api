@@ -20,14 +20,9 @@
 
 namespace PSX\Api\Generator;
 
-use PSX\Api\GeneratorCollectionInterface;
-use PSX\Api\GeneratorInterface;
-use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
-use PSX\Schema\Generator;
-use PSX\Schema\Property;
-use PSX\Schema\Schema;
-use PSX\Schema\SchemaInterface;
+use PSX\Schema;
+use PSX\Schema\GeneratorInterface;
+use PSX\Schema\PropertyType;
 
 /**
  * Typescript
@@ -36,89 +31,45 @@ use PSX\Schema\SchemaInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Typescript implements GeneratorInterface, GeneratorCollectionInterface
+class Typescript extends LanguageAbstract
 {
-    use Generator\GeneratorTrait;
-
     /**
      * @inheritdoc
      */
-    public function generate(Resource $resource)
+    protected function getType(PropertyType $property): string
     {
-        $generator = new Generator\Typescript();
-
-        $result  = [];
-        $methods = $resource->getMethods();
-
-        // path parameters
-        if ($resource->hasPathParameters()) {
-            $result['PathTemplate'] = $resource->getPathParameters();
+        if ($property->getType() == PropertyType::TYPE_STRING) {
+            return 'string';
+        } elseif ($property->getType() == PropertyType::TYPE_NUMBER || $property->getType() == PropertyType::TYPE_INTEGER) {
+            return 'number';
+        } elseif ($property->getType() == PropertyType::TYPE_BOOLEAN) {
+            return 'boolean';
+        } else {
+            return 'any';
         }
-
-        foreach ($methods as $method) {
-            // query parameters
-            if ($method->hasQueryParameters()) {
-                $result[ucfirst(strtolower($method->getName())) . 'Query'] = $method->getQueryParameters();
-            }
-
-            // request
-            $request = $method->getRequest();
-            if ($request instanceof SchemaInterface) {
-                $property = $request->getDefinition();
-                $name     = $this->getIdentifierForProperty($property);
-
-                $result[$name] = $property;
-            }
-
-            // response
-            $responses = $method->getResponses();
-            foreach ($responses as $statusCode => $response) {
-                if ($response instanceof SchemaInterface) {
-                    $property = $response->getDefinition();
-                    $name     = $this->getIdentifierForProperty($property);
-
-                    $result[$name] = $property;
-                }
-            }
-        }
-
-        $prop = Property::getObject();
-        $prop->setTitle('Endpoint');
-        foreach ($result as $name => $property) {
-            $prop->addProperty($name, $property);
-        }
-
-        $namespace = $this->getClassName($resource->getPath());
-
-        $result = 'namespace ' . $namespace . ' {' . "\n" . '    ';
-        $result.= str_replace("\n", "\n    ", $generator->generate(new Schema($prop))) . "\n";
-        $result.= '}' . "\n";
-        
-        $result = str_replace('interface ', 'export interface ', $result);
-        
-        return $result;
     }
 
     /**
      * @inheritdoc
      */
-    public function generateAll(ResourceCollection $collection)
+    protected function concat(string $part): string
     {
-        $result = '';
-        foreach ($collection as $path => $resource) {
-            $result.= $this->generate($resource) . "\n";
-        }
-
-        return $result;
+        return '"+' . $part . '+"';
     }
 
-    private function getClassName($path)
+    /**
+     * @inheritdoc
+     */
+    protected function getTemplate(): string
     {
-        $parts = explode('/', $path);
-        $parts = array_map(function($part){
-            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
-        }, $parts);
+        return 'typescript.ts.twig';
+    }
 
-        return implode('', $parts);
+    /**
+     * @inheritdoc
+     */
+    protected function getGenerator(): GeneratorInterface
+    {
+        return new Schema\Generator\Typescript();
     }
 }
