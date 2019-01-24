@@ -71,7 +71,7 @@ abstract class MethodAbstract
 
     public function __construct()
     {
-        $this->queryParameters = Property::getObject()->setTitle('query');
+        $this->queryParameters = Property::getObject()->setTitle(ucfirst(strtolower($this->getName())) . 'Query');
         $this->responses       = [];
     }
 
