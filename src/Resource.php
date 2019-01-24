@@ -228,6 +228,9 @@ class Resource implements IteratorAggregate
         return isset($this->methods[$method]);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getIterator()
     {
         return new ArrayIterator($this->methods);
