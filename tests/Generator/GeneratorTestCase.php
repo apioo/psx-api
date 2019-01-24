@@ -115,6 +115,8 @@ abstract class GeneratorTestCase extends TestCase
         $resource = new Resource(Resource::STATUS_ACTIVE, '/bar/:foo');
         $resource->setTitle('bar');
 
+        $resource->addPathParameter('foo', Property::getString());
+
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')
             ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class)));
@@ -127,6 +129,8 @@ abstract class GeneratorTestCase extends TestCase
 
         $resource = new Resource(Resource::STATUS_ACTIVE, '/bar/$year<[0-9]+>');
         $resource->setTitle('bar');
+
+        $resource->addPathParameter('year', Property::getString());
 
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')

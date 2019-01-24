@@ -33,21 +33,10 @@ class TypescriptTest extends GeneratorTestCase
 {
     public function testGenerate()
     {
-        $generator = new Typescript();
+        $generator = new Typescript('http://api.foo.com');
 
         $actual = $generator->generate($this->getResource());
         $expect = file_get_contents(__DIR__ . '/resource/typescript.ts');
-        $expect = str_replace(["\r\n", "\r"], "\n", $expect);
-
-        $this->assertEquals($expect, $actual, $actual);
-    }
-
-    public function testGenerateAll()
-    {
-        $generator = new Typescript();
-
-        $actual = $generator->generateAll($this->getResourceCollection());
-        $expect = file_get_contents(__DIR__ . '/resource/typescript_collection.ts');
         $expect = str_replace(["\r\n", "\r"], "\n", $expect);
 
         $this->assertEquals($expect, $actual, $actual);
