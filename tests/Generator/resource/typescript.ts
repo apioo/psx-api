@@ -1,4 +1,3 @@
-
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 
 export default class Resource {
