@@ -52,14 +52,6 @@ class Typescript extends LanguageAbstract
     /**
      * @inheritdoc
      */
-    protected function concat(string $part): string
-    {
-        return '"+' . $part . '+"';
-    }
-
-    /**
-     * @inheritdoc
-     */
     protected function getTemplate(): string
     {
         return 'typescript.ts.twig';

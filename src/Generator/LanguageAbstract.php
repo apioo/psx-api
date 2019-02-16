@@ -62,7 +62,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         $engine = new \Twig_Environment($loader);
 
         $properties = $this->getProperties($resource);
-        $url = $this->getUrl($resource, $properties);
+        $urlParts = $this->getUrlParts($resource, $properties);
 
         $schemas = [];
         $methods = [];
@@ -114,7 +114,8 @@ abstract class LanguageAbstract implements GeneratorInterface
 
         return $engine->render($this->getTemplate(), [
             'namespace' => $namespace,
-            'url' => $url,
+            'base_url' => $this->baseUrl,
+            'url_parts' => $urlParts,
             'resource' => $resource,
             'properties' => $properties,
             'methods' => $methods,
@@ -125,9 +126,9 @@ abstract class LanguageAbstract implements GeneratorInterface
     /**
      * @param \PSX\Api\Resource $resource
      * @param array $args
-     * @return string
+     * @return array
      */
-    protected function getUrl(Resource $resource, array $args): string
+    protected function getUrlParts(Resource $resource, array $args): array
     {
         $result = [];
         reset($args);
@@ -139,14 +140,20 @@ abstract class LanguageAbstract implements GeneratorInterface
                     throw new \RuntimeException('Missing ' . $part . ' as path parameter');
                 }
 
-                $result[] = $this->concat($pathName);
+                $result[] = [
+                    'type'  => 'variable',
+                    'value' => $pathName,
+                ];
                 next($args);
-            } else {
-                $result[] = $part;
+            } elseif (!empty($part)) {
+                $result[] = [
+                    'type'  => 'string',
+                    'value' => $part,
+                ];
             }
         }
 
-        return $this->baseUrl . implode('/', $result);
+        return $result;
     }
 
     /**
@@ -205,14 +212,6 @@ abstract class LanguageAbstract implements GeneratorInterface
      * @return string
      */
     abstract protected function getType(PropertyType $property): string;
-
-    /**
-     * Method to concat the provided argument
-     * 
-     * @param string $part
-     * @return string
-     */
-    abstract protected function concat(string $part): string;
 
     /**
      * @return string

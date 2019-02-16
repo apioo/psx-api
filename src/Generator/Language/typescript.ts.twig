@@ -1,4 +1,3 @@
-
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 
 export default class Resource {
@@ -15,7 +14,7 @@ export default class Resource {
         this.{{ name }} = {{ name }};
 {% endfor %}
 
-        this.url = "{{ url|raw }}";
+        this.url = "{{ base_url }}{% for part in url_parts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}";
         this.token = token;
         this.httpClient = httpClient ? httpClient : Axios.create({
             headers: {
