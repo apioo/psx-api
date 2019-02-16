@@ -12,7 +12,7 @@ Test description
 A long **Test** description
 ### Query-Parameters
 <a name="ObjectId"></a>
-##### query
+##### GetQuery
 * Required: `["bar"]`
 * Properties:
   * `foo`:

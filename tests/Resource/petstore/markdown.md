@@ -9,7 +9,7 @@ List all pets
 
 ### GET Query-Parameters
 
-<div id="psx_model_Query" class="psx-object"><h4>query</h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
+<div id="psx_model_GetQuery" class="psx-object"><h4>GetQuery</h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
   <span class="psx-object-json-key">"limit"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Integer</span><span class="psx-object-json-pun">,</span>
 <span class="psx-object-json-pun">}</span></pre><table class="table psx-object-properties"><colgroup><col width="30%" /><col width="70%" /></colgroup><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td><span class="psx-property-name psx-property-optional">limit</span></td><td><span class="psx-property-type">Integer</span><br /><div class="psx-property-description"></div></td></tr></tbody></table></div>
 

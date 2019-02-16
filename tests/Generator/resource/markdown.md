@@ -16,7 +16,7 @@ Returns a collection
 
 ### GET Query-Parameters
 
-<div id="psx_model_Query" class="psx-object"><h4>query</h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
+<div id="psx_model_GetQuery" class="psx-object"><h4>GetQuery</h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
   <span class="psx-object-json-key">"startIndex"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Integer</span><span class="psx-object-json-pun">,</span>
   <span class="psx-object-json-key">"float"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Number</span><span class="psx-object-json-pun">,</span>
   <span class="psx-object-json-key">"boolean"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Boolean</span><span class="psx-object-json-pun">,</span>

@@ -17,7 +17,7 @@ lorem ipsum
 Returns a collection
 ### Query-Parameters
 <a name="[id]"></a>
-##### query
+##### GetQuery
 * Required: `["startIndex"]`
 * Properties:
   * `startIndex`:
@@ -64,7 +64,7 @@ Returns a collection
 ## POST 
 ### Query-Parameters
 <a name="[id]"></a>
-##### query
+##### PostQuery
 
 ### Request
 <a name="[id]"></a>
@@ -98,7 +98,7 @@ Returns a collection
 ## PUT 
 ### Query-Parameters
 <a name="[id]"></a>
-##### query
+##### PutQuery
 
 ### Request
 <a name="[id]"></a>
@@ -132,7 +132,7 @@ Returns a collection
 ## DELETE 
 ### Query-Parameters
 <a name="[id]"></a>
-##### query
+##### DeleteQuery
 
 ### Request
 <a name="[id]"></a>
@@ -166,7 +166,7 @@ Returns a collection
 ## PATCH 
 ### Query-Parameters
 <a name="[id]"></a>
-##### query
+##### PatchQuery
 
 ### Request
 <a name="[id]"></a>

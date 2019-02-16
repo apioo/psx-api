@@ -84,7 +84,14 @@
           }
         }
       },
-      "parameters": []
+      "parameters": [
+        {
+          "name": "foo",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
     },
     "\/bar\/{year}": {
       "get": {
@@ -122,7 +129,14 @@
           }
         }
       },
-      "parameters": []
+      "parameters": [
+        {
+          "name": "year",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
     }
   },
   "definitions": {

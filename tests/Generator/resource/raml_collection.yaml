@@ -101,6 +101,10 @@ title: PSX
                   }
               }
 /bar/{foo}:
+  uriParameters:
+    foo:
+      type: string
+      required: false
   get:
     description: 'Returns a collection'
     responses:
@@ -198,6 +202,10 @@ title: PSX
                   }
               }
 /bar/{year}:
+  uriParameters:
+    year:
+      type: string
+      required: false
   get:
     description: 'Returns a collection'
     responses:

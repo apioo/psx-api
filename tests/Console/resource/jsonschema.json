@@ -16,7 +16,7 @@
     },
     "GET-query": {
       "type": "object",
-      "title": "query",
+      "title": "GetQuery",
       "properties": {
         "foo": {
           "type": "string",

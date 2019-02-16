@@ -15,7 +15,7 @@ A long **Test** description
 
 ### GET Query-Parameters
 
-<div id="psx_model_Query" class="psx-object"><h4>query</h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
+<div id="psx_model_GetQuery" class="psx-object"><h4>GetQuery</h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
   <span class="psx-object-json-key">"foo"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">String</span><span class="psx-object-json-pun">,</span>
   <span class="psx-object-json-key">"bar"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">String</span><span class="psx-object-json-pun">,</span>
   <span class="psx-object-json-key">"baz"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">String</span><span class="psx-object-json-pun">,</span>
