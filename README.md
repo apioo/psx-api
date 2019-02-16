@@ -26,6 +26,7 @@ an [online tool](http://phpsx.org/tools/openapi) to test those conversions.
 - PHP (Generates PHP source code which represents a controller consuming the API resource)
 - RAML (Generates a [RAML 1.0](http://raml.org/) specification)
 - Swagger (Generates a [Swagger 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) specification)
+- Typescript (Generates a Typescript based client stub)
 - Template (Generates a representation based on a [Twig](https://twig.symfony.com/) template)
 
 ## Usage
