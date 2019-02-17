@@ -105,7 +105,8 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 break;
 
             case GeneratorFactoryInterface::TYPE_TYPESCRIPT:
-                $generator = new Generator\Typescript();
+                $baseUri   = $this->url . '/' . $this->dispatch;
+                $generator = new Generator\Typescript($baseUri);
                 break;
 
             case GeneratorFactoryInterface::TYPE_TEMPLATE:
