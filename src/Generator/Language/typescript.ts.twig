@@ -9,18 +9,14 @@ export default class Resource {
     private {{ name }}: {{ hint }};
 {% endfor %}
 
-    public constructor({% for name, hint in properties %}{{ name }}: {{ hint }}, {% endfor %}token: string, httpClient?: AxiosInstance) {
+    public constructor({% for name, hint in properties %}{{ name }}: {{ hint }}, {% endfor %}baseUrl: string, token: string, httpClient?: AxiosInstance) {
 {% for name, hint in properties %}
         this.{{ name }} = {{ name }};
 {% endfor %}
 
-        this.url = "{{ base_url }}{% for part in url_parts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}";
+        this.url = baseUrl + "{% for part in url_parts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}";
         this.token = token;
-        this.httpClient = httpClient ? httpClient : Axios.create({
-            headers: {
-                'Authorization': 'Bearer ' + this.token
-            }
-        });
+        this.httpClient = httpClient ? httpClient : Axios.create();
     }
 
 {% for methodName, method in methods %}
@@ -34,6 +30,11 @@ export default class Resource {
             method: "{{ method.httpMethod }}",
 {% if method.args.query is defined %}
             params: query,
+{% endif %}
+{% if method.secure %}
+            headers: {
+                'Authorization': 'Bearer ' + this.token
+            },
 {% endif %}
         };
 
