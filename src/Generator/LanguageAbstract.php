@@ -104,6 +104,7 @@ abstract class LanguageAbstract implements GeneratorInterface
             $methods[$methodName] = [
                 'httpMethod' => $method->getName(),
                 'description' => $method->getDescription(),
+                'secure' => $method->hasSecurity(),
                 'args' => $args,
                 'return' => $return,
             ];
