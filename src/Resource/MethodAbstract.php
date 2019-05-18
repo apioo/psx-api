@@ -171,6 +171,11 @@ abstract class MethodAbstract
         return $this->security;
     }
 
+    public function hasSecurity()
+    {
+        return !empty($this->security);
+    }
+
     public function setTags(array $tags)
     {
         $this->tags = $tags;
