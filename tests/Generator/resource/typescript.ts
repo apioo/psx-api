@@ -8,17 +8,13 @@ export default class Resource {
     private name: string;
     private type: string;
 
-    public constructor(name: string, type: string, token: string, httpClient?: AxiosInstance) {
+    public constructor(name: string, type: string, baseUrl: string, token: string, httpClient?: AxiosInstance) {
         this.name = name;
         this.type = type;
 
-        this.url = "http://api.foo.com/foo/"+name+"/"+type+"";
+        this.url = baseUrl + "/foo/"+name+"/"+type+"";
         this.token = token;
-        this.httpClient = httpClient ? httpClient : Axios.create({
-            headers: {
-                'Authorization': 'Bearer ' + this.token
-            }
-        });
+        this.httpClient = httpClient ? httpClient : Axios.create();
     }
 
     /**
