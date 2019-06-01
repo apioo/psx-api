@@ -22,6 +22,7 @@ namespace PSX\Api\Console;
 
 use PSX\Api\GeneratorFactory;
 use PSX\Api\GeneratorFactoryInterface;
+use PSX\Api\Listing\FilterFactoryInterface;
 use PSX\Api\ListingInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -49,12 +50,23 @@ class GenerateCommand extends Command
      */
     protected $factory;
 
-    public function __construct(ListingInterface $listing, GeneratorFactoryInterface $factory)
+    /**
+     * @var \PSX\Api\Listing\FilterFactoryInterface
+     */
+    protected $filterFactory;
+
+    /**
+     * @param \PSX\Api\ListingInterface $listing
+     * @param \PSX\Api\GeneratorFactoryInterface $factory
+     * @param \PSX\Api\Listing\FilterFactoryInterface $filterFactory
+     */
+    public function __construct(ListingInterface $listing, GeneratorFactoryInterface $factory, FilterFactoryInterface $filterFactory = null)
     {
         parent::__construct();
 
         $this->listing = $listing;
         $this->factory = $factory;
+        $this->filterFactory = $filterFactory;
     }
 
     protected function configure()
@@ -63,14 +75,24 @@ class GenerateCommand extends Command
             ->setName('api:generate')
             ->setDescription('Generates for each API resource a file in a specific format')
             ->addArgument('dir', InputArgument::REQUIRED, 'The target directory')
-            ->addArgument('filter', InputArgument::OPTIONAL, 'Optional a path regexp filter')
             ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Optional the output format possible values are: ' . implode(', ', GeneratorFactory::getPossibleTypes()))
-            ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Optional a config value which gets passed to the generator');
+            ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Optional a config value which gets passed to the generator')
+            ->addOption('filter', 'i', InputOption::VALUE_REQUIRED, 'Optional a specific filter name i.e. internal or external')
+            ->addOption('regexp', 'r', InputOption::VALUE_REQUIRED, 'Optional a path regexp filter');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $resources = $this->listing->getResourceIndex();
+        $filterName   = $input->getOption('filter');
+        $filterRegexp = $input->getOption('regexp');
+
+        if ($this->filterFactory instanceof FilterFactoryInterface && !empty($filterName)) {
+            $filter = $this->filterFactory->getFilter($filterName);
+        } else {
+            $filter = null;
+        }
+
+        $resources = $this->listing->getResourceIndex($filter);
         $progress  = new ProgressBar($output, count($resources));
 
         $dir = $input->getArgument('dir');
@@ -78,24 +100,24 @@ class GenerateCommand extends Command
             throw new \InvalidArgumentException('Directory does not exist');
         }
 
-        $filter = $input->getArgument('filter');
-
         $generator = $this->factory->getGenerator($input->getOption('format'), $input->getOption('config'));
         $extension = $this->factory->getFileExtension($input->getOption('format'), $input->getOption('config'));
 
         $progress->start();
 
         foreach ($resources as $resource) {
-            if (!empty($filter) && !preg_match('/^' . $filter . '$/', $resource->getPath())) {
+            if (!empty($filterRegexp) && !preg_match('/~' . $filterRegexp . '~/', $resource->getPath())) {
                 continue;
             }
 
             $progress->setMessage('Generating ' . $resource->getPath());
 
             $content  = $generator->generate($this->listing->getResource($resource->getPath()));
-            $file     = $dir . '/' . $this->getFileName($resource->getPath(), $extension);
+            $fileName = $this->getFileName($resource->getPath(), $extension);
 
-            file_put_contents($file, $content);
+            if ($fileName !== null) {
+                file_put_contents($dir . '/' . $fileName, $content);
+            }
 
             $progress->advance();
         }
@@ -109,6 +131,10 @@ class GenerateCommand extends Command
     {
         $path = trim($path, '/');
         $path = preg_replace('/[^A-Za-z0-9]/', '_', $path);
+
+        if (empty($path)) {
+            return null;
+        }
 
         return $path . '.' . $extension;
     }
