@@ -18,32 +18,39 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests;
+namespace PSX\Api\Tests\Generator\Client;
 
-use PHPUnit\Framework\TestCase;
+use PSX\Api\Generator\Client\Php;
+use PSX\Api\Tests\Generator\GeneratorTestCase;
 
 /**
- * BinTest
+ * PhpTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class BinTest extends TestCase
+class PhpTest extends GeneratorTestCase
 {
-    public function setUp()
+    public function testGenerate()
     {
-        if (strpos(shell_exec('php -v'), 'PHP') === false) {
-            $this->markTestIncomplete('Looks like php is not available');
-        }
+        $generator = new Php('http://api.foo.com');
+
+        $actual = $generator->generate($this->getResource());
+        $expect = file_get_contents(__DIR__ . '/resource/php.php');
+        $expect = str_replace(["\r\n", "\r"], "\n", $expect);
+
+        $this->assertEquals($expect, $actual, $actual);
     }
 
-    public function testBin()
+    public function testGenerateComplex()
     {
-        $actual = shell_exec('php ' . __DIR__ . '/../bin/api');
+        $generator = new Php('http://api.foo.com');
 
-        $this->assertRegExp('/api:generate/', $actual);
-        $this->assertRegExp('/api:parse/', $actual);
-        $this->assertRegExp('/api:resource/', $actual);
+        $actual = $generator->generate($this->getResourceComplex());
+        $expect = file_get_contents(__DIR__ . '/resource/php_complex.php');
+        $expect = str_replace(["\r\n", "\r"], "\n", $expect);
+
+        $this->assertEquals($expect, $actual, $actual);
     }
 }

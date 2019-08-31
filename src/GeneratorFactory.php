@@ -71,53 +71,54 @@ class GeneratorFactory implements GeneratorFactoryInterface
     public function getGenerator($format, $config = null)
     {
         switch ($format) {
-            case GeneratorFactoryInterface::TYPE_HTML:
-                $generator = new Generator\Html();
+            case GeneratorFactoryInterface::CLIENT_PHP:
+                $baseUri   = $this->url . '/' . $this->dispatch;
+                $generator = new Generator\Client\Php($baseUri);
                 break;
 
-            case GeneratorFactoryInterface::TYPE_JSONSCHEMA:
+            case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
+                $baseUri   = $this->url . '/' . $this->dispatch;
+                $generator = new Generator\Client\Typescript($baseUri);
+                break;
+
+            case GeneratorFactoryInterface::MARKUP_HTML:
+                $generator = new Generator\Markup\Html();
+                break;
+
+            case GeneratorFactoryInterface::MARKUP_MARKDOWN:
+                $generator = new Generator\Markup\Markdown();
+                break;
+
+            case GeneratorFactoryInterface::MARKUP_TEMPLATE:
+                $generator = new Generator\Markup\Template($config);
+                break;
+
+            case GeneratorFactoryInterface::SERVER_PHP:
+                return new Generator\Server\Php($config ?: null);
+                break;
+
+            case GeneratorFactoryInterface::SPEC_JSONSCHEMA:
                 $namespace = $config ?: $this->namespace;
-                $generator = new Generator\JsonSchema($namespace);
+                $generator = new Generator\Spec\JsonSchema($namespace);
                 break;
 
-            case GeneratorFactoryInterface::TYPE_MARKDOWN:
-                $generator = new Generator\Markdown();
-                break;
-
-            case GeneratorFactoryInterface::TYPE_OPENAPI:
+            case GeneratorFactoryInterface::SPEC_RAML:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
-                $generator = new Generator\OpenAPI($this->reader, 1, $baseUri, $namespace);
+                $generator = new Generator\Spec\Raml(1, $baseUri, $namespace);
                 break;
 
-            case GeneratorFactoryInterface::TYPE_PHP:
-                return new Generator\Php($config ?: null);
-                break;
-
-            case GeneratorFactoryInterface::TYPE_RAML:
+            case GeneratorFactoryInterface::SPEC_SWAGGER:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
-                $generator = new Generator\Raml(1, $baseUri, $namespace);
-                break;
-
-            case GeneratorFactoryInterface::TYPE_SERIALIZE:
-                $generator = new Generator\Serialize();
-                break;
-
-            case GeneratorFactoryInterface::TYPE_TYPESCRIPT:
-                $baseUri   = $this->url . '/' . $this->dispatch;
-                $generator = new Generator\Typescript($baseUri);
-                break;
-
-            case GeneratorFactoryInterface::TYPE_TEMPLATE:
-                $generator = new Generator\Template($config);
+                $generator = new Generator\Spec\Swagger($this->reader, 1, $baseUri, $namespace);
                 break;
 
             default:
-            case GeneratorFactoryInterface::TYPE_SWAGGER:
+            case GeneratorFactoryInterface::SPEC_OPENAPI:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
-                $generator = new Generator\Swagger($this->reader, 1, $baseUri, $namespace);
+                $generator = new Generator\Spec\OpenAPI($this->reader, 1, $baseUri, $namespace);
                 break;
         }
 
@@ -132,32 +133,29 @@ class GeneratorFactory implements GeneratorFactoryInterface
     public function getFileExtension($format, $config = null)
     {
         switch ($format) {
-            case GeneratorFactoryInterface::TYPE_HTML:
-                return 'html';
-
-            case GeneratorFactoryInterface::TYPE_MARKDOWN:
-                return 'md';
-
-            case GeneratorFactoryInterface::TYPE_PHP:
+            case GeneratorFactoryInterface::CLIENT_PHP:
                 return 'php';
+            case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
+                return 'ts';
 
-            case GeneratorFactoryInterface::TYPE_RAML:
-                return 'raml';
-
-            case GeneratorFactoryInterface::TYPE_SERIALIZE:
-                return 'ser';
-
-            case GeneratorFactoryInterface::TYPE_JSONSCHEMA:
-            case GeneratorFactoryInterface::TYPE_OPENAPI:
-            case GeneratorFactoryInterface::TYPE_SWAGGER:
-                return 'json';
-
-            case GeneratorFactoryInterface::TYPE_TEMPLATE:
+            case GeneratorFactoryInterface::MARKUP_HTML:
+                return 'html';
+            case GeneratorFactoryInterface::MARKUP_MARKDOWN:
+                return 'md';
+            case GeneratorFactoryInterface::MARKUP_TEMPLATE:
                 $ext = pathinfo(pathinfo($config, PATHINFO_FILENAME), PATHINFO_EXTENSION);
                 return !empty($ext) ? $ext : 'html';
 
-            case GeneratorFactoryInterface::TYPE_TYPESCRIPT:
-                return 'ts';
+            case GeneratorFactoryInterface::SERVER_PHP:
+                return 'php';
+
+            case GeneratorFactoryInterface::SPEC_JSONSCHEMA:
+            case GeneratorFactoryInterface::SPEC_OPENAPI:
+            case GeneratorFactoryInterface::SPEC_SWAGGER:
+                return 'json';
+
+            case GeneratorFactoryInterface::SPEC_RAML:
+                return 'raml';
 
             default:
                 return 'txt';
@@ -170,31 +168,28 @@ class GeneratorFactory implements GeneratorFactoryInterface
     public function getMime($format, $config = null)
     {
         switch ($format) {
-            case GeneratorFactoryInterface::TYPE_HTML:
-                return 'text/html';
-
-            case GeneratorFactoryInterface::TYPE_MARKDOWN:
-                return 'text/markdown';
-
-            case GeneratorFactoryInterface::TYPE_PHP:
+            case GeneratorFactoryInterface::CLIENT_PHP:
                 return 'application/php';
+            case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
+                return 'application/typescript';
 
-            case GeneratorFactoryInterface::TYPE_RAML:
-                return 'application/raml+yaml';
-
-            case GeneratorFactoryInterface::TYPE_SERIALIZE:
-                return 'application/octet-stream';
-
-            case GeneratorFactoryInterface::TYPE_JSONSCHEMA:
-            case GeneratorFactoryInterface::TYPE_OPENAPI:
-            case GeneratorFactoryInterface::TYPE_SWAGGER:
-                return 'application/json';
-
-            case GeneratorFactoryInterface::TYPE_TEMPLATE:
+            case GeneratorFactoryInterface::MARKUP_HTML:
+                return 'text/html';
+            case GeneratorFactoryInterface::MARKUP_MARKDOWN:
+                return 'text/markdown';
+            case GeneratorFactoryInterface::MARKUP_TEMPLATE:
                 return 'text/plain';
 
-            case GeneratorFactoryInterface::TYPE_TYPESCRIPT:
-                return 'application/typescript';
+            case GeneratorFactoryInterface::SERVER_PHP:
+                return 'application/php';
+
+            case GeneratorFactoryInterface::SPEC_JSONSCHEMA:
+            case GeneratorFactoryInterface::SPEC_OPENAPI:
+            case GeneratorFactoryInterface::SPEC_SWAGGER:
+                return 'application/json';
+
+            case GeneratorFactoryInterface::SPEC_RAML:
+                return 'application/raml+yaml';
 
             default:
                 return 'text/plain';
@@ -216,16 +211,19 @@ class GeneratorFactory implements GeneratorFactoryInterface
     public static function getPossibleTypes()
     {
         return [
-            GeneratorFactoryInterface::TYPE_HTML,
-            GeneratorFactoryInterface::TYPE_JSONSCHEMA,
-            GeneratorFactoryInterface::TYPE_MARKDOWN,
-            GeneratorFactoryInterface::TYPE_OPENAPI,
-            GeneratorFactoryInterface::TYPE_PHP,
-            GeneratorFactoryInterface::TYPE_RAML,
-            GeneratorFactoryInterface::TYPE_SERIALIZE,
-            GeneratorFactoryInterface::TYPE_SWAGGER,
-            GeneratorFactoryInterface::TYPE_TEMPLATE,
-            GeneratorFactoryInterface::TYPE_TYPESCRIPT,
+            GeneratorFactoryInterface::CLIENT_PHP,
+            GeneratorFactoryInterface::CLIENT_TYPESCRIPT,
+
+            GeneratorFactoryInterface::MARKUP_HTML,
+            GeneratorFactoryInterface::MARKUP_MARKDOWN,
+            GeneratorFactoryInterface::MARKUP_TEMPLATE,
+
+            GeneratorFactoryInterface::SERVER_PHP,
+
+            GeneratorFactoryInterface::SPEC_JSONSCHEMA,
+            GeneratorFactoryInterface::SPEC_OPENAPI,
+            GeneratorFactoryInterface::SPEC_RAML,
+            GeneratorFactoryInterface::SPEC_SWAGGER,
         ];
     }
 }

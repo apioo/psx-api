@@ -18,32 +18,50 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests;
+namespace PSX\Api\Generator\Client;
 
-use PHPUnit\Framework\TestCase;
+use PSX\Schema;
+use PSX\Schema\GeneratorInterface;
+use PSX\Schema\PropertyType;
 
 /**
- * BinTest
+ * Typescript
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class BinTest extends TestCase
+class Typescript extends LanguageAbstract
 {
-    public function setUp()
+    /**
+     * @inheritdoc
+     */
+    protected function getType(PropertyType $property): string
     {
-        if (strpos(shell_exec('php -v'), 'PHP') === false) {
-            $this->markTestIncomplete('Looks like php is not available');
+        if ($property->getType() == PropertyType::TYPE_STRING) {
+            return 'string';
+        } elseif ($property->getType() == PropertyType::TYPE_NUMBER || $property->getType() == PropertyType::TYPE_INTEGER) {
+            return 'number';
+        } elseif ($property->getType() == PropertyType::TYPE_BOOLEAN) {
+            return 'boolean';
+        } else {
+            return 'any';
         }
     }
 
-    public function testBin()
+    /**
+     * @inheritdoc
+     */
+    protected function getTemplate(): string
     {
-        $actual = shell_exec('php ' . __DIR__ . '/../bin/api');
+        return 'typescript.ts.twig';
+    }
 
-        $this->assertRegExp('/api:generate/', $actual);
-        $this->assertRegExp('/api:parse/', $actual);
-        $this->assertRegExp('/api:resource/', $actual);
+    /**
+     * @inheritdoc
+     */
+    protected function getGenerator(): GeneratorInterface
+    {
+        return new Schema\Generator\Typescript();
     }
 }

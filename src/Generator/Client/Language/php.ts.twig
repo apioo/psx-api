@@ -1,0 +1,98 @@
+<?php
+
+use GuzzleHttp\Client;
+use PSX\Schema\Parser\Popo\Dumper;
+use PSX\Schema\SchemaManager;
+use PSX\Schema\SchemaTraverser;
+use PSX\Schema\Visitor\TypeVisitor;
+
+class Resource
+{
+    /**
+     * @var string
+     */
+    private $url;
+
+    /**
+     * @var string
+     */
+    private $token;
+
+    /**
+     * @var Client
+     */
+    private $httpClient;
+
+    /**
+     * @var SchemaManager
+     */
+    private $schemaManager;
+
+{% for name, hint in properties %}
+    /**
+     * @var {{ hint }}
+     */
+    private ${{ name }};
+
+{% endfor %}
+    public function __construct({% for name, hint in properties %}{{ hint }} ${{ name }}, {% endfor %}string $baseUrl, string $token, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
+    {
+{% for name, hint in properties %}
+        $this->{{ name }} = ${{ name }};
+{% endfor %}
+
+        $this->url = $baseUrl . '{% for part in url_parts %}/{% if part.type == 'variable' %}' . ${{ part.value }} . '{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}';
+        $this->token = $token;
+        $this->httpClient = $httpClient ? $httpClient : new Client();
+        $this->schemaManager = $schemaManager ? $schemaManager : new SchemaManager();
+    }
+
+{% for methodName, method in methods %}
+{% if method.description %}
+    /**
+     * {{ method.description }}
+     */
+{% endif %}
+    public function {{ methodName }}({% for name, hint in method.args %}{{ hint }} ${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: {{ method.return }}{% endif %}
+
+    {
+        $options = [
+{% if method.args.query is defined %}
+            'query' => $this->convertToArray($query),
+{% endif %}
+{% if method.secure %}
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->token
+            ],
+{% endif %}
+{% if method.args.data is defined %}
+            'json' => $this->convertToArray($data)
+{% endif %}
+        ];
+
+        $response = $this->httpClient->request('{{ method.httpMethod }}', $this->url, $options);
+        $data     = (string) $response->getBody();
+
+        return $this->convertToObject($data, {% if method.return %}{{ method.return }}::class{% else %}null{% endif %});
+    }
+
+{% endfor %}
+    private function convertToArray($object)
+    {
+        return (new Dumper())->dump($object);
+    }
+
+    private function convertToObject(string $data, ?string $class)
+    {
+        $data = Parser::decode($data);
+        if ($class !== null) {
+            $schema = $this->schemaManager->getSchema($class);
+            return (new SchemaTraverser())->traverse($data, $schema, new TypeVisitor());
+        } else {
+            return $data;
+        }
+    }
+}
+
+{{ schemas|raw }}
+

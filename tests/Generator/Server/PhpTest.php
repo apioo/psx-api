@@ -18,32 +18,28 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests;
+namespace PSX\Api\Tests\Generator\Server;
 
-use PHPUnit\Framework\TestCase;
+use PSX\Api\Generator\Server\Php;
+use PSX\Api\Tests\Generator\GeneratorTestCase;
 
 /**
- * BinTest
+ * PhpTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class BinTest extends TestCase
+class PhpTest extends GeneratorTestCase
 {
-    public function setUp()
+    public function testGenerate()
     {
-        if (strpos(shell_exec('php -v'), 'PHP') === false) {
-            $this->markTestIncomplete('Looks like php is not available');
-        }
-    }
+        $generator = new Php();
 
-    public function testBin()
-    {
-        $actual = shell_exec('php ' . __DIR__ . '/../bin/api');
+        $actual = $generator->generate($this->getResource());
+        $expect = file_get_contents(__DIR__ . '/resource/php.php');
+        $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
 
-        $this->assertRegExp('/api:generate/', $actual);
-        $this->assertRegExp('/api:parse/', $actual);
-        $this->assertRegExp('/api:resource/', $actual);
+        $this->assertEquals($expect, $actual, $actual);
     }
 }

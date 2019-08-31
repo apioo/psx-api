@@ -51,16 +51,19 @@ class GeneratorFactoryTest extends TestCase
     public function typeProvider()
     {
         return [
-            [GeneratorFactoryInterface::TYPE_HTML],
-            [GeneratorFactoryInterface::TYPE_JSONSCHEMA],
-            [GeneratorFactoryInterface::TYPE_MARKDOWN],
-            [GeneratorFactoryInterface::TYPE_OPENAPI],
-            [GeneratorFactoryInterface::TYPE_PHP],
-            [GeneratorFactoryInterface::TYPE_RAML],
-            [GeneratorFactoryInterface::TYPE_SERIALIZE],
-            [GeneratorFactoryInterface::TYPE_SWAGGER],
-            [GeneratorFactoryInterface::TYPE_TEMPLATE],
-            [GeneratorFactoryInterface::TYPE_TYPESCRIPT],
+            [GeneratorFactoryInterface::CLIENT_PHP],
+            [GeneratorFactoryInterface::CLIENT_TYPESCRIPT],
+            
+            [GeneratorFactoryInterface::MARKUP_HTML],
+            [GeneratorFactoryInterface::MARKUP_MARKDOWN],
+            [GeneratorFactoryInterface::MARKUP_TEMPLATE],
+
+            [GeneratorFactoryInterface::SERVER_PHP],
+
+            [GeneratorFactoryInterface::SPEC_JSONSCHEMA],
+            [GeneratorFactoryInterface::SPEC_OPENAPI],
+            [GeneratorFactoryInterface::SPEC_RAML],
+            [GeneratorFactoryInterface::SPEC_SWAGGER],
         ];
     }
 }

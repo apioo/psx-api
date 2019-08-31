@@ -24,6 +24,7 @@ use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
 use PSX\Api\Console\ParseCommand;
 use PSX\Api\GeneratorFactory;
+use PSX\Api\GeneratorFactoryInterface;
 use PSX\Api\Resource;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 use PSX\Schema\SchemaManager;
@@ -38,7 +39,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ParseCommandTest extends TestCase
 {
-    public function testGenerateHtml()
+    public function testGenerateClientPhp()
     {
         $command = $this->getParseCommand();
 
@@ -46,16 +47,52 @@ class ParseCommandTest extends TestCase
         $commandTester->execute(array(
             'source'   => TestController::class,
             'path'     => '/foo',
-            '--format' => 'html',
+            '--format' => GeneratorFactoryInterface::CLIENT_PHP,
         ));
 
         $actual = $commandTester->getDisplay();
-        $expect = file_get_contents(__DIR__ . '/resource/html.htm');
+        $expect = file_get_contents(__DIR__ . '/resource/client_php.php');
+        $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
+
+        $this->assertEquals($expect, $actual, $actual);
+    }
+
+    public function testGenerateClientTypescript()
+    {
+        $command = $this->getParseCommand();
+
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'source'   => TestController::class,
+            'path'     => '/foo',
+            '--format' => GeneratorFactoryInterface::CLIENT_TYPESCRIPT,
+        ));
+
+        $actual = $commandTester->getDisplay();
+        $expect = file_get_contents(__DIR__ . '/resource/client_typescript.ts');
+        $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
+
+        $this->assertEquals($expect, $actual, $actual);
+    }
+
+    public function testGenerateMarkupHtml()
+    {
+        $command = $this->getParseCommand();
+
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'source'   => TestController::class,
+            'path'     => '/foo',
+            '--format' => GeneratorFactoryInterface::MARKUP_HTML,
+        ));
+
+        $actual = $commandTester->getDisplay();
+        $expect = file_get_contents(__DIR__ . '/resource/markup_html.htm');
 
         $this->assertXmlStringNotEqualsXmlString('<div>' . $expect . '</div>', '<div>' . $actual . '</div>', $actual);
     }
 
-    public function testGenerateJsonschema()
+    public function testGenerateMarkupMarkdown()
     {
         $command = $this->getParseCommand();
 
@@ -63,18 +100,58 @@ class ParseCommandTest extends TestCase
         $commandTester->execute(array(
             'source'   => TestController::class,
             'path'     => '/foo',
-            '--format' => 'jsonschema',
+            '--format' => GeneratorFactoryInterface::MARKUP_MARKDOWN,
         ));
 
         $actual = $commandTester->getDisplay();
         $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
 
-        $expect = file_get_contents(__DIR__ . '/resource/jsonschema.json');
+        $expect = file_get_contents(__DIR__ . '/resource/markup_markdown.md');
+        $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
+
+        $this->assertEquals($expect, $actual, $actual);
+    }
+
+    public function testGenerateServerPhp()
+    {
+        $command = $this->getParseCommand();
+
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'source'   => TestController::class,
+            'path'     => '/foo',
+            '--format' => GeneratorFactoryInterface::SERVER_PHP,
+        ));
+
+        $actual = $commandTester->getDisplay();
+        $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
+
+        $expect = file_get_contents(__DIR__ . '/resource/server_php.php');
+        $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
+
+        $this->assertEquals($expect, $actual, $actual);
+    }
+
+    public function testGenerateSpecJsonschema()
+    {
+        $command = $this->getParseCommand();
+
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'source'   => TestController::class,
+            'path'     => '/foo',
+            '--format' => GeneratorFactoryInterface::SPEC_JSONSCHEMA,
+        ));
+
+        $actual = $commandTester->getDisplay();
+        $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
+
+        $expect = file_get_contents(__DIR__ . '/resource/spec_jsonschema.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
     
-    public function testGenerateMarkdown()
+    public function testGenerateSpecOpenAPI()
     {
         $command = $this->getParseCommand();
 
@@ -82,38 +159,18 @@ class ParseCommandTest extends TestCase
         $commandTester->execute(array(
             'source'   => TestController::class,
             'path'     => '/foo',
-            '--format' => 'markdown',
+            '--format' => GeneratorFactoryInterface::SPEC_OPENAPI,
         ));
 
         $actual = $commandTester->getDisplay();
         $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
 
-        $expect = file_get_contents(__DIR__ . '/resource/markdown.md');
-        $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
-
-        $this->assertEquals($expect, $actual, $actual);
-    }
-
-    public function testGenerateOpenAPI()
-    {
-        $command = $this->getParseCommand();
-
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'source'   => TestController::class,
-            'path'     => '/foo',
-            '--format' => 'openapi',
-        ));
-
-        $actual = $commandTester->getDisplay();
-        $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
-
-        $expect = file_get_contents(__DIR__ . '/resource/openapi.json');
+        $expect = file_get_contents(__DIR__ . '/resource/spec_openapi.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
-    public function testGeneratePhp()
+    public function testGenerateSpecRaml()
     {
         $command = $this->getParseCommand();
 
@@ -121,19 +178,19 @@ class ParseCommandTest extends TestCase
         $commandTester->execute(array(
             'source'   => TestController::class,
             'path'     => '/foo',
-            '--format' => 'php',
+            '--format' => GeneratorFactoryInterface::SPEC_RAML,
         ));
 
         $actual = $commandTester->getDisplay();
         $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
 
-        $expect = file_get_contents(__DIR__ . '/resource/php.php');
+        $expect = file_get_contents(__DIR__ . '/resource/spec_raml.yaml');
         $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
 
         $this->assertEquals($expect, $actual, $actual);
     }
 
-    public function testGenerateRaml()
+    public function testGenerateSpecSwagger()
     {
         $command = $this->getParseCommand();
 
@@ -141,50 +198,13 @@ class ParseCommandTest extends TestCase
         $commandTester->execute(array(
             'source'   => TestController::class,
             'path'     => '/foo',
-            '--format' => 'raml',
+            '--format' => GeneratorFactoryInterface::SPEC_SWAGGER,
         ));
 
         $actual = $commandTester->getDisplay();
         $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
 
-        $expect = file_get_contents(__DIR__ . '/resource/raml.yaml');
-        $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
-
-        $this->assertEquals($expect, $actual, $actual);
-    }
-
-    public function testGenerateSerialize()
-    {
-        $command = $this->getParseCommand();
-
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'source'   => TestController::class,
-            'path'     => '/foo',
-            '--format' => 'serialize',
-        ));
-
-        $actual   = $commandTester->getDisplay();
-        $resource = unserialize($actual);
-
-        $this->assertInstanceOf(Resource::class, $resource);
-    }
-
-    public function testGenerateSwagger()
-    {
-        $command = $this->getParseCommand();
-
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'source'   => TestController::class,
-            'path'     => '/foo',
-            '--format' => 'swagger',
-        ));
-
-        $actual = $commandTester->getDisplay();
-        $actual = preg_replace('/Object([0-9A-Fa-f]{8})/', 'ObjectId', $actual);
-
-        $expect = file_get_contents(__DIR__ . '/resource/swagger.json');
+        $expect = file_get_contents(__DIR__ . '/resource/spec_swagger.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }

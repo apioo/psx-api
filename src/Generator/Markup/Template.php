@@ -18,32 +18,47 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests;
+namespace PSX\Api\Generator\Markup;
 
-use PHPUnit\Framework\TestCase;
+use PSX\Api\GeneratorInterface;
+use PSX\Api\Resource;
 
 /**
- * BinTest
+ * Template
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class BinTest extends TestCase
+class Template implements GeneratorInterface
 {
-    public function setUp()
+    /**
+     * @var \Twig_Environment
+     */
+    protected $engine;
+
+    /**
+     * @var string
+     */
+    protected $template;
+
+    /**
+     * @param string $template
+     */
+    public function __construct($template)
     {
-        if (strpos(shell_exec('php -v'), 'PHP') === false) {
-            $this->markTestIncomplete('Looks like php is not available');
-        }
+        $loader = new \Twig_Loader_Filesystem(__DIR__ . '/../../../resources');
+
+        $this->engine   = new \Twig_Environment($loader);
+        $this->template = $template;
     }
 
-    public function testBin()
+    /**
+     * @param \PSX\Api\Resource $resource
+     * @return string
+     */
+    public function generate(Resource $resource)
     {
-        $actual = shell_exec('php ' . __DIR__ . '/../bin/api');
-
-        $this->assertRegExp('/api:generate/', $actual);
-        $this->assertRegExp('/api:parse/', $actual);
-        $this->assertRegExp('/api:resource/', $actual);
+        return $this->engine->render($this->template, ['resource' => $resource]);
     }
 }

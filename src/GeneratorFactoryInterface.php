@@ -29,16 +29,19 @@ namespace PSX\Api;
  */
 interface GeneratorFactoryInterface
 {
-    const TYPE_HTML = 'html';
-    const TYPE_JSONSCHEMA = 'jsonschema';
-    const TYPE_MARKDOWN = 'markdown';
-    const TYPE_OPENAPI = 'openapi';
-    const TYPE_PHP = 'php';
-    const TYPE_RAML = 'raml';
-    const TYPE_SERIALIZE = 'serialize';
-    const TYPE_SWAGGER = 'swagger';
-    const TYPE_TEMPLATE = 'template';
-    const TYPE_TYPESCRIPT = 'typescript';
+    const CLIENT_PHP = 'client.php';
+    const CLIENT_TYPESCRIPT = 'client.typescript';
+
+    const MARKUP_HTML = 'markup.html';
+    const MARKUP_MARKDOWN = 'markup.markdown';
+    const MARKUP_TEMPLATE = 'markup.template';
+
+    const SPEC_JSONSCHEMA = 'markup.jsonschema';
+    const SPEC_OPENAPI = 'spec.openapi';
+    const SPEC_RAML = 'spec.raml';
+    const SPEC_SWAGGER = 'spec.swagger';
+
+    const SERVER_PHP = 'server.php';
 
     /**
      * Returns the fitting generator object for the provided type

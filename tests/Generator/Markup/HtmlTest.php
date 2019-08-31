@@ -18,32 +18,29 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests;
+namespace PSX\Api\Tests\Generator\Markup;
 
-use PHPUnit\Framework\TestCase;
+use PSX\Api\Generator\Markup\Html;
+use PSX\Api\Tests\Generator\GeneratorTestCase;
 
 /**
- * BinTest
+ * HtmlTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class BinTest extends TestCase
+class HtmlTest extends GeneratorTestCase
 {
-    public function setUp()
+    public function testGenerate()
     {
-        if (strpos(shell_exec('php -v'), 'PHP') === false) {
-            $this->markTestIncomplete('Looks like php is not available');
-        }
-    }
+        $generator = new Html();
 
-    public function testBin()
-    {
-        $actual = shell_exec('php ' . __DIR__ . '/../bin/api');
+        $actual = $generator->generate($this->getResource());
+        $actual = preg_replace('/psx_model_Object([0-9A-Fa-f]{8})/', '[dynamic_id]', $actual);
 
-        $this->assertRegExp('/api:generate/', $actual);
-        $this->assertRegExp('/api:parse/', $actual);
-        $this->assertRegExp('/api:resource/', $actual);
+        $expect = file_get_contents(__DIR__ . '/resource/html.htm');
+
+        $this->assertXmlStringEqualsXmlString('<div>' . $expect . '</div>', '<div>' . $actual . '</div>', $actual);
     }
 }
