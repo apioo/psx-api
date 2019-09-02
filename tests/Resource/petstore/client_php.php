@@ -1,5 +1,7 @@
 <?php
 
+namespace Pets;
+
 use GuzzleHttp\Client;
 use PSX\Schema\Parser\Popo\Dumper;
 use PSX\Schema\SchemaManager;
