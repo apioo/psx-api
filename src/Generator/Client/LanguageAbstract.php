@@ -46,11 +46,17 @@ abstract class LanguageAbstract implements GeneratorInterface
     protected $baseUrl;
 
     /**
+     * @var string
+     */
+    protected $namespace;
+
+    /**
      * @param string $baseUrl
      */
-    public function __construct(string $baseUrl)
+    public function __construct(string $baseUrl, ?string $namespace = null)
     {
         $this->baseUrl = $baseUrl;
+        $this->namespace = $namespace;
     }
 
     /**
@@ -110,12 +116,13 @@ abstract class LanguageAbstract implements GeneratorInterface
             ];
         }
 
-        $namespace = $this->getClassName($resource->getPath());
+        $className = $this->getClassName($resource->getPath());
         $schemas = $this->generateSchema($schemas);
 
         return $engine->render($this->getTemplate(), [
-            'namespace' => $namespace,
             'base_url' => $this->baseUrl,
+            'namespace' => $this->namespace,
+            'class_name' => $className,
             'url_parts' => $urlParts,
             'resource' => $resource,
             'properties' => $properties,

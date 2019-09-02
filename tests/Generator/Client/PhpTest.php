@@ -45,7 +45,7 @@ class PhpTest extends GeneratorTestCase
 
     public function testGenerateComplex()
     {
-        $generator = new Php('http://api.foo.com');
+        $generator = new Php('http://api.foo.com', 'Foo\Bar');
 
         $actual = $generator->generate($this->getResourceComplex());
         $expect = file_get_contents(__DIR__ . '/resource/php_complex.php');

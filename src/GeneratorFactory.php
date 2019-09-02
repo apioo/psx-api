@@ -73,7 +73,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
         switch ($format) {
             case GeneratorFactoryInterface::CLIENT_PHP:
                 $baseUri   = $this->url . '/' . $this->dispatch;
-                $generator = new Generator\Client\Php($baseUri);
+                $generator = new Generator\Client\Php($baseUri, $config);
                 break;
 
             case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
