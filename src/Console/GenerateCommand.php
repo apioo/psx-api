@@ -106,7 +106,7 @@ class GenerateCommand extends Command
         $progress->start();
 
         foreach ($resources as $resource) {
-            if (!empty($filterRegexp) && !preg_match('/~' . $filterRegexp . '~/', $resource->getPath())) {
+            if (!empty($filterRegexp) && !preg_match('~' . $filterRegexp . '~', $resource->getPath())) {
                 continue;
             }
 

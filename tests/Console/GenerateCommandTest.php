@@ -222,6 +222,24 @@ class GenerateCommandTest extends TestCase
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
+    public function testGenerateClientPhpRegexp()
+    {
+        $command = $this->getGenerateCommand();
+
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'dir'      => __DIR__ . '/output',
+            '--regexp' => '^/foo',
+            '--format' => GeneratorFactoryInterface::CLIENT_PHP,
+        ));
+
+        $actual = file_get_contents(__DIR__ . '/output/foo.php');
+        $expect = file_get_contents(__DIR__ . '/resource/client_php.php');
+        $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
+
+        $this->assertEquals($expect, $actual, $actual);
+    }
+
     protected function getGenerateCommand()
     {
         $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
