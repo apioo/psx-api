@@ -1,4 +1,9 @@
 
+### 2.6.0
+
+* Added PHP client generator
+* Reorganize generators
+
 ### 2.5.2 (2018-12-15)
 
 * Upgrade PHPUnit to 6.0
