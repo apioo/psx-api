@@ -1,6 +1,6 @@
 <?php
 
-namespace Foo\Bar;
+namespace Foo\Bar\FooNameType;
 
 use GuzzleHttp\Client;
 use PSX\Schema\Parser\Popo\Dumper;

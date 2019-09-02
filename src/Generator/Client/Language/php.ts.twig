@@ -1,8 +1,7 @@
 <?php
 
-{% if namespace %}namespace {{ namespace }};
+namespace {% if namespace %}{{ namespace }}\{% endif %}{{ class_name }};
 
-{% endif %}
 use GuzzleHttp\Client;
 use PSX\Schema\Parser\Popo\Dumper;
 use PSX\Schema\SchemaManager;
