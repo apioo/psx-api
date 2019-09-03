@@ -177,8 +177,6 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 return 'text/html';
             case GeneratorFactoryInterface::MARKUP_MARKDOWN:
                 return 'text/markdown';
-            case GeneratorFactoryInterface::MARKUP_TEMPLATE:
-                return 'text/plain';
 
             case GeneratorFactoryInterface::SERVER_PHP:
                 return 'application/php';
@@ -216,7 +214,6 @@ class GeneratorFactory implements GeneratorFactoryInterface
 
             GeneratorFactoryInterface::MARKUP_HTML,
             GeneratorFactoryInterface::MARKUP_MARKDOWN,
-            GeneratorFactoryInterface::MARKUP_TEMPLATE,
 
             GeneratorFactoryInterface::SERVER_PHP,
 
