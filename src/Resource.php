@@ -35,6 +35,8 @@ use PSX\Schema\PropertyInterface;
  */
 class Resource implements IteratorAggregate
 {
+    use TagableTrait;
+
     const STATUS_ACTIVE      = 0x1;
     const STATUS_DEPRECATED  = 0x2;
     const STATUS_CLOSED      = 0x3;

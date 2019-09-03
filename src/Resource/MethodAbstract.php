@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Resource;
 
+use PSX\Api\TagableTrait;
 use PSX\Schema\Property;
 use PSX\Schema\PropertyInterface;
 use PSX\Schema\SchemaInterface;
@@ -34,6 +35,8 @@ use RuntimeException;
  */
 abstract class MethodAbstract
 {
+    use TagableTrait;
+
     /**
      * @var string
      */
@@ -63,11 +66,6 @@ abstract class MethodAbstract
      * @var array
      */
     protected $security;
-
-    /**
-     * @var array
-     */
-    protected $tags;
 
     public function __construct()
     {
@@ -174,18 +172,6 @@ abstract class MethodAbstract
     public function hasSecurity()
     {
         return !empty($this->security);
-    }
-
-    public function setTags(array $tags)
-    {
-        $this->tags = $tags;
-
-        return $this;
-    }
-
-    public function getTags()
-    {
-        return $this->tags;
     }
 
     /**

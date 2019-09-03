@@ -196,6 +196,12 @@ class Swagger extends OpenAPIAbstract
                 $operation->setDescription($description);
             }
 
+            // tags
+            $tags = array_merge($resource->getTags(), $method->getTags());
+            if (!empty($tags)) {
+                $operation->setTags($tags);
+            }
+
             // query parameter
             $queryParameters = $method->getQueryParameters();
             $parameters      = [];
