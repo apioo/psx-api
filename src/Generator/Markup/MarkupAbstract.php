@@ -20,8 +20,10 @@
 
 namespace PSX\Api\Generator\Markup;
 
+use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 use PSX\Http\Http;
 use PSX\Schema\Generator\GeneratorTrait;
 use PSX\Schema\PropertyInterface;
@@ -34,7 +36,7 @@ use PSX\Schema\SchemaInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-abstract class MarkupAbstract implements GeneratorInterface
+abstract class MarkupAbstract implements GeneratorInterface, GeneratorCollectionInterface
 {
     use GeneratorTrait;
 
@@ -109,6 +111,19 @@ abstract class MarkupAbstract implements GeneratorInterface
         }
 
         $text.= $this->endResource();
+
+        return $text;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function generateAll(ResourceCollection $collection)
+    {
+        $text = '';
+        foreach ($collection as $path => $resource) {
+            $text.= $this->generate($resource) . "\n\n";
+        }
 
         return $text;
     }
