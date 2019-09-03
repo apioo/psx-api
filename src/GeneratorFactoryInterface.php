@@ -36,7 +36,7 @@ interface GeneratorFactoryInterface
     const MARKUP_MARKDOWN = 'markup.markdown';
     const MARKUP_TEMPLATE = 'markup.template';
 
-    const SPEC_JSONSCHEMA = 'markup.jsonschema';
+    const SPEC_JSONSCHEMA = 'spec.jsonschema';
     const SPEC_OPENAPI = 'spec.openapi';
     const SPEC_RAML = 'spec.raml';
     const SPEC_SWAGGER = 'spec.swagger';
