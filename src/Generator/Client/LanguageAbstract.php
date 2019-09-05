@@ -73,7 +73,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         $schemas = [];
         $methods = [];
         foreach ($resource->getMethods() as $method) {
-            $methodName = $method->getOperationId() ?: strtolower($method->getName());
+            $methodName = $this->getMethodName($method->getOperationId() ?: strtolower($method->getName()));
 
             $args = [];
 
@@ -243,5 +243,19 @@ abstract class LanguageAbstract implements GeneratorInterface
         }, $parts);
 
         return implode('', $parts);
+    }
+
+    /**
+     * @param $methodName
+     * @return string
+     */
+    private function getMethodName($methodName): string
+    {
+        $parts = explode('_', str_replace(['.', ' '], '_', $methodName));
+        $parts = array_map(function($part){
+            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
+        }, $parts);
+
+        return lcfirst(implode('', $parts));
     }
 }
