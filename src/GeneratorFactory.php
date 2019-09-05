@@ -215,8 +215,6 @@ class GeneratorFactory implements GeneratorFactoryInterface
             GeneratorFactoryInterface::MARKUP_HTML,
             GeneratorFactoryInterface::MARKUP_MARKDOWN,
 
-            GeneratorFactoryInterface::SERVER_PHP,
-
             GeneratorFactoryInterface::SPEC_JSONSCHEMA,
             GeneratorFactoryInterface::SPEC_OPENAPI,
             GeneratorFactoryInterface::SPEC_RAML,
