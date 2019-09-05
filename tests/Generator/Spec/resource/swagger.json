@@ -13,7 +13,7 @@
     "\/foo\/{name}\/{type}": {
       "get": {
         "description": "Returns a collection",
-        "operationId": "getCollection",
+        "operationId": "list.foo",
         "parameters": [
           {
             "description": "startIndex parameter",
@@ -83,7 +83,7 @@
         }
       },
       "post": {
-        "operationId": "postItem",
+        "operationId": "create.foo",
         "parameters": [
           {
             "description": "POST request",

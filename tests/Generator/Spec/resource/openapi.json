@@ -13,7 +13,7 @@
     "\/foo\/{name}\/{type}": {
       "get": {
         "description": "Returns a collection",
-        "operationId": "getCollection",
+        "operationId": "list.foo",
         "parameters": [
           {
             "name": "startIndex",
@@ -100,7 +100,7 @@
         }
       },
       "post": {
-        "operationId": "postItem",
+        "operationId": "create.foo",
         "requestBody": {
           "content": {
             "application\/json": {
@@ -202,18 +202,6 @@
   },
   "components": {
     "schemas": {
-      "Collection": {
-        "type": "object",
-        "title": "collection",
-        "properties": {
-          "entry": {
-            "type": "array",
-            "items": {
-              "$ref": "#\/components\/schemas\/Item"
-            }
-          }
-        }
-      },
       "Item": {
         "type": "object",
         "title": "item",
@@ -238,6 +226,18 @@
         "required": [
           "id"
         ]
+      },
+      "Collection": {
+        "type": "object",
+        "title": "collection",
+        "properties": {
+          "entry": {
+            "type": "array",
+            "items": {
+              "$ref": "#\/components\/schemas\/Item"
+            }
+          }
+        }
       },
       "Message": {
         "type": "object",

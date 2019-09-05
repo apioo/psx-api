@@ -20,7 +20,7 @@ export default class Resource {
     /**
      * Returns a collection
      */
-    public get(query: GetQuery): AxiosPromise<Collection> {
+    public listFoo(query: GetQuery): AxiosPromise<Collection> {
         let params = {
             method: "GET",
             params: query,
@@ -29,7 +29,7 @@ export default class Resource {
         return this.httpClient.get<Collection>(this.url, params);
     }
 
-    public post(data: Item): AxiosPromise<Message> {
+    public createFoo(data: Item): AxiosPromise<Message> {
         let params = {
             method: "POST",
         };

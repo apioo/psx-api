@@ -54,7 +54,7 @@ class Resource
     /**
      * Returns a collection
      */
-    public function get(GetQuery $query): Collection
+    public function listFoo(GetQuery $query): Collection
     {
         $options = [
             'query' => $this->convertToArray($query),
@@ -66,7 +66,7 @@ class Resource
         return $this->convertToObject($data, Collection::class);
     }
 
-    public function post(Item $data): Message
+    public function createFoo(Item $data): Message
     {
         $options = [
             'json' => $this->convertToArray($data)

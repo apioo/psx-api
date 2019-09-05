@@ -59,6 +59,7 @@ abstract class GeneratorTestCase extends TestCase
         
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')
+            ->setOperationId('list.foo')
             ->addQueryParameter('startIndex', Property::getInteger()
                 ->setDescription('startIndex parameter')
                 ->setMinimum(0)
@@ -72,6 +73,7 @@ abstract class GeneratorTestCase extends TestCase
         $resource->getMethod('GET')->getQueryParameters()->setRequired(['startIndex']);
 
         $resource->addMethod(Resource\Factory::getMethod('POST')
+            ->setOperationId('create.foo')
             ->setRequest($schemaManager->getSchema(Schema\Create::class))
             ->addResponse(201, $schemaManager->getSchema(Schema\SuccessMessage::class)));
 
