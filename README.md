@@ -19,15 +19,27 @@ an [online tool](http://phpsx.org/tools/openapi) to test those conversions.
 
 ### Generator
 
+#### Client
+
+- PHP (Generates a PHP client stub)
+- Typescript (Generates a Typescript based client stub)
+
+#### Markup
+
 - HTML (Generates a HTML representation of the resource)
-- JsonSchema (Generates a [JsonSchema](http://json-schema.org/) which contains all schemas of the specification)
 - Markdown (Generates a Markdown representation of the resource)
+- Template (Generates a representation based on a [Twig](https://twig.symfony.com/) template)
+
+#### Server
+
+- PHP (Generates a PHP controller class which represents the API resource)
+
+#### Spec
+
+- JsonSchema (Generates a [JsonSchema](http://json-schema.org/) which contains all schemas of the specification)
 - OpenAPI (Generates a [OpenAPI 3.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md) specification)
-- PHP (Generates PHP source code which represents a controller consuming the API resource)
 - RAML (Generates a [RAML 1.0](http://raml.org/) specification)
 - Swagger (Generates a [Swagger 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) specification)
-- Typescript (Generates a Typescript based client stub)
-- Template (Generates a representation based on a [Twig](https://twig.symfony.com/) template)
 
 ## Usage
 
@@ -69,8 +81,8 @@ $resource->getMethod('POST')->hasResponse(201);
 // returns the response body specification as PSX\Schema\SchemaInterface
 $resource->getMethod('POST')->getResponse(201);
 
-// creates a PHP controller which consumes the defined /foo resource
-$generator = new \PSX\Api\Generator\Php();
+// creates a PHP client which consumes the defined /foo resource
+$generator = new \PSX\Api\Generator\Client\Php();
 
 $source = $generator->generate($resource);
 
