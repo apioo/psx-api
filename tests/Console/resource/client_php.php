@@ -47,6 +47,9 @@ class Resource
 
     /**
      * A long **Test** description
+     *
+     * @param GetQuery $query
+     * @return Song
      */
     public function doGet(GetQuery $query): Song
     {
@@ -101,27 +104,27 @@ class Rating
      * @Type("string")
      */
     protected $text;
-    public function setAuthor($author)
+    public function setAuthor(?string $author)
     {
         $this->author = $author;
     }
-    public function getAuthor()
+    public function getAuthor() : ?string
     {
         return $this->author;
     }
-    public function setRating($rating)
+    public function setRating(?int $rating)
     {
         $this->rating = $rating;
     }
-    public function getRating()
+    public function getRating() : ?int
     {
         return $this->rating;
     }
-    public function setText($text)
+    public function setText(?string $text)
     {
         $this->text = $text;
     }
-    public function getText()
+    public function getText() : ?string
     {
         return $this->text;
     }
@@ -154,35 +157,35 @@ class Song
      * @Items(@Ref("PSX\Generation\Rating"))
      */
     protected $ratings;
-    public function setTitle($title)
+    public function setTitle(?string $title)
     {
         $this->title = $title;
     }
-    public function getTitle()
+    public function getTitle() : ?string
     {
         return $this->title;
     }
-    public function setArtist($artist)
+    public function setArtist(?string $artist)
     {
         $this->artist = $artist;
     }
-    public function getArtist()
+    public function getArtist() : ?string
     {
         return $this->artist;
     }
-    public function setLength($length)
+    public function setLength(?int $length)
     {
         $this->length = $length;
     }
-    public function getLength()
+    public function getLength() : ?int
     {
         return $this->length;
     }
-    public function setRatings($ratings)
+    public function setRatings(?array $ratings)
     {
         $this->ratings = $ratings;
     }
-    public function getRatings()
+    public function getRatings() : ?array
     {
         return $this->ratings;
     }
@@ -241,75 +244,75 @@ class GetQuery
      * @Type("string")
      */
     protected $string;
-    public function setFoo($foo)
+    public function setFoo(?string $foo)
     {
         $this->foo = $foo;
     }
-    public function getFoo()
+    public function getFoo() : ?string
     {
         return $this->foo;
     }
-    public function setBar($bar)
+    public function setBar(?string $bar)
     {
         $this->bar = $bar;
     }
-    public function getBar()
+    public function getBar() : ?string
     {
         return $this->bar;
     }
-    public function setBaz($baz)
+    public function setBaz(?string $baz)
     {
         $this->baz = $baz;
     }
-    public function getBaz()
+    public function getBaz() : ?string
     {
         return $this->baz;
     }
-    public function setBoz($boz)
+    public function setBoz(?string $boz)
     {
         $this->boz = $boz;
     }
-    public function getBoz()
+    public function getBoz() : ?string
     {
         return $this->boz;
     }
-    public function setInteger($integer)
+    public function setInteger(?int $integer)
     {
         $this->integer = $integer;
     }
-    public function getInteger()
+    public function getInteger() : ?int
     {
         return $this->integer;
     }
-    public function setNumber($number)
+    public function setNumber(?float $number)
     {
         $this->number = $number;
     }
-    public function getNumber()
+    public function getNumber() : ?float
     {
         return $this->number;
     }
-    public function setDate($date)
+    public function setDate(?string $date)
     {
         $this->date = $date;
     }
-    public function getDate()
+    public function getDate() : ?string
     {
         return $this->date;
     }
-    public function setBoolean($boolean)
+    public function setBoolean(?bool $boolean)
     {
         $this->boolean = $boolean;
     }
-    public function getBoolean()
+    public function getBoolean() : ?bool
     {
         return $this->boolean;
     }
-    public function setString($string)
+    public function setString(?string $string)
     {
         $this->string = $string;
     }
-    public function getString()
+    public function getString() : ?string
     {
         return $this->string;
     }
@@ -329,19 +332,19 @@ class Endpoint
      * @Ref("PSX\Generation\Song")
      */
     protected $Song;
-    public function setGetQuery($GetQuery)
+    public function setGetQuery(?GetQuery $GetQuery)
     {
         $this->GetQuery = $GetQuery;
     }
-    public function getGetQuery()
+    public function getGetQuery() : ?GetQuery
     {
         return $this->GetQuery;
     }
-    public function setSong($Song)
+    public function setSong(?Song $Song)
     {
         $this->Song = $Song;
     }
-    public function getSong()
+    public function getSong() : ?Song
     {
         return $this->Song;
     }

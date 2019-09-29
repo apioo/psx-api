@@ -41,6 +41,9 @@ class Resource
 
     /**
      * List all pets
+     *
+     * @param GetQuery $query
+     * @return Pets
      */
     public function listPets(GetQuery $query): Pets
     {
@@ -56,6 +59,9 @@ class Resource
 
     /**
      * Create a pet
+     *
+     * @param Pet $data
+     * @return void
      */
     public function createPets(Pet $data)
     {
@@ -112,27 +118,27 @@ class Pet
      * @Type("string")
      */
     protected $tag;
-    public function setId($id)
+    public function setId(?int $id)
     {
         $this->id = $id;
     }
-    public function getId()
+    public function getId() : ?int
     {
         return $this->id;
     }
-    public function setName($name)
+    public function setName(?string $name)
     {
         $this->name = $name;
     }
-    public function getName()
+    public function getName() : ?string
     {
         return $this->name;
     }
-    public function setTag($tag)
+    public function setTag(?string $tag)
     {
         $this->tag = $tag;
     }
-    public function getTag()
+    public function getTag() : ?string
     {
         return $this->tag;
     }
@@ -148,11 +154,11 @@ class Pets
      * @Items(@Ref("PSX\Generation\Pet"))
      */
     protected $pets;
-    public function setPets($pets)
+    public function setPets(?array $pets)
     {
         $this->pets = $pets;
     }
-    public function getPets()
+    public function getPets() : ?array
     {
         return $this->pets;
     }
@@ -168,11 +174,11 @@ class GetQuery
      * @Format("int32")
      */
     protected $limit;
-    public function setLimit($limit)
+    public function setLimit(?int $limit)
     {
         $this->limit = $limit;
     }
-    public function getLimit()
+    public function getLimit() : ?int
     {
         return $this->limit;
     }
@@ -197,27 +203,27 @@ class Endpoint
      * @Ref("PSX\Generation\Pet")
      */
     protected $Pet;
-    public function setGetQuery($GetQuery)
+    public function setGetQuery(?GetQuery $GetQuery)
     {
         $this->GetQuery = $GetQuery;
     }
-    public function getGetQuery()
+    public function getGetQuery() : ?GetQuery
     {
         return $this->GetQuery;
     }
-    public function setPets($Pets)
+    public function setPets(?Pets $Pets)
     {
         $this->Pets = $Pets;
     }
-    public function getPets()
+    public function getPets() : ?Pets
     {
         return $this->Pets;
     }
-    public function setPet($Pet)
+    public function setPet(?Pet $Pet)
     {
         $this->Pet = $Pet;
     }
-    public function getPet()
+    public function getPet() : ?Pet
     {
         return $this->Pet;
     }

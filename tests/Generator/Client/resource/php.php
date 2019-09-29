@@ -53,6 +53,9 @@ class Resource
 
     /**
      * Returns a collection
+     *
+     * @param GetQuery $query
+     * @return Collection
      */
     public function listFoo(GetQuery $query): Collection
     {
@@ -66,6 +69,10 @@ class Resource
         return $this->convertToObject($data, Collection::class);
     }
 
+    /**
+     * @param Item $data
+     * @return Message
+     */
     public function createFoo(Item $data): Message
     {
         $options = [
@@ -78,6 +85,10 @@ class Resource
         return $this->convertToObject($data, Message::class);
     }
 
+    /**
+     * @param Item $data
+     * @return Message
+     */
     public function put(Item $data): Message
     {
         $options = [
@@ -90,6 +101,9 @@ class Resource
         return $this->convertToObject($data, Message::class);
     }
 
+    /**
+     * @return Message
+     */
     public function delete(): Message
     {
         $options = [
@@ -101,6 +115,10 @@ class Resource
         return $this->convertToObject($data, Message::class);
     }
 
+    /**
+     * @param Item $data
+     * @return Message
+     */
     public function patch(Item $data): Message
     {
         $options = [
@@ -149,19 +167,19 @@ class Message
      * @Type("string")
      */
     protected $message;
-    public function setSuccess($success)
+    public function setSuccess(?bool $success)
     {
         $this->success = $success;
     }
-    public function getSuccess()
+    public function getSuccess() : ?bool
     {
         return $this->success;
     }
-    public function setMessage($message)
+    public function setMessage(?string $message)
     {
         $this->message = $message;
     }
-    public function getMessage()
+    public function getMessage() : ?string
     {
         return $this->message;
     }
@@ -196,35 +214,35 @@ class Item
      * @Format("date-time")
      */
     protected $date;
-    public function setId($id)
+    public function setId(?int $id)
     {
         $this->id = $id;
     }
-    public function getId()
+    public function getId() : ?int
     {
         return $this->id;
     }
-    public function setUserId($userId)
+    public function setUserId(?int $userId)
     {
         $this->userId = $userId;
     }
-    public function getUserId()
+    public function getUserId() : ?int
     {
         return $this->userId;
     }
-    public function setTitle($title)
+    public function setTitle(?string $title)
     {
         $this->title = $title;
     }
-    public function getTitle()
+    public function getTitle() : ?string
     {
         return $this->title;
     }
-    public function setDate($date)
+    public function setDate(?\DateTime $date)
     {
         $this->date = $date;
     }
-    public function getDate()
+    public function getDate() : ?\DateTime
     {
         return $this->date;
     }
@@ -240,11 +258,11 @@ class Collection
      * @Items(@Ref("PSX\Generation\Item"))
      */
     protected $entry;
-    public function setEntry($entry)
+    public function setEntry(?array $entry)
     {
         $this->entry = $entry;
     }
-    public function getEntry()
+    public function getEntry() : ?array
     {
         return $this->entry;
     }
@@ -285,43 +303,43 @@ class GetQuery
      * @Format("date-time")
      */
     protected $datetime;
-    public function setStartIndex($startIndex)
+    public function setStartIndex(?int $startIndex)
     {
         $this->startIndex = $startIndex;
     }
-    public function getStartIndex()
+    public function getStartIndex() : ?int
     {
         return $this->startIndex;
     }
-    public function setFloat($float)
+    public function setFloat(?float $float)
     {
         $this->float = $float;
     }
-    public function getFloat()
+    public function getFloat() : ?float
     {
         return $this->float;
     }
-    public function setBoolean($boolean)
+    public function setBoolean(?bool $boolean)
     {
         $this->boolean = $boolean;
     }
-    public function getBoolean()
+    public function getBoolean() : ?bool
     {
         return $this->boolean;
     }
-    public function setDate($date)
+    public function setDate(?\DateTime $date)
     {
         $this->date = $date;
     }
-    public function getDate()
+    public function getDate() : ?\DateTime
     {
         return $this->date;
     }
-    public function setDatetime($datetime)
+    public function setDatetime(?\DateTime $datetime)
     {
         $this->datetime = $datetime;
     }
-    public function getDatetime()
+    public function getDatetime() : ?\DateTime
     {
         return $this->datetime;
     }
@@ -351,35 +369,35 @@ class Endpoint
      * @Ref("PSX\Generation\Message")
      */
     protected $Message;
-    public function setGetQuery($GetQuery)
+    public function setGetQuery(?GetQuery $GetQuery)
     {
         $this->GetQuery = $GetQuery;
     }
-    public function getGetQuery()
+    public function getGetQuery() : ?GetQuery
     {
         return $this->GetQuery;
     }
-    public function setCollection($Collection)
+    public function setCollection(?Collection $Collection)
     {
         $this->Collection = $Collection;
     }
-    public function getCollection()
+    public function getCollection() : ?Collection
     {
         return $this->Collection;
     }
-    public function setItem($Item)
+    public function setItem(?Item $Item)
     {
         $this->Item = $Item;
     }
-    public function getItem()
+    public function getItem() : ?Item
     {
         return $this->Item;
     }
-    public function setMessage($Message)
+    public function setMessage(?Message $Message)
     {
         $this->Message = $Message;
     }
-    public function getMessage()
+    public function getMessage() : ?Message
     {
         return $this->Message;
     }

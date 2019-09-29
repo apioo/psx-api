@@ -84,35 +84,35 @@ class Item
      * @Format("date-time")
      */
     protected $date;
-    public function setId($id)
+    public function setId(?int $id)
     {
         $this->id = $id;
     }
-    public function getId()
+    public function getId() : ?int
     {
         return $this->id;
     }
-    public function setUserId($userId)
+    public function setUserId(?int $userId)
     {
         $this->userId = $userId;
     }
-    public function getUserId()
+    public function getUserId() : ?int
     {
         return $this->userId;
     }
-    public function setTitle($title)
+    public function setTitle(?string $title)
     {
         $this->title = $title;
     }
-    public function getTitle()
+    public function getTitle() : ?string
     {
         return $this->title;
     }
-    public function setDate($date)
+    public function setDate(?\DateTime $date)
     {
         $this->date = $date;
     }
-    public function getDate()
+    public function getDate() : ?\DateTime
     {
         return $this->date;
     }
@@ -128,11 +128,11 @@ class Collection
      * @Items(@Ref("PSX\Generation\Item"))
      */
     protected $entry;
-    public function setEntry($entry)
+    public function setEntry(?array $entry)
     {
         $this->entry = $entry;
     }
-    public function getEntry()
+    public function getEntry() : ?array
     {
         return $this->entry;
     }
@@ -154,19 +154,19 @@ class Message
      * @Type("string")
      */
     protected $message;
-    public function setSuccess($success)
+    public function setSuccess(?bool $success)
     {
         $this->success = $success;
     }
-    public function getSuccess()
+    public function getSuccess() : ?bool
     {
         return $this->success;
     }
-    public function setMessage($message)
+    public function setMessage(?string $message)
     {
         $this->message = $message;
     }
-    public function getMessage()
+    public function getMessage() : ?string
     {
         return $this->message;
     }

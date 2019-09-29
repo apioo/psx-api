@@ -160,10 +160,11 @@ abstract class GeneratorTestCase extends TestCase
         $resource->addPathParameter('name', Property::getString());
         $resource->addPathParameter('type', Property::getString());
 
-        $resource->addMethod(Resource\Factory::getMethod('GET')
+        $resource->addMethod(Resource\Factory::getMethod('POST')
             ->setDescription('Returns a collection')
             ->setTags(['foo'])
-            ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class))
+            ->setRequest($schemaManager->getSchema(Schema\Complex::class))
+            ->addResponse(200, $schemaManager->getSchema(Schema\Complex::class))
             ->setSecurity('OAuth2', ['foo']));
 
         return $resource;

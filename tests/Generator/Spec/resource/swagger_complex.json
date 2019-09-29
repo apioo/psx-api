@@ -20,18 +20,28 @@
   ],
   "paths": {
     "\/foo\/{name}\/{type}": {
-      "get": {
+      "post": {
         "tags": [
           "foo"
         ],
         "description": "Returns a collection",
-        "operationId": "getCollection",
-        "parameters": [],
+        "operationId": "postEntryOrMessage",
+        "parameters": [
+          {
+            "description": "POST request",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#\/definitions\/EntryOrMessage"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "GET 200 response",
+            "description": "POST 200 response",
             "schema": {
-              "$ref": "#\/definitions\/Collection"
+              "$ref": "#\/definitions\/EntryOrMessage"
             }
           }
         },
@@ -82,17 +92,28 @@
         }
       }
     },
-    "Collection": {
+    "Message": {
       "type": "object",
-      "title": "collection",
+      "title": "message",
       "properties": {
-        "entry": {
-          "type": "array",
-          "items": {
-            "$ref": "#\/definitions\/Item"
-          }
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
         }
       }
+    },
+    "EntryOrMessage": {
+      "title": "EntryOrMessage",
+      "oneOf": [
+        {
+          "$ref": "#\/definitions\/Item"
+        },
+        {
+          "$ref": "#\/definitions\/Message"
+        }
+      ]
     }
   },
   "securityDefinitions": {

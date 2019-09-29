@@ -12,38 +12,42 @@ export default class Resource {
         this.name = name;
         this.type = type;
 
-        this.url = baseUrl + "/foo/"+name+"/"+type+"";
+        this.url = baseUrl + "";
         this.token = token;
         this.httpClient = httpClient ? httpClient : Axios.create();
     }
 
     /**
      * Returns a collection
+     *
+     * @param {Item | Message} data
+     * @returns {AxiosPromise<Item | Message>}
      */
-    public get(): AxiosPromise<Collection> {
+    public post(data: Item | Message): AxiosPromise<Item | Message> {
         let params = {
-            method: "GET",
+            method: "POST",
             headers: {
                 'Authorization': 'Bearer ' + this.token
             },
         };
 
-        return this.httpClient.get<Collection>(this.url, params);
+        return this.httpClient.post<Item | Message>(this.url, data, params);
     }
 
 }
 
 interface Endpoint {
-    Collection?: Collection
-}
-interface Collection {
-    entry?: Array<Item>
+    EntryOrMessage?: Item | Message
 }
 interface Item {
     id?: number
     userId?: number
     title?: string
     date?: string
+}
+interface Message {
+    success?: boolean
+    message?: string
 }
 
 

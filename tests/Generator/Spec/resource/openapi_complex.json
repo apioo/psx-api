@@ -22,19 +22,28 @@
   ],
   "paths": {
     "\/foo\/{name}\/{type}": {
-      "get": {
+      "post": {
         "tags": [
           "foo"
         ],
         "description": "Returns a collection",
-        "operationId": "getCollection",
+        "operationId": "postEntryOrMessage",
+        "requestBody": {
+          "content": {
+            "application\/json": {
+              "schema": {
+                "$ref": "#\/components\/schemas\/EntryOrMessage"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "GET 200 response",
+            "description": "POST 200 response",
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/Collection"
+                  "$ref": "#\/components\/schemas\/EntryOrMessage"
                 }
               }
             }
@@ -92,17 +101,28 @@
           }
         }
       },
-      "Collection": {
+      "Message": {
         "type": "object",
-        "title": "collection",
+        "title": "message",
         "properties": {
-          "entry": {
-            "type": "array",
-            "items": {
-              "$ref": "#\/components\/schemas\/Item"
-            }
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
           }
         }
+      },
+      "EntryOrMessage": {
+        "title": "EntryOrMessage",
+        "oneOf": [
+          {
+            "$ref": "#\/components\/schemas\/Item"
+          },
+          {
+            "$ref": "#\/components\/schemas\/Message"
+          }
+        ]
       }
     },
     "securitySchemes": {

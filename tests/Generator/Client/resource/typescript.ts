@@ -12,13 +12,16 @@ export default class Resource {
         this.name = name;
         this.type = type;
 
-        this.url = baseUrl + "/foo/"+name+"/"+type+"";
+        this.url = baseUrl + "";
         this.token = token;
         this.httpClient = httpClient ? httpClient : Axios.create();
     }
 
     /**
      * Returns a collection
+     *
+     * @param {GetQuery} query
+     * @returns {AxiosPromise<Collection>}
      */
     public listFoo(query: GetQuery): AxiosPromise<Collection> {
         let params = {
@@ -29,6 +32,10 @@ export default class Resource {
         return this.httpClient.get<Collection>(this.url, params);
     }
 
+    /**
+     * @param {Item} data
+     * @returns {AxiosPromise<Message>}
+     */
     public createFoo(data: Item): AxiosPromise<Message> {
         let params = {
             method: "POST",
@@ -37,6 +44,10 @@ export default class Resource {
         return this.httpClient.post<Message>(this.url, data, params);
     }
 
+    /**
+     * @param {Item} data
+     * @returns {AxiosPromise<Message>}
+     */
     public put(data: Item): AxiosPromise<Message> {
         let params = {
             method: "PUT",
@@ -45,6 +56,9 @@ export default class Resource {
         return this.httpClient.put<Message>(this.url, data, params);
     }
 
+    /**
+     * @returns {AxiosPromise<Message>}
+     */
     public delete(): AxiosPromise<Message> {
         let params = {
             method: "DELETE",
@@ -53,6 +67,10 @@ export default class Resource {
         return this.httpClient.delete(this.url, params);
     }
 
+    /**
+     * @param {Item} data
+     * @returns {AxiosPromise<Message>}
+     */
     public patch(data: Item): AxiosPromise<Message> {
         let params = {
             method: "PATCH",

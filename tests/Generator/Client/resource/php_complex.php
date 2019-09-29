@@ -53,19 +53,23 @@ class Resource
 
     /**
      * Returns a collection
+     *
+     * @param Item|Message $data
+     * @return Item|Message
      */
-    public function get(): Collection
+    public function post( $data)
     {
         $options = [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->token
             ],
+            'json' => $this->convertToArray($data)
         ];
 
-        $response = $this->httpClient->request('GET', $this->url, $options);
+        $response = $this->httpClient->request('POST', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->convertToObject($data, Collection::class);
+        return $this->convertToObject($data, null);
     }
 
     private function convertToArray($object)
@@ -89,6 +93,38 @@ class Resource
 
 
 
+/**
+ * @Title("message")
+ */
+class Message
+{
+    /**
+     * @Key("success")
+     * @Type("boolean")
+     */
+    protected $success;
+    /**
+     * @Key("message")
+     * @Type("string")
+     */
+    protected $message;
+    public function setSuccess(?bool $success)
+    {
+        $this->success = $success;
+    }
+    public function getSuccess() : ?bool
+    {
+        return $this->success;
+    }
+    public function setMessage(?string $message)
+    {
+        $this->message = $message;
+    }
+    public function getMessage() : ?string
+    {
+        return $this->message;
+    }
+}
 /**
  * @Title("item")
  */
@@ -118,57 +154,37 @@ class Item
      * @Format("date-time")
      */
     protected $date;
-    public function setId($id)
+    public function setId(?int $id)
     {
         $this->id = $id;
     }
-    public function getId()
+    public function getId() : ?int
     {
         return $this->id;
     }
-    public function setUserId($userId)
+    public function setUserId(?int $userId)
     {
         $this->userId = $userId;
     }
-    public function getUserId()
+    public function getUserId() : ?int
     {
         return $this->userId;
     }
-    public function setTitle($title)
+    public function setTitle(?string $title)
     {
         $this->title = $title;
     }
-    public function getTitle()
+    public function getTitle() : ?string
     {
         return $this->title;
     }
-    public function setDate($date)
+    public function setDate(?\DateTime $date)
     {
         $this->date = $date;
     }
-    public function getDate()
+    public function getDate() : ?\DateTime
     {
         return $this->date;
-    }
-}
-/**
- * @Title("collection")
- */
-class Collection
-{
-    /**
-     * @Key("entry")
-     * @Type("array")
-     * @Items(@Ref("PSX\Generation\Item"))
-     */
-    protected $entry;
-    public function setEntry($entry)
-    {
-        $this->entry = $entry;
-    }
-    public function getEntry()
-    {
-        return $this->entry;
     }
 }
 /**
@@ -177,17 +193,18 @@ class Collection
 class Endpoint
 {
     /**
-     * @Key("Collection")
-     * @Ref("PSX\Generation\Collection")
+     * @Key("EntryOrMessage")
+     * @Title("EntryOrMessage")
+     * @OneOf(@Ref("PSX\Generation\Item"), @Ref("PSX\Generation\Message"))
      */
-    protected $Collection;
-    public function setCollection($Collection)
+    protected $EntryOrMessage;
+    public function setEntryOrMessage($EntryOrMessage)
     {
-        $this->Collection = $Collection;
+        $this->EntryOrMessage = $EntryOrMessage;
     }
-    public function getCollection()
+    public function getEntryOrMessage()
     {
-        return $this->Collection;
+        return $this->EntryOrMessage;
     }
 }
 

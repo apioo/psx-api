@@ -8,13 +8,16 @@ export default class Resource {
 
     public constructor(baseUrl: string, token: string, httpClient?: AxiosInstance) {
 
-        this.url = baseUrl + "/pets";
+        this.url = baseUrl + "";
         this.token = token;
         this.httpClient = httpClient ? httpClient : Axios.create();
     }
 
     /**
      * List all pets
+     *
+     * @param {GetQuery} query
+     * @returns {AxiosPromise<Pets>}
      */
     public listPets(query: GetQuery): AxiosPromise<Pets> {
         let params = {
@@ -27,13 +30,16 @@ export default class Resource {
 
     /**
      * Create a pet
+     *
+     * @param {Pet} data
+     * @returns {AxiosPromise<void>}
      */
     public createPets(data: Pet) {
         let params = {
             method: "POST",
         };
 
-        return this.httpClient.post<>(this.url, data, params);
+        return this.httpClient.post(this.url, data, params);
     }
 
 }
