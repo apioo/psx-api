@@ -25,7 +25,7 @@ use PSX\Api\Resource;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\Property;
-use PSX\Schema\PropertyType;
+use PSX\Schema\PropertyInterface;
 use PSX\Schema\Schema;
 use PSX\Schema\SchemaInterface;
 
@@ -76,35 +76,41 @@ abstract class LanguageAbstract implements GeneratorInterface
             $methodName = $this->getMethodName($method->getOperationId() ?: strtolower($method->getName()));
 
             $args = [];
+            $docs = [];
 
             // query parameters
             if ($method->hasQueryParameters()) {
                 $parameters = $method->getQueryParameters();
 
-                $schemas[$parameters->getTitle()] = $parameters;
-                $args['query'] = $parameters->getTitle();
+                $schemas[$this->getIdentifierForProperty($parameters)] = $parameters;
+
+                $args['query'] = $this->getType($parameters);
+                $docs['query'] = $this->getDocType($parameters);
             }
 
             // request
             $request = $method->getRequest();
             if ($request instanceof SchemaInterface && !in_array($method->getName(), ['GET', 'DELETE'])) {
                 $property = $request->getDefinition();
-                $name     = $this->getIdentifierForProperty($property);
 
-                $schemas[$name] = $property;
-                $args['data'] = $name;
+                $schemas[$this->getIdentifierForProperty($property)] = $property;
+
+                $args['data'] = $this->getType($property);
+                $docs['data'] = $this->getDocType($property);
             }
 
             // response
             $response = $this->getSuccessfulResponse($method);
             if ($response instanceof SchemaInterface) {
                 $property = $response->getDefinition();
-                $name     = $this->getIdentifierForProperty($property);
 
-                $schemas[$name] = $property;
-                $return = $name;
+                $schemas[$this->getIdentifierForProperty($property)] = $property;
+
+                $return = $this->getType($property);
+                $returnDoc = $this->getDocType($property);
             } else {
                 $return = null;
+                $returnDoc = null;
             }
 
             $methods[$methodName] = [
@@ -112,7 +118,9 @@ abstract class LanguageAbstract implements GeneratorInterface
                 'description' => $method->getDescription(),
                 'secure' => $method->hasSecurity(),
                 'args' => $args,
+                'docs' => $docs,
                 'return' => $return,
+                'returnDoc' => $returnDoc,
             ];
         }
 
@@ -120,10 +128,10 @@ abstract class LanguageAbstract implements GeneratorInterface
         $schemas = $this->generateSchema($schemas);
 
         return $engine->render($this->getTemplate(), [
-            'base_url' => $this->baseUrl,
+            'baseUrl' => $this->baseUrl,
             'namespace' => $this->namespace,
-            'class_name' => $className,
-            'url_parts' => $urlParts,
+            'className' => $className,
+            'urlParts' => $urlParts,
             'resource' => $resource,
             'properties' => $properties,
             'methods' => $methods,
@@ -216,10 +224,26 @@ abstract class LanguageAbstract implements GeneratorInterface
     /**
      * Returns the type of the provided property for the specific language
      *
-     * @param \PSX\Schema\PropertyType $property
+     * @param \PSX\Schema\PropertyInterface $property
      * @return string
      */
-    abstract protected function getType(PropertyType $property): string;
+    protected function getType(PropertyInterface $property): string
+    {
+        $generator = $this->getGenerator();
+        if ($generator instanceof Generator\TypeAwareInterface) {
+            return $generator->getType($property);
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * Returns a type which is used in the documentation
+     * 
+     * @param \PSX\Schema\PropertyInterface $property
+     * @return string
+     */
+    abstract protected function getDocType(PropertyInterface $property): string;
 
     /**
      * @return string

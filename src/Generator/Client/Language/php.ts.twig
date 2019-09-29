@@ -1,6 +1,6 @@
 <?php
 
-namespace {% if namespace %}{{ namespace }}\{% endif %}{{ class_name }};
+namespace {% if namespace %}{{ namespace }}\{% endif %}{{ className }};
 
 use GuzzleHttp\Client;
 use PSX\Schema\Parser\Popo\Dumper;
@@ -43,18 +43,22 @@ class Resource
         $this->{{ name }} = ${{ name }};
 {% endfor %}
 
-        $this->url = $baseUrl . '{% for part in url_parts %}/{% if part.type == 'variable' %}' . ${{ part.value }} . '{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}';
+        $this->url = $baseUrl . '{% for part in urlParts %}/{% if part.type == 'variable' %}' . ${{ part.value }} . '{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}';
         $this->token = $token;
         $this->httpClient = $httpClient ? $httpClient : new Client();
         $this->schemaManager = $schemaManager ? $schemaManager : new SchemaManager();
     }
 
 {% for methodName, method in methods %}
-{% if method.description %}
     /**
-     * {{ method.description }}
-     */
+{% if method.description %}     * {{ method.description }}
+     *
 {% endif %}
+{% for name, hint in method.docs %}     * @param {{ hint }} ${{ name }}
+{% endfor %}
+     * @return {% if method.returnDoc %}{{ method.returnDoc }}{% else %}void{% endif %}
+
+     */
     public function {{ methodName }}({% for name, hint in method.args %}{{ hint }} ${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: {{ method.return }}{% endif %}
 
     {

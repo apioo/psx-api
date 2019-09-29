@@ -22,6 +22,7 @@ namespace PSX\Api\Generator\Client;
 
 use PSX\Schema;
 use PSX\Schema\GeneratorInterface;
+use PSX\Schema\PropertyInterface;
 use PSX\Schema\PropertyType;
 
 /**
@@ -36,18 +37,36 @@ class Php extends LanguageAbstract
     /**
      * @inheritdoc
      */
-    protected function getType(PropertyType $property): string
+    protected function getDocType(PropertyInterface $property): string
     {
-        if ($property->getType() == PropertyType::TYPE_STRING) {
+        $type = $this->getRealType($property);
+
+        if ($type == PropertyType::TYPE_STRING) {
             return 'string';
-        } elseif ($property->getType() == PropertyType::TYPE_NUMBER) {
+        } elseif ($type == PropertyType::TYPE_NUMBER) {
             return 'float';
-        } elseif ($property->getType() == PropertyType::TYPE_INTEGER) {
+        } elseif ($type == PropertyType::TYPE_INTEGER) {
             return 'int';
-        } elseif ($property->getType() == PropertyType::TYPE_BOOLEAN) {
+        } elseif ($type == PropertyType::TYPE_BOOLEAN) {
             return 'bool';
+        } elseif ($type == PropertyType::TYPE_ARRAY) {
+            return $this->getIdentifierForProperty($property) . '[]';
+        } elseif ($type == PropertyType::TYPE_OBJECT) {
+            return $this->getIdentifierForProperty($property);
+        } elseif ($property->getOneOf()) {
+            $parts = [];
+            foreach ($property->getOneOf() as $property) {
+                $parts[] = $this->getType($property);
+            }
+            return implode('|', $parts);
+        } elseif ($property->getAllOf()) {
+            $parts = [];
+            foreach ($property->getAllOf() as $property) {
+                $parts[] = $this->getType($property);
+            }
+            return implode('&', $parts);
         } else {
-            return '';
+            return 'mixed';
         }
     }
 

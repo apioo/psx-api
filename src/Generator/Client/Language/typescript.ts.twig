@@ -20,12 +20,15 @@ export default class Resource {
     }
 
 {% for methodName, method in methods %}
-{% if method.description %}
     /**
-     * {{ method.description }}
-     */
+{% if method.description %}     * {{ method.description }}
+     *
 {% endif %}
-    public {{ methodName }}({% for name, hint in method.args %}{{ name }}: {{ hint }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: AxiosPromise<{{ method.return }}>{% endif %} {
+{% for name, hint in method.docs %}     * @param {{ '{' }}{{ hint }}{{ '}' }} {{ name }}
+{% endfor %}
+     * @returns {{ '{' }}AxiosPromise<{% if method.returnDoc %}{{ method.returnDoc }}{% else %}void{% endif %}>{{ '}' }}
+     */
+    public {{ methodName }}({% for name, hint in method.args %}{{ name }}: {{ hint }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: AxiosPromise<{% if method.return %}{{ method.return }}{% else %}any{% endif %}>{% endif %} {
         let params = {
             method: "{{ method.httpMethod }}",
 {% if method.args.query is defined %}
@@ -41,9 +44,9 @@ export default class Resource {
 {% if method.httpMethod == "DELETE" %}
         return this.httpClient.{{ method.httpMethod|lower }}(this.url, params);
 {% elseif method.args.data is defined %}
-        return this.httpClient.{{ method.httpMethod|lower }}<{{ method.return }}>(this.url, data, params);
+        return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return }}>{% endif %}(this.url, data, params);
 {% else %}
-        return this.httpClient.{{ method.httpMethod|lower }}<{{ method.return }}>(this.url, params);
+        return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return }}>{% endif %}(this.url, params);
 {% endif %}
     }
 

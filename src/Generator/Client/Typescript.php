@@ -22,6 +22,7 @@ namespace PSX\Api\Generator\Client;
 
 use PSX\Schema;
 use PSX\Schema\GeneratorInterface;
+use PSX\Schema\PropertyInterface;
 use PSX\Schema\PropertyType;
 
 /**
@@ -36,14 +37,32 @@ class Typescript extends LanguageAbstract
     /**
      * @inheritdoc
      */
-    protected function getType(PropertyType $property): string
+    protected function getDocType(PropertyInterface $property): string
     {
-        if ($property->getType() == PropertyType::TYPE_STRING) {
+        $type = $this->getRealType($property);
+
+        if ($type == PropertyType::TYPE_STRING) {
             return 'string';
-        } elseif ($property->getType() == PropertyType::TYPE_NUMBER || $property->getType() == PropertyType::TYPE_INTEGER) {
+        } elseif ($type == PropertyType::TYPE_NUMBER || $type == PropertyType::TYPE_INTEGER) {
             return 'number';
-        } elseif ($property->getType() == PropertyType::TYPE_BOOLEAN) {
+        } elseif ($type == PropertyType::TYPE_BOOLEAN) {
             return 'boolean';
+        } elseif ($type == PropertyType::TYPE_ARRAY) {
+            return 'Array<' . $this->getIdentifierForProperty($property) . '>';
+        } elseif ($type == PropertyType::TYPE_OBJECT) {
+            return $this->getIdentifierForProperty($property);
+        } elseif ($property->getOneOf()) {
+            $parts = [];
+            foreach ($property->getOneOf() as $property) {
+                $parts[] = $this->getDocType($property);
+            }
+            return implode(' | ', $parts);
+        } elseif ($property->getAllOf()) {
+            $parts = [];
+            foreach ($property->getAllOf() as $property) {
+                $parts[] = $this->getDocType($property);
+            }
+            return implode(' & ', $parts);
         } else {
             return 'any';
         }
