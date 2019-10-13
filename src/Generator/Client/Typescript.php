@@ -37,40 +37,6 @@ class Typescript extends LanguageAbstract
     /**
      * @inheritdoc
      */
-    protected function getDocType(PropertyInterface $property): string
-    {
-        $type = $this->getRealType($property);
-
-        if ($type == PropertyType::TYPE_STRING) {
-            return 'string';
-        } elseif ($type == PropertyType::TYPE_NUMBER || $type == PropertyType::TYPE_INTEGER) {
-            return 'number';
-        } elseif ($type == PropertyType::TYPE_BOOLEAN) {
-            return 'boolean';
-        } elseif ($type == PropertyType::TYPE_ARRAY) {
-            return 'Array<' . $this->getIdentifierForProperty($property) . '>';
-        } elseif ($type == PropertyType::TYPE_OBJECT) {
-            return $this->getIdentifierForProperty($property);
-        } elseif ($property->getOneOf()) {
-            $parts = [];
-            foreach ($property->getOneOf() as $property) {
-                $parts[] = $this->getDocType($property);
-            }
-            return implode(' | ', $parts);
-        } elseif ($property->getAllOf()) {
-            $parts = [];
-            foreach ($property->getAllOf() as $property) {
-                $parts[] = $this->getDocType($property);
-            }
-            return implode(' & ', $parts);
-        } else {
-            return 'any';
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
     protected function getTemplate(): string
     {
         return 'typescript.ts.twig';

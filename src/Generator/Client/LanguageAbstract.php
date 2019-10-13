@@ -243,7 +243,15 @@ abstract class LanguageAbstract implements GeneratorInterface
      * @param \PSX\Schema\PropertyInterface $property
      * @return string
      */
-    abstract protected function getDocType(PropertyInterface $property): string;
+    protected function getDocType(PropertyInterface $property): string
+    {
+        $generator = $this->getGenerator();
+        if ($generator instanceof Generator\TypeAwareInterface) {
+            return $generator->getDocType($property);
+        } else {
+            return '';
+        }
+    }
 
     /**
      * @return string

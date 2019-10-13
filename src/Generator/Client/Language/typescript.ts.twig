@@ -9,7 +9,7 @@ export default class Resource {
     private {{ name }}: {{ hint }};
 {% endfor %}
 
-    public constructor({% for name, hint in properties %}{{ name }}: {{ hint }}, {% endfor %}baseUrl: string, token: string, httpClient?: AxiosInstance) {
+    public constructor({% for name, hint in properties %}{{ name }}: {{ hint|raw }}, {% endfor %}baseUrl: string, token: string, httpClient?: AxiosInstance) {
 {% for name, hint in properties %}
         this.{{ name }} = {{ name }};
 {% endfor %}
@@ -26,9 +26,9 @@ export default class Resource {
 {% endif %}
 {% for name, hint in method.docs %}     * @param {{ '{' }}{{ hint }}{{ '}' }} {{ name }}
 {% endfor %}
-     * @returns {{ '{' }}AxiosPromise<{% if method.returnDoc %}{{ method.returnDoc }}{% else %}void{% endif %}>{{ '}' }}
+     * @returns {{ '{' }}AxiosPromise<{% if method.returnDoc %}{{ method.returnDoc|raw }}{% else %}void{% endif %}>{{ '}' }}
      */
-    public {{ methodName }}({% for name, hint in method.args %}{{ name }}: {{ hint }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: AxiosPromise<{% if method.return %}{{ method.return }}{% else %}any{% endif %}>{% endif %} {
+    public {{ methodName }}({% for name, hint in method.args %}{{ name }}: {{ hint|raw }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: AxiosPromise<{% if method.return %}{{ method.return|raw }}{% else %}any{% endif %}>{% endif %} {
         let params = {
             method: "{{ method.httpMethod }}",
 {% if method.args.query is defined %}

@@ -37,42 +37,6 @@ class Php extends LanguageAbstract
     /**
      * @inheritdoc
      */
-    protected function getDocType(PropertyInterface $property): string
-    {
-        $type = $this->getRealType($property);
-
-        if ($type == PropertyType::TYPE_STRING) {
-            return 'string';
-        } elseif ($type == PropertyType::TYPE_NUMBER) {
-            return 'float';
-        } elseif ($type == PropertyType::TYPE_INTEGER) {
-            return 'int';
-        } elseif ($type == PropertyType::TYPE_BOOLEAN) {
-            return 'bool';
-        } elseif ($type == PropertyType::TYPE_ARRAY) {
-            return $this->getIdentifierForProperty($property) . '[]';
-        } elseif ($type == PropertyType::TYPE_OBJECT) {
-            return $this->getIdentifierForProperty($property);
-        } elseif ($property->getOneOf()) {
-            $parts = [];
-            foreach ($property->getOneOf() as $property) {
-                $parts[] = $this->getType($property);
-            }
-            return implode('|', $parts);
-        } elseif ($property->getAllOf()) {
-            $parts = [];
-            foreach ($property->getAllOf() as $property) {
-                $parts[] = $this->getType($property);
-            }
-            return implode('&', $parts);
-        } else {
-            return 'mixed';
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
     protected function getTemplate(): string
     {
         return 'php.ts.twig';
