@@ -43,14 +43,14 @@ class Php extends LanguageAbstract
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     protected function generateSchema(array $schemas)
     {
         $return = parent::generateSchema($schemas);
 
         $return = str_replace('<?php', '', $return);
-        $return = str_replace('namespace PSX\Generation;', '', $return);
+        $return = str_replace('namespace ' . $this->namespace . ';', '', $return);
 
         return $return;
     }
@@ -60,6 +60,6 @@ class Php extends LanguageAbstract
      */
     protected function getGenerator(): GeneratorInterface
     {
-        return new Schema\Generator\Php();
+        return new Schema\Generator\Php($this->namespace);
     }
 }

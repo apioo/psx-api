@@ -48,15 +48,21 @@ abstract class LanguageAbstract implements GeneratorInterface
     /**
      * @var string
      */
+    protected $baseNamespace;
+
+    /**
+     * @var string
+     */
     protected $namespace;
 
     /**
      * @param string $baseUrl
+     * @param string $namespace
      */
     public function __construct(string $baseUrl, ?string $namespace = null)
     {
         $this->baseUrl = $baseUrl;
-        $this->namespace = $namespace;
+        $this->baseNamespace = $namespace;
     }
 
     /**
@@ -66,6 +72,12 @@ abstract class LanguageAbstract implements GeneratorInterface
     {
         $loader = new \Twig_Loader_Filesystem(__DIR__ . '/Language');
         $engine = new \Twig_Environment($loader);
+
+        $this->namespace = '';
+        if ($this->baseNamespace) {
+            $this->namespace = $this->baseNamespace . '\\';
+        }
+        $this->namespace.= $this->getNamespace($resource->getPath());
 
         $properties = $this->getProperties($resource);
         $urlParts = $this->getUrlParts($resource, $properties);
@@ -124,13 +136,11 @@ abstract class LanguageAbstract implements GeneratorInterface
             ];
         }
 
-        $className = $this->getClassName($resource->getPath());
         $schemas = $this->generateSchema($schemas);
 
         return $engine->render($this->getTemplate(), [
             'baseUrl' => $this->baseUrl,
             'namespace' => $this->namespace,
-            'className' => $className,
             'urlParts' => $urlParts,
             'resource' => $resource,
             'properties' => $properties,
@@ -208,6 +218,7 @@ abstract class LanguageAbstract implements GeneratorInterface
     }
 
     /**
+     * @param array $schemas
      * @return string
      */
     protected function generateSchema(array $schemas)
@@ -267,7 +278,7 @@ abstract class LanguageAbstract implements GeneratorInterface
      * @param string $path
      * @return string
      */
-    private function getClassName($path): string
+    private function getNamespace($path): string
     {
         $parts = explode('/', $path);
         $parts = array_map(function($part){

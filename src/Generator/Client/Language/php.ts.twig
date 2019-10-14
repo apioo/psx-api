@@ -1,6 +1,8 @@
 <?php
 
-namespace {% if namespace %}{{ namespace }}\{% endif %}{{ className }};
+{% if namespace %}
+namespace {{ namespace }};
+{% endif %}
 
 use GuzzleHttp\Client;
 use PSX\Json\Parser;
