@@ -168,18 +168,30 @@ class Message
      * @Type("string")
      */
     protected $message;
+    /**
+     * @param bool $success
+     */
     public function setSuccess(?bool $success)
     {
         $this->success = $success;
     }
+    /**
+     * @return bool
+     */
     public function getSuccess() : ?bool
     {
         return $this->success;
     }
+    /**
+     * @param string $message
+     */
     public function setMessage(?string $message)
     {
         $this->message = $message;
     }
+    /**
+     * @return string
+     */
     public function getMessage() : ?string
     {
         return $this->message;
@@ -215,34 +227,58 @@ class Item
      * @Format("date-time")
      */
     protected $date;
+    /**
+     * @param int $id
+     */
     public function setId(?int $id)
     {
         $this->id = $id;
     }
+    /**
+     * @return int
+     */
     public function getId() : ?int
     {
         return $this->id;
     }
+    /**
+     * @param int $userId
+     */
     public function setUserId(?int $userId)
     {
         $this->userId = $userId;
     }
+    /**
+     * @return int
+     */
     public function getUserId() : ?int
     {
         return $this->userId;
     }
+    /**
+     * @param string $title
+     */
     public function setTitle(?string $title)
     {
         $this->title = $title;
     }
+    /**
+     * @return string
+     */
     public function getTitle() : ?string
     {
         return $this->title;
     }
+    /**
+     * @param \DateTime $date
+     */
     public function setDate(?\DateTime $date)
     {
         $this->date = $date;
     }
+    /**
+     * @return \DateTime
+     */
     public function getDate() : ?\DateTime
     {
         return $this->date;
@@ -256,13 +292,19 @@ class Collection
     /**
      * @Key("entry")
      * @Type("array")
-     * @Items(@Ref("PSX\Generation\Item"))
+     * @Items(@Ref("FooNameType\Item"))
      */
     protected $entry;
+    /**
+     * @param array<Item> $entry
+     */
     public function setEntry(?array $entry)
     {
         $this->entry = $entry;
     }
+    /**
+     * @return array<Item>
+     */
     public function getEntry() : ?array
     {
         return $this->entry;
@@ -304,42 +346,72 @@ class GetQuery
      * @Format("date-time")
      */
     protected $datetime;
+    /**
+     * @param int $startIndex
+     */
     public function setStartIndex(?int $startIndex)
     {
         $this->startIndex = $startIndex;
     }
+    /**
+     * @return int
+     */
     public function getStartIndex() : ?int
     {
         return $this->startIndex;
     }
+    /**
+     * @param float $float
+     */
     public function setFloat(?float $float)
     {
         $this->float = $float;
     }
+    /**
+     * @return float
+     */
     public function getFloat() : ?float
     {
         return $this->float;
     }
+    /**
+     * @param bool $boolean
+     */
     public function setBoolean(?bool $boolean)
     {
         $this->boolean = $boolean;
     }
+    /**
+     * @return bool
+     */
     public function getBoolean() : ?bool
     {
         return $this->boolean;
     }
+    /**
+     * @param \DateTime $date
+     */
     public function setDate(?\DateTime $date)
     {
         $this->date = $date;
     }
+    /**
+     * @return \DateTime
+     */
     public function getDate() : ?\DateTime
     {
         return $this->date;
     }
+    /**
+     * @param \DateTime $datetime
+     */
     public function setDatetime(?\DateTime $datetime)
     {
         $this->datetime = $datetime;
     }
+    /**
+     * @return \DateTime
+     */
     public function getDatetime() : ?\DateTime
     {
         return $this->datetime;
@@ -352,52 +424,76 @@ class Endpoint
 {
     /**
      * @Key("GetQuery")
-     * @Ref("PSX\Generation\GetQuery")
+     * @Ref("FooNameType\GetQuery")
      */
     protected $GetQuery;
     /**
      * @Key("Collection")
-     * @Ref("PSX\Generation\Collection")
+     * @Ref("FooNameType\Collection")
      */
     protected $Collection;
     /**
      * @Key("Item")
-     * @Ref("PSX\Generation\Item")
+     * @Ref("FooNameType\Item")
      */
     protected $Item;
     /**
      * @Key("Message")
-     * @Ref("PSX\Generation\Message")
+     * @Ref("FooNameType\Message")
      */
     protected $Message;
+    /**
+     * @param GetQuery $GetQuery
+     */
     public function setGetQuery(?GetQuery $GetQuery)
     {
         $this->GetQuery = $GetQuery;
     }
+    /**
+     * @return GetQuery
+     */
     public function getGetQuery() : ?GetQuery
     {
         return $this->GetQuery;
     }
+    /**
+     * @param Collection $Collection
+     */
     public function setCollection(?Collection $Collection)
     {
         $this->Collection = $Collection;
     }
+    /**
+     * @return Collection
+     */
     public function getCollection() : ?Collection
     {
         return $this->Collection;
     }
+    /**
+     * @param Item $Item
+     */
     public function setItem(?Item $Item)
     {
         $this->Item = $Item;
     }
+    /**
+     * @return Item
+     */
     public function getItem() : ?Item
     {
         return $this->Item;
     }
+    /**
+     * @param Message $Message
+     */
     public function setMessage(?Message $Message)
     {
         $this->Message = $Message;
     }
+    /**
+     * @return Message
+     */
     public function getMessage() : ?Message
     {
         return $this->Message;

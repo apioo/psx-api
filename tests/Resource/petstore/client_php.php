@@ -119,26 +119,44 @@ class Pet
      * @Type("string")
      */
     protected $tag;
+    /**
+     * @param int $id
+     */
     public function setId(?int $id)
     {
         $this->id = $id;
     }
+    /**
+     * @return int
+     */
     public function getId() : ?int
     {
         return $this->id;
     }
+    /**
+     * @param string $name
+     */
     public function setName(?string $name)
     {
         $this->name = $name;
     }
+    /**
+     * @return string
+     */
     public function getName() : ?string
     {
         return $this->name;
     }
+    /**
+     * @param string $tag
+     */
     public function setTag(?string $tag)
     {
         $this->tag = $tag;
     }
+    /**
+     * @return string
+     */
     public function getTag() : ?string
     {
         return $this->tag;
@@ -152,13 +170,19 @@ class Pets
     /**
      * @Key("pets")
      * @Type("array")
-     * @Items(@Ref("PSX\Generation\Pet"))
+     * @Items(@Ref("Pets\Pet"))
      */
     protected $pets;
+    /**
+     * @param array<Pet> $pets
+     */
     public function setPets(?array $pets)
     {
         $this->pets = $pets;
     }
+    /**
+     * @return array<Pet>
+     */
     public function getPets() : ?array
     {
         return $this->pets;
@@ -175,10 +199,16 @@ class GetQuery
      * @Format("int32")
      */
     protected $limit;
+    /**
+     * @param int $limit
+     */
     public function setLimit(?int $limit)
     {
         $this->limit = $limit;
     }
+    /**
+     * @return int
+     */
     public function getLimit() : ?int
     {
         return $this->limit;
@@ -191,39 +221,57 @@ class Endpoint
 {
     /**
      * @Key("GetQuery")
-     * @Ref("PSX\Generation\GetQuery")
+     * @Ref("Pets\GetQuery")
      */
     protected $GetQuery;
     /**
      * @Key("Pets")
-     * @Ref("PSX\Generation\Pets")
+     * @Ref("Pets\Pets")
      */
     protected $Pets;
     /**
      * @Key("Pet")
-     * @Ref("PSX\Generation\Pet")
+     * @Ref("Pets\Pet")
      */
     protected $Pet;
+    /**
+     * @param GetQuery $GetQuery
+     */
     public function setGetQuery(?GetQuery $GetQuery)
     {
         $this->GetQuery = $GetQuery;
     }
+    /**
+     * @return GetQuery
+     */
     public function getGetQuery() : ?GetQuery
     {
         return $this->GetQuery;
     }
+    /**
+     * @param Pets $Pets
+     */
     public function setPets(?Pets $Pets)
     {
         $this->Pets = $Pets;
     }
+    /**
+     * @return Pets
+     */
     public function getPets() : ?Pets
     {
         return $this->Pets;
     }
+    /**
+     * @param Pet $Pet
+     */
     public function setPet(?Pet $Pet)
     {
         $this->Pet = $Pet;
     }
+    /**
+     * @return Pet
+     */
     public function getPet() : ?Pet
     {
         return $this->Pet;

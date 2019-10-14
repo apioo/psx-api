@@ -105,26 +105,44 @@ class Rating
      * @Type("string")
      */
     protected $text;
+    /**
+     * @param string $author
+     */
     public function setAuthor(?string $author)
     {
         $this->author = $author;
     }
+    /**
+     * @return string
+     */
     public function getAuthor() : ?string
     {
         return $this->author;
     }
+    /**
+     * @param int $rating
+     */
     public function setRating(?int $rating)
     {
         $this->rating = $rating;
     }
+    /**
+     * @return int
+     */
     public function getRating() : ?int
     {
         return $this->rating;
     }
+    /**
+     * @param string $text
+     */
     public function setText(?string $text)
     {
         $this->text = $text;
     }
+    /**
+     * @return string
+     */
     public function getText() : ?string
     {
         return $this->text;
@@ -155,37 +173,61 @@ class Song
     /**
      * @Key("ratings")
      * @Type("array")
-     * @Items(@Ref("PSX\Generation\Rating"))
+     * @Items(@Ref("Foo\Rating"))
      */
     protected $ratings;
+    /**
+     * @param string $title
+     */
     public function setTitle(?string $title)
     {
         $this->title = $title;
     }
+    /**
+     * @return string
+     */
     public function getTitle() : ?string
     {
         return $this->title;
     }
+    /**
+     * @param string $artist
+     */
     public function setArtist(?string $artist)
     {
         $this->artist = $artist;
     }
+    /**
+     * @return string
+     */
     public function getArtist() : ?string
     {
         return $this->artist;
     }
+    /**
+     * @param int $length
+     */
     public function setLength(?int $length)
     {
         $this->length = $length;
     }
+    /**
+     * @return int
+     */
     public function getLength() : ?int
     {
         return $this->length;
     }
+    /**
+     * @param array<Rating> $ratings
+     */
     public function setRatings(?array $ratings)
     {
         $this->ratings = $ratings;
     }
+    /**
+     * @return array<Rating>
+     */
     public function getRatings() : ?array
     {
         return $this->ratings;
@@ -245,74 +287,128 @@ class GetQuery
      * @Type("string")
      */
     protected $string;
+    /**
+     * @param string $foo
+     */
     public function setFoo(?string $foo)
     {
         $this->foo = $foo;
     }
+    /**
+     * @return string
+     */
     public function getFoo() : ?string
     {
         return $this->foo;
     }
+    /**
+     * @param string $bar
+     */
     public function setBar(?string $bar)
     {
         $this->bar = $bar;
     }
+    /**
+     * @return string
+     */
     public function getBar() : ?string
     {
         return $this->bar;
     }
+    /**
+     * @param string $baz
+     */
     public function setBaz(?string $baz)
     {
         $this->baz = $baz;
     }
+    /**
+     * @return string
+     */
     public function getBaz() : ?string
     {
         return $this->baz;
     }
+    /**
+     * @param string $boz
+     */
     public function setBoz(?string $boz)
     {
         $this->boz = $boz;
     }
+    /**
+     * @return string
+     */
     public function getBoz() : ?string
     {
         return $this->boz;
     }
+    /**
+     * @param int $integer
+     */
     public function setInteger(?int $integer)
     {
         $this->integer = $integer;
     }
+    /**
+     * @return int
+     */
     public function getInteger() : ?int
     {
         return $this->integer;
     }
+    /**
+     * @param float $number
+     */
     public function setNumber(?float $number)
     {
         $this->number = $number;
     }
+    /**
+     * @return float
+     */
     public function getNumber() : ?float
     {
         return $this->number;
     }
+    /**
+     * @param string $date
+     */
     public function setDate(?string $date)
     {
         $this->date = $date;
     }
+    /**
+     * @return string
+     */
     public function getDate() : ?string
     {
         return $this->date;
     }
+    /**
+     * @param bool $boolean
+     */
     public function setBoolean(?bool $boolean)
     {
         $this->boolean = $boolean;
     }
+    /**
+     * @return bool
+     */
     public function getBoolean() : ?bool
     {
         return $this->boolean;
     }
+    /**
+     * @param string $string
+     */
     public function setString(?string $string)
     {
         $this->string = $string;
     }
+    /**
+     * @return string
+     */
     public function getString() : ?string
     {
         return $this->string;
@@ -325,26 +421,38 @@ class Endpoint
 {
     /**
      * @Key("GetQuery")
-     * @Ref("PSX\Generation\GetQuery")
+     * @Ref("Foo\GetQuery")
      */
     protected $GetQuery;
     /**
      * @Key("Song")
-     * @Ref("PSX\Generation\Song")
+     * @Ref("Foo\Song")
      */
     protected $Song;
+    /**
+     * @param GetQuery $GetQuery
+     */
     public function setGetQuery(?GetQuery $GetQuery)
     {
         $this->GetQuery = $GetQuery;
     }
+    /**
+     * @return GetQuery
+     */
     public function getGetQuery() : ?GetQuery
     {
         return $this->GetQuery;
     }
+    /**
+     * @param Song $Song
+     */
     public function setSong(?Song $Song)
     {
         $this->Song = $Song;
     }
+    /**
+     * @return Song
+     */
     public function getSong() : ?Song
     {
         return $this->Song;

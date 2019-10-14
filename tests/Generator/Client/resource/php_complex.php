@@ -109,18 +109,30 @@ class Message
      * @Type("string")
      */
     protected $message;
+    /**
+     * @param bool $success
+     */
     public function setSuccess(?bool $success)
     {
         $this->success = $success;
     }
+    /**
+     * @return bool
+     */
     public function getSuccess() : ?bool
     {
         return $this->success;
     }
+    /**
+     * @param string $message
+     */
     public function setMessage(?string $message)
     {
         $this->message = $message;
     }
+    /**
+     * @return string
+     */
     public function getMessage() : ?string
     {
         return $this->message;
@@ -155,34 +167,58 @@ class Item
      * @Format("date-time")
      */
     protected $date;
+    /**
+     * @param int $id
+     */
     public function setId(?int $id)
     {
         $this->id = $id;
     }
+    /**
+     * @return int
+     */
     public function getId() : ?int
     {
         return $this->id;
     }
+    /**
+     * @param int $userId
+     */
     public function setUserId(?int $userId)
     {
         $this->userId = $userId;
     }
+    /**
+     * @return int
+     */
     public function getUserId() : ?int
     {
         return $this->userId;
     }
+    /**
+     * @param string $title
+     */
     public function setTitle(?string $title)
     {
         $this->title = $title;
     }
+    /**
+     * @return string
+     */
     public function getTitle() : ?string
     {
         return $this->title;
     }
+    /**
+     * @param \DateTime $date
+     */
     public function setDate(?\DateTime $date)
     {
         $this->date = $date;
     }
+    /**
+     * @return \DateTime
+     */
     public function getDate() : ?\DateTime
     {
         return $this->date;
@@ -196,13 +232,19 @@ class Endpoint
     /**
      * @Key("EntryOrMessage")
      * @Title("EntryOrMessage")
-     * @OneOf(@Ref("PSX\Generation\Item"), @Ref("PSX\Generation\Message"))
+     * @OneOf(@Ref("Foo\Bar\FooNameType\Item"), @Ref("Foo\Bar\FooNameType\Message"))
      */
     protected $EntryOrMessage;
+    /**
+     * @param Item|Message $EntryOrMessage
+     */
     public function setEntryOrMessage($EntryOrMessage)
     {
         $this->EntryOrMessage = $EntryOrMessage;
     }
+    /**
+     * @return Item|Message
+     */
     public function getEntryOrMessage()
     {
         return $this->EntryOrMessage;

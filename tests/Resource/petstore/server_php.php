@@ -51,26 +51,44 @@ class Pet
      * @Type("string")
      */
     protected $tag;
+    /**
+     * @param int $id
+     */
     public function setId(?int $id)
     {
         $this->id = $id;
     }
+    /**
+     * @return int
+     */
     public function getId() : ?int
     {
         return $this->id;
     }
+    /**
+     * @param string $name
+     */
     public function setName(?string $name)
     {
         $this->name = $name;
     }
+    /**
+     * @return string
+     */
     public function getName() : ?string
     {
         return $this->name;
     }
+    /**
+     * @param string $tag
+     */
     public function setTag(?string $tag)
     {
         $this->tag = $tag;
     }
+    /**
+     * @return string
+     */
     public function getTag() : ?string
     {
         return $this->tag;
@@ -87,10 +105,16 @@ class Pets
      * @Items(@Ref("PSX\Generation\Pet"))
      */
     protected $pets;
+    /**
+     * @param array<Pet> $pets
+     */
     public function setPets(?array $pets)
     {
         $this->pets = $pets;
     }
+    /**
+     * @return array<Pet>
+     */
     public function getPets() : ?array
     {
         return $this->pets;
@@ -115,18 +139,30 @@ class Error
      * @Type("string")
      */
     protected $message;
+    /**
+     * @param int $code
+     */
     public function setCode(?int $code)
     {
         $this->code = $code;
     }
+    /**
+     * @return int
+     */
     public function getCode() : ?int
     {
         return $this->code;
     }
+    /**
+     * @param string $message
+     */
     public function setMessage(?string $message)
     {
         $this->message = $message;
     }
+    /**
+     * @return string
+     */
     public function getMessage() : ?string
     {
         return $this->message;
