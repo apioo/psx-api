@@ -4,6 +4,7 @@ namespace Pets;
 
 use GuzzleHttp\Client;
 use PSX\Json\Parser;
+use PSX\Record\RecordInterface;
 use PSX\Schema\Parser\Popo\Dumper;
 use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaTraverser;
@@ -46,16 +47,16 @@ class Resource
      * @param GetQuery $query
      * @return Pets
      */
-    public function listPets(GetQuery $query): Pets
+    public function listPets(?GetQuery $query): Pets
     {
         $options = [
-            'query' => $this->convertToArray($query),
+            'query' => $this->prepare($query, true),
         ];
 
         $response = $this->httpClient->request('GET', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->convertToObject($data, Pets::class);
+        return $this->parse($data, Pets::class);
     }
 
     /**
@@ -64,29 +65,38 @@ class Resource
      * @param Pet $data
      * @return void
      */
-    public function createPets(Pet $data)
+    public function createPets(?Pet $data)
     {
         $options = [
-            'json' => $this->convertToArray($data)
+            'json' => $this->prepare($data)
         ];
 
         $response = $this->httpClient->request('POST', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->convertToObject($data, null);
+        return $this->parse($data, null);
     }
 
-    private function convertToArray($object)
+    private function prepare($object, bool $asArray = false)
     {
-        return (new Dumper())->dump($object);
+        $data = (new Dumper())->dump($object);
+        if ($asArray) {
+            if ($data instanceof RecordInterface) {
+                return $data->getProperties();
+            } else {
+                return [];
+            }
+        } else {
+            return $data;
+        }
     }
 
-    private function convertToObject(string $data, ?string $class)
+    private function parse(string $data, ?string $class)
     {
         $data = Parser::decode($data);
         if ($class !== null) {
             $schema = $this->schemaManager->getSchema($class);
-            return (new SchemaTraverser())->traverse($data, $schema, new TypeVisitor());
+            return (new SchemaTraverser(false))->traverse($data, $schema, new TypeVisitor());
         } else {
             return $data;
         }

@@ -4,6 +4,7 @@ namespace FooNameType;
 
 use GuzzleHttp\Client;
 use PSX\Json\Parser;
+use PSX\Record\RecordInterface;
 use PSX\Schema\Parser\Popo\Dumper;
 use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaTraverser;
@@ -58,48 +59,48 @@ class Resource
      * @param GetQuery $query
      * @return Collection
      */
-    public function listFoo(GetQuery $query): Collection
+    public function listFoo(?GetQuery $query): Collection
     {
         $options = [
-            'query' => $this->convertToArray($query),
+            'query' => $this->prepare($query, true),
         ];
 
         $response = $this->httpClient->request('GET', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->convertToObject($data, Collection::class);
+        return $this->parse($data, Collection::class);
     }
 
     /**
      * @param Item $data
      * @return Message
      */
-    public function createFoo(Item $data): Message
+    public function createFoo(?Item $data): Message
     {
         $options = [
-            'json' => $this->convertToArray($data)
+            'json' => $this->prepare($data)
         ];
 
         $response = $this->httpClient->request('POST', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->convertToObject($data, Message::class);
+        return $this->parse($data, Message::class);
     }
 
     /**
      * @param Item $data
      * @return Message
      */
-    public function put(Item $data): Message
+    public function put(?Item $data): Message
     {
         $options = [
-            'json' => $this->convertToArray($data)
+            'json' => $this->prepare($data)
         ];
 
         $response = $this->httpClient->request('PUT', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->convertToObject($data, Message::class);
+        return $this->parse($data, Message::class);
     }
 
     /**
@@ -113,36 +114,45 @@ class Resource
         $response = $this->httpClient->request('DELETE', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->convertToObject($data, Message::class);
+        return $this->parse($data, Message::class);
     }
 
     /**
      * @param Item $data
      * @return Message
      */
-    public function patch(Item $data): Message
+    public function patch(?Item $data): Message
     {
         $options = [
-            'json' => $this->convertToArray($data)
+            'json' => $this->prepare($data)
         ];
 
         $response = $this->httpClient->request('PATCH', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->convertToObject($data, Message::class);
+        return $this->parse($data, Message::class);
     }
 
-    private function convertToArray($object)
+    private function prepare($object, bool $asArray = false)
     {
-        return (new Dumper())->dump($object);
+        $data = (new Dumper())->dump($object);
+        if ($asArray) {
+            if ($data instanceof RecordInterface) {
+                return $data->getProperties();
+            } else {
+                return [];
+            }
+        } else {
+            return $data;
+        }
     }
 
-    private function convertToObject(string $data, ?string $class)
+    private function parse(string $data, ?string $class)
     {
         $data = Parser::decode($data);
         if ($class !== null) {
             $schema = $this->schemaManager->getSchema($class);
-            return (new SchemaTraverser())->traverse($data, $schema, new TypeVisitor());
+            return (new SchemaTraverser(false))->traverse($data, $schema, new TypeVisitor());
         } else {
             return $data;
         }
