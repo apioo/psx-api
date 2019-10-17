@@ -6,6 +6,7 @@ namespace {{ namespace }};
 
 use GuzzleHttp\Client;
 use PSX\Json\Parser;
+use PSX\Record\RecordInterface;
 use PSX\Schema\Parser\Popo\Dumper;
 use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaTraverser;
@@ -62,12 +63,12 @@ class Resource
      * @return {% if method.returnDoc %}{{ method.returnDoc }}{% else %}void{% endif %}
 
      */
-    public function {{ methodName }}({% for name, hint in method.args %}{{ hint }} ${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: {{ method.return }}{% endif %}
+    public function {{ methodName }}({% for name, hint in method.args %}?{{ hint }} ${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: {{ method.return }}{% endif %}
 
     {
         $options = [
 {% if method.args.query is defined %}
-            'query' => $this->convertToArray($query),
+            'query' => $this->prepare($query, true),
 {% endif %}
 {% if method.secure %}
             'headers' => [
@@ -75,28 +76,37 @@ class Resource
             ],
 {% endif %}
 {% if method.args.data is defined %}
-            'json' => $this->convertToArray($data)
+            'json' => $this->prepare($data)
 {% endif %}
         ];
 
         $response = $this->httpClient->request('{{ method.httpMethod }}', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->convertToObject($data, {% if method.return %}{{ method.return }}::class{% else %}null{% endif %});
+        return $this->parse($data, {% if method.return %}{{ method.return }}::class{% else %}null{% endif %});
     }
 
 {% endfor %}
-    private function convertToArray($object)
+    private function prepare($object, bool $asArray = false)
     {
-        return (new Dumper())->dump($object);
+        $data = (new Dumper())->dump($object);
+        if ($asArray) {
+            if ($data instanceof RecordInterface) {
+                return $data->getProperties();
+            } else {
+                return [];
+            }
+        } else {
+            return $data;
+        }
     }
 
-    private function convertToObject(string $data, ?string $class)
+    private function parse(string $data, ?string $class)
     {
         $data = Parser::decode($data);
         if ($class !== null) {
             $schema = $this->schemaManager->getSchema($class);
-            return (new SchemaTraverser())->traverse($data, $schema, new TypeVisitor());
+            return (new SchemaTraverser(false))->traverse($data, $schema, new TypeVisitor());
         } else {
             return $data;
         }
