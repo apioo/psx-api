@@ -1,7 +1,7 @@
 {
   "name": "psx/api",
   "description": "Parse and generate API specification formats",
-  "keywords": ["api", "specification", "raml", "swagger", "wsdl"],
+  "keywords": ["api", "specification", "openapi", "raml", "swagger"],
   "homepage": "http://phpsx.org",
   "license": "Apache-2.0",
   "authors": [
@@ -15,7 +15,7 @@
     "php": ">=7.0",
     "doctrine/annotations": "^1.3",
     "doctrine/cache": "^1.6",
-    "nikic/php-parser": "^3.0",
+    "nikic/php-parser": "^4.2",
     "psx/json": "^1.0",
     "psx/model": "^2.0",
     "psx/cache": "^1.0",
