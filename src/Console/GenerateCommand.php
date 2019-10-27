@@ -24,6 +24,7 @@ use PSX\Api\GeneratorFactory;
 use PSX\Api\GeneratorFactoryInterface;
 use PSX\Api\Listing\FilterFactoryInterface;
 use PSX\Api\ListingInterface;
+use PSX\Schema\Generator\Code\Chunks;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -112,10 +113,14 @@ class GenerateCommand extends Command
 
             $progress->setMessage('Generating ' . $resource->getPath());
 
-            $content  = $generator->generate($this->listing->getResource($resource->getPath()));
-            $fileName = $this->getFileName($resource->getPath(), $extension);
+            $content = $generator->generate($this->listing->getResource($resource->getPath()));
 
-            if ($fileName !== null) {
+            if ($content instanceof Chunks) {
+                foreach ($content->getChunks() as $fileName => $code) {
+                    file_put_contents($dir . '/' . $fileName, $code);
+                }
+            } else {
+                $fileName = $this->getFileName($resource->getPath(), $extension);
                 file_put_contents($dir . '/' . $fileName, $content);
             }
 
