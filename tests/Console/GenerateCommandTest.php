@@ -26,7 +26,6 @@ use PSX\Api\Console\GenerateCommand;
 use PSX\Api\GeneratorFactory;
 use PSX\Api\GeneratorFactoryInterface;
 use PSX\Api\Listing\MemoryListing;
-use PSX\Api\Resource;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 use PSX\Schema\SchemaManager;
 use Symfony\Component\Console\Tester\CommandTester;

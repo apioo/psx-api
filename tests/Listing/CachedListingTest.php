@@ -22,9 +22,9 @@ namespace PSX\Api\Tests\Listing;
 
 use Doctrine\Common\Cache\ArrayCache;
 use PSX\Api\ApiManager;
-use PSX\Api\ListingInterface;
 use PSX\Api\Listing\CachedListing;
 use PSX\Api\Listing\MemoryListing;
+use PSX\Api\ListingInterface;
 use PSX\Api\Tests\Parser\Annotation\FooController;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 use PSX\Cache\Pool;
