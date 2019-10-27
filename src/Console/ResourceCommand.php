@@ -75,9 +75,9 @@ class ResourceCommand extends Command
         $response  = $generator->generate($resource);
 
         if ($response instanceof Chunks) {
-            // we need to simply write data to the stdout and can write files. In
-            // case the generator returns a chunked response we simply format the
-            // response as HTTP multipart
+            // we need to simply write data to the stdout and cant write files.
+            // In case the generator returns a chunked response we simply format
+            // the response as HTTP multipart
             $mime = $this->factory->getMime($input->getOption('format'), $input->getOption('config'));
             $boundary = '85d62adb6dd029cc080b15eb2086a8e054887f8a';
             foreach ($response->getChunks() as $identifier => $code) {
