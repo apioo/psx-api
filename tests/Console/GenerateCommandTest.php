@@ -48,13 +48,32 @@ class GenerateCommandTest extends TestCase
         $commandTester->execute(array(
             'dir'      => __DIR__ . '/output',
             '--format' => GeneratorFactoryInterface::CLIENT_PHP,
+            '--config' => 'Acme\\Sdk\\Generated',
         ));
 
-        $actual = file_get_contents(__DIR__ . '/output/foo.php');
-        $expect = file_get_contents(__DIR__ . '/resource/client_php.php');
-        $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
+        $this->assertFileExists(__DIR__ . '/output/FooResource.php');
+        $this->assertFileExists(__DIR__ . '/output/FooResourceSchema.php');
+        $this->assertFileExists(__DIR__ . '/output/GetQuery.php');
+        $this->assertFileExists(__DIR__ . '/output/Rating.php');
+        $this->assertFileExists(__DIR__ . '/output/Song.php');
+    }
 
-        $this->assertEquals($expect, $actual, $actual);
+    public function testGenerateClientTypescript()
+    {
+        $command = $this->getGenerateCommand();
+
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'dir'      => __DIR__ . '/output',
+            '--format' => GeneratorFactoryInterface::CLIENT_TYPESCRIPT,
+            '--config' => 'Acme.Sdk.Generated',
+        ));
+
+        $this->assertFileExists(__DIR__ . '/output/FooResource.ts');
+        $this->assertFileExists(__DIR__ . '/output/FooResourceSchema.ts');
+        $this->assertFileExists(__DIR__ . '/output/GetQuery.ts');
+        $this->assertFileExists(__DIR__ . '/output/Rating.ts');
+        $this->assertFileExists(__DIR__ . '/output/Song.ts');
     }
 
     protected function getGenerateCommand()
