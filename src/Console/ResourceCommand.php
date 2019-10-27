@@ -23,6 +23,7 @@ namespace PSX\Api\Console;
 use PSX\Api\GeneratorFactory;
 use PSX\Api\GeneratorFactoryInterface;
 use PSX\Api\ListingInterface;
+use PSX\Schema\Generator\Code\Chunks;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -73,6 +74,24 @@ class ResourceCommand extends Command
         $generator = $this->factory->getGenerator($input->getOption('format'), $input->getOption('config'));
         $response  = $generator->generate($resource);
 
-        $output->write($response);
+        if ($response instanceof Chunks) {
+            // we need to simply write data to the stdout and can write files. In
+            // case the generator returns a chunked response we simply format the
+            // response as HTTP multipart
+            $mime = $this->factory->getMime($input->getOption('format'), $input->getOption('config'));
+            $boundary = '85d62adb6dd029cc080b15eb2086a8e054887f8a';
+            foreach ($response->getChunks() as $identifier => $code) {
+                $output->writeln('--' . $boundary);
+                $output->writeln('Content-Type: ' . $mime);
+                $output->writeln('Content-Disposition: attachment; filename="' . $identifier . '"');
+                $output->writeln('Content-Length: ' . strlen($code));
+                $output->writeln('');
+                $output->write($code);
+                $output->writeln('');
+            }
+            $output->writeln('--' . $boundary . '--');
+        } else {
+            $output->write($response);
+        }
     }
 }
