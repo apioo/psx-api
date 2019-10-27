@@ -73,6 +73,6 @@ class ParseCommand extends Command
         $generator = $this->factory->getGenerator($input->getOption('format'), $input->getOption('config'));
         $response  = $generator->generate($resource);
 
-        $output->write($response);
+        OutputWriter::write($response, $output);
     }
 }
