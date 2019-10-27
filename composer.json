@@ -19,7 +19,7 @@
     "psx/json": "^1.0",
     "psx/model": "^2.0",
     "psx/cache": "^1.0",
-    "psx/schema": "^2.0",
+    "psx/schema": "^2.6",
     "symfony/console": "~2.8|~3.0|~4.0",
     "symfony/yaml": "~2.8|~3.0",
     "twig/twig": "^2.4"
