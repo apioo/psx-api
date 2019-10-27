@@ -78,7 +78,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
 
             case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
                 $baseUri   = $this->url . '/' . $this->dispatch;
-                $generator = new Generator\Client\Typescript($baseUri);
+                $generator = new Generator\Client\Typescript($baseUri, $config);
                 break;
 
             case GeneratorFactoryInterface::MARKUP_HTML:
