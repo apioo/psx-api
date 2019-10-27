@@ -55,7 +55,7 @@ abstract class MarkupAbstract implements GeneratorInterface, GeneratorCollection
 
         // path parameters
         $pathParameters = $resource->getPathParameters();
-        if ($pathParameters instanceof PropertyInterface && $pathParameters->hasConstraints()) {
+        if ($pathParameters instanceof PropertyInterface && $pathParameters->getProperties()) {
             $result = $this->getParameters($pathParameters, self::TYPE_PATH, $resource->getPath());
 
             if (!empty($result)) {
@@ -71,7 +71,7 @@ abstract class MarkupAbstract implements GeneratorInterface, GeneratorCollection
 
             // query parameters
             $queryParameters = $method->getQueryParameters();
-            if ($queryParameters instanceof PropertyInterface && $queryParameters->hasConstraints()) {
+            if ($queryParameters instanceof PropertyInterface && $queryParameters->getProperties()) {
                 $result = $this->getParameters($queryParameters, self::TYPE_QUERY, $resource->getPath(), $method->getName());
 
                 if (!empty($result)) {
