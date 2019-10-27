@@ -43,23 +43,31 @@ class Php extends LanguageAbstract
     }
 
     /**
-     * @inheritDoc
-     */
-    protected function generateSchema(array $schemas)
-    {
-        $return = parent::generateSchema($schemas);
-
-        $return = str_replace('<?php', '', $return);
-        $return = str_replace('namespace ' . $this->namespace . ';', '', $return);
-
-        return $return;
-    }
-
-    /**
      * @inheritdoc
      */
     protected function getGenerator(): GeneratorInterface
     {
         return new Schema\Generator\Php($this->namespace);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getFileName(string $identifier): string
+    {
+        return $identifier . '.php';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getFileContent(string $code, string $identifier): string
+    {
+        $comment = '/**' . "\n";
+        $comment.= ' * ' . $identifier . ' generated on ' . date('Y-m-d') . "\n";
+        $comment.= ' * @see https://github.com/apioo' . "\n";
+        $comment.= ' */' . "\n";
+
+        return '<?php ' . "\n" . $comment . "\n" . $code;
     }
 }

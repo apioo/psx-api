@@ -48,11 +48,6 @@ abstract class LanguageAbstract implements GeneratorInterface
     /**
      * @var string
      */
-    protected $baseNamespace;
-
-    /**
-     * @var string
-     */
     protected $namespace;
 
     /**
@@ -62,7 +57,7 @@ abstract class LanguageAbstract implements GeneratorInterface
     public function __construct(string $baseUrl, ?string $namespace = null)
     {
         $this->baseUrl = $baseUrl;
-        $this->baseNamespace = $namespace;
+        $this->namespace = $namespace;
     }
 
     /**
@@ -73,11 +68,11 @@ abstract class LanguageAbstract implements GeneratorInterface
         $loader = new \Twig_Loader_Filesystem(__DIR__ . '/Language');
         $engine = new \Twig_Environment($loader);
 
-        $this->namespace = '';
-        if ($this->baseNamespace) {
-            $this->namespace = $this->baseNamespace . '\\';
+        $className = $this->getClassName($resource->getPath());
+
+        if (empty($className)) {
+            return;
         }
-        $this->namespace.= $this->getNamespace($resource->getPath());
 
         $properties = $this->getProperties($resource);
         $urlParts = $this->getUrlParts($resource, $properties);
@@ -136,17 +131,22 @@ abstract class LanguageAbstract implements GeneratorInterface
             ];
         }
 
-        $schemas = $this->generateSchema($schemas);
-
-        return $engine->render($this->getTemplate(), [
+        $code = $engine->render($this->getTemplate(), [
             'baseUrl' => $this->baseUrl,
             'namespace' => $this->namespace,
+            'className' => $className,
             'urlParts' => $urlParts,
             'resource' => $resource,
             'properties' => $properties,
             'methods' => $methods,
-            'schemas' => $schemas,
         ]);
+
+        $chunks = new Generator\Code\Chunks();
+        $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
+
+        $this->generateSchema($schemas, $className, $chunks);
+
+        return $chunks;
     }
 
     /**
@@ -219,17 +219,27 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     /**
      * @param array $schemas
+     * @param string $className
+     * @param Generator\Code\Chunks $chunks
      * @return string
      */
-    protected function generateSchema(array $schemas)
+    protected function generateSchema(array $schemas, string $className, Generator\Code\Chunks $chunks)
     {
         $prop = Property::getObject();
-        $prop->setTitle('Endpoint');
+        $prop->setTitle($className . 'Schema');
         foreach ($schemas as $name => $property) {
             $prop->addProperty($name, $property);
         }
 
-        return $this->getGenerator()->generate(new Schema($prop));
+        $result = $this->getGenerator()->generate(new Schema($prop));
+
+        if ($result instanceof Generator\Code\Chunks) {
+            foreach ($result->getChunks() as $identifier => $code) {
+                $chunks->append($this->getFileName($identifier), $this->getFileContent($code, $identifier));
+            }
+        } else {
+            $chunks->append($this->getFileName($className . 'Schema'), $result);
+        }
     }
 
     /**
@@ -265,6 +275,30 @@ abstract class LanguageAbstract implements GeneratorInterface
     }
 
     /**
+     * @param string $path
+     * @return string
+     */
+    protected function getClassName(string $path): string
+    {
+        $parts = explode('/', $path);
+        $parts = array_map(function($part){
+            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
+        }, $parts);
+
+        return implode('', $parts) . 'Resource';
+    }
+
+    /**
+     * @param string $code
+     * @param string $identifier
+     * @return string
+     */
+    protected function getFileContent(string $code, string $identifier): string
+    {
+        return $code;
+    }
+
+    /**
      * @return string
      */
     abstract protected function getTemplate(): string;
@@ -275,18 +309,10 @@ abstract class LanguageAbstract implements GeneratorInterface
     abstract protected function getGenerator(): SchemaGeneratorInterface;
 
     /**
-     * @param string $path
+     * @param string $identifier
      * @return string
      */
-    private function getNamespace($path): string
-    {
-        $parts = explode('/', $path);
-        $parts = array_map(function($part){
-            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
-        }, $parts);
-
-        return implode('', $parts);
-    }
+    abstract protected function getFileName(string $identifier): string;
 
     /**
      * @param $methodName

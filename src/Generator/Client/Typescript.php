@@ -47,6 +47,27 @@ class Typescript extends LanguageAbstract
      */
     protected function getGenerator(): GeneratorInterface
     {
-        return new Schema\Generator\Typescript();
+        return new Schema\Generator\Typescript($this->namespace);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getFileName(string $identifier): string
+    {
+        return $identifier . '.ts';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getFileContent(string $code, string $identifier): string
+    {
+        $comment = '/**' . "\n";
+        $comment.= ' * ' . $identifier . ' generated on ' . date('Y-m-d') . "\n";
+        $comment.= ' * {@link https://github.com/apioo}' . "\n";
+        $comment.= ' */' . "\n";
+
+        return $comment . "\n" . $code;
     }
 }

@@ -1,6 +1,10 @@
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 
-export default class Resource {
+{% if namespace %}
+namespace {{ namespace }} {
+{% endif %}
+
+export default class {{ className }} {
     private url: string;
     private token: string;
     private httpClient: AxiosInstance;
@@ -53,5 +57,6 @@ export default class Resource {
 {% endfor %}
 }
 
-{{ schemas|raw }}
-
+{% if namespace %}
+}
+{% endif %}

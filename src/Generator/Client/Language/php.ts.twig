@@ -1,5 +1,3 @@
-<?php
-
 {% if namespace %}
 namespace {{ namespace }};
 {% endif %}
@@ -12,7 +10,7 @@ use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Visitor\TypeVisitor;
 
-class Resource
+class {{ className }}
 {
     /**
      * @var string
@@ -112,6 +110,3 @@ class Resource
         }
     }
 }
-
-{{ schemas|raw }}
-
