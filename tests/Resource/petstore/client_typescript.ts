@@ -1,6 +1,12 @@
+/**
+ * PetsResource generated on 2019-10-27
+ * {@link https://github.com/apioo}
+ */
+
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 
-export default class Resource {
+
+export default class PetsResource {
     private url: string;
     private token: string;
     private httpClient: AxiosInstance;
@@ -44,21 +50,43 @@ export default class Resource {
 
 }
 
-interface Endpoint {
+
+/**
+ * PetsResourceSchema generated on 2019-10-27
+ * {@link https://github.com/apioo}
+ */
+
+interface PetsResourceSchema {
     GetQuery?: GetQuery
     Pets?: Pets
     Pet?: Pet
 }
+
+/**
+ * GetQuery generated on 2019-10-27
+ * {@link https://github.com/apioo}
+ */
+
 interface GetQuery {
     limit?: number
 }
+
+/**
+ * Pets generated on 2019-10-27
+ * {@link https://github.com/apioo}
+ */
+
 interface Pets {
     pets?: Array<Pet>
 }
+
+/**
+ * Pet generated on 2019-10-27
+ * {@link https://github.com/apioo}
+ */
+
 interface Pet {
     id: number
     name: string
     tag?: string
 }
-
-

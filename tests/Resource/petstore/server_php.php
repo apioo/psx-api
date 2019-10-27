@@ -7,7 +7,7 @@ use PSX\Http\Environment\HttpContextInterface;
 /**
  * @Description("foobar")
  */
-class Endpoint extends SchemaApiAbstract
+class PetsResource extends SchemaApiAbstract
 {
     /**
      * @Description("List all pets")
@@ -27,6 +27,38 @@ class Endpoint extends SchemaApiAbstract
     {
     }
 }
+<?php
+
+namespace PSX\Generation;
+
+/**
+ * @Title("Pets")
+ */
+class Pets
+{
+    /**
+     * @Key("pets")
+     * @Type("array")
+     * @Items(@Ref("PSX\Generation\Pet"))
+     */
+    protected $pets;
+    /**
+     * @param array<Pet> $pets
+     */
+    public function setPets(?array $pets)
+    {
+        $this->pets = $pets;
+    }
+    /**
+     * @return array<Pet>
+     */
+    public function getPets() : ?array
+    {
+        return $this->pets;
+    }
+}
+<?php
+
 namespace PSX\Generation;
 
 /**
@@ -94,32 +126,8 @@ class Pet
         return $this->tag;
     }
 }
-/**
- * @Title("Pets")
- */
-class Pets
-{
-    /**
-     * @Key("pets")
-     * @Type("array")
-     * @Items(@Ref("PSX\Generation\Pet"))
-     */
-    protected $pets;
-    /**
-     * @param array<Pet> $pets
-     */
-    public function setPets(?array $pets)
-    {
-        $this->pets = $pets;
-    }
-    /**
-     * @return array<Pet>
-     */
-    public function getPets() : ?array
-    {
-        return $this->pets;
-    }
-}
+<?php
+
 namespace PSX\Generation;
 
 /**

@@ -1,6 +1,9 @@
-<?php
+<?php 
+/**
+ * PetsResource generated on 2019-10-27
+ * @see https://github.com/apioo
+ */
 
-namespace Pets;
 
 use GuzzleHttp\Client;
 use PSX\Json\Parser;
@@ -10,7 +13,7 @@ use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Visitor\TypeVisitor;
 
-class Resource
+class PetsResource
 {
     /**
      * @var string
@@ -103,9 +106,144 @@ class Resource
     }
 }
 
+<?php 
+/**
+ * PetsResourceSchema generated on 2019-10-27
+ * @see https://github.com/apioo
+ */
 
+/**
+ * @Title("PetsResourceSchema")
+ */
+class PetsResourceSchema
+{
+    /**
+     * @Key("GetQuery")
+     * @Ref("\GetQuery")
+     */
+    protected $GetQuery;
+    /**
+     * @Key("Pets")
+     * @Ref("\Pets")
+     */
+    protected $Pets;
+    /**
+     * @Key("Pet")
+     * @Ref("\Pet")
+     */
+    protected $Pet;
+    /**
+     * @param GetQuery $GetQuery
+     */
+    public function setGetQuery(?GetQuery $GetQuery)
+    {
+        $this->GetQuery = $GetQuery;
+    }
+    /**
+     * @return GetQuery
+     */
+    public function getGetQuery() : ?GetQuery
+    {
+        return $this->GetQuery;
+    }
+    /**
+     * @param Pets $Pets
+     */
+    public function setPets(?Pets $Pets)
+    {
+        $this->Pets = $Pets;
+    }
+    /**
+     * @return Pets
+     */
+    public function getPets() : ?Pets
+    {
+        return $this->Pets;
+    }
+    /**
+     * @param Pet $Pet
+     */
+    public function setPet(?Pet $Pet)
+    {
+        $this->Pet = $Pet;
+    }
+    /**
+     * @return Pet
+     */
+    public function getPet() : ?Pet
+    {
+        return $this->Pet;
+    }
+}
+<?php 
+/**
+ * GetQuery generated on 2019-10-27
+ * @see https://github.com/apioo
+ */
 
+/**
+ * @Title("GetQuery")
+ */
+class GetQuery
+{
+    /**
+     * @Key("limit")
+     * @Type("integer")
+     * @Format("int32")
+     */
+    protected $limit;
+    /**
+     * @param int $limit
+     */
+    public function setLimit(?int $limit)
+    {
+        $this->limit = $limit;
+    }
+    /**
+     * @return int
+     */
+    public function getLimit() : ?int
+    {
+        return $this->limit;
+    }
+}
+<?php 
+/**
+ * Pets generated on 2019-10-27
+ * @see https://github.com/apioo
+ */
 
+/**
+ * @Title("Pets")
+ */
+class Pets
+{
+    /**
+     * @Key("pets")
+     * @Type("array")
+     * @Items(@Ref("\Pet"))
+     */
+    protected $pets;
+    /**
+     * @param array<Pet> $pets
+     */
+    public function setPets(?array $pets)
+    {
+        $this->pets = $pets;
+    }
+    /**
+     * @return array<Pet>
+     */
+    public function getPets() : ?array
+    {
+        return $this->pets;
+    }
+}
+<?php 
+/**
+ * Pet generated on 2019-10-27
+ * @see https://github.com/apioo
+ */
 
 /**
  * @Title("Pet")
@@ -172,119 +310,3 @@ class Pet
         return $this->tag;
     }
 }
-/**
- * @Title("Pets")
- */
-class Pets
-{
-    /**
-     * @Key("pets")
-     * @Type("array")
-     * @Items(@Ref("Pets\Pet"))
-     */
-    protected $pets;
-    /**
-     * @param array<Pet> $pets
-     */
-    public function setPets(?array $pets)
-    {
-        $this->pets = $pets;
-    }
-    /**
-     * @return array<Pet>
-     */
-    public function getPets() : ?array
-    {
-        return $this->pets;
-    }
-}
-/**
- * @Title("GetQuery")
- */
-class GetQuery
-{
-    /**
-     * @Key("limit")
-     * @Type("integer")
-     * @Format("int32")
-     */
-    protected $limit;
-    /**
-     * @param int $limit
-     */
-    public function setLimit(?int $limit)
-    {
-        $this->limit = $limit;
-    }
-    /**
-     * @return int
-     */
-    public function getLimit() : ?int
-    {
-        return $this->limit;
-    }
-}
-/**
- * @Title("Endpoint")
- */
-class Endpoint
-{
-    /**
-     * @Key("GetQuery")
-     * @Ref("Pets\GetQuery")
-     */
-    protected $GetQuery;
-    /**
-     * @Key("Pets")
-     * @Ref("Pets\Pets")
-     */
-    protected $Pets;
-    /**
-     * @Key("Pet")
-     * @Ref("Pets\Pet")
-     */
-    protected $Pet;
-    /**
-     * @param GetQuery $GetQuery
-     */
-    public function setGetQuery(?GetQuery $GetQuery)
-    {
-        $this->GetQuery = $GetQuery;
-    }
-    /**
-     * @return GetQuery
-     */
-    public function getGetQuery() : ?GetQuery
-    {
-        return $this->GetQuery;
-    }
-    /**
-     * @param Pets $Pets
-     */
-    public function setPets(?Pets $Pets)
-    {
-        $this->Pets = $Pets;
-    }
-    /**
-     * @return Pets
-     */
-    public function getPets() : ?Pets
-    {
-        return $this->Pets;
-    }
-    /**
-     * @param Pet $Pet
-     */
-    public function setPet(?Pet $Pet)
-    {
-        $this->Pet = $Pet;
-    }
-    /**
-     * @return Pet
-     */
-    public function getPet() : ?Pet
-    {
-        return $this->Pet;
-    }
-}
-

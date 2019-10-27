@@ -40,7 +40,7 @@ class ResourceConversionTest extends ApiManagerTestCase
         $resources = $this->getResources();
         $generator = new Generator\Client\Php('http://api.phpsx.org');
 
-        $actual = $generator->generate($resources['/pets']);
+        $actual = (string) $generator->generate($resources['/pets']);
         $expect = file_get_contents(__DIR__ . '/Resource/petstore/client_php.php');
         $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
 
@@ -52,7 +52,7 @@ class ResourceConversionTest extends ApiManagerTestCase
         $resources = $this->getResources();
         $generator = new Generator\Client\Typescript('http://api.phpsx.org');
 
-        $actual = $generator->generate($resources['/pets']);
+        $actual = (string) $generator->generate($resources['/pets']);
         $expect = file_get_contents(__DIR__ . '/Resource/petstore/client_typescript.ts');
         $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
 
@@ -88,7 +88,7 @@ class ResourceConversionTest extends ApiManagerTestCase
         $resources = $this->getResources();
         $generator = new Generator\Server\Php();
 
-        $actual = $generator->generate($resources['/pets']);
+        $actual = (string) $generator->generate($resources['/pets']);
 
         $expect = file_get_contents(__DIR__ . '/Resource/petstore/server_php.php');
         $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
