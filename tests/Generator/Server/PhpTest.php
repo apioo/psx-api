@@ -36,7 +36,7 @@ class PhpTest extends GeneratorTestCase
     {
         $generator = new Php();
 
-        $actual = $generator->generate($this->getResource());
+        $actual = (string) $generator->generate($this->getResource());
         $expect = file_get_contents(__DIR__ . '/resource/php.php');
         $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
 

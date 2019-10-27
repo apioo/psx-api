@@ -10,7 +10,7 @@ use PSX\Http\Environment\HttpContextInterface;
  * @PathParam(name="name", type="string", description="Name parameter", required=true, minLength=0, maxLength=16, pattern="[A-z]+")
  * @PathParam(name="type", type="string", enum={"foo", "bar"})
  */
-class Endpoint extends SchemaApiAbstract
+class FooNameTypeResource extends SchemaApiAbstract
 {
     /**
      * @Description("Returns a collection")
@@ -53,10 +53,43 @@ class Endpoint extends SchemaApiAbstract
     {
     }
 }
+<?php
+
+namespace PSX\Generation;
+
+/**
+ * @Title("collection")
+ */
+class Collection
+{
+    /**
+     * @Key("entry")
+     * @Type("array")
+     * @Items(@Ref("PSX\Generation\Item"))
+     */
+    protected $entry;
+    /**
+     * @param array<Item> $entry
+     */
+    public function setEntry(?array $entry)
+    {
+        $this->entry = $entry;
+    }
+    /**
+     * @return array<Item>
+     */
+    public function getEntry() : ?array
+    {
+        return $this->entry;
+    }
+}
+<?php
+
 namespace PSX\Generation;
 
 /**
  * @Title("item")
+ * @Required({"id"})
  */
 class Item
 {
@@ -141,32 +174,8 @@ class Item
         return $this->date;
     }
 }
-/**
- * @Title("collection")
- */
-class Collection
-{
-    /**
-     * @Key("entry")
-     * @Type("array")
-     * @Items(@Ref("PSX\Generation\Item"))
-     */
-    protected $entry;
-    /**
-     * @param array<Item> $entry
-     */
-    public function setEntry(?array $entry)
-    {
-        $this->entry = $entry;
-    }
-    /**
-     * @return array<Item>
-     */
-    public function getEntry() : ?array
-    {
-        return $this->entry;
-    }
-}
+<?php
+
 namespace PSX\Generation;
 
 /**
