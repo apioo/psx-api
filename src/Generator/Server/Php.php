@@ -21,7 +21,6 @@
 namespace PSX\Api\Generator\Server;
 
 use PhpParser\BuilderFactory;
-use PhpParser\Node\Stmt\Class_;
 use PhpParser\PrettyPrinter;
 use PSX\Api\GeneratorAbstract;
 use PSX\Api\Resource;
@@ -63,7 +62,7 @@ class Php extends GeneratorAbstract
     /**
      * @param string|null $namespace
      */
-    public function __construct($namespace = null)
+    public function __construct(?string $namespace = null)
     {
         $this->factory   = new BuilderFactory();
         $this->printer   = new PrettyPrinter\Standard();
@@ -77,9 +76,7 @@ class Php extends GeneratorAbstract
      */
     public function generate(Resource $resource)
     {
-        $root = $this->factory->namespace($this->namespace);
-
-        $className = 'Endpoint';
+        $className = $this->getClassName($resource->getPath());
         $methods   = $resource->getMethods();
 
         $class = $this->factory->class($className);
@@ -102,24 +99,31 @@ class Php extends GeneratorAbstract
             $class->addStmt($phpMethod);
         }
 
+        $root = $this->factory->namespace($this->namespace);
         $root->addStmt($this->factory->use('PSX\Framework\Controller\SchemaApiAbstract'));
         $root->addStmt($this->factory->use('PSX\Http\Environment\HttpContextInterface'));
-        $root->addStmt($class->getNode());
+        $root->addStmt($class);
 
-        $nodes = [];
-        $nodes[] = $root->getNode();
+        $code = $this->printer->prettyPrint([$root->getNode()]);
 
-        $generator = new Generator\Php();
+        $chunks = new Generator\Code\Chunks();
+        $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
+
+        $generator = new Generator\Php($this->namespace);
+
         foreach ($this->schemas as $schema) {
-            $class = $this->getIdentifierForProperty($schema->getDefinition());
+            $result = $generator->generate($schema);
 
-            if (!$this->containsClass($nodes, $class)) {
-                $generator->generate($schema);
-                $nodes[] = $generator->getNode();
+            if ($result instanceof Generator\Code\Chunks) {
+                foreach ($result->getChunks() as $identifier => $code) {
+                    $chunks->append($this->getFileName($identifier), $this->getFileContent($code, $identifier));
+                }
+            } else {
+                $chunks->append($this->getFileName($className . 'Schema'), $result);
             }
         }
 
-        return $this->printer->prettyPrintFile($nodes);
+        return $chunks;
     }
 
     /**
@@ -296,21 +300,34 @@ class Php extends GeneratorAbstract
     }
 
     /**
-     * @param array $nodes
-     * @param string $name
-     * @return boolean
+     * @param string $path
+     * @return string
      */
-    private function containsClass(array $nodes, $name)
+    protected function getClassName(string $path): string
     {
-        foreach ($nodes as $node) {
-            /** @var \PhpParser\Node\Stmt\Namespace_ $node */
-            foreach ($node->stmts as $stmt) {
-                if ($stmt instanceof Class_ && $stmt->name == $name) {
-                    return true;
-                }
-            }
-        }
+        $parts = explode('/', $path);
+        $parts = array_map(function($part){
+            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
+        }, $parts);
 
-        return false;
+        return implode('', $parts) . 'Resource';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getFileName(string $identifier): string
+    {
+        return $identifier . '.php';
+    }
+
+    /**
+     * @param string $code
+     * @param string $identifier
+     * @return string
+     */
+    protected function getFileContent(string $code, string $identifier): string
+    {
+        return '<?php' . "\n\n" . $code;
     }
 }
