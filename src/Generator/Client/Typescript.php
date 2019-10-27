@@ -22,8 +22,6 @@ namespace PSX\Api\Generator\Client;
 
 use PSX\Schema;
 use PSX\Schema\GeneratorInterface;
-use PSX\Schema\PropertyInterface;
-use PSX\Schema\PropertyType;
 
 /**
  * Typescript
