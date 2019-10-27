@@ -1,6 +1,14 @@
-<?php
+--85d62adb6dd029cc080b15eb2086a8e054887f8a
+Content-Type: application/php
+Content-Disposition: attachment; filename="FooResource.php"
+Content-Length: 2179
 
-namespace Foo;
+<?php 
+/**
+ * FooResource generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
+
 
 use GuzzleHttp\Client;
 use PSX\Json\Parser;
@@ -10,7 +18,7 @@ use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Visitor\TypeVisitor;
 
-class Resource
+class FooResource
 {
     /**
      * @var string
@@ -91,158 +99,72 @@ class Resource
     }
 }
 
+--85d62adb6dd029cc080b15eb2086a8e054887f8a
+Content-Type: application/php
+Content-Disposition: attachment; filename="FooResourceSchema.php"
+Content-Length: 846
 
-
-
+<?php 
+/**
+ * FooResourceSchema generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
 
 /**
- * @Title("Rating")
+ * @Title("FooResourceSchema")
  */
-class Rating
+class FooResourceSchema
 {
     /**
-     * @Key("author")
-     * @Type("string")
+     * @Key("GetQuery")
+     * @Ref("\GetQuery")
      */
-    protected $author;
+    protected $GetQuery;
     /**
-     * @Key("rating")
-     * @Type("integer")
+     * @Key("Song")
+     * @Ref("\Song")
      */
-    protected $rating;
+    protected $Song;
     /**
-     * @Key("text")
-     * @Type("string")
+     * @param GetQuery $GetQuery
      */
-    protected $text;
-    /**
-     * @param string $author
-     */
-    public function setAuthor(?string $author)
+    public function setGetQuery(?GetQuery $GetQuery)
     {
-        $this->author = $author;
+        $this->GetQuery = $GetQuery;
     }
     /**
-     * @return string
+     * @return GetQuery
      */
-    public function getAuthor() : ?string
+    public function getGetQuery() : ?GetQuery
     {
-        return $this->author;
+        return $this->GetQuery;
     }
     /**
-     * @param int $rating
+     * @param Song $Song
      */
-    public function setRating(?int $rating)
+    public function setSong(?Song $Song)
     {
-        $this->rating = $rating;
+        $this->Song = $Song;
     }
     /**
-     * @return int
+     * @return Song
      */
-    public function getRating() : ?int
+    public function getSong() : ?Song
     {
-        return $this->rating;
-    }
-    /**
-     * @param string $text
-     */
-    public function setText(?string $text)
-    {
-        $this->text = $text;
-    }
-    /**
-     * @return string
-     */
-    public function getText() : ?string
-    {
-        return $this->text;
+        return $this->Song;
     }
 }
+--85d62adb6dd029cc080b15eb2086a8e054887f8a
+Content-Type: application/php
+Content-Disposition: attachment; filename="GetQuery.php"
+Content-Length: 3195
+
+<?php 
 /**
- * @Title("Song")
- * @Description("A canonical song")
- * @Required({"title", "artist"})
+ * GetQuery generated on 0000-00-00
+ * @see https://github.com/apioo
  */
-class Song
-{
-    /**
-     * @Key("title")
-     * @Type("string")
-     */
-    protected $title;
-    /**
-     * @Key("artist")
-     * @Type("string")
-     */
-    protected $artist;
-    /**
-     * @Key("length")
-     * @Type("integer")
-     */
-    protected $length;
-    /**
-     * @Key("ratings")
-     * @Type("array")
-     * @Items(@Ref("Foo\Rating"))
-     */
-    protected $ratings;
-    /**
-     * @param string $title
-     */
-    public function setTitle(?string $title)
-    {
-        $this->title = $title;
-    }
-    /**
-     * @return string
-     */
-    public function getTitle() : ?string
-    {
-        return $this->title;
-    }
-    /**
-     * @param string $artist
-     */
-    public function setArtist(?string $artist)
-    {
-        $this->artist = $artist;
-    }
-    /**
-     * @return string
-     */
-    public function getArtist() : ?string
-    {
-        return $this->artist;
-    }
-    /**
-     * @param int $length
-     */
-    public function setLength(?int $length)
-    {
-        $this->length = $length;
-    }
-    /**
-     * @return int
-     */
-    public function getLength() : ?int
-    {
-        return $this->length;
-    }
-    /**
-     * @param array<Rating> $ratings
-     */
-    public function setRatings(?array $ratings)
-    {
-        $this->ratings = $ratings;
-    }
-    /**
-     * @return array<Rating>
-     */
-    public function getRatings() : ?array
-    {
-        return $this->ratings;
-    }
-}
+
 /**
  * @Title("GetQuery")
  * @Required({"bar"})
@@ -424,48 +346,174 @@ class GetQuery
         return $this->string;
     }
 }
+--85d62adb6dd029cc080b15eb2086a8e054887f8a
+Content-Type: application/php
+Content-Disposition: attachment; filename="Song.php"
+Content-Length: 1594
+
+<?php 
 /**
- * @Title("Endpoint")
+ * Song generated on 0000-00-00
+ * @see https://github.com/apioo
  */
-class Endpoint
+
+/**
+ * @Title("Song")
+ * @Description("A canonical song")
+ * @Required({"title", "artist"})
+ */
+class Song
 {
     /**
-     * @Key("GetQuery")
-     * @Ref("Foo\GetQuery")
+     * @Key("title")
+     * @Type("string")
      */
-    protected $GetQuery;
+    protected $title;
     /**
-     * @Key("Song")
-     * @Ref("Foo\Song")
+     * @Key("artist")
+     * @Type("string")
      */
-    protected $Song;
+    protected $artist;
     /**
-     * @param GetQuery $GetQuery
+     * @Key("length")
+     * @Type("integer")
      */
-    public function setGetQuery(?GetQuery $GetQuery)
+    protected $length;
+    /**
+     * @Key("ratings")
+     * @Type("array")
+     * @Items(@Ref("\Rating"))
+     */
+    protected $ratings;
+    /**
+     * @param string $title
+     */
+    public function setTitle(?string $title)
     {
-        $this->GetQuery = $GetQuery;
+        $this->title = $title;
     }
     /**
-     * @return GetQuery
+     * @return string
      */
-    public function getGetQuery() : ?GetQuery
+    public function getTitle() : ?string
     {
-        return $this->GetQuery;
+        return $this->title;
     }
     /**
-     * @param Song $Song
+     * @param string $artist
      */
-    public function setSong(?Song $Song)
+    public function setArtist(?string $artist)
     {
-        $this->Song = $Song;
+        $this->artist = $artist;
     }
     /**
-     * @return Song
+     * @return string
      */
-    public function getSong() : ?Song
+    public function getArtist() : ?string
     {
-        return $this->Song;
+        return $this->artist;
+    }
+    /**
+     * @param int $length
+     */
+    public function setLength(?int $length)
+    {
+        $this->length = $length;
+    }
+    /**
+     * @return int
+     */
+    public function getLength() : ?int
+    {
+        return $this->length;
+    }
+    /**
+     * @param array<Rating> $ratings
+     */
+    public function setRatings(?array $ratings)
+    {
+        $this->ratings = $ratings;
+    }
+    /**
+     * @return array<Rating>
+     */
+    public function getRatings() : ?array
+    {
+        return $this->ratings;
     }
 }
+--85d62adb6dd029cc080b15eb2086a8e054887f8a
+Content-Type: application/php
+Content-Disposition: attachment; filename="Rating.php"
+Content-Length: 1127
 
+<?php 
+/**
+ * Rating generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
+
+/**
+ * @Title("Rating")
+ */
+class Rating
+{
+    /**
+     * @Key("author")
+     * @Type("string")
+     */
+    protected $author;
+    /**
+     * @Key("rating")
+     * @Type("integer")
+     */
+    protected $rating;
+    /**
+     * @Key("text")
+     * @Type("string")
+     */
+    protected $text;
+    /**
+     * @param string $author
+     */
+    public function setAuthor(?string $author)
+    {
+        $this->author = $author;
+    }
+    /**
+     * @return string
+     */
+    public function getAuthor() : ?string
+    {
+        return $this->author;
+    }
+    /**
+     * @param int $rating
+     */
+    public function setRating(?int $rating)
+    {
+        $this->rating = $rating;
+    }
+    /**
+     * @return int
+     */
+    public function getRating() : ?int
+    {
+        return $this->rating;
+    }
+    /**
+     * @param string $text
+     */
+    public function setText(?string $text)
+    {
+        $this->text = $text;
+    }
+    /**
+     * @return string
+     */
+    public function getText() : ?string
+    {
+        return $this->text;
+    }
+}
+--85d62adb6dd029cc080b15eb2086a8e054887f8a--

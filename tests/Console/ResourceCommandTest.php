@@ -51,6 +51,8 @@ class ResourceCommandTest extends TestCase
         ));
 
         $actual = $commandTester->getDisplay();
+        $actual = str_replace(date('Y-m-d'), '0000-00-00', $actual);
+        $actual = str_replace(["\r\n", "\n", "\r"], "\n", $actual);
         $expect = file_get_contents(__DIR__ . '/resource/client_php.php');
         $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
 
