@@ -1,6 +1,10 @@
-<?php
+<?php 
+/**
+ * FooNameTypeResource generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
 
-namespace Foo\Bar\FooNameType;
+namespace Foo\Bar;
 
 use GuzzleHttp\Client;
 use PSX\Json\Parser;
@@ -10,7 +14,7 @@ use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Visitor\TypeVisitor;
 
-class Resource
+class FooNameTypeResource
 {
     /**
      * @var string
@@ -100,54 +104,48 @@ class Resource
     }
 }
 
+<?php 
+/**
+ * FooNameTypeResourceSchema generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
 
-
-
+namespace Foo\Bar;
 
 /**
- * @Title("message")
+ * @Title("FooNameTypeResourceSchema")
  */
-class Message
+class FooNameTypeResourceSchema
 {
     /**
-     * @Key("success")
-     * @Type("boolean")
+     * @Key("EntryOrMessage")
+     * @Title("EntryOrMessage")
+     * @OneOf(@Ref("Foo\Bar\Item"), @Ref("Foo\Bar\Message"))
      */
-    protected $success;
+    protected $EntryOrMessage;
     /**
-     * @Key("message")
-     * @Type("string")
+     * @param Item|Message $EntryOrMessage
      */
-    protected $message;
-    /**
-     * @param bool $success
-     */
-    public function setSuccess(?bool $success)
+    public function setEntryOrMessage($EntryOrMessage)
     {
-        $this->success = $success;
+        $this->EntryOrMessage = $EntryOrMessage;
     }
     /**
-     * @return bool
+     * @return Item|Message
      */
-    public function getSuccess() : ?bool
+    public function getEntryOrMessage()
     {
-        return $this->success;
-    }
-    /**
-     * @param string $message
-     */
-    public function setMessage(?string $message)
-    {
-        $this->message = $message;
-    }
-    /**
-     * @return string
-     */
-    public function getMessage() : ?string
-    {
-        return $this->message;
+        return $this->EntryOrMessage;
     }
 }
+<?php 
+/**
+ * Item generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
+
+namespace Foo\Bar;
+
 /**
  * @Title("item")
  */
@@ -234,30 +232,55 @@ class Item
         return $this->date;
     }
 }
+<?php 
 /**
- * @Title("Endpoint")
+ * Message generated on 0000-00-00
+ * @see https://github.com/apioo
  */
-class Endpoint
+
+namespace Foo\Bar;
+
+/**
+ * @Title("message")
+ */
+class Message
 {
     /**
-     * @Key("EntryOrMessage")
-     * @Title("EntryOrMessage")
-     * @OneOf(@Ref("Foo\Bar\FooNameType\Item"), @Ref("Foo\Bar\FooNameType\Message"))
+     * @Key("success")
+     * @Type("boolean")
      */
-    protected $EntryOrMessage;
+    protected $success;
     /**
-     * @param Item|Message $EntryOrMessage
+     * @Key("message")
+     * @Type("string")
      */
-    public function setEntryOrMessage($EntryOrMessage)
+    protected $message;
+    /**
+     * @param bool $success
+     */
+    public function setSuccess(?bool $success)
     {
-        $this->EntryOrMessage = $EntryOrMessage;
+        $this->success = $success;
     }
     /**
-     * @return Item|Message
+     * @return bool
      */
-    public function getEntryOrMessage()
+    public function getSuccess() : ?bool
     {
-        return $this->EntryOrMessage;
+        return $this->success;
+    }
+    /**
+     * @param string $message
+     */
+    public function setMessage(?string $message)
+    {
+        $this->message = $message;
+    }
+    /**
+     * @return string
+     */
+    public function getMessage() : ?string
+    {
+        return $this->message;
     }
 }
-

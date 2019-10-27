@@ -1,6 +1,9 @@
-<?php
+<?php 
+/**
+ * FooNameTypeResource generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
 
-namespace FooNameType;
 
 use GuzzleHttp\Client;
 use PSX\Json\Parser;
@@ -10,7 +13,7 @@ use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Visitor\TypeVisitor;
 
-class Resource
+class FooNameTypeResource
 {
     /**
      * @var string
@@ -159,167 +162,100 @@ class Resource
     }
 }
 
-
-
-
+<?php 
+/**
+ * FooNameTypeResourceSchema generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
 
 /**
- * @Title("message")
+ * @Title("FooNameTypeResourceSchema")
  */
-class Message
+class FooNameTypeResourceSchema
 {
     /**
-     * @Key("success")
-     * @Type("boolean")
+     * @Key("GetQuery")
+     * @Ref("\GetQuery")
      */
-    protected $success;
+    protected $GetQuery;
     /**
-     * @Key("message")
-     * @Type("string")
+     * @Key("Collection")
+     * @Ref("\Collection")
      */
-    protected $message;
+    protected $Collection;
     /**
-     * @param bool $success
+     * @Key("Item")
+     * @Ref("\Item")
      */
-    public function setSuccess(?bool $success)
+    protected $Item;
+    /**
+     * @Key("Message")
+     * @Ref("\Message")
+     */
+    protected $Message;
+    /**
+     * @param GetQuery $GetQuery
+     */
+    public function setGetQuery(?GetQuery $GetQuery)
     {
-        $this->success = $success;
+        $this->GetQuery = $GetQuery;
     }
     /**
-     * @return bool
+     * @return GetQuery
      */
-    public function getSuccess() : ?bool
+    public function getGetQuery() : ?GetQuery
     {
-        return $this->success;
+        return $this->GetQuery;
     }
     /**
-     * @param string $message
+     * @param Collection $Collection
      */
-    public function setMessage(?string $message)
+    public function setCollection(?Collection $Collection)
     {
-        $this->message = $message;
+        $this->Collection = $Collection;
     }
     /**
-     * @return string
+     * @return Collection
      */
-    public function getMessage() : ?string
+    public function getCollection() : ?Collection
     {
-        return $this->message;
+        return $this->Collection;
+    }
+    /**
+     * @param Item $Item
+     */
+    public function setItem(?Item $Item)
+    {
+        $this->Item = $Item;
+    }
+    /**
+     * @return Item
+     */
+    public function getItem() : ?Item
+    {
+        return $this->Item;
+    }
+    /**
+     * @param Message $Message
+     */
+    public function setMessage(?Message $Message)
+    {
+        $this->Message = $Message;
+    }
+    /**
+     * @return Message
+     */
+    public function getMessage() : ?Message
+    {
+        return $this->Message;
     }
 }
+<?php 
 /**
- * @Title("item")
- * @Required({"id"})
+ * GetQuery generated on 0000-00-00
+ * @see https://github.com/apioo
  */
-class Item
-{
-    /**
-     * @Key("id")
-     * @Type("integer")
-     */
-    protected $id;
-    /**
-     * @Key("userId")
-     * @Type("integer")
-     */
-    protected $userId;
-    /**
-     * @Key("title")
-     * @Type("string")
-     * @MaxLength(16)
-     * @MinLength(3)
-     * @Pattern("[A-z]+")
-     */
-    protected $title;
-    /**
-     * @Key("date")
-     * @Type("string")
-     * @Format("date-time")
-     */
-    protected $date;
-    /**
-     * @param int $id
-     */
-    public function setId(?int $id)
-    {
-        $this->id = $id;
-    }
-    /**
-     * @return int
-     */
-    public function getId() : ?int
-    {
-        return $this->id;
-    }
-    /**
-     * @param int $userId
-     */
-    public function setUserId(?int $userId)
-    {
-        $this->userId = $userId;
-    }
-    /**
-     * @return int
-     */
-    public function getUserId() : ?int
-    {
-        return $this->userId;
-    }
-    /**
-     * @param string $title
-     */
-    public function setTitle(?string $title)
-    {
-        $this->title = $title;
-    }
-    /**
-     * @return string
-     */
-    public function getTitle() : ?string
-    {
-        return $this->title;
-    }
-    /**
-     * @param \DateTime $date
-     */
-    public function setDate(?\DateTime $date)
-    {
-        $this->date = $date;
-    }
-    /**
-     * @return \DateTime
-     */
-    public function getDate() : ?\DateTime
-    {
-        return $this->date;
-    }
-}
-/**
- * @Title("collection")
- */
-class Collection
-{
-    /**
-     * @Key("entry")
-     * @Type("array")
-     * @Items(@Ref("FooNameType\Item"))
-     */
-    protected $entry;
-    /**
-     * @param array<Item> $entry
-     */
-    public function setEntry(?array $entry)
-    {
-        $this->entry = $entry;
-    }
-    /**
-     * @return array<Item>
-     */
-    public function getEntry() : ?array
-    {
-        return $this->entry;
-    }
-}
+
 /**
  * @Title("GetQuery")
  * @Required({"startIndex"})
@@ -427,86 +363,178 @@ class GetQuery
         return $this->datetime;
     }
 }
+<?php 
 /**
- * @Title("Endpoint")
+ * Collection generated on 0000-00-00
+ * @see https://github.com/apioo
  */
-class Endpoint
+
+/**
+ * @Title("collection")
+ */
+class Collection
 {
     /**
-     * @Key("GetQuery")
-     * @Ref("FooNameType\GetQuery")
+     * @Key("entry")
+     * @Type("array")
+     * @Items(@Ref("\Item"))
      */
-    protected $GetQuery;
+    protected $entry;
     /**
-     * @Key("Collection")
-     * @Ref("FooNameType\Collection")
+     * @param array<Item> $entry
      */
-    protected $Collection;
-    /**
-     * @Key("Item")
-     * @Ref("FooNameType\Item")
-     */
-    protected $Item;
-    /**
-     * @Key("Message")
-     * @Ref("FooNameType\Message")
-     */
-    protected $Message;
-    /**
-     * @param GetQuery $GetQuery
-     */
-    public function setGetQuery(?GetQuery $GetQuery)
+    public function setEntry(?array $entry)
     {
-        $this->GetQuery = $GetQuery;
+        $this->entry = $entry;
     }
     /**
-     * @return GetQuery
+     * @return array<Item>
      */
-    public function getGetQuery() : ?GetQuery
+    public function getEntry() : ?array
     {
-        return $this->GetQuery;
-    }
-    /**
-     * @param Collection $Collection
-     */
-    public function setCollection(?Collection $Collection)
-    {
-        $this->Collection = $Collection;
-    }
-    /**
-     * @return Collection
-     */
-    public function getCollection() : ?Collection
-    {
-        return $this->Collection;
-    }
-    /**
-     * @param Item $Item
-     */
-    public function setItem(?Item $Item)
-    {
-        $this->Item = $Item;
-    }
-    /**
-     * @return Item
-     */
-    public function getItem() : ?Item
-    {
-        return $this->Item;
-    }
-    /**
-     * @param Message $Message
-     */
-    public function setMessage(?Message $Message)
-    {
-        $this->Message = $Message;
-    }
-    /**
-     * @return Message
-     */
-    public function getMessage() : ?Message
-    {
-        return $this->Message;
+        return $this->entry;
     }
 }
+<?php 
+/**
+ * Item generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
 
+/**
+ * @Title("item")
+ * @Required({"id"})
+ */
+class Item
+{
+    /**
+     * @Key("id")
+     * @Type("integer")
+     */
+    protected $id;
+    /**
+     * @Key("userId")
+     * @Type("integer")
+     */
+    protected $userId;
+    /**
+     * @Key("title")
+     * @Type("string")
+     * @MaxLength(16)
+     * @MinLength(3)
+     * @Pattern("[A-z]+")
+     */
+    protected $title;
+    /**
+     * @Key("date")
+     * @Type("string")
+     * @Format("date-time")
+     */
+    protected $date;
+    /**
+     * @param int $id
+     */
+    public function setId(?int $id)
+    {
+        $this->id = $id;
+    }
+    /**
+     * @return int
+     */
+    public function getId() : ?int
+    {
+        return $this->id;
+    }
+    /**
+     * @param int $userId
+     */
+    public function setUserId(?int $userId)
+    {
+        $this->userId = $userId;
+    }
+    /**
+     * @return int
+     */
+    public function getUserId() : ?int
+    {
+        return $this->userId;
+    }
+    /**
+     * @param string $title
+     */
+    public function setTitle(?string $title)
+    {
+        $this->title = $title;
+    }
+    /**
+     * @return string
+     */
+    public function getTitle() : ?string
+    {
+        return $this->title;
+    }
+    /**
+     * @param \DateTime $date
+     */
+    public function setDate(?\DateTime $date)
+    {
+        $this->date = $date;
+    }
+    /**
+     * @return \DateTime
+     */
+    public function getDate() : ?\DateTime
+    {
+        return $this->date;
+    }
+}
+<?php 
+/**
+ * Message generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
+
+/**
+ * @Title("message")
+ */
+class Message
+{
+    /**
+     * @Key("success")
+     * @Type("boolean")
+     */
+    protected $success;
+    /**
+     * @Key("message")
+     * @Type("string")
+     */
+    protected $message;
+    /**
+     * @param bool $success
+     */
+    public function setSuccess(?bool $success)
+    {
+        $this->success = $success;
+    }
+    /**
+     * @return bool
+     */
+    public function getSuccess() : ?bool
+    {
+        return $this->success;
+    }
+    /**
+     * @param string $message
+     */
+    public function setMessage(?string $message)
+    {
+        $this->message = $message;
+    }
+    /**
+     * @return string
+     */
+    public function getMessage() : ?string
+    {
+        return $this->message;
+    }
+}

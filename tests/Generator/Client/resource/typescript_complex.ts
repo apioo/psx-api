@@ -1,6 +1,12 @@
+/**
+ * FooNameTypeResource generated on 0000-00-00
+ * {@link https://github.com/apioo}
+ */
+
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 
-export default class Resource {
+
+export default class FooNameTypeResource {
     private url: string;
     private token: string;
     private httpClient: AxiosInstance;
@@ -36,18 +42,34 @@ export default class Resource {
 
 }
 
-interface Endpoint {
+
+/**
+ * FooNameTypeResourceSchema generated on 0000-00-00
+ * {@link https://github.com/apioo}
+ */
+
+interface FooNameTypeResourceSchema {
     EntryOrMessage?: Item | Message
 }
+
+/**
+ * Item generated on 0000-00-00
+ * {@link https://github.com/apioo}
+ */
+
 interface Item {
     id?: number
     userId?: number
     title?: string
     date?: string
 }
+
+/**
+ * Message generated on 0000-00-00
+ * {@link https://github.com/apioo}
+ */
+
 interface Message {
     success?: boolean
     message?: string
 }
-
-

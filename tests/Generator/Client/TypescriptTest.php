@@ -36,7 +36,8 @@ class TypescriptTest extends GeneratorTestCase
     {
         $generator = new Typescript('http://api.foo.com');
 
-        $actual = $generator->generate($this->getResource());
+        $actual = (string) $generator->generate($this->getResource());
+        $actual = str_replace(date('Y-m-d'), '0000-00-00', $actual);
         $expect = file_get_contents(__DIR__ . '/resource/typescript.ts');
         $expect = str_replace(["\r\n", "\r"], "\n", $expect);
 
@@ -47,7 +48,8 @@ class TypescriptTest extends GeneratorTestCase
     {
         $generator = new Typescript('http://api.foo.com');
 
-        $actual = $generator->generate($this->getResourceComplex());
+        $actual = (string) $generator->generate($this->getResourceComplex());
+        $actual = str_replace(date('Y-m-d'), '0000-00-00', $actual);
         $expect = file_get_contents(__DIR__ . '/resource/typescript_complex.ts');
         $expect = str_replace(["\r\n", "\r"], "\n", $expect);
 
