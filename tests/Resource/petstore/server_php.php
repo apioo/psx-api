@@ -4,7 +4,6 @@ namespace PSX\Generation;
 
 use PSX\Framework\Controller\SchemaApiAbstract;
 use PSX\Http\Environment\HttpContextInterface;
-
 /**
  * @Description("foobar")
  */

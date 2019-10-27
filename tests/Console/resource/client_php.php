@@ -1,5 +1,4 @@
 --85d62adb6dd029cc080b15eb2086a8e054887f8a
-Content-Type: application/php
 Content-Disposition: attachment; filename="FooResource.php"
 Content-Length: 2179
 
@@ -100,7 +99,6 @@ class FooResource
 }
 
 --85d62adb6dd029cc080b15eb2086a8e054887f8a
-Content-Type: application/php
 Content-Disposition: attachment; filename="FooResourceSchema.php"
 Content-Length: 846
 
@@ -155,7 +153,6 @@ class FooResourceSchema
     }
 }
 --85d62adb6dd029cc080b15eb2086a8e054887f8a
-Content-Type: application/php
 Content-Disposition: attachment; filename="GetQuery.php"
 Content-Length: 3195
 
@@ -347,7 +344,6 @@ class GetQuery
     }
 }
 --85d62adb6dd029cc080b15eb2086a8e054887f8a
-Content-Type: application/php
 Content-Disposition: attachment; filename="Song.php"
 Content-Length: 1594
 
@@ -443,7 +439,6 @@ class Song
     }
 }
 --85d62adb6dd029cc080b15eb2086a8e054887f8a
-Content-Type: application/php
 Content-Disposition: attachment; filename="Rating.php"
 Content-Length: 1127
 
