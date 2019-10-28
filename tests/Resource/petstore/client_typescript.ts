@@ -1,5 +1,5 @@
 /**
- * PetsResource generated on 2019-10-27
+ * PetsResource generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
@@ -52,7 +52,7 @@ export default class PetsResource {
 
 
 /**
- * PetsResourceSchema generated on 2019-10-27
+ * PetsResourceSchema generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
@@ -63,7 +63,7 @@ interface PetsResourceSchema {
 }
 
 /**
- * GetQuery generated on 2019-10-27
+ * GetQuery generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
@@ -72,7 +72,7 @@ interface GetQuery {
 }
 
 /**
- * Pets generated on 2019-10-27
+ * Pets generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
@@ -81,7 +81,7 @@ interface Pets {
 }
 
 /**
- * Pet generated on 2019-10-27
+ * Pet generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 

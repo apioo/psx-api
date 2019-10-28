@@ -1,6 +1,6 @@
 <?php 
 /**
- * PetsResource generated on 2019-10-27
+ * PetsResource generated on 0000-00-00
  * @see https://github.com/apioo
  */
 
@@ -108,7 +108,7 @@ class PetsResource
 
 <?php 
 /**
- * PetsResourceSchema generated on 2019-10-27
+ * PetsResourceSchema generated on 0000-00-00
  * @see https://github.com/apioo
  */
 
@@ -177,7 +177,7 @@ class PetsResourceSchema
 }
 <?php 
 /**
- * GetQuery generated on 2019-10-27
+ * GetQuery generated on 0000-00-00
  * @see https://github.com/apioo
  */
 
@@ -209,7 +209,7 @@ class GetQuery
 }
 <?php 
 /**
- * Pets generated on 2019-10-27
+ * Pets generated on 0000-00-00
  * @see https://github.com/apioo
  */
 
@@ -241,7 +241,7 @@ class Pets
 }
 <?php 
 /**
- * Pet generated on 2019-10-27
+ * Pet generated on 0000-00-00
  * @see https://github.com/apioo
  */
 
