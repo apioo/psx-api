@@ -42,16 +42,12 @@ class OutputWriter
     public static function write($response, OutputInterface $output)
     {
         if ($response instanceof Chunks) {
-            $boundary = '85d62adb6dd029cc080b15eb2086a8e054887f8a';
-            foreach ($response->getChunks() as $identifier => $code) {
-                $output->writeln('--' . $boundary);
-                $output->writeln('Content-Disposition: attachment; filename="' . $identifier . '"');
-                $output->writeln('Content-Length: ' . strlen($code));
-                $output->writeln('');
-                $output->write($code);
-                $output->writeln('');
-            }
-            $output->writeln('--' . $boundary . '--');
+            $dir  = defined('PSX_PATH_CACHE') ? PSX_PATH_CACHE : sys_get_temp_dir();
+            $file = tempnam($dir, 'sdk');
+
+            $response->writeTo($file);
+
+            $output->write(file_get_contents($file));
         } else {
             $output->write($response);
         }
