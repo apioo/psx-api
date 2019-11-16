@@ -53,6 +53,10 @@ class Php extends LanguageAbstract
      */
     protected function getFileName(string $identifier): string
     {
+        if (!empty($this->namespace)) {
+            $identifier = str_replace('\\', '/', $this->namespace) . '/' . $identifier;
+        }
+
         return $identifier . '.php';
     }
 
