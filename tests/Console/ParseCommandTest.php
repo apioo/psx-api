@@ -38,7 +38,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ParseCommandTest extends TestCase
 {
-    public function testGenerateClientPhp()
+    public function testGenerateSpecOpenAPI()
     {
         $command = $this->getParseCommand();
 
@@ -46,16 +46,13 @@ class ParseCommandTest extends TestCase
         $commandTester->execute(array(
             'source'   => TestController::class,
             'path'     => '/foo',
-            '--format' => GeneratorFactoryInterface::CLIENT_PHP,
+            '--format' => GeneratorFactoryInterface::SPEC_OPENAPI,
         ));
 
         $actual = $commandTester->getDisplay();
-        $actual = str_replace(date('Y-m-d'), '0000-00-00', $actual);
-        $actual = str_replace(["\r\n", "\n", "\r"], "\n", $actual);
-        $expect = file_get_contents(__DIR__ . '/resource/client_php.php');
-        $expect = str_replace(["\r\n", "\n", "\r"], "\n", $expect);
+        $expect = file_get_contents(__DIR__ . '/resource/spec_openapi.json');
 
-        $this->assertEquals($expect, $actual, $actual);
+        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
     protected function getParseCommand()

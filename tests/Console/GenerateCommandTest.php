@@ -53,18 +53,17 @@ class GenerateCommandTest extends TestCase
         $this->assertFileExists(__DIR__ . '/output/sdk-client-php.zip');
     }
 
-    public function testGenerateClientTypescript()
+    public function testGenerateSpecOpenAPI()
     {
         $command = $this->getGenerateCommand();
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'dir'      => __DIR__ . '/output',
-            '--format' => GeneratorFactoryInterface::CLIENT_TYPESCRIPT,
-            '--config' => 'Acme.Sdk.Generated',
+            '--format' => GeneratorFactoryInterface::SPEC_OPENAPI,
         ));
 
-        $this->assertFileExists(__DIR__ . '/output/sdk-client-typescript.zip');
+        $this->assertFileExists(__DIR__ . '/output/foo.json');
     }
 
     protected function getGenerateCommand()
