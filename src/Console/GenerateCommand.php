@@ -84,6 +84,9 @@ class GenerateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $format = $input->getOption('format');
+        $config = $input->getOption('config');
+
         $filterName   = $input->getOption('filter');
         $filterRegexp = $input->getOption('regexp');
 
@@ -101,8 +104,8 @@ class GenerateCommand extends Command
             throw new \InvalidArgumentException('Directory does not exist');
         }
 
-        $generator = $this->factory->getGenerator($input->getOption('format'), $input->getOption('config'));
-        $extension = $this->factory->getFileExtension($input->getOption('format'), $input->getOption('config'));
+        $generator = $this->factory->getGenerator($format, $config);
+        $extension = $this->factory->getFileExtension($format, $config);
 
         $progress->start();
 
@@ -116,9 +119,7 @@ class GenerateCommand extends Command
             $content = $generator->generate($this->listing->getResource($resource->getPath()));
 
             if ($content instanceof Chunks) {
-                foreach ($content->getChunks() as $fileName => $code) {
-                    file_put_contents($dir . '/' . $fileName, $code);
-                }
+                $content->writeTo($dir . '/sdk-' . $format .  '.zip');
             } else {
                 $fileName = $this->getFileName($resource->getPath(), $extension);
                 file_put_contents($dir . '/' . $fileName, $content);

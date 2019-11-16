@@ -50,11 +50,7 @@ class GenerateCommandTest extends TestCase
             '--config' => 'Acme\\Sdk\\Generated',
         ));
 
-        $this->assertFileExists(__DIR__ . '/output/FooResource.php');
-        $this->assertFileExists(__DIR__ . '/output/FooResourceSchema.php');
-        $this->assertFileExists(__DIR__ . '/output/GetQuery.php');
-        $this->assertFileExists(__DIR__ . '/output/Rating.php');
-        $this->assertFileExists(__DIR__ . '/output/Song.php');
+        $this->assertFileExists(__DIR__ . '/output/sdk-client-php.zip');
     }
 
     public function testGenerateClientTypescript()
@@ -68,11 +64,7 @@ class GenerateCommandTest extends TestCase
             '--config' => 'Acme.Sdk.Generated',
         ));
 
-        $this->assertFileExists(__DIR__ . '/output/FooResource.ts');
-        $this->assertFileExists(__DIR__ . '/output/FooResourceSchema.ts');
-        $this->assertFileExists(__DIR__ . '/output/GetQuery.ts');
-        $this->assertFileExists(__DIR__ . '/output/Rating.ts');
-        $this->assertFileExists(__DIR__ . '/output/Song.ts');
+        $this->assertFileExists(__DIR__ . '/output/sdk-client-typescript.zip');
     }
 
     protected function getGenerateCommand()
