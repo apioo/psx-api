@@ -20,8 +20,10 @@
 
 namespace PSX\Api\Generator\Client;
 
+use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\Property;
@@ -36,7 +38,7 @@ use PSX\Schema\SchemaInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-abstract class LanguageAbstract implements GeneratorInterface
+abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollectionInterface
 {
     use Generator\GeneratorTrait;
 
@@ -145,6 +147,20 @@ abstract class LanguageAbstract implements GeneratorInterface
         $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
 
         $this->generateSchema($schemas, $className, $chunks);
+
+        return $chunks;
+    }
+
+    /**
+     * @param ResourceCollection $collection
+     * @return Generator\Code\Chunks|string
+     */
+    public function generateAll(ResourceCollection $collection)
+    {
+        $chunks = new Generator\Code\Chunks();
+        foreach ($collection as $path => $resource) {
+            $chunks->merge($this->generate($resource));
+        }
 
         return $chunks;
     }
