@@ -61,7 +61,7 @@ class {{ className }}
      * @return {% if method.returnDoc %}{{ method.returnDoc }}{% else %}void{% endif %}
 
      */
-    public function {{ methodName }}({% for name, hint in method.args %}?{{ hint }} ${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: {{ method.return }}{% endif %}
+    public function {{ methodName }}({% for name, hint in method.args %}{% if hint %}?{{ hint }} {% endif %}${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: {{ method.return }}{% endif %}
 
     {
         $options = [
