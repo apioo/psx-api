@@ -237,10 +237,13 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
      * @param array $schemas
      * @param string $className
      * @param Generator\Code\Chunks $chunks
-     * @return string
      */
     protected function generateSchema(array $schemas, string $className, Generator\Code\Chunks $chunks)
     {
+        if (empty($schemas)) {
+            return;
+        }
+
         $prop = Property::getObject();
         $prop->setTitle($className . 'Schema');
         foreach ($schemas as $name => $property) {
