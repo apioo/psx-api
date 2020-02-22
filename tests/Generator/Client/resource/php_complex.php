@@ -63,7 +63,7 @@ class FooNameTypeResource
      * @param Item|Message $data
      * @return Item|Message
      */
-    public function post(? $data)
+    public function post($data)
     {
         $options = [
             'headers' => [
