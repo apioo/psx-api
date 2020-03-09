@@ -30,6 +30,8 @@ use PSX\Schema\Property;
 use PSX\Schema\SchemaInterface;
 use RuntimeException;
 use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Tag\TaggedValue;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Raml
@@ -172,7 +174,7 @@ class Raml implements ParserInterface, ParserCollectionInterface
      */
     private function parseUriParameters(Resource $resource, array $data)
     {
-        list($properties, $required) = $this->parseParameters('uriParameters', $data);
+        [$properties, $required] = $this->parseParameters('uriParameters', $data);
 
         foreach ($properties as $name => $property) {
             $resource->addPathParameter($name, $property);
@@ -189,7 +191,7 @@ class Raml implements ParserInterface, ParserCollectionInterface
      */
     private function parseQueryParameters(Resource\MethodAbstract $method, array $data)
     {
-        list($properties, $required) = $this->parseParameters('queryParameters', $data);
+        [$properties, $required] = $this->parseParameters('queryParameters', $data);
 
         foreach ($properties as $name => $property) {
             $method->addQueryParameter($name, $property);
@@ -213,7 +215,7 @@ class Raml implements ParserInterface, ParserCollectionInterface
             $required = [];
             foreach ($data[$type] as $name => $definition) {
                 if (!empty($name) && is_array($definition)) {
-                    list($property, $isRequired) = $this->parseParameter($definition);
+                    [$property, $isRequired] = $this->parseParameter($definition);
 
                     if ($property !== null) {
                         $properties[$name] = $property;
@@ -358,15 +360,19 @@ class Raml implements ParserInterface, ParserCollectionInterface
      */
     private function parseSchema($schema)
     {
-        if (is_string($schema)) {
-            if (substr($schema, 0, 8) == '!include') {
-                $file = trim(substr($schema, 8));
+        if ($schema instanceof TaggedValue) {
+            if ($schema->getTag() === 'include') {
+                $file = trim($schema->getValue());
                 if (!is_file($file)) {
                     $file = $this->basePath . '/' . $file;
                 }
 
                 return JsonSchema::fromFile($file);
-            } elseif (strpos($schema, '{') !== false) {
+            } else {
+                throw new RuntimeException('Unknown tag ' . $schema->getTag());
+            }
+        } elseif (is_string($schema)) {
+            if (strpos($schema, '{') !== false) {
                 $parser = new JsonSchema($this->basePath);
 
                 return $parser->parse($schema);
@@ -386,8 +392,8 @@ class Raml implements ParserInterface, ParserCollectionInterface
 
     private function parseDefinition($definition)
     {
-        if (is_string($definition) && substr($definition, 0, 8) == '!include') {
-            $file = trim(substr($definition, 8));
+        if ($definition instanceof TaggedValue && $definition->getTag() === 'include') {
+            $file = trim($definition->getValue());
 
             if (!is_file($file)) {
                 $file = $this->basePath !== null ? $this->basePath . DIRECTORY_SEPARATOR . $file : $file;
@@ -438,7 +444,7 @@ class Raml implements ParserInterface, ParserCollectionInterface
 
     private function setUp($schema)
     {
-        $this->data    = $this->parser->parse($schema);
+        $this->data    = $this->parser->parse($schema, Yaml::PARSE_CUSTOM_TAGS);
         $this->schemas = $this->getSchemas();
     }
 
