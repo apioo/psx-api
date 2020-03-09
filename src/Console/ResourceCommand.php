@@ -74,5 +74,7 @@ class ResourceCommand extends Command
         $response  = $generator->generate($resource);
 
         OutputWriter::write($response, $output);
+
+        return 0;
     }
 }

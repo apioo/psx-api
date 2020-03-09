@@ -131,6 +131,8 @@ class GenerateCommand extends Command
         $progress->finish();
 
         $output->writeln('Successful!');
+
+        return 0;
     }
 
     private function getFileName($path, $extension)
