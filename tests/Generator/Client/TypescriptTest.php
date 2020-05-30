@@ -36,23 +36,53 @@ class TypescriptTest extends GeneratorTestCase
     {
         $generator = new Typescript('http://api.foo.com');
 
-        $actual = (string) $generator->generate($this->getResource());
-        $actual = str_replace(date('Y-m-d'), '0000-00-00', $actual);
-        $expect = file_get_contents(__DIR__ . '/resource/typescript.ts');
-        $expect = str_replace(["\r\n", "\r"], "\n", $expect);
+        $result = $generator->generate($this->getResource());
+        $target = __DIR__ . '/resource/typescript';
 
-        $this->assertEquals($expect, $actual, $actual);
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/Collection.ts');
+        $this->assertFileExists($target . '/FooNameTypeResource.ts');
+        $this->assertFileExists($target . '/GetQuery.ts');
+        $this->assertFileExists($target . '/Item.ts');
+        $this->assertFileExists($target . '/ItemCreate.ts');
+        $this->assertFileExists($target . '/ItemPatch.ts');
+        $this->assertFileExists($target . '/ItemUpdate.ts');
+        $this->assertFileExists($target . '/Message.ts');
+        $this->assertFileExists($target . '/Path.ts');
+    }
+
+    public function testGenerateCollection()
+    {
+        $generator = new Typescript('http://api.foo.com');
+
+        $result = $generator->generateAll($this->getResourceCollection());
+        $target = __DIR__ . '/resource/typescript_collection';
+
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/BarFooResource.ts');
+        $this->assertFileExists($target . '/BarYear09Resource.ts');
+        $this->assertFileExists($target . '/Collection.ts');
+        $this->assertFileExists($target . '/FooResource.ts');
+        $this->assertFileExists($target . '/Item.ts');
+        $this->assertFileExists($target . '/ItemCreate.ts');
+        $this->assertFileExists($target . '/Message.ts');
+        $this->assertFileExists($target . '/Path.ts');
     }
 
     public function testGenerateComplex()
     {
         $generator = new Typescript('http://api.foo.com');
 
-        $actual = (string) $generator->generate($this->getResourceComplex());
-        $actual = str_replace(date('Y-m-d'), '0000-00-00', $actual);
-        $expect = file_get_contents(__DIR__ . '/resource/typescript_complex.ts');
-        $expect = str_replace(["\r\n", "\r"], "\n", $expect);
+        $result = $generator->generate($this->getResourceComplex());
+        $target = __DIR__ . '/resource/typescript_complex';
 
-        $this->assertEquals($expect, $actual, $actual);
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/FooNameTypeResource.ts');
+        $this->assertFileExists($target . '/Item.ts');
+        $this->assertFileExists($target . '/Message.ts');
+        $this->assertFileExists($target . '/Path.ts');
     }
 }

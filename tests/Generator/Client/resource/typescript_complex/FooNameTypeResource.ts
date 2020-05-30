@@ -18,7 +18,7 @@ export default class FooNameTypeResource {
         this.name = name;
         this.type = type;
 
-        this.url = baseUrl + "";
+        this.url = baseUrl + "/foo/"+name+"/"+type+"";
         this.token = token;
         this.httpClient = httpClient ? httpClient : Axios.create();
     }
@@ -42,34 +42,3 @@ export default class FooNameTypeResource {
 
 }
 
-
-/**
- * FooNameTypeResourceSchema generated on 0000-00-00
- * {@link https://github.com/apioo}
- */
-
-interface FooNameTypeResourceSchema {
-    EntryOrMessage?: Item | Message
-}
-
-/**
- * Item generated on 0000-00-00
- * {@link https://github.com/apioo}
- */
-
-interface Item {
-    id?: number
-    userId?: number
-    title?: string
-    date?: string
-}
-
-/**
- * Message generated on 0000-00-00
- * {@link https://github.com/apioo}
- */
-
-interface Message {
-    success?: boolean
-    message?: string
-}
