@@ -21,9 +21,9 @@
 namespace PSX\Api\Resource;
 
 use PSX\Api\TagableTrait;
-use PSX\Schema\Property;
-use PSX\Schema\PropertyInterface;
 use PSX\Schema\SchemaInterface;
+use PSX\Schema\TypeFactory;
+use PSX\Schema\TypeInterface;
 use RuntimeException;
 
 /**
@@ -69,7 +69,7 @@ abstract class MethodAbstract
 
     public function __construct()
     {
-        $this->queryParameters = Property::getObject()->setTitle(ucfirst(strtolower($this->getName())) . 'Query');
+        $this->queryParameters = TypeFactory::getStruct();
         $this->responses       = [];
     }
 
@@ -97,9 +97,9 @@ abstract class MethodAbstract
         return $this->description;
     }
 
-    public function addQueryParameter($name, PropertyInterface $property = null)
+    public function addQueryParameter($name, TypeInterface $type)
     {
-        $this->queryParameters->addProperty($name, $property);
+        $this->queryParameters->addProperty($name, $type);
 
         return $this;
     }

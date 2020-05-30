@@ -23,8 +23,8 @@ namespace PSX\Api;
 use ArrayIterator;
 use IteratorAggregate;
 use PSX\Api\Resource\MethodAbstract;
-use PSX\Schema\Property;
-use PSX\Schema\PropertyInterface;
+use PSX\Schema\TypeFactory;
+use PSX\Schema\TypeInterface;
 
 /**
  * A resource describes the capabilities of an API endpoint
@@ -84,10 +84,10 @@ class Resource implements IteratorAggregate
      */
     public function __construct($status, $path)
     {
-        $this->status          = $status;
-        $this->path            = $path;
-        $this->pathParameters  = Property::getObject()->setTitle('path');
-        $this->methods         = [];
+        $this->status         = $status;
+        $this->path           = $path;
+        $this->pathParameters = TypeFactory::getStruct();
+        $this->methods        = [];
     }
 
     /**
@@ -170,9 +170,9 @@ class Resource implements IteratorAggregate
         return $this->description;
     }
 
-    public function addPathParameter($name, PropertyInterface $property = null)
+    public function addPathParameter($name, TypeInterface $type)
     {
-        $this->pathParameters->addProperty($name, $property);
+        $this->pathParameters->addProperty($name, $type);
 
         return $this;
     }
