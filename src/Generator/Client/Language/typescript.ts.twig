@@ -18,7 +18,7 @@ export default class {{ className }} {
         this.{{ name }} = {{ name }};
 {% endfor %}
 
-        this.url = baseUrl + "{% for part in url_parts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}";
+        this.url = baseUrl + "{% for part in urlParts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}";
         this.token = token;
         this.httpClient = httpClient ? httpClient : Axios.create();
     }

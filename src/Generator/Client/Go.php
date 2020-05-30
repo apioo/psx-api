@@ -24,20 +24,20 @@ use PSX\Schema;
 use PSX\Schema\GeneratorInterface;
 
 /**
- * Php
+ * Go
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Php extends LanguageAbstract
+class Go extends LanguageAbstract
 {
     /**
      * @inheritdoc
      */
     protected function getTemplate(): string
     {
-        return 'php.ts.twig';
+        return 'go.go.twig';
     }
 
     /**
@@ -45,7 +45,7 @@ class Php extends LanguageAbstract
      */
     protected function getGenerator(): GeneratorInterface
     {
-        return new Schema\Generator\Php($this->namespace);
+        return new Schema\Generator\Go($this->namespace);
     }
 
     /**
@@ -53,7 +53,7 @@ class Php extends LanguageAbstract
      */
     protected function getFileName(string $identifier): string
     {
-        return $identifier . '.php';
+        return $this->underscore($identifier) . '.go';
     }
 
     /**
@@ -61,11 +61,16 @@ class Php extends LanguageAbstract
      */
     protected function getFileContent(string $code, string $identifier): string
     {
-        $comment = '/**' . "\n";
-        $comment.= ' * ' . $identifier . ' generated on ' . date('Y-m-d') . "\n";
-        $comment.= ' * @see https://github.com/apioo' . "\n";
-        $comment.= ' */' . "\n";
+        $comment = "\n";
+        $comment.= '// ' . $identifier . ' generated on ' . date('Y-m-d') . "\n";
+        $comment.= '// {@link https://github.com/apioo}' . "\n";
+        $comment.= "\n";
 
-        return '<?php ' . "\n" . $comment . "\n" . $code;
+        return $comment . "\n" . $code;
+    }
+
+    private function underscore(string $file): string
+    {
+        return strtolower(preg_replace(array('/([A-Z]+)([A-Z][a-z])/', '/([a-z\d])([A-Z])/'), array('\\1_\\2', '\\1_\\2'), strtr($file, '_', '.')));
     }
 }

@@ -24,12 +24,19 @@ use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
+use PSX\Schema\Definitions;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
-use PSX\Schema\Property;
-use PSX\Schema\PropertyInterface;
 use PSX\Schema\Schema;
 use PSX\Schema\SchemaInterface;
+use PSX\Schema\Type\MapType;
+use PSX\Schema\Type\ReferenceType;
+use PSX\Schema\Type\StructType;
+use PSX\Schema\TypeFactory;
+use PSX\Schema\TypeInterface;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 /**
  * LanguageAbstract
@@ -40,8 +47,6 @@ use PSX\Schema\SchemaInterface;
  */
 abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollectionInterface
 {
-    use Generator\GeneratorTrait;
-
     /**
      * @var string
      */
@@ -67,19 +72,26 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
      */
     public function generate(Resource $resource)
     {
-        $loader = new \Twig_Loader_Filesystem(__DIR__ . '/Language');
-        $engine = new \Twig_Environment($loader);
+        $loader = new FilesystemLoader([__DIR__ . '/Language']);
+        $engine = new Environment($loader);
 
+        $definitions = new Definitions();
         $className = $this->getClassName($resource->getPath());
 
         if (empty($className)) {
             return;
         }
 
+        if ($resource->hasPathParameters()) {
+            $pathParameters = $resource->getPathParameters();
+
+            $name = 'Path';
+            $definitions->addType($name, $pathParameters);
+        }
+
         $properties = $this->getProperties($resource);
         $urlParts = $this->getUrlParts($resource, $properties);
 
-        $schemas = [];
         $methods = [];
         foreach ($resource->getMethods() as $method) {
             $methodName = $this->getMethodName($method->getOperationId() ?: strtolower($method->getName()));
@@ -89,34 +101,35 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
 
             // query parameters
             if ($method->hasQueryParameters()) {
-                $parameters = $method->getQueryParameters();
+                $queryParameters = $method->getQueryParameters();
 
-                $schemas[$this->getIdentifierForProperty($parameters)] = $parameters;
+                $name = ucfirst(strtolower($method->getName())) . 'Query';
+                $definitions->addType($name, $queryParameters);
 
-                $args['query'] = $this->getType($parameters);
-                $docs['query'] = $this->getDocType($parameters);
+                $args['query'] = $this->getType(TypeFactory::getReference($name));
+                $docs['query'] = $this->getDocType(TypeFactory::getReference($name));
             }
 
             // request
             $request = $method->getRequest();
             if ($request instanceof SchemaInterface && !in_array($method->getName(), ['GET', 'DELETE'])) {
-                $property = $request->getDefinition();
+                $definitions->merge($request->getDefinitions());
 
-                $schemas[$this->getIdentifierForProperty($property)] = $property;
+                $type = $this->resolveType($definitions, $request->getType());
 
-                $args['data'] = $this->getType($property);
-                $docs['data'] = $this->getDocType($property);
+                $args['data'] = $this->getType($type);
+                $docs['data'] = $this->getDocType($type);
             }
 
             // response
             $response = $this->getSuccessfulResponse($method);
             if ($response instanceof SchemaInterface) {
-                $property = $response->getDefinition();
+                $definitions->merge($response->getDefinitions());
 
-                $schemas[$this->getIdentifierForProperty($property)] = $property;
+                $type = $this->resolveType($definitions, $response->getType());
 
-                $return = $this->getType($property);
-                $returnDoc = $this->getDocType($property);
+                $return = $this->getType($type);
+                $returnDoc = $this->getDocType($type);
             } else {
                 $return = null;
                 $returnDoc = null;
@@ -146,7 +159,7 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
         $chunks = new Generator\Code\Chunks();
         $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
 
-        $this->generateSchema($schemas, $className, $chunks);
+        $this->generateSchema($definitions, $chunks);
 
         return $chunks;
     }
@@ -234,40 +247,30 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
     }
 
     /**
-     * @param array $schemas
-     * @param string $className
+     * @param DefinitionsInterface $definitions
      * @param Generator\Code\Chunks $chunks
      */
-    protected function generateSchema(array $schemas, string $className, Generator\Code\Chunks $chunks)
+    protected function generateSchema(DefinitionsInterface $definitions, Generator\Code\Chunks $chunks)
     {
-        if (empty($schemas)) {
-            return;
-        }
-
-        $prop = Property::getObject();
-        $prop->setTitle($className . 'Schema');
-        foreach ($schemas as $name => $property) {
-            $prop->addProperty($name, $property);
-        }
-
-        $result = $this->getGenerator()->generate(new Schema($prop));
-
+        $schema = new Schema(TypeFactory::getAny(), $definitions);
+        $result = $this->getGenerator()->generate($schema);
+        
         if ($result instanceof Generator\Code\Chunks) {
             foreach ($result->getChunks() as $identifier => $code) {
                 $chunks->append($this->getFileName($identifier), $this->getFileContent($code, $identifier));
             }
         } else {
-            $chunks->append($this->getFileName($className . 'Schema'), $result);
+            $chunks->append($this->getFileName('RootSchema'), $result);
         }
     }
 
     /**
      * Returns the type of the provided property for the specific language
      *
-     * @param \PSX\Schema\PropertyInterface $property
+     * @param \PSX\Schema\TypeInterface $property
      * @return string
      */
-    protected function getType(PropertyInterface $property): string
+    protected function getType(TypeInterface $property): string
     {
         $generator = $this->getGenerator();
         if ($generator instanceof Generator\TypeAwareInterface) {
@@ -280,10 +283,10 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
     /**
      * Returns a type which is used in the documentation
      * 
-     * @param \PSX\Schema\PropertyInterface $property
+     * @param \PSX\Schema\TypeInterface $property
      * @return string
      */
-    protected function getDocType(PropertyInterface $property): string
+    protected function getDocType(TypeInterface $property): string
     {
         $generator = $this->getGenerator();
         if ($generator instanceof Generator\TypeAwareInterface) {
@@ -345,5 +348,24 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
         }, $parts);
 
         return lcfirst(implode('', $parts));
+    }
+
+    /**
+     * Resolves a reference type in case it points to a non struct or map type
+     * 
+     * @param DefinitionsInterface $definitions
+     * @param TypeInterface $type
+     * @return ReferenceType|TypeInterface
+     */
+    private function resolveType(DefinitionsInterface $definitions, TypeInterface $type)
+    {
+        if ($type instanceof ReferenceType) {
+            $resolved = $definitions->getType($type->getRef());
+            if (!$resolved instanceof StructType && !$resolved instanceof MapType) {
+                return $resolved;
+            }
+        }
+
+        return $type;
     }
 }
