@@ -24,8 +24,10 @@ use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
+use PSX\Schema\Generator\Code\Chunks;
 use PSX\Schema\Property;
 use PSX\Schema\SchemaManager;
+use PSX\Schema\TypeFactory;
 
 /**
  * GeneratorTestCase
@@ -47,12 +49,12 @@ abstract class GeneratorTestCase extends TestCase
         $resource->setTitle('foo');
         $resource->setDescription('lorem ipsum');
 
-        $resource->addPathParameter('name', Property::getString()
+        $resource->addPathParameter('name', TypeFactory::getString()
             ->setDescription('Name parameter')
             ->setMinLength(0)
             ->setMaxLength(16)
             ->setPattern('[A-z]+'));
-        $resource->addPathParameter('type', Property::getString()
+        $resource->addPathParameter('type', TypeFactory::getString()
             ->setEnum(['foo', 'bar']));
 
         $resource->getPathParameters()->setRequired(['name']);
@@ -60,14 +62,14 @@ abstract class GeneratorTestCase extends TestCase
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')
             ->setOperationId('list.foo')
-            ->addQueryParameter('startIndex', Property::getInteger()
+            ->addQueryParameter('startIndex', TypeFactory::getInteger()
                 ->setDescription('startIndex parameter')
                 ->setMinimum(0)
                 ->setMaximum(32))
-            ->addQueryParameter('float', Property::getNumber())
-            ->addQueryParameter('boolean', Property::getBoolean())
-            ->addQueryParameter('date', Property::getDate())
-            ->addQueryParameter('datetime', Property::getDateTime())
+            ->addQueryParameter('float', TypeFactory::getNumber())
+            ->addQueryParameter('boolean', TypeFactory::getBoolean())
+            ->addQueryParameter('date', TypeFactory::getDate())
+            ->addQueryParameter('datetime', TypeFactory::getDateTime())
             ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class)));
 
         $resource->getMethod('GET')->getQueryParameters()->setRequired(['startIndex']);
@@ -117,7 +119,7 @@ abstract class GeneratorTestCase extends TestCase
         $resource = new Resource(Resource::STATUS_ACTIVE, '/bar/:foo');
         $resource->setTitle('bar');
 
-        $resource->addPathParameter('foo', Property::getString());
+        $resource->addPathParameter('foo', TypeFactory::getString());
 
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')
@@ -132,7 +134,7 @@ abstract class GeneratorTestCase extends TestCase
         $resource = new Resource(Resource::STATUS_ACTIVE, '/bar/$year<[0-9]+>');
         $resource->setTitle('bar');
 
-        $resource->addPathParameter('year', Property::getString());
+        $resource->addPathParameter('year', TypeFactory::getString());
 
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')
@@ -157,8 +159,8 @@ abstract class GeneratorTestCase extends TestCase
         $resource = new Resource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
         $resource->setTitle('foo');
         $resource->setDescription('lorem ipsum');
-        $resource->addPathParameter('name', Property::getString());
-        $resource->addPathParameter('type', Property::getString());
+        $resource->addPathParameter('name', TypeFactory::getString());
+        $resource->addPathParameter('type', TypeFactory::getString());
 
         $resource->addMethod(Resource\Factory::getMethod('POST')
             ->setDescription('Returns a collection')
@@ -173,5 +175,14 @@ abstract class GeneratorTestCase extends TestCase
     protected function getPaths()
     {
         return array();
+    }
+
+    protected function writeChunksToFolder(Chunks $result, string $target)
+    {
+        foreach ($result->getChunks() as $file => $code) {
+            $code = str_replace(date('Y-m-d'), '0000-00-00', $code);
+
+            file_put_contents($target . '/' . $file, $code);
+        }
     }
 }

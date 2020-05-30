@@ -22,6 +22,7 @@ namespace PSX\Api\Tests\Generator\Client;
 
 use PSX\Api\Generator\Client\Php;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
+use PSX\Schema\Generator\Code\Chunks;
 
 /**
  * PhpTest
@@ -36,23 +37,53 @@ class PhpTest extends GeneratorTestCase
     {
         $generator = new Php('http://api.foo.com');
 
-        $actual = (string) $generator->generate($this->getResource());
-        $actual = str_replace(date('Y-m-d'), '0000-00-00', $actual);
-        $expect = file_get_contents(__DIR__ . '/resource/php.php');
-        $expect = str_replace(["\r\n", "\r"], "\n", $expect);
+        $result = $generator->generate($this->getResource());
+        $target = __DIR__ . '/resource/php';
 
-        $this->assertEquals($expect, $actual, $actual);
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/Collection.php');
+        $this->assertFileExists($target . '/FooNameTypeResource.php');
+        $this->assertFileExists($target . '/GetQuery.php');
+        $this->assertFileExists($target . '/Item.php');
+        $this->assertFileExists($target . '/ItemCreate.php');
+        $this->assertFileExists($target . '/ItemPatch.php');
+        $this->assertFileExists($target . '/ItemUpdate.php');
+        $this->assertFileExists($target . '/Message.php');
+        $this->assertFileExists($target . '/Path.php');
+    }
+
+    public function testGenerateCollection()
+    {
+        $generator = new Php('http://api.foo.com', 'Foo\Bar');
+
+        $result = $generator->generateAll($this->getResourceCollection());
+        $target = __DIR__ . '/resource/php_collection';
+
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/BarFooResource.php');
+        $this->assertFileExists($target . '/BarYear09Resource.php');
+        $this->assertFileExists($target . '/Collection.php');
+        $this->assertFileExists($target . '/FooResource.php');
+        $this->assertFileExists($target . '/Item.php');
+        $this->assertFileExists($target . '/ItemCreate.php');
+        $this->assertFileExists($target . '/Message.php');
+        $this->assertFileExists($target . '/Path.php');
     }
 
     public function testGenerateComplex()
     {
         $generator = new Php('http://api.foo.com', 'Foo\Bar');
 
-        $actual = (string) $generator->generate($this->getResourceComplex());
-        $actual = str_replace(date('Y-m-d'), '0000-00-00', $actual);
-        $expect = file_get_contents(__DIR__ . '/resource/php_complex.php');
-        $expect = str_replace(["\r\n", "\r"], "\n", $expect);
+        $result = $generator->generate($this->getResourceComplex());
+        $target = __DIR__ . '/resource/php_complex';
 
-        $this->assertEquals($expect, $actual, $actual);
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/FooNameTypeResource.php');
+        $this->assertFileExists($target . '/Item.php');
+        $this->assertFileExists($target . '/Message.php');
+        $this->assertFileExists($target . '/Path.php');
     }
 }
