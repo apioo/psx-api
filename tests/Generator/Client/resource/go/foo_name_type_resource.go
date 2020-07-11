@@ -27,7 +27,7 @@ func SetBaseURL(url string) {
 }
 
 // Listfoo Returns a collection
-func Listfoo(query GetQuery) Collection {
+func Listfoo(query GetQuery) EntryCollection {
 
 
     req, err := http.NewRequest("GET", baseURL + url, nil)
@@ -42,14 +42,14 @@ func Listfoo(query GetQuery) Collection {
     defer resp.Body.Close()
     respBody, _ := ioutil.ReadAll(resp.Body)
 
-    var response Collection
+    var response EntryCollection
     json.Unmarshal(respBody, &response)
 
     return response
 }
 
 // Createfoo 
-func Createfoo(data ItemCreate) Message {
+func Createfoo(data EntryCreate) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -70,14 +70,14 @@ func Createfoo(data ItemCreate) Message {
     defer resp.Body.Close()
     respBody, _ := ioutil.ReadAll(resp.Body)
 
-    var response Message
+    var response EntryMessage
     json.Unmarshal(respBody, &response)
 
     return response
 }
 
 // Put 
-func Put(data ItemUpdate) Message {
+func Put(data EntryUpdate) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -98,14 +98,14 @@ func Put(data ItemUpdate) Message {
     defer resp.Body.Close()
     respBody, _ := ioutil.ReadAll(resp.Body)
 
-    var response Message
+    var response EntryMessage
     json.Unmarshal(respBody, &response)
 
     return response
 }
 
 // Delete 
-func Delete() Message {
+func Delete() EntryMessage {
 
 
     req, err := http.NewRequest("DELETE", baseURL + url, nil)
@@ -120,14 +120,14 @@ func Delete() Message {
     defer resp.Body.Close()
     respBody, _ := ioutil.ReadAll(resp.Body)
 
-    var response Message
+    var response EntryMessage
     json.Unmarshal(respBody, &response)
 
     return response
 }
 
 // Patch 
-func Patch(data ItemPatch) Message {
+func Patch(data EntryPatch) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -148,7 +148,7 @@ func Patch(data ItemPatch) Message {
     defer resp.Body.Close()
     respBody, _ := ioutil.ReadAll(resp.Body)
 
-    var response Message
+    var response EntryMessage
     json.Unmarshal(respBody, &response)
 
     return response

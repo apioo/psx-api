@@ -6,7 +6,9 @@
 
 namespace Foo\Bar;
 
-
+/**
+ * @Required({"name", "type"})
+ */
 class Path
 {
     /**

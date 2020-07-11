@@ -36,11 +36,11 @@ class OpenAPITest extends GeneratorTestCase
     public function testGenerate()
     {
         $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+        $reader->addNamespace('PSX\\Schema\\Annotation');
 
         $generator = new OpenAPI($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
 
-        $actual = $generator->generate($this->getResource());
+        $actual = $generator->generate($this->getSpecification());
         $expect = file_get_contents(__DIR__ . '/resource/openapi.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
@@ -49,11 +49,11 @@ class OpenAPITest extends GeneratorTestCase
     public function testGenerateAll()
     {
         $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+        $reader->addNamespace('PSX\\Schema\\Annotation');
 
         $generator = new OpenAPI($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
 
-        $actual = $generator->generateAll($this->getResourceCollection());
+        $actual = $generator->generate($this->getSpecificationCollection());
         $expect = file_get_contents(__DIR__ . '/resource/openapi_collection.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
@@ -62,7 +62,7 @@ class OpenAPITest extends GeneratorTestCase
     public function testGenerateComplex()
     {
         $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+        $reader->addNamespace('PSX\\Schema\\Annotation');
 
         $generator = new OpenAPI($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
         $generator->setTitle('Sample Pet Store App');
@@ -77,7 +77,7 @@ class OpenAPITest extends GeneratorTestCase
         $generator->addTag('foo', 'Foo tag');
         $generator->addTag('bar', 'Boo tag');
 
-        $actual = $generator->generate($this->getResourceComplex());
+        $actual = $generator->generate($this->getSpecificationComplex());
         $expect = file_get_contents(__DIR__ . '/resource/openapi_complex.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);

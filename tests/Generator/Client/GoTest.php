@@ -23,6 +23,7 @@ namespace PSX\Api\Tests\Generator\Client;
 use PSX\Api\Generator\Client\Go;
 use PSX\Api\Generator\Client\Typescript;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
+use PSX\Schema\Definitions;
 
 /**
  * GoTest
@@ -37,19 +38,20 @@ class GoTest extends GeneratorTestCase
     {
         $generator = new Go('http://api.foo.com');
 
-        $result = $generator->generate($this->getResource());
+        $result = $generator->generate($this->getSpecification());
         $target = __DIR__ . '/resource/go';
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/collection.go');
+        $this->assertFileExists($target . '/entry.go');
+        $this->assertFileExists($target . '/entry_collection.go');
+        $this->assertFileExists($target . '/entry_create.go');
+        $this->assertFileExists($target . '/entry_delete.go');
+        $this->assertFileExists($target . '/entry_message.go');
+        $this->assertFileExists($target . '/entry_patch.go');
+        $this->assertFileExists($target . '/entry_update.go');
         $this->assertFileExists($target . '/foo_name_type_resource.go');
         $this->assertFileExists($target . '/get_query.go');
-        $this->assertFileExists($target . '/item.go');
-        $this->assertFileExists($target . '/item_create.go');
-        $this->assertFileExists($target . '/item_patch.go');
-        $this->assertFileExists($target . '/item_update.go');
-        $this->assertFileExists($target . '/message.go');
         $this->assertFileExists($target . '/path.go');
     }
 
@@ -57,33 +59,34 @@ class GoTest extends GeneratorTestCase
     {
         $generator = new Go('http://api.foo.com');
 
-        $result = $generator->generateAll($this->getResourceCollection());
+        $result = $generator->generate($this->getSpecificationCollection());
         $target = __DIR__ . '/resource/go_collection';
 
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/bar_foo_resource.go');
         $this->assertFileExists($target . '/bar_year09_resource.go');
-        $this->assertFileExists($target . '/collection.go');
+        $this->assertFileExists($target . '/entry.go');
+        $this->assertFileExists($target . '/entry_collection.go');
+        $this->assertFileExists($target . '/entry_create.go');
+        $this->assertFileExists($target . '/entry_message.go');
         $this->assertFileExists($target . '/foo_resource.go');
-        $this->assertFileExists($target . '/item.go');
-        $this->assertFileExists($target . '/item_create.go');
-        $this->assertFileExists($target . '/message.go');
-        $this->assertFileExists($target . '/path.go');
+        $this->assertFileExists($target . '/path_foo.go');
+        $this->assertFileExists($target . '/path_year.go');
     }
 
     public function testGenerateComplex()
     {
         $generator = new Go('http://api.foo.com');
 
-        $result = $generator->generate($this->getResourceComplex());
+        $result = $generator->generate($this->getSpecificationComplex());
         $target = __DIR__ . '/resource/go_complex';
 
         $this->writeChunksToFolder($result, $target);
 
+        $this->assertFileExists($target . '/entry.go');
+        $this->assertFileExists($target . '/entry_message.go');
         $this->assertFileExists($target . '/foo_name_type_resource.go');
-        $this->assertFileExists($target . '/item.go');
-        $this->assertFileExists($target . '/message.go');
         $this->assertFileExists($target . '/path.go');
     }
 }

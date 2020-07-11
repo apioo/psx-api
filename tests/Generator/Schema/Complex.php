@@ -20,8 +20,9 @@
 
 namespace PSX\Api\Tests\Generator\Schema;
 
-use PSX\Schema\Property;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\SchemaAbstract;
+use PSX\Schema\TypeFactory;
 
 /**
  * Complex
@@ -32,13 +33,16 @@ use PSX\Schema\SchemaAbstract;
  */
 class Complex extends SchemaAbstract
 {
-    public function getDefinition()
+    public function build(DefinitionsInterface $definitions): string
     {
-        return Property::get()
-            ->setTitle('EntryOrMessage')
-            ->setOneOf([
-                $this->getSchema(Entry::class),
-                $this->getSchema(SuccessMessage::class)
-            ]);
+        $this->load(Entry::class);
+        $this->load(Message::class);
+
+        $definitions->addType('EntryOrMessage', TypeFactory::getUnion([
+            TypeFactory::getReference('Entry'),
+            TypeFactory::getReference('EntryMessage')
+        ]));
+
+        return 'EntryOrMessage';
     }
 }

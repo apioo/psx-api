@@ -24,6 +24,7 @@ use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
+use PSX\Api\SpecificationInterface;
 use PSX\Schema\Definitions;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
@@ -45,7 +46,7 @@ use Twig\Loader\FilesystemLoader;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollectionInterface
+abstract class LanguageAbstract implements GeneratorInterface
 {
     /**
      * @var string
@@ -68,29 +69,47 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function generate(Resource $resource)
+    public function generate(SpecificationInterface $specification)
+    {
+        $collection = $specification->getResourceCollection();
+        $definitions = $specification->getDefinitions();
+
+        $chunks = new Generator\Code\Chunks();
+        foreach ($collection as $path => $resource) {
+            $return = $this->generateResource($resource, $definitions);
+            if ($return instanceof Generator\Code\Chunks) {
+                $chunks->merge($return);
+            }
+        }
+
+        $this->generateSchema($definitions, $chunks);
+
+        return $chunks;
+    }
+
+    /**
+     * @param Resource $resource
+     * @param DefinitionsInterface $definitions
+     * @return Generator\Code\Chunks|null
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
+    public function generateResource(Resource $resource, DefinitionsInterface $definitions): ?Generator\Code\Chunks
     {
         $loader = new FilesystemLoader([__DIR__ . '/Language']);
         $engine = new Environment($loader);
 
-        $definitions = new Definitions();
         $className = $this->getClassName($resource->getPath());
 
         if (empty($className)) {
-            return;
+            return null;
         }
 
-        if ($resource->hasPathParameters()) {
-            $pathParameters = $resource->getPathParameters();
-
-            $name = 'Path';
-            $definitions->addType($name, $pathParameters);
-        }
-
-        $properties = $this->getProperties($resource);
-        $urlParts = $this->getUrlParts($resource, $properties);
+        $properties = $this->getPathParameterTypes($resource, $definitions);
+        $urlParts = $this->getUrlParts($resource, $properties ?? []);
 
         $methods = [];
         foreach ($resource->getMethods() as $method) {
@@ -103,19 +122,14 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
             if ($method->hasQueryParameters()) {
                 $queryParameters = $method->getQueryParameters();
 
-                $name = ucfirst(strtolower($method->getName())) . 'Query';
-                $definitions->addType($name, $queryParameters);
-
-                $args['query'] = $this->getType(TypeFactory::getReference($name));
-                $docs['query'] = $this->getDocType(TypeFactory::getReference($name));
+                $args['query'] = $this->getType(TypeFactory::getReference($queryParameters));
+                $docs['query'] = $this->getDocType(TypeFactory::getReference($queryParameters));
             }
 
             // request
             $request = $method->getRequest();
-            if ($request instanceof SchemaInterface && !in_array($method->getName(), ['GET', 'DELETE'])) {
-                $definitions->merge($request->getDefinitions());
-
-                $type = $this->resolveType($definitions, $request->getType());
+            if (!empty($request) && !in_array($method->getName(), ['GET', 'DELETE'])) {
+                $type = $this->resolveType($request, $definitions);
 
                 $args['data'] = $this->getType($type);
                 $docs['data'] = $this->getDocType($type);
@@ -123,10 +137,8 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
 
             // response
             $response = $this->getSuccessfulResponse($method);
-            if ($response instanceof SchemaInterface) {
-                $definitions->merge($response->getDefinitions());
-
-                $type = $this->resolveType($definitions, $response->getType());
+            if (!empty($response)) {
+                $type = $this->resolveType($response, $definitions);
 
                 $return = $this->getType($type);
                 $returnDoc = $this->getDocType($type);
@@ -159,22 +171,6 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
         $chunks = new Generator\Code\Chunks();
         $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
 
-        $this->generateSchema($definitions, $chunks);
-
-        return $chunks;
-    }
-
-    /**
-     * @param ResourceCollection $collection
-     * @return Generator\Code\Chunks|string
-     */
-    public function generateAll(ResourceCollection $collection)
-    {
-        $chunks = new Generator\Code\Chunks();
-        foreach ($collection as $path => $resource) {
-            $chunks->merge($this->generate($resource));
-        }
-
         return $chunks;
     }
 
@@ -199,6 +195,7 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
                     'type'  => 'variable',
                     'value' => $pathName,
                 ];
+
                 next($args);
             } elseif (!empty($part)) {
                 $result[] = [
@@ -211,18 +208,25 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
         return $result;
     }
 
-    /**
-     * @param \PSX\Api\Resource $resource
-     * @return array
-     */
-    protected function getProperties(Resource $resource)
+    private function getPathParameterTypes(Resource $resource, DefinitionsInterface $definitions): ?array
     {
+        if (!$resource->hasPathParameters()) {
+            return null;
+        }
+
+        if (!$definitions->hasType($resource->getPathParameters())) {
+            return null;
+        }
+
+        $type = $definitions->getType($resource->getPathParameters());
+        if (!$type instanceof StructType) {
+            return null;
+        }
+
         $args = [];
-        if ($resource->hasPathParameters()) {
-            $properties = $resource->getPathParameters()->getProperties();
-            foreach ($properties as $name => $property) {
-                $args[$name] = $this->getType($property);
-            }
+        $properties = $type->getProperties();
+        foreach ($properties as $name => $property) {
+            $args[$name] = $this->getType($property);
         }
 
         return $args;
@@ -352,20 +356,18 @@ abstract class LanguageAbstract implements GeneratorInterface, GeneratorCollecti
 
     /**
      * Resolves a reference type in case it points to a non struct or map type
-     * 
+     *
+     * @param string $name
      * @param DefinitionsInterface $definitions
-     * @param TypeInterface $type
      * @return ReferenceType|TypeInterface
      */
-    private function resolveType(DefinitionsInterface $definitions, TypeInterface $type)
+    private function resolveType(string $name, DefinitionsInterface $definitions): TypeInterface
     {
-        if ($type instanceof ReferenceType) {
-            $resolved = $definitions->getType($type->getRef());
-            if (!$resolved instanceof StructType && !$resolved instanceof MapType) {
-                return $resolved;
-            }
+        $resolved = $definitions->getType($name);
+        if (!$resolved instanceof StructType && !$resolved instanceof MapType) {
+            return $resolved;
         }
 
-        return $type;
+        return TypeFactory::getReference($name);
     }
 }

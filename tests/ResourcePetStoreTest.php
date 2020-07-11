@@ -102,7 +102,7 @@ class ResourceConversionTest extends ApiManagerTestCase
     {
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\\Api\\Annotation');
-        $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+        $reader->addNamespace('PSX\\Schema\\Annotation');
 
         $resources = $this->getResources();
         $generator = new Generator\Spec\OpenAPI($reader, 1, '/', 'urn:schema.phpsx.org#');
@@ -131,7 +131,7 @@ class ResourceConversionTest extends ApiManagerTestCase
     {
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\\Api\\Annotation');
-        $reader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+        $reader->addNamespace('PSX\\Schema\\Annotation');
 
         $resources = $this->getResources();
         $generator = new Generator\Spec\Swagger($reader, 1, 'http://api.phpsx.org', 'urn:schema.phpsx.org#');
@@ -144,8 +144,11 @@ class ResourceConversionTest extends ApiManagerTestCase
 
     private function getResources()
     {
-        $resolver = new RefResolver();
-        $parser   = new Parser\OpenAPI(null, $resolver);
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Api\\Annotation');
+        $reader->addNamespace('PSX\\Schema\\Annotation');
+
+        $parser = new Parser\OpenAPI($reader, __DIR__ . '/Resource');
 
         return $parser->parseAll(json_encode(Yaml::parse($this->getOpenAPI())));
     }

@@ -40,7 +40,7 @@ class GeneratorFactoryTest extends TestCase
     public function testGetGenerator($type)
     {
         $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+        $schemaReader->addNamespace('PSX\\Schema\\Annotation');
 
         $factory   = new GeneratorFactory($schemaReader, 'urn:phpsx.org:2016#', 'http://foo.com', '');
         $generator = $factory->getGenerator($type);
@@ -51,19 +51,16 @@ class GeneratorFactoryTest extends TestCase
     public function typeProvider()
     {
         return [
+            [GeneratorFactoryInterface::CLIENT_GO],
             [GeneratorFactoryInterface::CLIENT_PHP],
             [GeneratorFactoryInterface::CLIENT_TYPESCRIPT],
-            
+
             [GeneratorFactoryInterface::MARKUP_HTML],
             [GeneratorFactoryInterface::MARKUP_MARKDOWN],
-            [GeneratorFactoryInterface::MARKUP_TEMPLATE],
 
-            [GeneratorFactoryInterface::SERVER_PHP],
-
-            [GeneratorFactoryInterface::SPEC_JSONSCHEMA],
+            [GeneratorFactoryInterface::SPEC_TYPESCHEMA],
             [GeneratorFactoryInterface::SPEC_OPENAPI],
             [GeneratorFactoryInterface::SPEC_RAML],
-            [GeneratorFactoryInterface::SPEC_SWAGGER],
         ];
     }
 }

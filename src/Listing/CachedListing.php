@@ -25,6 +25,7 @@ use PSX\Api\ListingInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
 use PSX\Schema\Schema;
+use PSX\Schema\SchemaInterface;
 
 /**
  * CachedListing
@@ -192,13 +193,15 @@ class CachedListing implements ListingInterface
     {
         foreach ($resource as $method) {
             $request = $method->getRequest();
-            if ($request) {
-                $method->setRequest(new Schema($request->getDefinition()));
+            if ($request instanceof SchemaInterface) {
+                $method->setRequest(new Schema($request->getType(), $request->getDefinitions()));
             }
 
             $responses = $method->getResponses();
             foreach ($responses as $statusCode => $response) {
-                $method->addResponse($statusCode, new Schema($response->getDefinition()));
+                if ($response instanceof SchemaInterface) {
+                    $method->addResponse($statusCode, new Schema($response->getType(), $response->getDefinitions()));
+                }
             }
         }
     }

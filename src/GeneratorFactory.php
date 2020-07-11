@@ -71,6 +71,11 @@ class GeneratorFactory implements GeneratorFactoryInterface
     public function getGenerator($format, $config = null)
     {
         switch ($format) {
+            case GeneratorFactoryInterface::CLIENT_GO:
+                $baseUri   = $this->url . '/' . $this->dispatch;
+                $generator = new Generator\Client\Go($baseUri, $config);
+                break;
+
             case GeneratorFactoryInterface::CLIENT_PHP:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $generator = new Generator\Client\Php($baseUri, $config);
@@ -89,29 +94,10 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 $generator = new Generator\Markup\Markdown();
                 break;
 
-            case GeneratorFactoryInterface::MARKUP_TEMPLATE:
-                $generator = new Generator\Markup\Template($config);
-                break;
-
-            case GeneratorFactoryInterface::SERVER_PHP:
-                return new Generator\Server\Php($config ?: null);
-                break;
-
-            case GeneratorFactoryInterface::SPEC_JSONSCHEMA:
-                $namespace = $config ?: $this->namespace;
-                $generator = new Generator\Spec\JsonSchema($namespace);
-                break;
-
             case GeneratorFactoryInterface::SPEC_RAML:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $namespace = $config ?: $this->namespace;
                 $generator = new Generator\Spec\Raml(1, $baseUri, $namespace);
-                break;
-
-            case GeneratorFactoryInterface::SPEC_SWAGGER:
-                $baseUri   = $this->url . '/' . $this->dispatch;
-                $namespace = $config ?: $this->namespace;
-                $generator = new Generator\Spec\Swagger($this->reader, 1, $baseUri, $namespace);
                 break;
 
             default:
@@ -133,6 +119,8 @@ class GeneratorFactory implements GeneratorFactoryInterface
     public function getFileExtension($format, $config = null)
     {
         switch ($format) {
+            case GeneratorFactoryInterface::CLIENT_GO:
+                return 'go';
             case GeneratorFactoryInterface::CLIENT_PHP:
                 return 'php';
             case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
@@ -142,16 +130,9 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 return 'html';
             case GeneratorFactoryInterface::MARKUP_MARKDOWN:
                 return 'md';
-            case GeneratorFactoryInterface::MARKUP_TEMPLATE:
-                $ext = pathinfo(pathinfo($config, PATHINFO_FILENAME), PATHINFO_EXTENSION);
-                return !empty($ext) ? $ext : 'html';
 
-            case GeneratorFactoryInterface::SERVER_PHP:
-                return 'php';
-
-            case GeneratorFactoryInterface::SPEC_JSONSCHEMA:
+            case GeneratorFactoryInterface::SPEC_TYPESCHEMA:
             case GeneratorFactoryInterface::SPEC_OPENAPI:
-            case GeneratorFactoryInterface::SPEC_SWAGGER:
                 return 'json';
 
             case GeneratorFactoryInterface::SPEC_RAML:
@@ -168,6 +149,8 @@ class GeneratorFactory implements GeneratorFactoryInterface
     public function getMime($format, $config = null)
     {
         switch ($format) {
+            case GeneratorFactoryInterface::CLIENT_GO:
+                return 'application/go';
             case GeneratorFactoryInterface::CLIENT_PHP:
                 return 'application/php';
             case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
@@ -178,14 +161,8 @@ class GeneratorFactory implements GeneratorFactoryInterface
             case GeneratorFactoryInterface::MARKUP_MARKDOWN:
                 return 'text/markdown';
 
-            case GeneratorFactoryInterface::SERVER_PHP:
-                return 'application/php';
-
-            case GeneratorFactoryInterface::SPEC_JSONSCHEMA:
             case GeneratorFactoryInterface::SPEC_OPENAPI:
-            case GeneratorFactoryInterface::SPEC_SWAGGER:
                 return 'application/json';
-
             case GeneratorFactoryInterface::SPEC_RAML:
                 return 'application/raml+yaml';
 
@@ -209,16 +186,15 @@ class GeneratorFactory implements GeneratorFactoryInterface
     public static function getPossibleTypes()
     {
         return [
+            GeneratorFactoryInterface::CLIENT_GO,
             GeneratorFactoryInterface::CLIENT_PHP,
             GeneratorFactoryInterface::CLIENT_TYPESCRIPT,
 
             GeneratorFactoryInterface::MARKUP_HTML,
             GeneratorFactoryInterface::MARKUP_MARKDOWN,
 
-            GeneratorFactoryInterface::SPEC_JSONSCHEMA,
             GeneratorFactoryInterface::SPEC_OPENAPI,
             GeneratorFactoryInterface::SPEC_RAML,
-            GeneratorFactoryInterface::SPEC_SWAGGER,
         ];
     }
 }

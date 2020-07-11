@@ -21,9 +21,6 @@
 namespace PSX\Api\Resource;
 
 use PSX\Api\TagableTrait;
-use PSX\Schema\SchemaInterface;
-use PSX\Schema\TypeFactory;
-use PSX\Schema\TypeInterface;
 use RuntimeException;
 
 /**
@@ -48,12 +45,12 @@ abstract class MethodAbstract
     protected $description;
 
     /**
-     * @var \PSX\Schema\PropertyInterface
+     * @var string
      */
     protected $queryParameters;
 
     /**
-     * @var \PSX\Schema\SchemaInterface
+     * @var string
      */
     protected $request;
 
@@ -69,81 +66,121 @@ abstract class MethodAbstract
 
     public function __construct()
     {
-        $this->queryParameters = TypeFactory::getStruct();
-        $this->responses       = [];
+        $this->responses = [];
     }
 
-    public function setOperationId($operationId)
+    /**
+     * @param string $operationId
+     */
+    public function setOperationId(string $operationId)
     {
         $this->operationId = $operationId;
 
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getOperationId()
     {
         return $this->operationId;
     }
 
-    public function setDescription($description)
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description)
     {
         $this->description = $description;
 
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getDescription()
     {
         return $this->description;
     }
 
-    public function addQueryParameter($name, TypeInterface $type)
+    /**
+     * @param string $typeName
+     */
+    public function setQueryParameters(string $typeName)
     {
-        $this->queryParameters->addProperty($name, $type);
+        $this->queryParameters = $typeName;
 
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getQueryParameters()
     {
         return $this->queryParameters;
     }
 
+    /**
+     * @return bool
+     */
     public function hasQueryParameters()
     {
-        return count($this->queryParameters->getProperties() ?: []) > 0;
+        return !empty($this->queryParameters);
     }
 
-    public function setRequest(SchemaInterface $schema)
+    /**
+     * @param string $typeName
+     */
+    public function setRequest(string $typeName)
     {
-        $this->request = $schema;
+        $this->request = $typeName;
 
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getRequest()
     {
         return $this->request;
     }
 
+    /**
+     * @return bool
+     */
     public function hasRequest()
     {
-        return $this->request instanceof SchemaInterface;
+        return !empty($this->request);
     }
 
-    public function addResponse($statusCode, SchemaInterface $schema)
+    /**
+     * @param integer $statusCode
+     * @param string $typeName
+     */
+    public function addResponse(int $statusCode, string $typeName)
     {
-        $this->responses[$statusCode] = $schema;
+        $this->responses[$statusCode] = $typeName;
 
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getResponses()
     {
         return $this->responses;
     }
 
-    public function getResponse($statusCode)
+    /**
+     * @param int $statusCode
+     * @return string
+     */
+    public function getResponse(int $statusCode)
     {
         if (isset($this->responses[$statusCode])) {
             return $this->responses[$statusCode];
@@ -152,23 +189,37 @@ abstract class MethodAbstract
         }
     }
 
+    /**
+     * @param int $statusCode
+     * @return bool
+     */
     public function hasResponse($statusCode)
     {
         return isset($this->responses[$statusCode]);
     }
 
-    public function setSecurity($name, array $scopes)
+    /**
+     * @param string $name
+     * @param array $scopes
+     */
+    public function setSecurity(string $name, array $scopes)
     {
         $this->security[$name] = $scopes;
 
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getSecurity()
     {
         return $this->security;
     }
 
+    /**
+     * @return bool
+     */
     public function hasSecurity()
     {
         return !empty($this->security);
@@ -180,4 +231,24 @@ abstract class MethodAbstract
      * @return string
      */
     abstract public function getName();
+
+    public function toArray(): array
+    {
+        $responses = [];
+        foreach ($this->responses as $statusCode => $response) {
+            $responses[$statusCode] = $response;
+        }
+
+        return array_filter([
+            'operationId' => $this->operationId,
+            'description' => $this->description,
+            'security' => $this->security,
+            'tags' => $this->tags,
+            'queryParameters' => $this->queryParameters,
+            'request' => $this->request,
+            'responses' => $responses,
+        ], function($value){
+            return $value !== null;
+        });
+    }
 }

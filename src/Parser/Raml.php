@@ -24,10 +24,18 @@ use PSX\Api\ParserCollectionInterface;
 use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
+use PSX\Api\Specification;
+use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
-use PSX\Schema\Parser\JsonSchema;
-use PSX\Schema\Property;
+use PSX\Schema\Definitions;
+use PSX\Schema\Parser\TypeSchema;
 use PSX\Schema\SchemaInterface;
+use PSX\Schema\Type\NumberType;
+use PSX\Schema\Type\ScalarType;
+use PSX\Schema\Type\StringType;
+use PSX\Schema\Type\TypeAbstract;
+use PSX\Schema\TypeFactory;
+use PSX\Schema\TypeInterface;
 use RuntimeException;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Tag\TaggedValue;
@@ -40,7 +48,7 @@ use Symfony\Component\Yaml\Yaml;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Raml implements ParserInterface, ParserCollectionInterface
+class Raml implements ParserInterface
 {
     /**
      * @var string|null
@@ -75,39 +83,27 @@ class Raml implements ParserInterface, ParserCollectionInterface
     /**
      * @inheritdoc
      */
-    public function parse($schema, $path)
-    {
-        $this->setUp($schema);
-
-        $paths = $this->getPaths();
-        $path  = Inflection::transformRoutePlaceholder($path);
-
-        if (isset($paths[$path])) {
-            return $this->parseResource($paths[$path], $path);
-        } else {
-            throw new RuntimeException('Could not find resource definition "' . $path . '" in RAML schema');
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function parseAll($schema)
+    public function parse(string $schema): SpecificationInterface
     {
         $this->setUp($schema);
 
         $paths  = $this->getPaths();
-        $result = new ResourceCollection();
+
+        $definitions = new Definitions();
+        $collection = new ResourceCollection();
 
         foreach ($paths as $path => $spec) {
             $resource = $this->parseResource($spec, Inflection::transformRoutePlaceholder($path));
-            $result->set($resource);
+            $collection->set($resource);
         }
 
-        return $result;
+        return new Specification(
+            $collection,
+            $definitions
+        );
     }
 
-    private function parseResource(array $data, $path)
+    private function parseResource(array $data, string $path): Resource
     {
         $status   = Resource::STATUS_ACTIVE;
         $resource = new Resource($status, $path);
@@ -261,46 +257,51 @@ class Raml implements ParserInterface, ParserCollectionInterface
 
     /**
      * @param array $definition
-     * @return \PSX\Schema\PropertyInterface
+     * @return \PSX\Schema\TypeInterface
      */
-    private function getParameter(array $definition)
+    private function getParameter(array $definition): TypeInterface
     {
-        $type     = isset($definition['type']) ? $definition['type'] : 'string';
-        $property = $this->getPropertyType($type);
+        $type = $this->getPropertyType($definition['type'] ?? 'string');
 
-        if (isset($definition['description'])) {
-            $property->setDescription($definition['description']);
+        if ($type instanceof TypeAbstract) {
+            if (isset($definition['description'])) {
+                $type->setDescription($definition['description']);
+            }
         }
 
-        if (isset($definition['enum']) && is_array($definition['enum'])) {
-            $property->setEnum($definition['enum']);
+        if ($type instanceof ScalarType) {
+            if (isset($definition['enum']) && is_array($definition['enum'])) {
+                $type->setEnum($definition['enum']);
+            }
         }
 
-        if (isset($definition['pattern'])) {
-            $property->setPattern($definition['pattern']);
+        if ($type instanceof StringType) {
+            if (isset($definition['pattern'])) {
+                $type->setPattern($definition['pattern']);
+            }
+
+            if (isset($definition['minLength'])) {
+                $type->setMinLength($definition['minLength']);
+            }
+
+            if (isset($definition['maxLength'])) {
+                $type->setMaxLength($definition['maxLength']);
+            }
+        } elseif ($type instanceof NumberType) {
+            if (isset($definition['minimum'])) {
+                $type->setMinimum($definition['minimum']);
+            }
+
+            if (isset($definition['maximum'])) {
+                $type->setMaximum($definition['maximum']);
+            }
+
+            if (isset($definition['multipleOf'])) {
+                $type->setMultipleOf($definition['multipleOf']);
+            }
         }
 
-        if (isset($definition['minLength'])) {
-            $property->setMinLength($definition['minLength']);
-        }
-
-        if (isset($definition['maxLength'])) {
-            $property->setMaxLength($definition['maxLength']);
-        }
-
-        if (isset($definition['minimum'])) {
-            $property->setMinimum($definition['minimum']);
-        }
-
-        if (isset($definition['maximum'])) {
-            $property->setMaximum($definition['maximum']);
-        }
-
-        if (isset($definition['multipleOf'])) {
-            $property->setMultipleOf($definition['multipleOf']);
-        }
-
-        return $property;
+        return $type;
     }
 
     private function parseRequest(Resource\MethodAbstract $method, array $data)
@@ -367,24 +368,20 @@ class Raml implements ParserInterface, ParserCollectionInterface
                     $file = $this->basePath . '/' . $file;
                 }
 
-                return JsonSchema::fromFile($file);
+                return TypeSchema::fromFile($file);
             } else {
                 throw new RuntimeException('Unknown tag ' . $schema->getTag());
             }
         } elseif (is_string($schema)) {
             if (strpos($schema, '{') !== false) {
-                $parser = new JsonSchema($this->basePath);
-
-                return $parser->parse($schema);
+                return (new TypeSchema())->parse($schema);
             } elseif (isset($this->schemas[$schema])) {
                 return $this->parseSchema($this->schemas[$schema]);
             } else {
                 throw new RuntimeException('Referenced schema does not exist');
             }
         } elseif (is_array($schema)) {
-            $parser = new JsonSchema($this->basePath);
-
-            return $parser->parse(json_encode($schema));
+            return (new TypeSchema())->parse(json_encode($schema));
         } else {
             throw new RuntimeException('Schema definition must be a string or object');
         }
@@ -417,28 +414,28 @@ class Raml implements ParserInterface, ParserCollectionInterface
     {
         switch ($type) {
             case 'integer':
-                return Property::getInteger();
+                return TypeFactory::getInteger();
 
             case 'number':
-                return Property::getNumber();
+                return TypeFactory::getNumber();
 
             case 'date':
             case 'datetime':
             case 'datetime-only':
-                return Property::getDateTime();
+                return TypeFactory::getDateTime();
 
             case 'date-only':
-                return Property::getDate();
+                return TypeFactory::getDate();
 
             case 'time-only':
-                return Property::getTime();
+                return TypeFactory::getTime();
 
             case 'boolean':
-                return Property::getBoolean();
+                return TypeFactory::getBoolean();
 
             case 'string':
             default:
-                return Property::getString();
+                return TypeFactory::getString();
         }
     }
 

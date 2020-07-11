@@ -26,7 +26,7 @@ func SetBaseURL(url string) {
 }
 
 // Get Returns a collection
-func Get() Collection {
+func Get() EntryCollection {
 
 
     req, err := http.NewRequest("GET", baseURL + url, nil)
@@ -41,14 +41,14 @@ func Get() Collection {
     defer resp.Body.Close()
     respBody, _ := ioutil.ReadAll(resp.Body)
 
-    var response Collection
+    var response EntryCollection
     json.Unmarshal(respBody, &response)
 
     return response
 }
 
 // Post 
-func Post(data ItemCreate) Message {
+func Post(data EntryCreate) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -69,7 +69,7 @@ func Post(data ItemCreate) Message {
     defer resp.Body.Close()
     respBody, _ := ioutil.ReadAll(resp.Body)
 
-    var response Message
+    var response EntryMessage
     json.Unmarshal(respBody, &response)
 
     return response

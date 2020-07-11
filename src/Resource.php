@@ -23,8 +23,6 @@ namespace PSX\Api;
 use ArrayIterator;
 use IteratorAggregate;
 use PSX\Api\Resource\MethodAbstract;
-use PSX\Schema\TypeFactory;
-use PSX\Schema\TypeInterface;
 
 /**
  * A resource describes the capabilities of an API endpoint
@@ -33,7 +31,7 @@ use PSX\Schema\TypeInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Resource implements IteratorAggregate
+class Resource implements IteratorAggregate, \JsonSerializable
 {
     use TagableTrait;
 
@@ -69,12 +67,12 @@ class Resource implements IteratorAggregate
     protected $description;
 
     /**
-     * @var \PSX\Schema\PropertyInterface
+     * @var string
      */
     protected $pathParameters;
 
     /**
-     * @var array
+     * @var \PSX\Api\Resource\MethodAbstract[]
      */
     protected $methods;
 
@@ -84,10 +82,9 @@ class Resource implements IteratorAggregate
      */
     public function __construct($status, $path)
     {
-        $this->status         = $status;
-        $this->path           = $path;
-        $this->pathParameters = TypeFactory::getStruct();
-        $this->methods        = [];
+        $this->status  = $status;
+        $this->path    = $path;
+        $this->methods = [];
     }
 
     /**
@@ -170,23 +167,33 @@ class Resource implements IteratorAggregate
         return $this->description;
     }
 
-    public function addPathParameter($name, TypeInterface $type)
+    /**
+     * @param string $typeName
+     */
+    public function setPathParameters(string $typeName)
     {
-        $this->pathParameters->addProperty($name, $type);
-
-        return $this;
+        $this->pathParameters = $typeName;
     }
 
+    /**
+     * @return string
+     */
     public function getPathParameters()
     {
         return $this->pathParameters;
     }
 
+    /**
+     * @return bool
+     */
     public function hasPathParameters()
     {
-        return count($this->pathParameters->getProperties() ?: []) > 0;
+        return !empty($this->pathParameters);
     }
 
+    /**
+     * @param MethodAbstract $method
+     */
     public function addMethod(MethodAbstract $method)
     {
         $this->methods[$method->getName()] = $method;
@@ -236,5 +243,29 @@ class Resource implements IteratorAggregate
     public function getIterator()
     {
         return new ArrayIterator($this->methods);
+    }
+
+    public function toArray(): array
+    {
+        $methods = [];
+        foreach ($this->methods as $methodName => $method) {
+            $methods[$methodName] = $method->toArray();
+        }
+
+        return array_filter([
+            'status' => $this->status,
+            'path' => $this->path,
+            'title' => $this->title,
+            'description' => $this->description,
+            'pathParameters' => $this->pathParameters,
+            'methods' => $methods,
+        ], function($value){
+            return $value !== null;
+        });
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }

@@ -49,7 +49,7 @@ abstract class ApiManagerTestCase extends TestCase
      */
     protected $apiManager;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\\Api\\Annotation');

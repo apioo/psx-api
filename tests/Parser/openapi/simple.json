@@ -1,4 +1,12 @@
 {
+  "$import": {
+    "my_schema": "file:///../schema/schema.json"
+  },
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Simple API",
+    "version": "1.0.0"
+  },
   "paths": {
     "/foo": {
       "summary": "Test",
@@ -73,20 +81,22 @@
           }
         }],
         "requestBody": {
+          "description": "Request body",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "file:///../schema/schema.json"
+                "$ref": "my_schema:Song"
               }
             }
           }
         },
         "responses": {
           "200": {
+            "description": "Response body",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "file:///../schema/schema.json"
+                  "$ref": "my_schema:Song"
                 }
               }
             }

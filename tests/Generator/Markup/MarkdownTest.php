@@ -36,7 +36,7 @@ class MarkdownTest extends GeneratorTestCase
     {
         $generator = new Markdown();
 
-        $actual = $generator->generate($this->getResource());
+        $actual = $generator->generate($this->getSpecification());
 
         $expect = file_get_contents(__DIR__ . '/resource/markdown.md');
         $expect = str_replace(array("\r\n", "\r"), "\n", $expect);

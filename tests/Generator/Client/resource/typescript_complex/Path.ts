@@ -4,6 +4,6 @@
  */
 
 interface Path {
-    name?: string
-    type?: string
+    name: string
+    type: string
 }

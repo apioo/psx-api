@@ -27,45 +27,45 @@ export default class FooNameTypeResource {
      * Returns a collection
      *
      * @param {GetQuery} query
-     * @returns {AxiosPromise<Collection>}
+     * @returns {AxiosPromise<EntryCollection>}
      */
-    public listFoo(query: GetQuery): AxiosPromise<Collection> {
+    public listFoo(query: GetQuery): AxiosPromise<EntryCollection> {
         let params = {
             method: "GET",
             params: query,
         };
 
-        return this.httpClient.get<Collection>(this.url, params);
+        return this.httpClient.get<EntryCollection>(this.url, params);
     }
 
     /**
-     * @param {ItemCreate} data
-     * @returns {AxiosPromise<Message>}
+     * @param {EntryCreate} data
+     * @returns {AxiosPromise<EntryMessage>}
      */
-    public createFoo(data: ItemCreate): AxiosPromise<Message> {
+    public createFoo(data: EntryCreate): AxiosPromise<EntryMessage> {
         let params = {
             method: "POST",
         };
 
-        return this.httpClient.post<Message>(this.url, data, params);
+        return this.httpClient.post<EntryMessage>(this.url, data, params);
     }
 
     /**
-     * @param {ItemUpdate} data
-     * @returns {AxiosPromise<Message>}
+     * @param {EntryUpdate} data
+     * @returns {AxiosPromise<EntryMessage>}
      */
-    public put(data: ItemUpdate): AxiosPromise<Message> {
+    public put(data: EntryUpdate): AxiosPromise<EntryMessage> {
         let params = {
             method: "PUT",
         };
 
-        return this.httpClient.put<Message>(this.url, data, params);
+        return this.httpClient.put<EntryMessage>(this.url, data, params);
     }
 
     /**
-     * @returns {AxiosPromise<Message>}
+     * @returns {AxiosPromise<EntryMessage>}
      */
-    public delete(): AxiosPromise<Message> {
+    public delete(): AxiosPromise<EntryMessage> {
         let params = {
             method: "DELETE",
         };
@@ -74,15 +74,15 @@ export default class FooNameTypeResource {
     }
 
     /**
-     * @param {ItemPatch} data
-     * @returns {AxiosPromise<Message>}
+     * @param {EntryPatch} data
+     * @returns {AxiosPromise<EntryMessage>}
      */
-    public patch(data: ItemPatch): AxiosPromise<Message> {
+    public patch(data: EntryPatch): AxiosPromise<EntryMessage> {
         let params = {
             method: "PATCH",
         };
 
-        return this.httpClient.patch<Message>(this.url, data, params);
+        return this.httpClient.patch<EntryMessage>(this.url, data, params);
     }
 
 }

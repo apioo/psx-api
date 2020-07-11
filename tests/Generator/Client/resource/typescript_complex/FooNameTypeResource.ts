@@ -26,10 +26,10 @@ export default class FooNameTypeResource {
     /**
      * Returns a collection
      *
-     * @param {Item | Message} data
-     * @returns {AxiosPromise<Item | Message>}
+     * @param {Entry | EntryMessage} data
+     * @returns {AxiosPromise<Entry | EntryMessage>}
      */
-    public post(data: Item | Message): AxiosPromise<Item | Message> {
+    public postEntryOrMessage(data: Entry | EntryMessage): AxiosPromise<Entry | EntryMessage> {
         let params = {
             method: "POST",
             headers: {
@@ -37,7 +37,7 @@ export default class FooNameTypeResource {
             },
         };
 
-        return this.httpClient.post<Item | Message>(this.url, data, params);
+        return this.httpClient.post<Entry | EntryMessage>(this.url, data, params);
     }
 
 }

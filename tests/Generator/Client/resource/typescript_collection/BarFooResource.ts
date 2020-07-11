@@ -24,26 +24,26 @@ export default class BarFooResource {
     /**
      * Returns a collection
      *
-     * @returns {AxiosPromise<Collection>}
+     * @returns {AxiosPromise<EntryCollection>}
      */
-    public get(): AxiosPromise<Collection> {
+    public get(): AxiosPromise<EntryCollection> {
         let params = {
             method: "GET",
         };
 
-        return this.httpClient.get<Collection>(this.url, params);
+        return this.httpClient.get<EntryCollection>(this.url, params);
     }
 
     /**
-     * @param {ItemCreate} data
-     * @returns {AxiosPromise<Message>}
+     * @param {EntryCreate} data
+     * @returns {AxiosPromise<EntryMessage>}
      */
-    public post(data: ItemCreate): AxiosPromise<Message> {
+    public post(data: EntryCreate): AxiosPromise<EntryMessage> {
         let params = {
             method: "POST",
         };
 
-        return this.httpClient.post<Message>(this.url, data, params);
+        return this.httpClient.post<EntryMessage>(this.url, data, params);
     }
 
 }

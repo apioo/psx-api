@@ -42,7 +42,7 @@ class CachedListingTest extends ListingTestCase
     protected function newListing()
     {
         $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+        $schemaReader->addNamespace('PSX\\Schema\\Annotation');
 
         $apiReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
         $apiReader->addNamespace('PSX\\Api\\Annotation');

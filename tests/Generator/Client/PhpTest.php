@@ -22,6 +22,7 @@ namespace PSX\Api\Tests\Generator\Client;
 
 use PSX\Api\Generator\Client\Php;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
+use PSX\Schema\Definitions;
 use PSX\Schema\Generator\Code\Chunks;
 
 /**
@@ -37,19 +38,20 @@ class PhpTest extends GeneratorTestCase
     {
         $generator = new Php('http://api.foo.com');
 
-        $result = $generator->generate($this->getResource());
+        $result = $generator->generate($this->getSpecification());
         $target = __DIR__ . '/resource/php';
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/Collection.php');
+        $this->assertFileExists($target . '/Entry.php');
+        $this->assertFileExists($target . '/EntryCollection.php');
+        $this->assertFileExists($target . '/EntryCreate.php');
+        $this->assertFileExists($target . '/EntryDelete.php');
+        $this->assertFileExists($target . '/EntryMessage.php');
+        $this->assertFileExists($target . '/EntryPatch.php');
+        $this->assertFileExists($target . '/EntryUpdate.php');
         $this->assertFileExists($target . '/FooNameTypeResource.php');
         $this->assertFileExists($target . '/GetQuery.php');
-        $this->assertFileExists($target . '/Item.php');
-        $this->assertFileExists($target . '/ItemCreate.php');
-        $this->assertFileExists($target . '/ItemPatch.php');
-        $this->assertFileExists($target . '/ItemUpdate.php');
-        $this->assertFileExists($target . '/Message.php');
         $this->assertFileExists($target . '/Path.php');
     }
 
@@ -57,33 +59,34 @@ class PhpTest extends GeneratorTestCase
     {
         $generator = new Php('http://api.foo.com', 'Foo\Bar');
 
-        $result = $generator->generateAll($this->getResourceCollection());
+        $result = $generator->generate($this->getSpecificationCollection());
         $target = __DIR__ . '/resource/php_collection';
 
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/BarFooResource.php');
         $this->assertFileExists($target . '/BarYear09Resource.php');
-        $this->assertFileExists($target . '/Collection.php');
+        $this->assertFileExists($target . '/Entry.php');
+        $this->assertFileExists($target . '/EntryCollection.php');
+        $this->assertFileExists($target . '/EntryCreate.php');
+        $this->assertFileExists($target . '/EntryMessage.php');
         $this->assertFileExists($target . '/FooResource.php');
-        $this->assertFileExists($target . '/Item.php');
-        $this->assertFileExists($target . '/ItemCreate.php');
-        $this->assertFileExists($target . '/Message.php');
-        $this->assertFileExists($target . '/Path.php');
+        $this->assertFileExists($target . '/PathFoo.php');
+        $this->assertFileExists($target . '/PathYear.php');
     }
 
     public function testGenerateComplex()
     {
         $generator = new Php('http://api.foo.com', 'Foo\Bar');
 
-        $result = $generator->generate($this->getResourceComplex());
+        $result = $generator->generate($this->getSpecificationComplex());
         $target = __DIR__ . '/resource/php_complex';
 
         $this->writeChunksToFolder($result, $target);
 
+        $this->assertFileExists($target . '/Entry.php');
+        $this->assertFileExists($target . '/EntryMessage.php');
         $this->assertFileExists($target . '/FooNameTypeResource.php');
-        $this->assertFileExists($target . '/Item.php');
-        $this->assertFileExists($target . '/Message.php');
         $this->assertFileExists($target . '/Path.php');
     }
 }

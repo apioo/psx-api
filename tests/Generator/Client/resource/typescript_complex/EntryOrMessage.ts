@@ -3,4 +3,4 @@
  * {@link https://github.com/apioo}
  */
 
-type EntryOrMessage = Item | Message;
+type EntryOrMessage = Entry | EntryMessage;

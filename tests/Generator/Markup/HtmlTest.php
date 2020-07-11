@@ -36,7 +36,7 @@ class HtmlTest extends GeneratorTestCase
     {
         $generator = new Html();
 
-        $actual = $generator->generate($this->getResource());
+        $actual = $generator->generate($this->getSpecification());
         $actual = preg_replace('/psx_model_Object([0-9A-Fa-f]{8})/', '[dynamic_id]', $actual);
 
         $expect = file_get_contents(__DIR__ . '/resource/html.htm');

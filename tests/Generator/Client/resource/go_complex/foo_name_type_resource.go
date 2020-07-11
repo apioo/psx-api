@@ -26,8 +26,8 @@ func SetBaseURL(url string) {
     baseURL = url
 }
 
-// Post Returns a collection
-func Post(data interface{}) interface{} {
+// Postentryormessage Returns a collection
+func Postentryormessage(data interface{}) interface{} {
 
     raw, err := json.Marshal(data)
     if err != nil {

@@ -17,9 +17,9 @@
     "doctrine/cache": "^1.6",
     "nikic/php-parser": "^4.0",
     "psx/json": "^1.0",
-    "psx/model": "^2.0",
+    "psx/model": "dev-master",
     "psx/cache": "^1.0",
-    "psx/schema": "^2.6",
+    "psx/schema": "dev-master",
     "symfony/console": "^4.0|^5.0",
     "symfony/yaml": "^4.0|^5.0",
     "twig/twig": "^2.4"

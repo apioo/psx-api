@@ -20,8 +20,10 @@
 
 namespace PSX\Api;
 
+use PSX\Schema\Generator\Code\Chunks;
+
 /**
- * Generates a API specification format from a resource object
+ * Generates a response format based ion an API specification
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -30,10 +32,10 @@ namespace PSX\Api;
 interface GeneratorInterface
 {
     /**
-     * Generates a representation of the resource in another format
+     * Generates a representation of the specification in a specific format
      *
-     * @param \PSX\Api\Resource $resource
-     * @return string
+     * @param SpecificationInterface $specification
+     * @return string|Chunks
      */
-    public function generate(Resource $resource);
+    public function generate(SpecificationInterface $specification);
 }

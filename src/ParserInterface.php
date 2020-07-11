@@ -21,7 +21,8 @@
 namespace PSX\Api;
 
 /**
- * The parser reads an arbitrary schema format and returns a resource object
+ * The parser reads an arbitrary schema format and returns a specification
+ * object
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -30,11 +31,10 @@ namespace PSX\Api;
 interface ParserInterface
 {
     /**
-     * Parses a schema and returns the corresponding resource object
+     * Parses a specification and returns a specification object
      *
      * @param string $schema
-     * @param string $path
-     * @return \PSX\Api\Resource
+     * @return SpecificationInterface
      */
-    public function parse($schema, $path);
+    public function parse(string $schema): SpecificationInterface;
 }

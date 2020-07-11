@@ -20,12 +20,13 @@
 
 namespace PSX\Api\Tests\Parser;
 
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\ApiManager;
 use PSX\Api\Parser\OpenAPI;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
-use PSX\Schema\PropertyInterface;
 use PSX\Schema\SchemaInterface;
+use PSX\Schema\TypeInterface;
 
 /**
  * OpenAPITest
@@ -51,8 +52,8 @@ class OpenAPITest extends ParserTestCase
 
         $path = $resource->getPathParameters();
 
-        $this->assertInstanceOf(PropertyInterface::class, $path);
-        $this->assertInstanceOf(PropertyInterface::class, $path->getProperty('fooId'));
+        $this->assertInstanceOf(TypeInterface::class, $path);
+        $this->assertInstanceOf(TypeInterface::class, $path->getProperty('fooId'));
 
         $methods = $resource->getMethods();
 
@@ -62,22 +63,22 @@ class OpenAPITest extends ParserTestCase
 
         $query = $methods['GET']->getQueryParameters();
 
-        $this->assertInstanceOf(PropertyInterface::class, $query->getProperty('bar'));
+        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('bar'));
 
         $request = $methods['GET']->getRequest();
 
         $this->assertInstanceOf(SchemaInterface::class, $request);
-        $this->assertInstanceOf(PropertyInterface::class, $request->getDefinition()->getProperty('artist'));
+        $this->assertInstanceOf(TypeInterface::class, $request->getType()->getProperty('artist'));
 
         $response = $methods['GET']->getResponse(200);
 
         $this->assertInstanceOf(SchemaInterface::class, $response);
-        $this->assertInstanceOf(PropertyInterface::class, $response->getDefinition()->getProperty('artist'));
+        $this->assertInstanceOf(TypeInterface::class, $response->getType()->getProperty('artist'));
 
         $response = $methods['GET']->getResponse(500);
 
         $this->assertInstanceOf(SchemaInterface::class, $response);
-        $this->assertInstanceOf(PropertyInterface::class, $response->getDefinition()->getProperty('success'));
+        $this->assertInstanceOf(TypeInterface::class, $response->getType()->getProperty('success'));
     }
 
     public function testParsePath()
@@ -97,7 +98,10 @@ class OpenAPITest extends ParserTestCase
 
     public function testParseAll()
     {
-        $parser = new OpenAPI(__DIR__ . '/openapi');
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Schema\\Annotation');
+
+        $parser = new OpenAPI($reader, __DIR__ . '/openapi');
         $result = $parser->parseAll(file_get_contents(__DIR__ . '/openapi/simple.json'));
 
         $this->assertInstanceOf(ResourceCollection::class, $result);

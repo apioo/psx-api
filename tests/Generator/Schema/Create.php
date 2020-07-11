@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Generator\Schema;
 
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\SchemaAbstract;
 
 /**
@@ -31,11 +32,13 @@ use PSX\Schema\SchemaAbstract;
  */
 class Create extends SchemaAbstract
 {
-    public function getDefinition()
+    public function build(DefinitionsInterface $definitions): string
     {
-        $entry = $this->getSchema(Entry::class);
+        $this->load(Entry::class);
+
+        $entry = $this->modify('Entry', 'EntryCreate');
         $entry->setRequired(['title', 'date']);
 
-        return $entry;
+        return 'EntryCreate';
     }
 }

@@ -20,17 +20,35 @@
 
 namespace PSX\Api\Parser;
 
+use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\ParserCollectionInterface;
 use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
+use PSX\Api\Specification;
+use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
-use PSX\Schema\Parser\JsonSchema;
-use PSX\Schema\Property;
-use PSX\Schema\PropertyInterface;
+use PSX\Model\OpenAPI\MediaType;
+use PSX\Model\OpenAPI\MediaTypes;
+use PSX\Model\OpenAPI\OpenAPI as OpenAPIModel;
+use PSX\Model\OpenAPI\Operation;
+use PSX\Model\OpenAPI\Parameter;
+use PSX\Model\OpenAPI\PathItem;
+use PSX\Model\OpenAPI\Reference;
+use PSX\Model\OpenAPI\RequestBody;
+use PSX\Model\OpenAPI\Response;
+use PSX\Model\OpenAPI\Responses;
+use PSX\Schema\Definitions;
+use PSX\Schema\Parser as SchemaParser;
 use PSX\Schema\Schema;
-use PSX\Uri\Uri;
+use PSX\Schema\SchemaInterface;
+use PSX\Schema\SchemaTraverser;
+use PSX\Schema\Type\ReferenceType;
+use PSX\Schema\TypeFactory;
+use PSX\Schema\TypeInterface;
+use PSX\Schema\Visitor\TypeVisitor;
 use RuntimeException;
 
 /**
@@ -40,131 +58,100 @@ use RuntimeException;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class OpenAPI implements ParserInterface, ParserCollectionInterface
+class OpenAPI implements ParserInterface
 {
+    /**
+     * @var Reader
+     */
+    private $annotationReader;
+
     /**
      * @var string|null
      */
     private $basePath;
 
     /**
-     * @var \PSX\Schema\Parser\JsonSchema\Document
+     * @var \PSX\Schema\Parser\TypeSchema
+     */
+    private $schemaParser;
+
+    /**
+     * @var \PSX\Schema\DefinitionsInterface
+     */
+    private $definitions;
+
+    /**
+     * @var \PSX\Model\OpenAPI\OpenAPI
      */
     private $document;
 
     /**
-     * @var \PSX\Schema\Parser\JsonSchema\RefResolver
+     * @param Reader $annotationReader
+     * @param string|null $basePath
      */
-    private $resolver;
-
-    /**
-     * @var array
-     */
-    private $pathStack;
-
-    /**
-     * @var integer
-     */
-    private $stackIndex;
-
-    /**
-     * @var array
-     */
-    private $data;
-
-    /**
-     * @param string $basePath
-     * @param \PSX\Schema\Parser\JsonSchema\RefResolver|null $resolver
-     */
-    public function __construct($basePath = null, JsonSchema\RefResolver $resolver = null)
+    public function __construct(Reader $annotationReader, ?string $basePath = null)
     {
+        $this->annotationReader = $annotationReader;
         $this->basePath = $basePath;
-        $this->resolver = $resolver === null ? JsonSchema\RefResolver::createDefault() : $resolver;
+        $this->schemaParser = new SchemaParser\TypeSchema(null, $basePath);
     }
 
     /**
      * @inheritdoc
      */
-    public function parse($schema, $path)
+    public function parse(string $schema): SpecificationInterface
     {
-        $this->setUp($schema);
+        $this->parseOpenAPI($schema);
 
-        $paths = $this->getPaths();
-        $path  = Inflection::transformRoutePlaceholder($path);
+        $collection = new ResourceCollection();
 
-        if (isset($paths[$path])) {
-            return $this->parseResource($paths[$path], $path);
-        } else {
-            throw new RuntimeException('Could not find resource definition "' . $path . '" in OpenAPI schema');
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function parseAll($schema)
-    {
-        $this->setUp($schema);
-
-        $paths  = $this->getPaths();
-        $result = new ResourceCollection();
-
+        $paths = $this->document->getPaths();
         foreach ($paths as $path => $spec) {
             $resource = $this->parseResource($spec, Inflection::transformRoutePlaceholder($path));
-            $result->set($resource);
+            $collection->set($resource);
         }
 
-        return $result;
+        return new Specification(
+            $collection,
+            $this->definitions
+        );
     }
 
-    private function parseResource(array $data, $path)
+    private function parseResource(PathItem $data, string $path): Resource
     {
-        $this->pushPath('paths');
-        $this->pushPath($path);
-
         $status   = Resource::STATUS_ACTIVE;
         $resource = new Resource($status, $path);
 
-        if (isset($data['summary'])) {
-            $resource->setTitle($data['summary']);
-        }
-
-        if (isset($data['description'])) {
-            $resource->setDescription($data['description']);
-        }
+        $resource->setTitle($data->getSummary());
+        $resource->setDescription($data->getDescription());
 
         $this->parseUriParameters($resource, $data);
 
-        foreach ($data as $methodName => $operation) {
-            if (in_array($methodName, ['get', 'post', 'put', 'delete', 'patch']) && is_array($operation)) {
-                $this->pushPath($methodName);
+        $methods = [
+            'get' => $data->getGet(),
+            'post' => $data->getPost(),
+            'put' => $data->getPut(),
+            'delete' => $data->getDelete(),
+            'patch' => $data->getPatch(),
+        ];
 
-                $method = Resource\Factory::getMethod(strtoupper($methodName));
-
-                if (isset($operation['operationId'])) {
-                    $method->setOperationId($operation['operationId']);
-                }
-
-                if (isset($operation['summary'])) {
-                    $method->setDescription($operation['summary']);
-                }
-
-                if (isset($operation['tags'])) {
-                    $method->setTags($operation['tags']);
-                }
-
-                $this->parseQueryParameters($method, $operation);
-                $this->parseRequest($method, $operation);
-                $this->parseResponses($method, $operation);
-
-                $resource->addMethod($method);
-
-                $this->popPath();
+        foreach ($methods as $methodName => $operation) {
+            if (!$operation instanceof Operation) {
+                continue;
             }
-        }
 
-        $this->popPath();
-        $this->popPath();
+            $method = Resource\Factory::getMethod(strtoupper($methodName));
+
+            $method->setOperationId($operation->getOperationId());
+            $method->setDescription($operation->getSummary());
+            $method->setTags($operation->getTags() ?? []);
+
+            $this->parseQueryParameters($method, $operation);
+            $this->parseRequest($method, $operation->getRequestBody());
+            $this->parseResponses($method, $operation);
+
+            $resource->addMethod($method);
+        }
 
         return $resource;
     }
@@ -173,9 +160,9 @@ class OpenAPI implements ParserInterface, ParserCollectionInterface
      * @param \PSX\Api\Resource $resource
      * @param array $data
      */
-    private function parseUriParameters(Resource $resource, array $data)
+    private function parseUriParameters(Resource $resource, PathItem $data)
     {
-        list($properties, $required) = $this->parseParameters('path', $data);
+        [$properties, $required] = $this->parseParameters('path', $data->getParameters() ?? []);
 
         foreach ($properties as $name => $property) {
             $resource->addPathParameter($name, $property);
@@ -188,11 +175,11 @@ class OpenAPI implements ParserInterface, ParserCollectionInterface
 
     /**
      * @param \PSX\Api\Resource\MethodAbstract $method
-     * @param array $data
+     * @param Operation $data
      */
-    private function parseQueryParameters(Resource\MethodAbstract $method, array $data)
+    private function parseQueryParameters(Resource\MethodAbstract $method, Operation $data)
     {
-        list($properties, $required) = $this->parseParameters('query', $data);
+        [$properties, $required] = $this->parseParameters('query', $data->getParameters() ?? []);
 
         foreach ($properties as $name => $property) {
             $method->addQueryParameter($name, $property);
@@ -208,34 +195,24 @@ class OpenAPI implements ParserInterface, ParserCollectionInterface
      * @param array $data
      * @return array
      */
-    private function parseParameters($type, array $data)
+    private function parseParameters(string $type, array $data)
     {
-        $this->pushPath('parameters');
-
         $properties = [];
         $required   = [];
 
-        if (isset($data['parameters']) && is_array($data['parameters'])) {
-            foreach ($data['parameters'] as $index => $definition) {
-                $this->pushPath($index);
+        foreach ($data as $index => $definition) {
+            [$name, $property, $isRequired] = $this->parseParameter($type, $definition);
 
-                list($name, $property, $isRequired) = $this->parseParameter($type, $definition);
-
-                if ($name !== null) {
-                    if ($property !== null) {
-                        $properties[$name] = $property;
-                    }
-
-                    if ($isRequired !== null && $isRequired === true) {
-                        $required[] = $name;
-                    }
+            if ($name !== null) {
+                if ($property instanceof TypeInterface) {
+                    $properties[$name] = $property;
                 }
 
-                $this->popPath();
+                if ($isRequired !== null && $isRequired === true) {
+                    $required[] = $name;
+                }
             }
         }
-
-        $this->popPath();
 
         return [
             $properties,
@@ -243,185 +220,149 @@ class OpenAPI implements ParserInterface, ParserCollectionInterface
         ];
     }
 
-    private function parseParameter($type, array $data)
+    /**
+     * @param string $in
+     * @param Parameter|Reference $data
+     * @return array|\PSX\Schema\TypeInterface
+     * @throws \PSX\Schema\TypeNotFoundException
+     */
+    private function parseParameter(string $in, $data)
     {
-        if (isset($data['$ref'])) {
-            $ref  = new Uri($data['$ref']);
-            $data = $this->resolver->extract($this->document, $ref);
-
-            $this->pushStack($ref->getFragment());
-            $return = $this->parseParameter($type, $data);
-            $this->popStack();
-
-            return $return;
+        if ($data instanceof Reference) {
+            return $this->parseParameter($in, $this->resolveReference($data->getRef()));
         }
 
-        $name = isset($data['name']) ? $data['name'] : null;
-        $in   = isset($data['in'])   ? $data['in']   : null;
+        if (!$data instanceof Parameter) {
+            throw new \RuntimeException('Not a parameter provided');
+        }
+
+        $name = $data->getName();
+        $type = TypeFactory::getString();
 
         $property = null;
         $required = null;
-        if (!empty($name) && $in == $type && is_array($data)) {
-            if (isset($data['required'])) {
-                $required = (bool) $data['required'];
-            } else {
-                $required = false;
-            }
+        if (!empty($name) && $data->getIn() == $in) {
+            $required = $data->getRequired() ?? false;
 
-            if (isset($data['schema']) && is_array($data['schema'])) {
-                if (isset($data['schema']['$ref'])) {
-                    $property = $this->resolver->resolve($this->document, new Uri($data['schema']['$ref']), null, 0);
-                } else {
-                    $this->pushPath('schema');
-
-                    $pointer  = $this->getJsonPointer();
-                    $property = $this->document->getProperty($pointer);
-
-                    $this->popPath();
+            $schema = $data->getSchema();
+            if ($schema instanceof \stdClass) {
+                $type = $this->schemaParser->parseType($schema);
+                if ($type instanceof ReferenceType) {
+                    $type = $this->definitions->getType($type->getRef());
                 }
-            } else {
-                $property = Property::get();
             }
         }
 
         return [
             $name,
-            $property,
+            $type,
             $required
         ];
     }
 
-    private function parseRequest(Resource\MethodAbstract $method, array $data)
+    private function parseRequest(Resource\MethodAbstract $method, $requestBody)
     {
-        if (isset($data['requestBody']) && is_array($data['requestBody'])) {
-            $this->pushPath('requestBody');
-
-            $property = $this->getPropertyFromContent($data['requestBody']);
-            if ($property instanceof PropertyInterface) {
-                $method->setRequest(new Schema($property));
+        if ($requestBody instanceof Reference) {
+            return $this->parseRequest($method, $this->resolveReference($requestBody->getRef()));
+        } elseif ($requestBody instanceof RequestBody) {
+            $mediaTypes = $requestBody->getContent();
+            if ($mediaTypes instanceof MediaTypes) {
+                $schema = $this->getSchemaFromMediaTypes($mediaTypes);
+                if ($schema instanceof SchemaInterface) {
+                    $method->setRequest($schema);
+                }
             }
-
-            $this->popPath();
         }
     }
 
-    private function parseResponses(Resource\MethodAbstract $method, array $data)
+    private function parseResponses(Resource\MethodAbstract $method, Operation $operation)
     {
-        if (isset($data['responses']) && is_array($data['responses'])) {
-            $this->pushPath('responses');
-            
-            foreach ($data['responses'] as $statusCode => $row) {
+        $responses = $operation->getResponses();
+        if ($responses instanceof Responses) {
+            foreach ($responses as $statusCode => $response) {
+                /** @var Response $response */
                 $statusCode = (int) $statusCode;
                 if ($statusCode < 100) {
                     continue;
                 }
 
-                $this->pushPath($statusCode);
-
-                $property = $this->getPropertyFromContent($row);
-                if ($property instanceof PropertyInterface) {
-                    $method->addResponse($statusCode, new Schema($property));
-                }
-
-                $this->popPath();
-            }
-            
-            $this->popPath();
-        }
-    }
-
-    private function getPropertyFromContent(array $data)
-    {
-        $property = null;
-        if (isset($data['$ref'])) {
-            $ref  = new Uri($data['$ref']);
-            $data = $this->resolver->extract($this->document, $ref);
-
-            $this->pushStack($ref->getFragment());
-            $property = $this->getPropertyFromContent($data);
-            $this->popStack();
-
-            return $property;
-        } elseif (isset($data['content'])) {
-            $this->pushPath('content');
-            
-            $content = $data['content'];
-            if (isset($content['application/json'])) {
-                $this->pushPath('application/json');
-
-                $mediaType = $content['application/json'];
-                if (isset($mediaType['schema'])) {
-                    if (isset($mediaType['schema']['$ref'])) {
-                        $property = $this->resolver->resolve($this->document, new Uri($mediaType['schema']['$ref']), null, 0);
-                    } else {
-                        $this->pushPath('schema');
-
-                        $pointer  = $this->getJsonPointer();
-                        $property = $this->document->getProperty($pointer);
-
-                        $this->popPath();
+                $mediaTypes = $response->getContent();
+                if ($mediaTypes instanceof MediaTypes) {
+                    $schema = $this->getSchemaFromMediaTypes($mediaTypes);
+                    if ($schema instanceof SchemaInterface) {
+                        $method->addResponse($statusCode, $schema);
                     }
                 }
-
-                $this->popPath();
             }
+        }
+    }
 
-            $this->popPath();
+    private function getSchemaFromMediaTypes(MediaTypes $mediaTypes): ?SchemaInterface
+    {
+        $mediaType = $mediaTypes['application/json'] ?? null;
+        if (!$mediaType instanceof MediaType) {
+            return null;
         }
 
-        return $property;
+        $schema = $mediaType->getSchema();
+        if (!$schema instanceof \stdClass) {
+            return null;
+        }
+
+        $type = $this->schemaParser->parseType($schema);
+        if ($type instanceof ReferenceType) {
+            $type = $this->definitions->getType($type->getRef());
+        }
+
+        return new Schema($type, $this->definitions);
     }
 
-    private function pushPath($path)
+    private function resolveReference(string $reference)
     {
-        array_push($this->pathStack[$this->stackIndex], $path);
+        $parts = explode('/', $reference);
+        $type = $parts[2] ?? null;
+        $name = $parts[3] ?? null;
+        if ($type === 'schemas') {
+            return $this->definitions->getType($name);
+        } elseif ($type === 'parameters') {
+            return $this->document->getComponents()->getParameters()->getProperty($name);
+        } elseif ($type === 'requestBodies') {
+            return $this->document->getComponents()->getRequestBodies()->getProperty($name);
+        } elseif ($type === 'responses') {
+            return $this->document->getComponents()->getResponses()->getProperty($name);
+        } elseif ($type === 'headers') {
+            return $this->document->getComponents()->getHeaders()->getProperty($name);
+        } elseif ($type === 'examples') {
+            return $this->document->getComponents()->getExamples()->getProperty($name);
+        } elseif ($type === 'links') {
+            return $this->document->getComponents()->getLinks()->getProperty($name);
+        } elseif ($type === 'callbacks') {
+            return $this->document->getComponents()->getCallbacks()->getProperty($name);
+        } else {
+            throw new \RuntimeException('Could not resolve reference ' . $reference);
+        }
     }
 
-    private function popPath()
+    private function parseOpenAPI(string $data): void
     {
-        array_pop($this->pathStack[$this->stackIndex]);
+        $data = Parser::decode($data);
+
+        // create a schema based on the open API models
+        $parser = new SchemaParser\Popo($this->annotationReader);
+        $schema = $parser->parse(OpenAPIModel::class);
+
+        $this->definitions = $this->schemaParser->parseSchema($data)->getDefinitions();
+        $this->document    = (new SchemaTraverser())->traverse($data, $schema, new TypeVisitor());
     }
 
-    private function pushStack($fragment)
-    {
-        $this->stackIndex++;
-        array_push($this->pathStack, array_filter(explode('/', $fragment)));
-    }
-
-    private function popStack()
-    {
-        $this->stackIndex--;
-        array_pop($this->pathStack);
-    }
-
-    private function getJsonPointer()
-    {
-        return '/' . implode('/', array_map(function ($path) {
-            return str_replace(['~', '/'], ['~0', '~1'], $path);
-        }, $this->pathStack[$this->stackIndex]));
-    }
-
-    private function setUp($schema)
-    {
-        $this->data = Parser::decode($schema, true);
-
-        $this->pathStack  = [[]];
-        $this->stackIndex = 0;
-
-        $this->document = new JsonSchema\Document($this->data, $this->resolver, $this->basePath);
-        $this->resolver->setRootDocument($this->document);
-    }
-
-    private function getPaths()
-    {
-        return isset($this->data['paths']) ? $this->data['paths'] : [];
-    }
-
-    public static function fromFile($file, $path)
+    public static function fromFile(string $file, string $path): Resource
     {
         if (!empty($file) && is_file($file)) {
+            $reader = new SimpleAnnotationReader();
+            $reader->addNamespace('PSX\\Schema\\Annotation');
+
             $basePath = pathinfo($file, PATHINFO_DIRNAME);
-            $parser   = new OpenAPI($basePath);
+            $parser   = new OpenAPI($reader, $basePath);
 
             return $parser->parse(file_get_contents($file), $path);
         } else {

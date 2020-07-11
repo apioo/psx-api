@@ -7,34 +7,15 @@
 namespace Foo\Bar;
 
 use GuzzleHttp\Client;
-use PSX\Json\Parser;
-use PSX\Record\RecordInterface;
-use PSX\Schema\Parser\Popo\Dumper;
+use PSX\Api\Generator\Client\Php\ResourceAbstract;
 use PSX\Schema\SchemaManager;
-use PSX\Schema\SchemaTraverser;
-use PSX\Schema\Visitor\TypeVisitor;
 
-class FooNameTypeResource
+class FooNameTypeResource extends ResourceAbstract
 {
     /**
      * @var string
      */
     private $url;
-
-    /**
-     * @var string
-     */
-    private $token;
-
-    /**
-     * @var Client
-     */
-    private $httpClient;
-
-    /**
-     * @var SchemaManager
-     */
-    private $schemaManager;
 
     /**
      * @var string
@@ -48,22 +29,20 @@ class FooNameTypeResource
 
     public function __construct(string $name, string $type, string $baseUrl, string $token, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
+        parent::__construct($baseUrl, $token, $httpClient, $schemaManager);
+
         $this->name = $name;
         $this->type = $type;
-
-        $this->url = $baseUrl . '/foo/' . $name . '/' . $type . '';
-        $this->token = $token;
-        $this->httpClient = $httpClient ? $httpClient : new Client();
-        $this->schemaManager = $schemaManager ? $schemaManager : new SchemaManager();
+        $this->url = $this->baseUrl . '/foo/' . $name . '/' . $type . '';
     }
 
     /**
      * Returns a collection
      *
-     * @param Item|Message $data
-     * @return Item|Message
+     * @param Entry|EntryMessage $data
+     * @return Entry|EntryMessage
      */
-    public function post($data)
+    public function postEntryOrMessage($data)
     {
         $options = [
             'headers' => [
@@ -78,28 +57,4 @@ class FooNameTypeResource
         return $this->parse($data, null);
     }
 
-    private function prepare($object, bool $asArray = false)
-    {
-        $data = (new Dumper())->dump($object);
-        if ($asArray) {
-            if ($data instanceof RecordInterface) {
-                return $data->getProperties();
-            } else {
-                return [];
-            }
-        } else {
-            return $data;
-        }
-    }
-
-    private function parse(string $data, ?string $class)
-    {
-        $data = Parser::decode($data);
-        if ($class !== null) {
-            $schema = $this->schemaManager->getSchema($class);
-            return (new SchemaTraverser(false))->traverse($data, $schema, new TypeVisitor());
-        } else {
-            return $data;
-        }
-    }
 }
