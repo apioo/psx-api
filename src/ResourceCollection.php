@@ -31,7 +31,7 @@ use PSX\Api\Listing\FilterInterface;
  */
 class ResourceCollection extends \ArrayObject
 {
-    public function __construct(iterable $input = [])
+    public function __construct(array $input = [])
     {
         parent::__construct([]);
 
