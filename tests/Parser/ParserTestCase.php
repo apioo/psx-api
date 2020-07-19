@@ -26,7 +26,6 @@ use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\Type\StringType;
 use PSX\Schema\Type\StructType;
 use PSX\Schema\TypeInterface;
-use PSX\Schema\SchemaInterface;
 
 /**
  * ParserTestCase

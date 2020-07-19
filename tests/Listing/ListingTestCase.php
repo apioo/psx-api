@@ -24,7 +24,6 @@ use PHPUnit\Framework\TestCase;
 use PSX\Api\Listing\Filter\RegxpFilter;
 use PSX\Api\Listing\Route;
 use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
 use PSX\Api\SpecificationInterface;
 
 /**

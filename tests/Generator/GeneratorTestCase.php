@@ -31,7 +31,6 @@ use PSX\Schema\Definitions;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator\Code\Chunks;
 use PSX\Schema\SchemaManager;
-use PSX\Schema\TypeFactory;
 
 /**
  * GeneratorTestCase

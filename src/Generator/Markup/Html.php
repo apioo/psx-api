@@ -21,13 +21,8 @@
 namespace PSX\Api\Generator\Markup;
 
 use PSX\Api\Resource;
-use PSX\Schema\Definitions;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface;
-use PSX\Schema\PropertyInterface;
-use PSX\Schema\Schema;
-use PSX\Schema\SchemaInterface;
-use PSX\Schema\Type\StructType;
 
 /**
  * Html

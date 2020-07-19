@@ -20,17 +20,13 @@
 
 namespace PSX\Api\Generator\Client;
 
-use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
 use PSX\Api\SpecificationInterface;
-use PSX\Schema\Definitions;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\Schema;
-use PSX\Schema\SchemaInterface;
 use PSX\Schema\Type\MapType;
 use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\Type\StructType;

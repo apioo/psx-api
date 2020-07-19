@@ -21,15 +21,11 @@
 namespace PSX\Api\Generator\Spec;
 
 use PSX\Api\GeneratorAbstract;
-use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
-use PSX\Schema\PropertyInterface;
-use PSX\Schema\PropertyType;
 use PSX\Schema\Type\BooleanType;
 use PSX\Schema\Type\IntegerType;
 use PSX\Schema\Type\NumberType;

@@ -22,8 +22,6 @@ namespace PSX\Api\Tests\Generator\Client;
 
 use PSX\Api\Generator\Client\Php;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
-use PSX\Schema\Definitions;
-use PSX\Schema\Generator\Code\Chunks;
 
 /**
  * PhpTest

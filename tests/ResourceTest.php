@@ -22,7 +22,6 @@ namespace PSX\Api\Tests;
 
 use PHPUnit\Framework\TestCase;
 use PSX\Api\Resource;
-use PSX\Schema\Property;
 
 /**
  * ResourceTest

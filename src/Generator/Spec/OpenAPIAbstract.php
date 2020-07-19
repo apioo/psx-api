@@ -22,7 +22,6 @@ namespace PSX\Api\Generator\Spec;
 
 use Doctrine\Common\Annotations\Reader;
 use PSX\Api\GeneratorAbstract;
-use PSX\Api\GeneratorCollectionInterface;
 use PSX\Schema\Parser\Popo\Dumper;
 
 /**

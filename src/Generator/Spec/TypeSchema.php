@@ -21,9 +21,6 @@
 namespace PSX\Api\Generator\Spec;
 
 use PSX\Api\GeneratorAbstract;
-use PSX\Api\GeneratorCollectionInterface;
-use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
 use PSX\Api\SpecificationInterface;
 use PSX\Json\Parser;
 use PSX\Schema\DefinitionsInterface;

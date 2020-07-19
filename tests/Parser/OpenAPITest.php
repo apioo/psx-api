@@ -26,7 +26,6 @@ use PSX\Api\Parser\OpenAPI;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
 use PSX\Api\SpecificationInterface;
-use PSX\Schema\SchemaInterface;
 use PSX\Schema\Type\StructType;
 use PSX\Schema\TypeInterface;
 

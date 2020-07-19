@@ -20,17 +20,13 @@
 
 namespace PSX\Api\Generator\Markup;
 
-use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
 use PSX\Api\SpecificationInterface;
 use PSX\Http\Http;
 use PSX\Schema\Definitions;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Schema;
-use PSX\Schema\SchemaInterface;
-use PSX\Schema\Type\StructType;
 use PSX\Schema\TypeFactory;
 
 /**

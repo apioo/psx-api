@@ -20,7 +20,6 @@
 
 namespace PSX\Api\Tests;
 
-use PSX\Api\Resource;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 

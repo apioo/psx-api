@@ -22,8 +22,6 @@ namespace PSX\Api\Tests\Resource;
 
 use PHPUnit\Framework\TestCase;
 use PSX\Api\Resource\Factory;
-use PSX\Schema\Property;
-use PSX\Schema\Schema;
 
 /**
  * MethodAbstractTest

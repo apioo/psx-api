@@ -22,11 +22,7 @@ namespace PSX\Api\Listing;
 
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\ListingInterface;
-use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
 use PSX\Api\SpecificationInterface;
-use PSX\Schema\Schema;
-use PSX\Schema\SchemaInterface;
 
 /**
  * CachedListing
