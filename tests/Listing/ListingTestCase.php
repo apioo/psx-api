@@ -40,7 +40,7 @@ abstract class ListingTestCase extends TestCase
         $listing = $this->newListing();
         $routes  = $listing->getAvailableRoutes();
 
-        $this->assertInternalType('array', $routes);
+        $this->assertIsArray($routes);
         $this->assertEquals(2, count($routes));
         $this->assertInstanceOf(Route::class, $routes[0]);
         $this->assertEquals('/foo', $routes[0]->getPath());
@@ -48,7 +48,7 @@ abstract class ListingTestCase extends TestCase
 
         $routes = $listing->getAvailableRoutes();
 
-        $this->assertInternalType('array', $routes);
+        $this->assertIsArray($routes);
         $this->assertEquals(2, count($routes));
         $this->assertInstanceOf(Route::class, $routes[0]);
         $this->assertEquals('/foo', $routes[0]->getPath());
@@ -60,14 +60,14 @@ abstract class ListingTestCase extends TestCase
         $listing = $this->newListing();
         $routes  = $listing->getAvailableRoutes(new RegxpFilter('^/foo'));
 
-        $this->assertInternalType('array', $routes);
+        $this->assertIsArray($routes);
         $this->assertEquals(1, count($routes));
         $this->assertInstanceOf(Route::class, $routes[0]);
         $this->assertEquals('/foo', $routes[0]->getPath());
 
         $routes = $listing->getAvailableRoutes(new RegxpFilter('^/bar'));
 
-        $this->assertInternalType('array', $routes);
+        $this->assertIsArray($routes);
         $this->assertEquals(1, count($routes));
         $this->assertInstanceOf(Route::class, $routes[0]);
         $this->assertEquals('/bar', $routes[0]->getPath());

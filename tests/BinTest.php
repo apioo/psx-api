@@ -31,7 +31,7 @@ use PHPUnit\Framework\TestCase;
  */
 class BinTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         if (strpos(shell_exec('php -v'), 'PHP') === false) {
             $this->markTestIncomplete('Looks like php is not available');

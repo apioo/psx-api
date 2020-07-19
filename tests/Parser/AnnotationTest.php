@@ -50,11 +50,10 @@ class AnnotationTest extends ParserTestCase
         $this->assertEquals('doGet', $resource->getMethod('GET')->getOperationId());
     }
 
-    /**
-     * @expectedException \ReflectionException
-     */
     public function testParseInvalid()
     {
+        $this->expectException(\ReflectionException::class);
+
         $annotation = new AnnotationParser(
             $this->annotationReader,
             $this->schemaManager

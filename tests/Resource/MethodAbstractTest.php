@@ -49,15 +49,14 @@ class MethodAbstractTest extends TestCase
         $this->assertTrue($method->hasResponse(200));
         $this->assertFalse($method->hasResponse(201));
         $this->assertTrue($method->hasQueryParameters());
-        $this->assertInternalType('array', $method->getTags());
+        $this->assertIsArray($method->getTags());
         $this->assertEquals('Foo', current($method->getTags()));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetResponseInvalid()
     {
+        $this->expectException(\RuntimeException::class);
+
         Factory::getMethod('POST')->getResponse(500);
     }
 }

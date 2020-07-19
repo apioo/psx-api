@@ -46,19 +46,17 @@ class ApiManagerTest extends ApiManagerTestCase
         $this->assertInstanceOf(SpecificationInterface::class, $specification);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetApiFileDoesNotExist()
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->apiManager->getApi(__DIR__ . '/Parser/openapi/unknown.json', '/foo/:fooId');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetApiInvalidType()
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->apiManager->getApi('', '/foo', 12);
     }
 }

@@ -56,11 +56,10 @@ class ResourceTest extends TestCase
         $this->assertTrue($resource->hasPathParameters());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetMethodInvalid()
     {
+        $this->expectException(\RuntimeException::class);
+
         $resource = new Resource(Resource::STATUS_ACTIVE, '/foo');
         $resource->getMethod('GET');
     }
