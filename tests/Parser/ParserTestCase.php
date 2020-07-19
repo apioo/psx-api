@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,12 @@
 
 namespace PSX\Api\Tests\Parser;
 
+use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
-use PSX\Schema\PropertyInterface;
-use PSX\Schema\SchemaInterface;
+use PSX\Schema\Type\ReferenceType;
+use PSX\Schema\Type\StringType;
+use PSX\Schema\Type\StructType;
+use PSX\Schema\TypeInterface;
 
 /**
  * ParserTestCase
@@ -35,16 +38,18 @@ abstract class ParserTestCase extends ApiManagerTestCase
 {
     public function testParseSimple()
     {
-        $resource = $this->getResource();
+        $specification = $this->getSpecification();
+        $definitions = $specification->getDefinitions();
+        $resource = $specification->getResourceCollection()->get('/foo');
 
         $this->assertEquals('/foo', $resource->getPath());
         $this->assertEquals('Test', $resource->getTitle());
         $this->assertEquals('Test description', $resource->getDescription());
 
-        $path = $resource->getPathParameters();
+        $path = $definitions->getType($resource->getPathParameters());
 
-        $this->assertInstanceOf(PropertyInterface::class, $path);
-        $this->assertInstanceOf(PropertyInterface::class, $path->getProperty('fooId'));
+        $this->assertInstanceOf(TypeInterface::class, $path);
+        $this->assertInstanceOf(TypeInterface::class, $path->getProperty('fooId'));
 
         $methods = $resource->getMethods();
 
@@ -52,35 +57,42 @@ abstract class ParserTestCase extends ApiManagerTestCase
 
         $this->assertEquals('A long **Test** description', $methods['GET']->getDescription());
 
-        $query = $methods['GET']->getQueryParameters();
+        $query = $definitions->getType($methods['GET']->getQueryParameters());
 
-        $this->assertInstanceOf(PropertyInterface::class, $query->getProperty('foo'));
+        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('foo'));
         $this->assertEquals('Test', $query->getProperty('foo')->getDescription());
-        $this->assertInstanceOf(PropertyInterface::class, $query->getProperty('bar'));
-        $this->assertInstanceOf(PropertyInterface::class, $query->getProperty('baz'));
+        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('bar'));
+        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('baz'));
         $this->assertEquals(['foo', 'bar'], $query->getProperty('baz')->getEnum());
-        $this->assertInstanceOf(PropertyInterface::class, $query->getProperty('boz'));
+        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('boz'));
         $this->assertEquals('[A-z]+', $query->getProperty('boz')->getPattern());
-        $this->assertInstanceOf(PropertyInterface::class, $query);
-        $this->assertInstanceOf(PropertyInterface::class, $query->getProperty('integer'));
-        $this->assertInstanceOf(PropertyInterface::class, $query->getProperty('number'));
-        $this->assertInstanceOf(PropertyInterface::class, $query->getProperty('date'));
-        $this->assertInstanceOf(PropertyInterface::class, $query->getProperty('boolean'));
-        $this->assertInstanceOf(PropertyInterface::class, $query->getProperty('string'));
+        $this->assertInstanceOf(TypeInterface::class, $query);
+        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('integer'));
+        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('number'));
+        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('date'));
+        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('boolean'));
+        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('string'));
 
-        $request = $methods['GET']->getRequest();
+        $request = $definitions->getType($methods['GET']->getRequest());
+        if ($request instanceof ReferenceType) {
+            $request = $definitions->getType($request->getRef());
+        }
 
-        $this->assertInstanceOf(SchemaInterface::class, $request);
-        $this->assertInstanceOf(PropertyInterface::class, $request->getDefinition()->getProperty('artist'));
+        $this->assertInstanceOf(StructType::class, $request);
+        $this->assertInstanceOf(StringType::class, $request->getProperty('artist'));
 
-        $response = $methods['GET']->getResponse(200);
+        $response = $definitions->getType($methods['GET']->getResponse(200));
 
-        $this->assertInstanceOf(SchemaInterface::class, $response);
-        $this->assertInstanceOf(PropertyInterface::class, $response->getDefinition()->getProperty('artist'));
+        if ($response instanceof ReferenceType) {
+            $response = $definitions->getType($response->getRef());
+        }
+
+        $this->assertInstanceOf(StructType::class, $response);
+        $this->assertInstanceOf(StringType::class, $response->getProperty('artist'));
     }
 
     /**
-     * @return \PSX\Api\Resource
+     * @return \PSX\Api\SpecificationInterface
      */
-    abstract protected function getResource();
+    abstract protected function getSpecification(): SpecificationInterface;
 }

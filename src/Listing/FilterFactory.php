@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class FilterFactory implements FilterFactoryInterface
      * @param string $name
      * @param \PSX\Api\Listing\FilterInterface $filter
      */
-    public function addFilter($name, FilterInterface $filter)
+    public function addFilter(string $name, FilterInterface $filter)
     {
         $this->container[$name] = $filter;
     }
@@ -57,7 +57,7 @@ class FilterFactory implements FilterFactoryInterface
     /**
      * @param string $name
      */
-    public function setDefault($name)
+    public function setDefault(string $name)
     {
         $this->default = $name;
     }
@@ -65,7 +65,7 @@ class FilterFactory implements FilterFactoryInterface
     /**
      * @inheritdoc
      */
-    public function getFilter($name)
+    public function getFilter(string $name): ?FilterInterface
     {
         if (isset($this->container[$name])) {
             return $this->container[$name];

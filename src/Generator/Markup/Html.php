@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,6 @@ namespace PSX\Api\Generator\Markup;
 use PSX\Api\Resource;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface;
-use PSX\Schema\PropertyInterface;
-use PSX\Schema\Schema;
-use PSX\Schema\SchemaInterface;
 
 /**
  * Html
@@ -37,11 +34,6 @@ use PSX\Schema\SchemaInterface;
 class Html extends MarkupAbstract
 {
     /**
-     * @var \PSX\Schema\GeneratorInterface
-     */
-    protected $generator;
-
-    /**
      * @param \PSX\Schema\GeneratorInterface|null $generator
      */
     public function __construct(GeneratorInterface $generator = null)
@@ -50,8 +42,7 @@ class Html extends MarkupAbstract
     }
 
     /**
-     * @param \PSX\Api\Resource $resource
-     * @return string
+     * @inheritDoc
      */
     protected function startResource(Resource $resource)
     {
@@ -63,111 +54,57 @@ class Html extends MarkupAbstract
             $html.= '<div class="psx-resource-description">' . $description . '</div>';
         }
 
+        $html.= '<table>';
         return $html;
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     protected function endResource()
     {
-        $html = '</div>';
+        $html = '</table>';
+        $html.= '</div>';
         return $html;
     }
 
     /**
-     * @param \PSX\Api\Resource\MethodAbstract $method
-     * @return string
+     * @inheritDoc
      */
     protected function startMethod(Resource\MethodAbstract $method)
     {
-        $html = '<div class="psx-resource-method" data-method="' . $method->getName() . '">';
-        $html.= '<h2>' . $method->getName() . '</h2>';
+        $html = '<tr>';
+        $html.= '<th colspan="2" class="psx-resource-method">';
+        $html.= '<span>' . $method->getName() . '</span>';
 
         $description = $method->getDescription();
         if (!empty($description)) {
-            $html.= '<div class="psx-resource-method-description">' . $description . '</div>';
+            $html.= ' - <span>' . $description . '</span>';
         }
 
+        $html.= '</th>';
+        $html.= '</tr>';
+        
         return $html;
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     protected function endMethod()
     {
-        $html = '</div>';
+        return '';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function renderSchema(string $title, string $schema)
+    {
+        $html = '<tr>';
+        $html.= '<td>' . $title . '</td>';
+        $html.= '<td><a href="#' . $schema . '">' . $schema . '</a></td>';
+        $html.= '</tr>';
         return $html;
-    }
-
-    /**
-     * @param string $title
-     * @param integer $type
-     * @return string
-     */
-    protected function startParameters($title, $type)
-    {
-        $html = '<div class="psx-resource-parameters" data-type="' . $type . '">';
-        $html.= '<h3>' . $title . '</h3>';
-        $html.= '<div class="psx-resource-parameters-content">';
-        return $html;
-    }
-
-    /**
-     * @return string
-     */
-    protected function endParameters()
-    {
-        $html = '</div>';
-        $html.= '</div>';
-        return $html;
-    }
-
-    /**
-     * @param \PSX\Schema\PropertyInterface $property
-     * @param integer $type
-     * @param string $path
-     * @param string|null $method
-     * @return string
-     */
-    protected function getParameters(PropertyInterface $property, $type, $path, $method = null)
-    {
-        return $this->generator->generate(new Schema($property));
-    }
-
-    /**
-     * @param string $title
-     * @param integer $type
-     * @return string
-     */
-    protected function startSchema($title, $type)
-    {
-        $html = '<div class="psx-resource-schema" data-type="' . $type . '">';
-        $html.= '<h3>' . $title . '</h3>';
-        $html.= '<div class="psx-resource-schema-content">';
-        return $html;
-    }
-
-    /**
-     * @return string
-     */
-    protected function endSchema()
-    {
-        $html = '</div>';
-        $html.= '</div>';
-        return $html;
-    }
-
-    /**
-     * @param SchemaInterface $schema
-     * @param int $type
-     * @param string $path
-     * @param string $method
-     * @param integer|null $statusCode
-     */
-    protected function getSchema(SchemaInterface $schema, $type, $path, $method, $statusCode = null)
-    {
-        return $this->generator->generate($schema);
     }
 }

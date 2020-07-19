@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ namespace PSX\Api\Tests\Resource;
 
 use PHPUnit\Framework\TestCase;
 use PSX\Api\Resource\Factory;
-use PSX\Schema\Property;
-use PSX\Schema\Schema;
 
 /**
  * MethodAbstractTest
@@ -38,28 +36,27 @@ class MethodAbstractTest extends TestCase
     {
         $method = Factory::getMethod('POST');
         $method->setDescription('foobar');
-        $method->addQueryParameter('foo', Property::getString());
-        $method->setRequest(new Schema(Property::getString()));
-        $method->addResponse(200, new Schema(Property::getString()));
+        $method->setQueryParameters('GetQuery');
+        $method->setRequest('Request');
+        $method->addResponse(200, 'Response');
         $method->setTags(['Foo']);
 
         $this->assertEquals('foobar', $method->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $method->getQueryParameters());
+        $this->assertEquals('GetQuery', $method->getQueryParameters());
         $this->assertTrue($method->hasRequest());
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $method->getRequest());
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $method->getResponse(200));
+        $this->assertEquals('Request', $method->getRequest());
+        $this->assertEquals('Response', $method->getResponse(200));
         $this->assertTrue($method->hasResponse(200));
         $this->assertFalse($method->hasResponse(201));
         $this->assertTrue($method->hasQueryParameters());
-        $this->assertInternalType('array', $method->getTags());
+        $this->assertIsArray($method->getTags());
         $this->assertEquals('Foo', current($method->getTags()));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetResponseInvalid()
     {
+        $this->expectException(\RuntimeException::class);
+
         Factory::getMethod('POST')->getResponse(500);
     }
 }

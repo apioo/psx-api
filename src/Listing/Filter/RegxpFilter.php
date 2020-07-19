@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class RegxpFilter implements FilterInterface
     /**
      * @param string $pattern
      */
-    public function __construct($pattern)
+    public function __construct(string $pattern)
     {
         $this->pattern = $pattern;
     }
@@ -47,7 +47,7 @@ class RegxpFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function match($path)
+    public function match(string $path): bool
     {
         return !!preg_match('~' . $this->pattern . '~', $path);
     }
@@ -55,7 +55,7 @@ class RegxpFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getId()
+    public function getId(): string
     {
         return substr(md5($this->pattern), 0, 8);
     }

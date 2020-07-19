@@ -29,6 +29,7 @@
         "description": "Returns a collection",
         "operationId": "postEntryOrMessage",
         "requestBody": {
+          "description": "POST Request",
           "content": {
             "application\/json": {
               "schema": {
@@ -39,7 +40,7 @@
         },
         "responses": {
           "200": {
-            "description": "POST 200 response",
+            "description": "POST 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -79,9 +80,8 @@
   },
   "components": {
     "schemas": {
-      "Item": {
+      "Entry": {
         "type": "object",
-        "title": "item",
         "properties": {
           "id": {
             "type": "integer"
@@ -96,14 +96,13 @@
             "maxLength": 16
           },
           "date": {
-            "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "type": "string"
           }
         }
       },
-      "Message": {
+      "EntryMessage": {
         "type": "object",
-        "title": "message",
         "properties": {
           "success": {
             "type": "boolean"
@@ -114,14 +113,28 @@
         }
       },
       "EntryOrMessage": {
-        "title": "EntryOrMessage",
         "oneOf": [
           {
-            "$ref": "#\/components\/schemas\/Item"
+            "$ref": "#\/components\/schemas\/Entry"
           },
           {
-            "$ref": "#\/components\/schemas\/Message"
+            "$ref": "#\/components\/schemas\/EntryMessage"
           }
+        ]
+      },
+      "Path": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "type"
         ]
       }
     },

@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@
 namespace PSX\Api;
 
 /**
- * The parser reads an arbitrary schema format and returns a resource object
+ * The parser reads an arbitrary schema format and returns a specification
+ * object
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -30,11 +31,11 @@ namespace PSX\Api;
 interface ParserInterface
 {
     /**
-     * Parses a schema and returns the corresponding resource object
+     * Parses a specification and returns a specification object
      *
      * @param string $schema
-     * @param string $path
-     * @return \PSX\Api\Resource
+     * @param string|null $path
+     * @return SpecificationInterface
      */
-    public function parse($schema, $path);
+    public function parse(string $schema, ?string $path = null): SpecificationInterface;
 }

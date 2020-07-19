@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Cache\ArrayCache;
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\Parser\OpenAPI;
-use PSX\Api\Parser\Raml;
-use PSX\Api\Parser\Swagger;
 use PSX\Cache\Pool;
 use PSX\Schema\SchemaManagerInterface;
 
@@ -39,9 +37,7 @@ use PSX\Schema\SchemaManagerInterface;
 class ApiManager implements ApiManagerInterface
 {
     const TYPE_ANNOTATION = 1;
-    const TYPE_RAML = 2;
     const TYPE_OPENAPI = 3;
-    const TYPE_SWAGGER = 4;
 
     /**
      * @var \Doctrine\Common\Annotations\Reader
@@ -80,12 +76,8 @@ class ApiManager implements ApiManagerInterface
     /**
      * @inheritdoc
      */
-    public function getApi($source, $path, $type = null)
+    public function getApi(string $source, string $path, ?int $type = null): SpecificationInterface
     {
-        if (!is_string($source)) {
-            throw new \InvalidArgumentException('API name must be a string');
-        }
-
         $item = null;
         if (!$this->debug) {
             $item = $this->cache->getItem($source);
@@ -98,12 +90,8 @@ class ApiManager implements ApiManagerInterface
             $type = $this->guessTypeFromSource($source);
         }
 
-        if ($type === self::TYPE_RAML) {
-            $api = Raml::fromFile($source, $path);
-        } elseif ($type === self::TYPE_OPENAPI) {
+        if ($type === self::TYPE_OPENAPI) {
             $api = OpenAPI::fromFile($source, $path);
-        } elseif ($type === self::TYPE_SWAGGER) {
-            $api = Swagger::fromFile($source, $path);
         } elseif ($type === self::TYPE_ANNOTATION) {
             $api = $this->parser->parse($source, $path);
         } else {
@@ -118,11 +106,9 @@ class ApiManager implements ApiManagerInterface
         return $api;
     }
 
-    private function guessTypeFromSource($source)
+    private function guessTypeFromSource($source): ?int
     {
-        if (strpos($source, '.raml') !== false) {
-            return self::TYPE_RAML;
-        } elseif (strpos($source, '.json') !== false) {
+        if (strpos($source, '.json') !== false) {
             return self::TYPE_OPENAPI;
         } elseif (class_exists($source)) {
             return self::TYPE_ANNOTATION;

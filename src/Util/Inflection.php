@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,21 @@ class Inflection
      * @param string $path
      * @return string
      */
-    public static function transformRoutePlaceholder($path)
+    public static function convertPlaceholderToCurly(string $path)
     {
         $path = preg_replace('/(\:|\*)(\w+)/i', '{$2}', $path);
         $path = preg_replace('/(\$)(\w+)(\<(.*)\>)/iU', '{$2}', $path);
+
+        return $path;
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    public static function convertPlaceholderToColon(string $path)
+    {
+        $path = preg_replace('/(\{(\w+)\})/i', ':$2', $path);
 
         return $path;
     }
@@ -50,7 +61,7 @@ class Inflection
      * @param string $path
      * @return string
      */
-    public static function generateTitleFromRoute($path)
+    public static function generateTitleFromRoute(string $path)
     {
         $path = str_replace([':', '*', '$'], '', $path);
         $path = preg_replace('/\<(.*)\>/iU', '', $path);

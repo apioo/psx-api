@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,8 +96,8 @@ class GenerateCommand extends Command
             $filter = null;
         }
 
-        $resources = $this->listing->getResourceIndex($filter);
-        $progress  = new ProgressBar($output, count($resources));
+        $routes   = $this->listing->getAvailableRoutes($filter);
+        $progress = new ProgressBar($output, count($routes));
 
         $dir = $input->getArgument('dir');
         if (!is_dir($dir)) {
@@ -109,14 +109,14 @@ class GenerateCommand extends Command
 
         $progress->start();
 
-        foreach ($resources as $resource) {
+        foreach ($routes as $resource) {
             if (!empty($filterRegexp) && !preg_match('~' . $filterRegexp . '~', $resource->getPath())) {
                 continue;
             }
 
             $progress->setMessage('Generating ' . $resource->getPath());
 
-            $content = $generator->generate($this->listing->getResource($resource->getPath()));
+            $content = $generator->generate($this->listing->find($resource->getPath()));
 
             if ($content instanceof Chunks) {
                 $content->writeTo($dir . '/sdk-' . $format .  '.zip');

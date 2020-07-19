@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,19 +29,16 @@ namespace PSX\Api;
  */
 interface GeneratorFactoryInterface
 {
+    const CLIENT_GO = 'client-go';
     const CLIENT_PHP = 'client-php';
     const CLIENT_TYPESCRIPT = 'client-typescript';
 
     const MARKUP_HTML = 'markup-html';
     const MARKUP_MARKDOWN = 'markup-markdown';
-    const MARKUP_TEMPLATE = 'markup-template';
 
-    const SPEC_JSONSCHEMA = 'spec-jsonschema';
+    const SPEC_TYPESCHEMA = 'spec-typeschema';
     const SPEC_OPENAPI = 'spec-openapi';
     const SPEC_RAML = 'spec-raml';
-    const SPEC_SWAGGER = 'spec-swagger';
-
-    const SERVER_PHP = 'server-php';
 
     /**
      * Returns the fitting generator object for the provided type

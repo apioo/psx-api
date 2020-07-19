@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ namespace PSX\Api\Generator\Spec;
 
 use Doctrine\Common\Annotations\Reader;
 use PSX\Api\GeneratorAbstract;
-use PSX\Api\GeneratorCollectionInterface;
 use PSX\Schema\Parser\Popo\Dumper;
 
 /**
@@ -32,7 +31,7 @@ use PSX\Schema\Parser\Popo\Dumper;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCollectionInterface
+abstract class OpenAPIAbstract extends GeneratorAbstract
 {
     const FLOW_AUTHORIZATION_CODE = 0;
     const FLOW_IMPLICIT = 1;
@@ -129,7 +128,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
      *
      * @param string $title
      */
-    public function setTitle($title)
+    public function setTitle(string $title)
     {
         $this->title = $title;
     }
@@ -140,7 +139,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
      *
      * @param string $description
      */
-    public function setDescription($description)
+    public function setDescription(string $description)
     {
         $this->description = $description;
     }
@@ -150,7 +149,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
      *
      * @param string $tos
      */
-    public function setTermsOfService($tos)
+    public function setTermsOfService(string $tos)
     {
         $this->tos = $tos;
     }
@@ -160,7 +159,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
      *
      * @param string $contactName
      */
-    public function setContactName($contactName)
+    public function setContactName(string $contactName)
     {
         $this->contactName = $contactName;
     }
@@ -171,7 +170,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
      *
      * @param string $contactUrl
      */
-    public function setContactUrl($contactUrl)
+    public function setContactUrl(string $contactUrl)
     {
         $this->contactUrl = $contactUrl;
     }
@@ -182,7 +181,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
      *
      * @param string $contactEmail
      */
-    public function setContactEmail($contactEmail)
+    public function setContactEmail(string $contactEmail)
     {
         $this->contactEmail = $contactEmail;
     }
@@ -192,7 +191,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
      *
      * @param string $licenseName
      */
-    public function setLicenseName($licenseName)
+    public function setLicenseName(string $licenseName)
     {
         $this->licenseName = $licenseName;
     }
@@ -202,7 +201,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
      *
      * @param string $licenseUrl
      */
-    public function setLicenseUrl($licenseUrl)
+    public function setLicenseUrl(string $licenseUrl)
     {
         $this->licenseUrl = $licenseUrl;
     }
@@ -217,7 +216,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
      * @param string|null $refreshUrl
      * @param array|null $scopes
      */
-    public function setAuthorizationFlow($name, $flow, $authorizationUrl, $tokenUrl, $refreshUrl = null, array $scopes = null)
+    public function setAuthorizationFlow(string $name, int $flow, string $authorizationUrl, string $tokenUrl, ?string $refreshUrl = null, ?array $scopes = null)
     {
         if (!isset($this->authFlows[$name])) {
             $this->authFlows[$name] = [];
@@ -234,7 +233,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
      * @param string $name
      * @param string $description
      */
-    public function addTag($name, $description)
+    public function addTag(string $name, string $description)
     {
         $this->tags[] = $this->newTag($name, $description);
     }
@@ -244,5 +243,5 @@ abstract class OpenAPIAbstract extends GeneratorAbstract implements GeneratorCol
      * @param string $description
      * @return object
      */
-    abstract protected function newTag($name, $description);
+    abstract protected function newTag(string $name, string $description);
 }

@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ namespace PSX\Api\Tests\Listing;
 
 use PSX\Api\ApiManager;
 use PSX\Api\Listing\MemoryListing;
+use PSX\Api\Listing\Route;
 use PSX\Api\Tests\Parser\Annotation\FooController;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 use PSX\Schema\SchemaManager;
@@ -38,7 +39,7 @@ class MemoryListingTest extends ListingTestCase
     protected function newListing()
     {
         $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+        $schemaReader->addNamespace('PSX\\Schema\\Annotation');
 
         $apiReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
         $apiReader->addNamespace('PSX\\Api\\Annotation');
@@ -46,8 +47,10 @@ class MemoryListingTest extends ListingTestCase
         $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
 
         $listing = new MemoryListing();
-        $listing->addResource($apiManager->getApi(TestController::class, '/foo'));
-        $listing->addResource($apiManager->getApi(FooController::class, '/bar'));
+        $listing->addRoute(new Route('/foo', ['GET'], '*'));
+        $listing->addRoute(new Route('/bar', ['GET'], '*'));
+        $listing->addSpecification($apiManager->getApi(TestController::class, '/foo'));
+        $listing->addSpecification($apiManager->getApi(FooController::class, '/bar'));
 
         return $listing;
     }

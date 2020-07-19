@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,14 +35,14 @@ class InflectionTest extends TestCase
     /**
      * @param string $expect
      * @param string $route
-     * @dataProvider transformRoutePlaceholderProvider
+     * @dataProvider convertPlaceholderToCurlyProvider
      */
-    public function testTransformRoutePlaceholder($expect, $route)
+    public function testConvertPlaceholderToCurly($expect, $route)
     {
-        $this->assertEquals($expect, Inflection::transformRoutePlaceholder($route));
+        $this->assertEquals($expect, Inflection::convertPlaceholderToCurly($route));
     }
 
-    public function transformRoutePlaceholderProvider()
+    public function convertPlaceholderToCurlyProvider()
     {
         return [
             ['/foo', '/foo'],
@@ -58,6 +58,26 @@ class InflectionTest extends TestCase
             ['/foo/{bar}/foo/{baz}/foo', '/foo/:bar/foo/:baz/foo'],
             ['/foo/{bar}/foo/{baz}/foo', '/foo/*bar/foo/*baz/foo'],
             ['/foo/{bar}/foo/{baz}/foo', '/foo/$bar<[0-9]+>/foo/$baz<[0-9]+>/foo'],
+        ];
+    }
+
+    /**
+     * @param string $expect
+     * @param string $route
+     * @dataProvider convertPlaceholderToColonProvider
+     */
+    public function testConvertPlaceholderToColon($expect, $route)
+    {
+        $this->assertEquals($expect, Inflection::convertPlaceholderToColon($route));
+    }
+
+    public function convertPlaceholderToColonProvider()
+    {
+        return [
+            ['/foo', '/foo'],
+            ['/foo/:bar', '/foo/{bar}'],
+            ['/foo/:bar/foo', '/foo/{bar}/foo'],
+            ['/foo/:bar/foo/:baz', '/foo/{bar}/foo/{baz}'],
         ];
     }
 

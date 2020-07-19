@@ -12,6 +12,9 @@
   "paths": {
     "\/pets": {
       "get": {
+        "tags": [
+          "pets"
+        ],
         "description": "List all pets",
         "operationId": "listPets",
         "parameters": [
@@ -20,14 +23,14 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "format": "int32",
+              "type": "integer"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "GET 200 response",
+            "description": "GET 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -37,7 +40,7 @@
             }
           },
           "500": {
-            "description": "GET 500 response",
+            "description": "GET 500 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -46,15 +49,16 @@
               }
             }
           }
-        },
-        "tags": [
-          "pets"
-        ]
+        }
       },
       "post": {
+        "tags": [
+          "pets"
+        ],
         "description": "Create a pet",
         "operationId": "createPets",
         "requestBody": {
+          "description": "POST Request",
           "content": {
             "application\/json": {
               "schema": {
@@ -65,7 +69,7 @@
         },
         "responses": {
           "500": {
-            "description": "POST 500 response",
+            "description": "POST 500 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -74,33 +78,60 @@
               }
             }
           }
-        },
+        }
+      }
+    },
+    "\/pets\/{petId}": {
+      "get": {
         "tags": [
           "pets"
-        ]
-      },
-      "parameters": []
+        ],
+        "description": "Info for a specific pet",
+        "operationId": "showPetById",
+        "parameters": [
+          {
+            "name": "petId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GET 200 Response",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/Pets"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "GET 500 Response",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
-      "Pets": {
-        "title": "Pets",
-        "properties": {
-          "pets": {
-            "type": "array",
-            "items": {
-              "$ref": "#\/components\/schemas\/Pet"
-            }
-          }
-        }
-      },
       "Error": {
         "title": "Error",
+        "type": "object",
         "properties": {
           "code": {
-            "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "type": "integer"
           },
           "message": {
             "type": "string"
@@ -113,10 +144,11 @@
       },
       "Pet": {
         "title": "Pet",
+        "type": "object",
         "properties": {
           "id": {
-            "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -129,6 +161,37 @@
           "id",
           "name"
         ]
+      },
+      "Pets": {
+        "title": "Pets",
+        "type": "object",
+        "properties": {
+          "pets": {
+            "type": "array",
+            "items": {
+              "$ref": "#\/components\/schemas\/Pet"
+            }
+          }
+        }
+      },
+      "PetsGetQuery": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "required": []
+      },
+      "PetsPetIdGetQuery": {
+        "type": "object",
+        "properties": {
+          "petId": {
+            "type": "string"
+          }
+        },
+        "required": []
       }
     }
   }

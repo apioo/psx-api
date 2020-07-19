@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 namespace PSX\Api\Tests;
 
-use PSX\Api\Resource;
+use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 
 /**
@@ -34,31 +34,29 @@ class ApiManagerTest extends ApiManagerTestCase
 {
     public function testGetApiAnnotation()
     {
-        $resource = $this->apiManager->getApi(TestController::class, '/foo');
+        $specification = $this->apiManager->getApi(TestController::class, '/foo');
 
-        $this->assertInstanceOf(Resource::class, $resource);
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
     }
 
-    public function testGetApiRaml()
+    public function testGetApiOpenAPI()
     {
-        $resource = $this->apiManager->getApi(__DIR__ . '/Parser/raml/test.raml', '/foo');
+        $specification = $this->apiManager->getApi(__DIR__ . '/Parser/openapi/test.json', '/foo/:fooId');
 
-        $this->assertInstanceOf(Resource::class, $resource);
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testGetApiInvalidDataType()
+    public function testGetApiFileDoesNotExist()
     {
-        $this->apiManager->getApi([], '/foo');
+        $this->expectException(\RuntimeException::class);
+
+        $this->apiManager->getApi(__DIR__ . '/Parser/openapi/unknown.json', '/foo/:fooId');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetApiInvalidType()
     {
-        $this->apiManager->getApi('', '/foo', 'foo');
+        $this->expectException(\RuntimeException::class);
+
+        $this->apiManager->getApi('', '/foo', 12);
     }
 }

@@ -13,14 +13,13 @@
     "\/foo": {
       "get": {
         "description": "Returns a collection",
-        "operationId": "fooGetCollection",
         "responses": {
           "200": {
-            "description": "GET 200 response",
+            "description": "GET 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/Collection"
+                  "$ref": "#\/components\/schemas\/EntryCollection"
                 }
               }
             }
@@ -28,42 +27,40 @@
         }
       },
       "post": {
-        "operationId": "fooPostItem",
         "requestBody": {
+          "description": "POST Request",
           "content": {
             "application\/json": {
               "schema": {
-                "$ref": "#\/components\/schemas\/Item"
+                "$ref": "#\/components\/schemas\/EntryCreate"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "POST 201 response",
+            "description": "POST 201 Response",
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/Message"
+                  "$ref": "#\/components\/schemas\/EntryMessage"
                 }
               }
             }
           }
         }
-      },
-      "parameters": []
+      }
     },
     "\/bar\/{foo}": {
       "get": {
         "description": "Returns a collection",
-        "operationId": "barFooGetCollection",
         "responses": {
           "200": {
-            "description": "GET 200 response",
+            "description": "GET 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/Collection"
+                  "$ref": "#\/components\/schemas\/EntryCollection"
                 }
               }
             }
@@ -71,23 +68,23 @@
         }
       },
       "post": {
-        "operationId": "barFooPostItem",
         "requestBody": {
+          "description": "POST Request",
           "content": {
             "application\/json": {
               "schema": {
-                "$ref": "#\/components\/schemas\/Item"
+                "$ref": "#\/components\/schemas\/EntryCreate"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "POST 201 response",
+            "description": "POST 201 Response",
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/Message"
+                  "$ref": "#\/components\/schemas\/EntryMessage"
                 }
               }
             }
@@ -98,7 +95,7 @@
         {
           "name": "foo",
           "in": "path",
-          "required": true,
+          "required": false,
           "schema": {
             "type": "string"
           }
@@ -108,14 +105,13 @@
     "\/bar\/{year}": {
       "get": {
         "description": "Returns a collection",
-        "operationId": "barYear09GetCollection",
         "responses": {
           "200": {
-            "description": "GET 200 response",
+            "description": "GET 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/Collection"
+                  "$ref": "#\/components\/schemas\/EntryCollection"
                 }
               }
             }
@@ -123,23 +119,23 @@
         }
       },
       "post": {
-        "operationId": "barYear09PostItem",
         "requestBody": {
+          "description": "POST Request",
           "content": {
             "application\/json": {
               "schema": {
-                "$ref": "#\/components\/schemas\/Item"
+                "$ref": "#\/components\/schemas\/EntryCreate"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "POST 201 response",
+            "description": "POST 201 Response",
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/Message"
+                  "$ref": "#\/components\/schemas\/EntryMessage"
                 }
               }
             }
@@ -150,7 +146,7 @@
         {
           "name": "year",
           "in": "path",
-          "required": true,
+          "required": false,
           "schema": {
             "type": "string"
           }
@@ -160,9 +156,8 @@
   },
   "components": {
     "schemas": {
-      "Item": {
+      "Entry": {
         "type": "object",
-        "title": "item",
         "properties": {
           "id": {
             "type": "integer"
@@ -177,8 +172,40 @@
             "maxLength": 16
           },
           "date": {
+            "format": "date-time",
+            "type": "string"
+          }
+        }
+      },
+      "EntryCollection": {
+        "type": "object",
+        "properties": {
+          "entry": {
+            "type": "array",
+            "items": {
+              "$ref": "#\/components\/schemas\/Entry"
+            }
+          }
+        }
+      },
+      "EntryCreate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "integer"
+          },
+          "title": {
             "type": "string",
-            "format": "date-time"
+            "pattern": "[A-z]+",
+            "minLength": 3,
+            "maxLength": 16
+          },
+          "date": {
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
@@ -186,26 +213,29 @@
           "date"
         ]
       },
-      "Collection": {
+      "EntryMessage": {
         "type": "object",
-        "title": "collection",
-        "properties": {
-          "entry": {
-            "type": "array",
-            "items": {
-              "$ref": "#\/components\/schemas\/Item"
-            }
-          }
-        }
-      },
-      "Message": {
-        "type": "object",
-        "title": "message",
         "properties": {
           "success": {
             "type": "boolean"
           },
           "message": {
+            "type": "string"
+          }
+        }
+      },
+      "PathFoo": {
+        "type": "object",
+        "properties": {
+          "foo": {
+            "type": "string"
+          }
+        }
+      },
+      "PathYear": {
+        "type": "object",
+        "properties": {
+          "year": {
             "type": "string"
           }
         }

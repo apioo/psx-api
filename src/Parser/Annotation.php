@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,18 @@ use Doctrine\Common\Annotations\Reader;
 use PSX\Api\Annotation as Anno;
 use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
-use PSX\Schema\Property;
-use PSX\Schema\SchemaInterface;
+use PSX\Api\Specification;
+use PSX\Api\SpecificationInterface;
+use PSX\Schema\Definitions;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaManagerInterface;
+use PSX\Schema\Type\NumberType;
+use PSX\Schema\Type\ScalarType;
+use PSX\Schema\Type\StringType;
+use PSX\Schema\Type\TypeAbstract;
+use PSX\Schema\TypeFactory;
+use PSX\Schema\TypeInterface;
 use ReflectionClass;
 use RuntimeException;
 
@@ -63,18 +71,21 @@ class Annotation implements ParserInterface
     /**
      * @inheritdoc
      */
-    public function parse($schema, $path)
+    public function parse(string $schema, ?string $path = null): SpecificationInterface
     {
         if (!is_string($schema)) {
             throw new RuntimeException('Schema must be a class name');
         }
 
         $resource    = new Resource(Resource::STATUS_ACTIVE, $path);
+        $definitions = new Definitions();
+
         $controller  = new ReflectionClass($schema);
         $basePath    = dirname($controller->getFileName());
         $required    = [];
         $annotations = $this->annotationReader->getClassAnnotations($controller);
 
+        $path = TypeFactory::getStruct();
         foreach ($annotations as $annotation) {
             if ($annotation instanceof Anno\Title) {
                 $resource->setTitle($annotation->getTitle());
@@ -83,23 +94,30 @@ class Annotation implements ParserInterface
             } elseif ($annotation instanceof Anno\PathParam) {
                 $required[] = $annotation->getName();
 
-                $resource->addPathParameter($annotation->getName(), $this->getParameter($annotation));
+                $path->addProperty($annotation->getName(), $this->getParameter($annotation));
             }
         }
 
-        $resource->getPathParameters()->setRequired($required);
+        if ($path->getProperties()) {
+            $typeName = 'Path';
 
-        $this->parseMethods($controller, $resource, $basePath);
+            $path->setRequired($required);
+            $definitions->addType($typeName, $path);
+            $resource->setPathParameters($typeName);
+        }
 
-        return $resource;
+        $this->parseMethods($controller, $resource, $definitions, $basePath);
+
+        return Specification::fromResource($resource, $definitions);
     }
 
     /**
      * @param \ReflectionClass $controller
      * @param \PSX\Api\Resource $resource
+     * @param DefinitionsInterface $definitions
      * @param string $basePath
      */
-    private function parseMethods(ReflectionClass $controller, Resource $resource, $basePath)
+    private function parseMethods(ReflectionClass $controller, Resource $resource, DefinitionsInterface $definitions, $basePath)
     {
         $methods = [
             'GET'    => 'doGet',
@@ -122,6 +140,9 @@ class Annotation implements ParserInterface
 
             $method->setOperationId($reflection->getName());
 
+            $query = TypeFactory::getStruct();
+            $typePrefix = str_replace('\\', '', $controller->getName()) . ucfirst(strtolower($httpMethod));
+
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof Anno\Description) {
                     $method->setDescription($this->getDescription($annotation, $basePath));
@@ -130,15 +151,15 @@ class Annotation implements ParserInterface
                         $required[] = $annotation->getName();
                     }
 
-                    $method->addQueryParameter($annotation->getName(), $this->getParameter($annotation));
+                    $query->addProperty($annotation->getName(), $this->getParameter($annotation));
                 } elseif ($annotation instanceof Anno\Incoming) {
-                    $schema = $this->getBodySchema($annotation, $basePath);
-                    if ($schema instanceof SchemaInterface) {
+                    $schema = $this->getBodySchema($annotation, $definitions, $basePath, $typePrefix . 'Request');
+                    if (!empty($schema)) {
                         $method->setRequest($schema);
                     }
                 } elseif ($annotation instanceof Anno\Outgoing) {
-                    $schema = $this->getBodySchema($annotation, $basePath);
-                    if ($schema instanceof SchemaInterface) {
+                    $schema = $this->getBodySchema($annotation, $definitions, $basePath, $typePrefix . $annotation->getCode() . 'Response');
+                    if (!empty($schema)) {
                         $method->addResponse($annotation->getCode(), $schema);
                     }
                 } elseif ($annotation instanceof Anno\Exclude) {
@@ -147,24 +168,34 @@ class Annotation implements ParserInterface
                 }
             }
 
-            $method->getQueryParameters()->setRequired($required);
+            if ($query->getProperties()) {
+                $typeName = ucfirst(strtolower($methodName)) . 'Query';
+
+                $query->setRequired($required);
+                $definitions->addType($typeName, $query);
+                $method->setQueryParameters($typeName);
+            }
 
             $resource->addMethod($method);
         }
     }
 
-    private function getBodySchema(Anno\SchemaAbstract $annotation, $basePath)
+    private function getBodySchema(Anno\SchemaAbstract $annotation, DefinitionsInterface $definitions, string $basePath, string $typeName): string
     {
         $schema = $annotation->getSchema();
         $type   = $annotation->getType();
 
         // if we have a file append base path
         if (strpos($schema, '.') !== false) {
-            $type   = SchemaManager::TYPE_JSONSCHEMA;
+            $type   = SchemaManager::TYPE_TYPESCHEMA;
             $schema = $basePath . '/' . $schema;
         }
 
-        return $this->schemaManager->getSchema($schema, $type);
+        $schema = $this->schemaManager->getSchema($schema, $type);
+
+        $definitions->addSchema($typeName, $schema);
+
+        return $typeName;
     }
 
     private function getDescription(Anno\Description $annotation, $basePath)
@@ -182,76 +213,78 @@ class Annotation implements ParserInterface
         }
     }
 
-    private function getParameter(Anno\ParamAbstract $param)
+    private function getParameter(Anno\ParamAbstract $param): TypeInterface
     {
         switch ($param->getType()) {
             case 'integer':
-                $property = Property::getInteger();
+                $type = TypeFactory::getInteger();
                 break;
 
             case 'number':
-                $property = Property::getNumber();
+                $type = TypeFactory::getNumber();
                 break;
 
             case 'boolean':
-                $property = Property::getBoolean();
-                break;
-
-            case 'null':
-                $property = Property::getNull();
+                $type = TypeFactory::getBoolean();
                 break;
 
             case 'string':
             default:
-                $property = Property::getString();
+                $type = TypeFactory::getString();
                 break;
         }
 
-        $description = $param->getDescription();
-        if ($description !== null) {
-            $property->setDescription($description);
+        if ($type instanceof TypeAbstract) {
+            $description = $param->getDescription();
+            if ($description !== null) {
+                $type->setDescription($description);
+            }
         }
 
-        $enum = $param->getEnum();
-        if ($enum !== null && is_array($enum)) {
-            $property->setEnum($enum);
+        if ($type instanceof ScalarType) {
+            $enum = $param->getEnum();
+            if ($enum !== null && is_array($enum)) {
+                $type->setEnum($enum);
+            }
         }
 
-        $minLength = $param->getMinLength();
-        if ($minLength !== null) {
-            $property->setMinLength($minLength);
+        if ($type instanceof StringType) {
+            $minLength = $param->getMinLength();
+            if ($minLength !== null) {
+                $type->setMinLength($minLength);
+            }
+
+            $maxLength = $param->getMaxLength();
+            if ($maxLength !== null) {
+                $type->setMaxLength($maxLength);
+            }
+
+            $pattern = $param->getPattern();
+            if ($pattern !== null) {
+                $type->setPattern($pattern);
+            }
+
+            $format = $param->getFormat();
+            if ($format !== null) {
+                $type->setFormat($format);
+            }
+        } elseif ($type instanceof NumberType) {
+            $minimum = $param->getMinimum();
+            if ($minimum !== null) {
+                $type->setMinimum($minimum);
+            }
+
+            $maximum = $param->getMaximum();
+            if ($maximum !== null) {
+                $type->setMaximum($maximum);
+            }
+
+            $multipleOf = $param->getMultipleOf();
+            if ($multipleOf !== null) {
+                $type->setMultipleOf($multipleOf);
+            }
         }
 
-        $maxLength = $param->getMaxLength();
-        if ($maxLength !== null) {
-            $property->setMaxLength($maxLength);
-        }
-
-        $pattern = $param->getPattern();
-        if ($pattern !== null) {
-            $property->setPattern($pattern);
-        }
-
-        $format = $param->getFormat();
-        if ($format !== null) {
-            $property->setFormat($format);
-        }
-
-        $minimum = $param->getMinimum();
-        if ($minimum !== null) {
-            $property->setMinimum($minimum);
-        }
-
-        $maximum = $param->getMaximum();
-        if ($maximum !== null) {
-            $property->setMaximum($maximum);
-        }
-
-        $multipleOf = $param->getMultipleOf();
-        if ($multipleOf !== null) {
-            $property->setMultipleOf($multipleOf);
-        }
-
-        return $property;
+        return $type;
     }
 }

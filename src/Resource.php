@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ namespace PSX\Api;
 use ArrayIterator;
 use IteratorAggregate;
 use PSX\Api\Resource\MethodAbstract;
-use PSX\Schema\Property;
-use PSX\Schema\PropertyInterface;
 
 /**
  * A resource describes the capabilities of an API endpoint
@@ -33,7 +31,7 @@ use PSX\Schema\PropertyInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Resource implements IteratorAggregate
+class Resource implements IteratorAggregate, \JsonSerializable
 {
     use TagableTrait;
 
@@ -69,12 +67,12 @@ class Resource implements IteratorAggregate
     protected $description;
 
     /**
-     * @var \PSX\Schema\PropertyInterface
+     * @var string
      */
     protected $pathParameters;
 
     /**
-     * @var array
+     * @var \PSX\Api\Resource\MethodAbstract[]
      */
     protected $methods;
 
@@ -82,18 +80,17 @@ class Resource implements IteratorAggregate
      * @param integer $status
      * @param string $path
      */
-    public function __construct($status, $path)
+    public function __construct(int $status, string $path)
     {
-        $this->status          = $status;
-        $this->path            = $path;
-        $this->pathParameters  = Property::getObject()->setTitle('path');
-        $this->methods         = [];
+        $this->status  = $status;
+        $this->path    = $path;
+        $this->methods = [];
     }
 
     /**
      * @return boolean
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->status == self::STATUS_ACTIVE;
     }
@@ -101,7 +98,7 @@ class Resource implements IteratorAggregate
     /**
      * @return boolean
      */
-    public function isDeprecated()
+    public function isDeprecated(): bool
     {
         return $this->status == self::STATUS_DEPRECATED;
     }
@@ -109,7 +106,7 @@ class Resource implements IteratorAggregate
     /**
      * @return boolean
      */
-    public function isClosed()
+    public function isClosed(): bool
     {
         return $this->status == self::STATUS_CLOSED;
     }
@@ -117,7 +114,7 @@ class Resource implements IteratorAggregate
     /**
      * @return boolean
      */
-    public function isDevelopment()
+    public function isDevelopment(): bool
     {
         return $this->status == self::STATUS_DEVELOPMENT;
     }
@@ -125,7 +122,7 @@ class Resource implements IteratorAggregate
     /**
      * @return integer
      */
-    public function getStatus()
+    public function getStatus(): int
     {
         return $this->status;
     }
@@ -133,7 +130,7 @@ class Resource implements IteratorAggregate
     /**
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -141,15 +138,17 @@ class Resource implements IteratorAggregate
     /**
      * @param string $title
      */
-    public function setTitle($title)
+    public function setTitle(?string $title)
     {
         $this->title = $title;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
@@ -157,46 +156,62 @@ class Resource implements IteratorAggregate
     /**
      * @param string $description
      */
-    public function setDescription($description)
+    public function setDescription(?string $description)
     {
         $this->description = $description;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function addPathParameter($name, PropertyInterface $property = null)
+    /**
+     * @param string $typeName
+     */
+    public function setPathParameters(?string $typeName)
     {
-        $this->pathParameters->addProperty($name, $property);
+        $this->pathParameters = $typeName;
 
         return $this;
     }
 
-    public function getPathParameters()
+    /**
+     * @return string
+     */
+    public function getPathParameters(): ?string
     {
         return $this->pathParameters;
     }
 
-    public function hasPathParameters()
+    /**
+     * @return bool
+     */
+    public function hasPathParameters(): bool
     {
-        return count($this->pathParameters->getProperties() ?: []) > 0;
+        return !empty($this->pathParameters);
     }
 
+    /**
+     * @param MethodAbstract $method
+     */
     public function addMethod(MethodAbstract $method)
     {
         $this->methods[$method->getName()] = $method;
+
+        return $this;
     }
 
     /**
      * @param string $method
      * @return \PSX\Api\Resource\MethodAbstract
      */
-    public function getMethod($method)
+    public function getMethod($method): ?MethodAbstract
     {
         if (isset($this->methods[$method])) {
             return $this->methods[$method];
@@ -208,7 +223,7 @@ class Resource implements IteratorAggregate
     /**
      * @return \PSX\Api\Resource\MethodAbstract[]
      */
-    public function getMethods()
+    public function getMethods(): array
     {
         return $this->methods;
     }
@@ -216,7 +231,7 @@ class Resource implements IteratorAggregate
     /**
      * @return array
      */
-    public function getAllowedMethods()
+    public function getAllowedMethods(): array
     {
         return array_keys($this->methods);
     }
@@ -225,7 +240,7 @@ class Resource implements IteratorAggregate
      * @param string $method
      * @return boolean
      */
-    public function hasMethod($method)
+    public function hasMethod($method): bool
     {
         return isset($this->methods[$method]);
     }
@@ -236,5 +251,29 @@ class Resource implements IteratorAggregate
     public function getIterator()
     {
         return new ArrayIterator($this->methods);
+    }
+
+    public function toArray(): array
+    {
+        $methods = [];
+        foreach ($this->methods as $methodName => $method) {
+            $methods[$methodName] = $method->toArray();
+        }
+
+        return array_filter([
+            'status' => $this->status,
+            'path' => $this->path,
+            'title' => $this->title,
+            'description' => $this->description,
+            'pathParameters' => $this->pathParameters,
+            'methods' => $methods,
+        ], function($value){
+            return $value !== null;
+        });
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }

@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@
 
 namespace PSX\Api\Generator\Markup;
 
-use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
+use PSX\Api\SpecificationInterface;
 use PSX\Http\Http;
-use PSX\Schema\Generator\GeneratorTrait;
-use PSX\Schema\PropertyInterface;
-use PSX\Schema\SchemaInterface;
+use PSX\Schema\Definitions;
+use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\Schema;
+use PSX\Schema\TypeFactory;
 
 /**
  * MarkupAbstract
@@ -36,33 +36,46 @@ use PSX\Schema\SchemaInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-abstract class MarkupAbstract implements GeneratorInterface, GeneratorCollectionInterface
+abstract class MarkupAbstract implements GeneratorInterface
 {
-    use GeneratorTrait;
-
-    const TYPE_PATH     = 0x1;
-    const TYPE_QUERY    = 0x2;
-    const TYPE_REQUEST  = 0x3;
-    const TYPE_RESPONSE = 0x4;
+    /**
+     * @var \PSX\Schema\GeneratorInterface
+     */
+    protected $generator;
 
     /**
-     * @param \PSX\Api\Resource $resource
+     * @inheritDoc
+     */
+    public function generate(SpecificationInterface $specification)
+    {
+        $collection = $specification->getResourceCollection();
+        $definitions = $specification->getDefinitions();
+
+        $text = '';
+        foreach ($collection as $path => $resource) {
+            $text.= $this->generateResource($resource, new Definitions()) . "\n\n";
+        }
+
+        // generate schemas
+        $schema = new Schema(TypeFactory::getAny(), $definitions);
+        $text.= $this->generator->generate($schema);
+
+        return $text;
+    }
+
+    /**
+     * @param Resource $resource
+     * @param DefinitionsInterface $definitions
      * @return string
      */
-    public function generate(Resource $resource)
+    public function generateResource(Resource $resource, DefinitionsInterface $definitions): string
     {
         $text = $this->startResource($resource);
 
         // path parameters
         $pathParameters = $resource->getPathParameters();
-        if ($pathParameters instanceof PropertyInterface && $pathParameters->getProperties()) {
-            $result = $this->getParameters($pathParameters, self::TYPE_PATH, $resource->getPath());
-
-            if (!empty($result)) {
-                $text.= $this->startParameters('Path-Parameters', self::TYPE_PATH);
-                $text.= $result;
-                $text.= $this->endParameters();
-            }
+        if (!empty($pathParameters)) {
+            $text.= $this->renderSchema('Path-Parameters', $pathParameters);
         }
 
         $methods = $resource->getMethods();
@@ -71,40 +84,22 @@ abstract class MarkupAbstract implements GeneratorInterface, GeneratorCollection
 
             // query parameters
             $queryParameters = $method->getQueryParameters();
-            if ($queryParameters instanceof PropertyInterface && $queryParameters->getProperties()) {
-                $result = $this->getParameters($queryParameters, self::TYPE_QUERY, $resource->getPath(), $method->getName());
-
-                if (!empty($result)) {
-                    $text.= $this->startParameters($method->getName() . ' Query-Parameters', self::TYPE_QUERY);
-                    $text.= $result;
-                    $text.= $this->endParameters();
-                }
+            if (!empty($queryParameters)) {
+                $text.= $this->renderSchema('Query-Parameters', $queryParameters);
             }
 
             // request
             $request = $method->getRequest();
-            if ($request instanceof SchemaInterface) {
-                $result = $this->getSchema($request, self::TYPE_REQUEST, $resource->getPath(), $method->getName());
-
-                if (!empty($result)) {
-                    $text.= $this->startSchema($method->getName() . ' Request', self::TYPE_REQUEST);
-                    $text.= $result;
-                    $text.= $this->endSchema();
-                }
+            if (!empty($request)) {
+                $text.= $this->renderSchema('Request', $request);
             }
 
             // responses
             $responses = $method->getResponses();
             foreach ($responses as $statusCode => $response) {
-                $result = $this->getSchema($response, self::TYPE_RESPONSE, $resource->getPath(), $method->getName(), $statusCode);
+                $message = isset(Http::$codes[$statusCode]) ? Http::$codes[$statusCode] : 'Unknown';
 
-                if (!empty($result)) {
-                    $message = isset(Http::$codes[$statusCode]) ? Http::$codes[$statusCode] : 'Unknown';
-
-                    $text.= $this->startSchema($method->getName() . ' Response - ' . $statusCode . ' ' . $message, self::TYPE_RESPONSE);
-                    $text.= $result;
-                    $text.= $this->endSchema();
-                }
+                $text.= $this->renderSchema('Response - ' . $statusCode . ' ' . $message, $response);
             }
 
             $text.= $this->endMethod();
@@ -112,18 +107,9 @@ abstract class MarkupAbstract implements GeneratorInterface, GeneratorCollection
 
         $text.= $this->endResource();
 
-        return $text;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function generateAll(ResourceCollection $collection)
-    {
-        $text = '';
-        foreach ($collection as $path => $resource) {
-            $text.= $this->generate($resource) . "\n\n";
-        }
+        // generate schemas
+        $schema = new Schema(TypeFactory::getAny(), $definitions);
+        $text.= $this->generator->generate($schema);
 
         return $text;
     }
@@ -152,44 +138,8 @@ abstract class MarkupAbstract implements GeneratorInterface, GeneratorCollection
 
     /**
      * @param string $title
-     * @param integer $type
+     * @param string $schema
      * @return string
      */
-    abstract protected function startParameters($title, $type);
-
-    /**
-     * @return string
-     */
-    abstract protected function endParameters();
-
-    /**
-     * @param \PSX\Schema\PropertyInterface $property
-     * @param integer $type
-     * @param string $path
-     * @param string|null $method
-     * @return string
-     */
-    abstract protected function getParameters(PropertyInterface $property, $type, $path, $method = null);
-
-    /**
-     * @param string $title
-     * @param integer $type
-     * @return string
-     */
-    abstract protected function startSchema($title, $type);
-
-    /**
-     * @return string
-     */
-    abstract protected function endSchema();
-
-    /**
-     * @param SchemaInterface $schema
-     * @param integer $type
-     * @param string $path
-     * @param string $method
-     * @param integer|null $statusCode
-     * @return string
-     */
-    abstract protected function getSchema(SchemaInterface $schema, $type, $path, $method, $statusCode = null);
+    abstract protected function renderSchema(string $title, string $schema);
 }

@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@
 
 namespace PSX\Api;
 
+use PSX\Api\Listing\FilterInterface;
+
 /**
  * ResourceCollection
  *
@@ -29,6 +31,15 @@ namespace PSX\Api;
  */
 class ResourceCollection extends \ArrayObject
 {
+    public function __construct(array $input = [])
+    {
+        parent::__construct([]);
+
+        foreach ($input as $resource) {
+            $this->set($resource);
+        }
+    }
+
     /**
      * @param \PSX\Api\Resource $resource
      */
@@ -41,7 +52,7 @@ class ResourceCollection extends \ArrayObject
      * @param string $path
      * @return boolean
      */
-    public function has($path)
+    public function has(string $path)
     {
         return $this->offsetExists($path);
     }
@@ -50,8 +61,24 @@ class ResourceCollection extends \ArrayObject
      * @param string $path
      * @return \PSX\Api\Resource
      */
-    public function get($path)
+    public function get(string $path)
     {
         return $this->offsetExists($path) ? $this->offsetGet($path) : null;
+    }
+
+    /**
+     * @param FilterInterface $filter
+     * @return ResourceCollection
+     */
+    public function filter(FilterInterface $filter): ResourceCollection
+    {
+        $collection = new ResourceCollection();
+        foreach ($this->getIterator() as $resource) {
+            if ($filter->match($resource->getPath())) {
+                $collection->set($resource);
+            }
+        }
+
+        return $collection;
     }
 }

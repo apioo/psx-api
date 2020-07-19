@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,12 @@ use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
-use PSX\Schema\Property;
+use PSX\Api\Specification;
+use PSX\Api\SpecificationInterface;
+use PSX\Schema\Builder;
+use PSX\Schema\Definitions;
+use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\Generator\Code\Chunks;
 use PSX\Schema\SchemaManager;
 
 /**
@@ -36,69 +41,100 @@ use PSX\Schema\SchemaManager;
  */
 abstract class GeneratorTestCase extends TestCase
 {
-    protected function getResource()
+    protected function getSpecification(): SpecificationInterface
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Api\\Annotation');
+        return Specification::fromResource(
+            $this->newResource(),
+            $this->newDefinitions()
+        );
+    }
 
-        $schemaManager = new SchemaManager($reader);
-
+    private function newResource(): Resource
+    {
         $resource = new Resource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
         $resource->setTitle('foo');
         $resource->setDescription('lorem ipsum');
+        $resource->setPathParameters('Path');
 
-        $resource->addPathParameter('name', Property::getString()
-            ->setDescription('Name parameter')
-            ->setMinLength(0)
-            ->setMaxLength(16)
-            ->setPattern('[A-z]+'));
-        $resource->addPathParameter('type', Property::getString()
-            ->setEnum(['foo', 'bar']));
-
-        $resource->getPathParameters()->setRequired(['name']);
-        
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')
             ->setOperationId('list.foo')
-            ->addQueryParameter('startIndex', Property::getInteger()
-                ->setDescription('startIndex parameter')
-                ->setMinimum(0)
-                ->setMaximum(32))
-            ->addQueryParameter('float', Property::getNumber())
-            ->addQueryParameter('boolean', Property::getBoolean())
-            ->addQueryParameter('date', Property::getDate())
-            ->addQueryParameter('datetime', Property::getDateTime())
-            ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class)));
-
-        $resource->getMethod('GET')->getQueryParameters()->setRequired(['startIndex']);
+            ->setQueryParameters('GetQuery')
+            ->addResponse(200, 'EntryCollection'));
 
         $resource->addMethod(Resource\Factory::getMethod('POST')
             ->setOperationId('create.foo')
-            ->setRequest($schemaManager->getSchema(Schema\Create::class))
-            ->addResponse(201, $schemaManager->getSchema(Schema\SuccessMessage::class)));
+            ->setRequest('EntryCreate')
+            ->addResponse(201, 'EntryMessage'));
 
         $resource->addMethod(Resource\Factory::getMethod('PUT')
-            ->setRequest($schemaManager->getSchema(Schema\Update::class))
-            ->addResponse(200, $schemaManager->getSchema(Schema\SuccessMessage::class)));
+            ->setRequest('EntryUpdate')
+            ->addResponse(200, 'EntryMessage'));
 
         $resource->addMethod(Resource\Factory::getMethod('DELETE')
-            ->setRequest($schemaManager->getSchema(Schema\Delete::class))
-            ->addResponse(200, $schemaManager->getSchema(Schema\SuccessMessage::class)));
+            ->setRequest('EntryDelete')
+            ->addResponse(200, 'EntryMessage'));
 
         $resource->addMethod(Resource\Factory::getMethod('PATCH')
-            ->setRequest($schemaManager->getSchema(Schema\Patch::class))
-            ->addResponse(200, $schemaManager->getSchema(Schema\SuccessMessage::class)));
+            ->setRequest('EntryPatch')
+            ->addResponse(200, 'EntryMessage'));
 
         return $resource;
     }
 
-    protected function getResourceCollection()
+    private function newDefinitions(): DefinitionsInterface
     {
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\\Api\\Annotation');
 
         $schemaManager = new SchemaManager($reader);
 
+        $builder = new Builder();
+        $builder->addString('name')
+            ->setDescription('Name parameter')
+            ->setMinLength(0)
+            ->setMaxLength(16)
+            ->setPattern('[A-z]+');
+        $builder->addString('type')
+            ->setEnum(['foo', 'bar']);
+        $builder->setRequired(['name']);
+        $path = $builder->getType();
+
+        $builder = new Builder();
+        $builder->addInteger('startIndex')
+            ->setDescription('startIndex parameter')
+            ->setMinimum(0)
+            ->setMaximum(32);
+        $builder->addNumber('float');
+        $builder->addBoolean('boolean');
+        $builder->addDate('date');
+        $builder->addDateTime('datetime');
+        $builder->setRequired(['startIndex']);
+        $getQuery = $builder->getType();
+
+        $definitions = new Definitions();
+        $definitions->addType('Path', $path);
+        $definitions->addType('GetQuery', $getQuery);
+        $definitions->merge($schemaManager->getSchema(Schema\Collection::class)->getDefinitions());
+        $definitions->merge($schemaManager->getSchema(Schema\Create::class)->getDefinitions());
+        $definitions->merge($schemaManager->getSchema(Schema\Update::class)->getDefinitions());
+        $definitions->merge($schemaManager->getSchema(Schema\Delete::class)->getDefinitions());
+        $definitions->merge($schemaManager->getSchema(Schema\Patch::class)->getDefinitions());
+        $definitions->merge($schemaManager->getSchema(Schema\Message::class)->getDefinitions());
+
+        return $definitions;
+    }
+
+    protected function getSpecificationCollection(): SpecificationInterface
+    {
+        return new Specification(
+            $this->newResourceCollection(),
+            $this->newDefinitionsCollection()
+        );
+    }
+
+    private function newResourceCollection()
+    {
         $collection = new ResourceCollection();
 
         $resource = new Resource(Resource::STATUS_ACTIVE, '/foo');
@@ -106,72 +142,125 @@ abstract class GeneratorTestCase extends TestCase
 
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')
-            ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class)));
+            ->addResponse(200, 'EntryCollection'));
 
         $resource->addMethod(Resource\Factory::getMethod('POST')
-            ->setRequest($schemaManager->getSchema(Schema\Create::class))
-            ->addResponse(201, $schemaManager->getSchema(Schema\SuccessMessage::class)));
+            ->setRequest('EntryCreate')
+            ->addResponse(201, 'EntryMessage'));
 
         $collection->set($resource);
 
         $resource = new Resource(Resource::STATUS_ACTIVE, '/bar/:foo');
         $resource->setTitle('bar');
-
-        $resource->addPathParameter('foo', Property::getString());
-
+        $resource->setPathParameters('PathFoo');
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')
-            ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class)));
+            ->addResponse(200, 'EntryCollection'));
 
         $resource->addMethod(Resource\Factory::getMethod('POST')
-            ->setRequest($schemaManager->getSchema(Schema\Create::class))
-            ->addResponse(201, $schemaManager->getSchema(Schema\SuccessMessage::class)));
+            ->setRequest('EntryCreate')
+            ->addResponse(201, 'EntryMessage'));
 
         $collection->set($resource);
 
         $resource = new Resource(Resource::STATUS_ACTIVE, '/bar/$year<[0-9]+>');
         $resource->setTitle('bar');
-
-        $resource->addPathParameter('year', Property::getString());
-
+        $resource->setPathParameters('PathYear');
         $resource->addMethod(Resource\Factory::getMethod('GET')
             ->setDescription('Returns a collection')
-            ->addResponse(200, $schemaManager->getSchema(Schema\Collection::class)));
+            ->addResponse(200, 'EntryCollection'));
 
         $resource->addMethod(Resource\Factory::getMethod('POST')
-            ->setRequest($schemaManager->getSchema(Schema\Create::class))
-            ->addResponse(201, $schemaManager->getSchema(Schema\SuccessMessage::class)));
+            ->setRequest('EntryCreate')
+            ->addResponse(201, 'EntryMessage'));
 
         $collection->set($resource);
 
         return $collection;
     }
 
-    protected function getResourceComplex()
+    private function newDefinitionsCollection(): DefinitionsInterface
     {
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\\Api\\Annotation');
 
         $schemaManager = new SchemaManager($reader);
 
+        $builder = new Builder();
+        $builder->addString('foo');
+        $pathFoo = $builder->getType();
+
+        $builder = new Builder();
+        $builder->addString('year');
+        $pathYear = $builder->getType();
+
+        $definitions = new Definitions();
+        $definitions->addType('PathFoo', $pathFoo);
+        $definitions->addType('PathYear', $pathYear);
+        $definitions->merge($schemaManager->getSchema(Schema\Collection::class)->getDefinitions());
+        $definitions->merge($schemaManager->getSchema(Schema\Create::class)->getDefinitions());
+        $definitions->merge($schemaManager->getSchema(Schema\Message::class)->getDefinitions());
+
+        return $definitions;
+    }
+
+    protected function getSpecificationComplex(): SpecificationInterface
+    {
+        return Specification::fromResource(
+            $this->newResourceComplex(),
+            $this->newDefinitionsComplex()
+        );
+    }
+
+    private function newResourceComplex(): Resource
+    {
         $resource = new Resource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
         $resource->setTitle('foo');
         $resource->setDescription('lorem ipsum');
-        $resource->addPathParameter('name', Property::getString());
-        $resource->addPathParameter('type', Property::getString());
+        $resource->setPathParameters('Path');
 
         $resource->addMethod(Resource\Factory::getMethod('POST')
             ->setDescription('Returns a collection')
+            ->setOperationId('postEntryOrMessage')
             ->setTags(['foo'])
-            ->setRequest($schemaManager->getSchema(Schema\Complex::class))
-            ->addResponse(200, $schemaManager->getSchema(Schema\Complex::class))
+            ->setRequest('EntryOrMessage')
+            ->addResponse(200, 'EntryOrMessage')
             ->setSecurity('OAuth2', ['foo']));
 
         return $resource;
     }
 
+    private function newDefinitionsComplex(): DefinitionsInterface
+    {
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Api\\Annotation');
+
+        $schemaManager = new SchemaManager($reader);
+
+        $builder = new Builder();
+        $builder->addString('name');
+        $builder->addString('type');
+        $builder->setRequired(['name', 'type']);
+        $path = $builder->getType();
+
+        $definitions = new Definitions();
+        $definitions->addType('Path', $path);
+        $definitions->merge($schemaManager->getSchema(Schema\Complex::class)->getDefinitions());
+
+        return $definitions;
+    }
+
     protected function getPaths()
     {
         return array();
+    }
+
+    protected function writeChunksToFolder(Chunks $result, string $target)
+    {
+        foreach ($result->getChunks() as $file => $code) {
+            $code = str_replace(date('Y-m-d'), '0000-00-00', $code);
+
+            file_put_contents($target . '/' . $file, $code);
+        }
     }
 }

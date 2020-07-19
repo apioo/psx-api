@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ interface DocumentedInterface
      * version was provided the most recent version should be returned
      *
      * @param integer $version
-     * @return \PSX\Api\Resource
+     * @return SpecificationInterface
      */
-    public function getDocumentation($version = null);
+    public function getDocumentation($version = null): SpecificationInterface;
 }

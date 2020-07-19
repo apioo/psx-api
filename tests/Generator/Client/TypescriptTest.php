@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,23 +36,56 @@ class TypescriptTest extends GeneratorTestCase
     {
         $generator = new Typescript('http://api.foo.com');
 
-        $actual = (string) $generator->generate($this->getResource());
-        $actual = str_replace(date('Y-m-d'), '0000-00-00', $actual);
-        $expect = file_get_contents(__DIR__ . '/resource/typescript.ts');
-        $expect = str_replace(["\r\n", "\r"], "\n", $expect);
+        $result = $generator->generate($this->getSpecification());
+        $target = __DIR__ . '/resource/typescript';
 
-        $this->assertEquals($expect, $actual, $actual);
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/Entry.ts');
+        $this->assertFileExists($target . '/EntryCollection.ts');
+        $this->assertFileExists($target . '/EntryCreate.ts');
+        $this->assertFileExists($target . '/EntryDelete.ts');
+        $this->assertFileExists($target . '/EntryMessage.ts');
+        $this->assertFileExists($target . '/EntryPatch.ts');
+        $this->assertFileExists($target . '/EntryUpdate.ts');
+        $this->assertFileExists($target . '/FooNameTypeResource.ts');
+        $this->assertFileExists($target . '/GetQuery.ts');
+        $this->assertFileExists($target . '/Path.ts');
+    }
+
+    public function testGenerateCollection()
+    {
+        $generator = new Typescript('http://api.foo.com');
+
+        $result = $generator->generate($this->getSpecificationCollection());
+        $target = __DIR__ . '/resource/typescript_collection';
+
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/BarFooResource.ts');
+        $this->assertFileExists($target . '/BarYear09Resource.ts');
+        $this->assertFileExists($target . '/Entry.ts');
+        $this->assertFileExists($target . '/EntryCollection.ts');
+        $this->assertFileExists($target . '/EntryCreate.ts');
+        $this->assertFileExists($target . '/EntryMessage.ts');
+        $this->assertFileExists($target . '/FooResource.ts');
+        $this->assertFileExists($target . '/PathFoo.ts');
+        $this->assertFileExists($target . '/PathYear.ts');
     }
 
     public function testGenerateComplex()
     {
         $generator = new Typescript('http://api.foo.com');
 
-        $actual = (string) $generator->generate($this->getResourceComplex());
-        $actual = str_replace(date('Y-m-d'), '0000-00-00', $actual);
-        $expect = file_get_contents(__DIR__ . '/resource/typescript_complex.ts');
-        $expect = str_replace(["\r\n", "\r"], "\n", $expect);
+        $result = $generator->generate($this->getSpecificationComplex());
+        $target = __DIR__ . '/resource/typescript_complex';
 
-        $this->assertEquals($expect, $actual, $actual);
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/Entry.ts');
+        $this->assertFileExists($target . '/EntryMessage.ts');
+        $this->assertFileExists($target . '/EntryOrMessage.ts');
+        $this->assertFileExists($target . '/FooNameTypeResource.ts');
+        $this->assertFileExists($target . '/Path.ts');
     }
 }

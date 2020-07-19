@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Generator\Schema;
 
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\SchemaAbstract;
 
 /**
@@ -31,11 +32,13 @@ use PSX\Schema\SchemaAbstract;
  */
 class Delete extends SchemaAbstract
 {
-    public function getDefinition()
+    public function build(DefinitionsInterface $definitions): string
     {
-        $entry = $this->getSchema(Entry::class);
+        $this->load(Entry::class);
+
+        $entry = $this->modify('Entry', 'EntryDelete');
         $entry->setRequired(['id']);
 
-        return $entry;
+        return 'EntryDelete';
     }
 }

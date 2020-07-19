@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ use PSX\Api\Console\GenerateCommand;
 use PSX\Api\GeneratorFactory;
 use PSX\Api\GeneratorFactoryInterface;
 use PSX\Api\Listing\MemoryListing;
+use PSX\Api\Listing\Route;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 use PSX\Schema\SchemaManager;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -69,7 +70,7 @@ class GenerateCommandTest extends TestCase
     protected function getGenerateCommand()
     {
         $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Parser\\Popo\\Annotation');
+        $schemaReader->addNamespace('PSX\\Schema\\Annotation');
 
         $apiReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
         $apiReader->addNamespace('PSX\\Api\\Annotation');
@@ -77,7 +78,8 @@ class GenerateCommandTest extends TestCase
         $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
 
         $listing = new MemoryListing();
-        $listing->addResource($apiManager->getApi(TestController::class, '/foo'));
+        $listing->addRoute(new Route('/foo', ['GET'], '*'));
+        $listing->addSpecification($apiManager->getApi(TestController::class, '/foo'));
 
         $factory = new GeneratorFactory($schemaReader, 'urn:phpsx.org:2016#', 'http://foo.com', '');
 

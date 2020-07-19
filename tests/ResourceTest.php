@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ namespace PSX\Api\Tests;
 
 use PHPUnit\Framework\TestCase;
 use PSX\Api\Resource;
-use PSX\Schema\Property;
 
 /**
  * ResourceTest
@@ -38,7 +37,7 @@ class ResourceTest extends TestCase
         $resource = new Resource(Resource::STATUS_ACTIVE, '/foo');
         $resource->setTitle('foobar');
         $resource->setDescription('foobar');
-        $resource->addPathParameter('foo', Property::getString());
+        $resource->setPathParameters('Path');
         $resource->addMethod(Resource\Factory::getMethod('GET'));
 
         $this->assertEquals(Resource::STATUS_ACTIVE, $resource->getStatus());
@@ -48,8 +47,8 @@ class ResourceTest extends TestCase
         $this->assertEquals('/foo', $resource->getPath());
         $this->assertEquals('foobar', $resource->getTitle());
         $this->assertEquals('foobar', $resource->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getPathParameters());
-        $this->assertInstanceOf('PSX\Api\Resource\MethodAbstract', $resource->getMethod('GET'));
+        $this->assertEquals('Path', $resource->getPathParameters());
+        $this->assertInstanceOf(Resource\MethodAbstract::class, $resource->getMethod('GET'));
         $this->assertEquals(['GET' => $resource->getMethod('GET')], $resource->getMethods());
         $this->assertEquals(['GET'], $resource->getAllowedMethods());
         $this->assertTrue($resource->hasMethod('GET'));
@@ -57,11 +56,10 @@ class ResourceTest extends TestCase
         $this->assertTrue($resource->hasPathParameters());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetMethodInvalid()
     {
+        $this->expectException(\RuntimeException::class);
+
         $resource = new Resource(Resource::STATUS_ACTIVE, '/foo');
         $resource->getMethod('GET');
     }

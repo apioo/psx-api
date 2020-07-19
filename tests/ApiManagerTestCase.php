@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ abstract class ApiManagerTestCase extends TestCase
      */
     protected $apiManager;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\\Api\\Annotation');

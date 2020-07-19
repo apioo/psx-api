@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,22 @@
 namespace PSX\Api\Generator\Spec;
 
 use PSX\Api\GeneratorAbstract;
-use PSX\Api\GeneratorCollectionInterface;
 use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
+use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
-use PSX\Schema\PropertyInterface;
-use PSX\Schema\PropertyType;
+use PSX\Schema\Type\BooleanType;
+use PSX\Schema\Type\IntegerType;
+use PSX\Schema\Type\NumberType;
+use PSX\Schema\Type\ScalarType;
+use PSX\Schema\Type\StringType;
+use PSX\Schema\Type\StructType;
+use PSX\Schema\Type\TypeAbstract;
+use PSX\Schema\TypeFactory;
+use PSX\Schema\TypeInterface;
 use Symfony\Component\Yaml\Inline;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Raml
@@ -37,10 +45,8 @@ use Symfony\Component\Yaml\Inline;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
+class Raml extends GeneratorAbstract
 {
-    use Generator\GeneratorTrait;
-
     /**
      * @var integer
      */
@@ -50,11 +56,6 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
      * @var string
      */
     protected $baseUri;
-
-    /**
-     * @var string
-     */
-    protected $targetNamespace;
 
     /**
      * @var string
@@ -69,13 +70,11 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
     /**
      * @param integer $apiVersion
      * @param string $baseUri
-     * @param string $targetNamespace
      */
-    public function __construct($apiVersion, $baseUri, $targetNamespace)
+    public function __construct($apiVersion, $baseUri)
     {
-        $this->apiVersion      = $apiVersion;
-        $this->baseUri         = $baseUri;
-        $this->targetNamespace = $targetNamespace;
+        $this->apiVersion = $apiVersion;
+        $this->baseUri    = $baseUri;
     }
 
     /**
@@ -95,28 +94,19 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
     }
 
     /**
-     * @param \PSX\Api\Resource $resource
-     * @return string
+     * @inheritDoc
      */
-    public function generate(Resource $resource)
+    public function generate(SpecificationInterface $specification)
     {
+        $collection = $specification->getResourceCollection();
+        $definitions = $specification->getDefinitions();
+
         $raml = $this->getDeclaration();
-        $raml.= $this->getResource($resource);
-
-        return $raml;
-    }
-
-    /**
-     * @param \PSX\Api\ResourceCollection $collection
-     * @return string
-     */
-    public function generateAll(ResourceCollection $collection)
-    {
-        $raml = $this->getDeclaration();
-
         foreach ($collection as $path => $resource) {
-            $raml.= $this->getResource($resource);
+            $raml.= $this->getResource($resource, $definitions);
         }
+
+        $raml.= $this->getTypes($definitions);
 
         return $raml;
     }
@@ -141,11 +131,12 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
 
     /**
      * @param \PSX\Api\Resource $resource
+     * @param \PSX\Schema\DefinitionsInterface $definitions
      * @return string
      */
-    protected function getResource(Resource $resource)
+    protected function getResource(Resource $resource, DefinitionsInterface $definitions)
     {
-        $path = Inflection::transformRoutePlaceholder($resource->getPath() ?: '/');
+        $path = Inflection::convertPlaceholderToCurly($resource->getPath() ?: '/');
         $raml = $path . ':' . "\n";
 
         $description = $resource->getDescription();
@@ -153,22 +144,12 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
             $raml.= '  description: ' . Inline::dump($description) . "\n";
         }
 
-        // path parameter
         $pathParameters = $resource->getPathParameters();
-        $properties     = $pathParameters->getProperties();
-
-        if (!empty($properties)) {
-            $raml.= '  uriParameters:' . "\n";
-
-            foreach ($properties as $name => $parameter) {
-                $raml.= '    ' . $name . ':' . "\n";
-                $raml.= $this->getParameter($parameter, 6, in_array($name, $pathParameters->getRequired() ?: []));
-            }
+        if (!empty($pathParameters) && $definitions->hasType($pathParameters)) {
+            $raml.= $this->getParameters('uriParameters', $definitions->getType($pathParameters), 2);
         }
 
-        $generator = new Generator\JsonSchema($this->targetNamespace);
-        $methods   = $resource->getMethods();
-
+        $methods = $resource->getMethods();
         foreach ($methods as $method) {
             $raml.= '  ' . strtolower($method->getName()) . ':' . "\n";
 
@@ -180,136 +161,145 @@ class Raml extends GeneratorAbstract implements GeneratorCollectionInterface
 
             // query parameter
             $queryParameters = $method->getQueryParameters();
-            $properties      = $queryParameters->getProperties();
-
-            if (!empty($properties)) {
-                $raml.= '    queryParameters:' . "\n";
-
-                foreach ($properties as $name => $parameter) {
-                    $raml.= '      ' . $name . ':' . "\n";
-                    $raml.= $this->getParameter($parameter, 8, in_array($name, $queryParameters->getRequired() ?: []));
-                }
+            if (!empty($queryParameters) && $definitions->hasType($queryParameters)) {
+                $raml.= $this->getParameters('queryParameters', $definitions->getType($queryParameters), 4);
             }
 
             // request body
-            if ($method->hasRequest()) {
-                $schema = $generator->generate($method->getRequest());
-                $schema = str_replace("\n", "\n          ", $schema);
-
+            $request = $method->hasRequest();
+            if (!empty($request)) {
                 $raml.= '    body:' . "\n";
                 $raml.= '      application/json:' . "\n";
-                $raml.= '        type: |' . "\n";
-                $raml.= '          ' . $schema . "\n";
+                $raml.= '        type: ' . $request . "\n";
             }
 
             // response body
-            $raml.= '    responses:' . "\n";
-
             $responses = $method->getResponses();
-
-            foreach ($responses as $statusCode => $response) {
-                $schema = $generator->generate($response);
-                $schema = str_replace("\n", "\n              ", $schema);
-
-                $raml.= '      ' . $statusCode . ':' . "\n";
-                $raml.= '        body:' . "\n";
-                $raml.= '          application/json:' . "\n";
-                $raml.= '            type: |' . "\n";
-                $raml.= '              ' . $schema . "\n";
+            if (!empty($responses)) {
+                $raml.= '    responses:' . "\n";
+                foreach ($responses as $statusCode => $response) {
+                    $raml.= '      ' . $statusCode . ':' . "\n";
+                    $raml.= '        body:' . "\n";
+                    $raml.= '          application/json:' . "\n";
+                    $raml.= '            type: ' . $response . "\n";
+                }
             }
         }
 
         return $raml;
     }
 
+    private function getTypes(DefinitionsInterface $definitions): string
+    {
+        $generator = new Generator\JsonSchema('#/types/');
+        $result    = $generator->toArray(TypeFactory::getAny(), $definitions);
+
+        $raml = 'types:' . "\n";
+        foreach ($result['definitions'] as $name => $schema) {
+            $raml.= '  ' . $name . ': ' . Yaml::dump($schema, 0, 2) . "\n";
+        }
+
+        return $raml;
+    }
+    
+    protected function getParameters(string $name, TypeInterface $type, int $indent): string
+    {
+        if (!$type instanceof StructType) {
+            return '';
+        }
+
+        $properties = $type->getProperties();
+        if (empty($properties)) {
+            return '';
+        }
+
+        $raml = str_repeat(' ', $indent) . $name . ':' . "\n";
+
+        foreach ($properties as $name => $parameter) {
+            $raml.= str_repeat(' ', $indent + 2) . $name . ':' . "\n";
+            $raml.= $this->getParameter($parameter, $indent + 4, in_array($name, $type->getRequired() ?: []));
+        }
+
+        return $raml;
+    }
+
     /**
-     * @param \PSX\Schema\PropertyInterface $parameter
+     * @param \PSX\Schema\TypeInterface $type
      * @param string $indent
      * @param boolean $required
      */
-    protected function getParameter(PropertyInterface $parameter, $indent, $required)
+    protected function getParameter(TypeInterface $type, $indent, $required)
     {
         $raml   = '';
         $indent = str_repeat(' ', $indent);
-        $type   = $this->getRealType($parameter);
-        
-        switch ($type) {
-            case PropertyType::TYPE_INTEGER:
-                $raml.= $indent . 'type: integer' . "\n";
-                break;
 
-            case PropertyType::TYPE_NUMBER:
-                $raml.= $indent . 'type: number' . "\n";
-                break;
-
-            case PropertyType::TYPE_BOOLEAN:
-                $raml.= $indent . 'type: boolean' . "\n";
-                break;
-
-            case PropertyType::TYPE_NULL:
-                $raml.= $indent . 'type: null' . "\n";
-                break;
-
-            case PropertyType::TYPE_STRING:
-            default:
-                if ($parameter->getFormat() === PropertyType::FORMAT_DATE) {
-                    $raml.= $indent . 'type: date-only' . "\n";
-                } elseif ($parameter->getFormat() === PropertyType::FORMAT_DATETIME) {
-                    $raml.= $indent . 'type: datetime-only' . "\n";
-                } elseif ($parameter->getFormat() === PropertyType::FORMAT_TIME) {
-                    $raml.= $indent . 'type: time-only' . "\n";
-                } else {
-                    $raml.= $indent . 'type: string' . "\n";
-                }
-                break;
+        if ($type instanceof TypeAbstract) {
+            $description = $type->getDescription();
+            if (!empty($description)) {
+                $raml.= $indent . 'description: ' . Inline::dump($type->getDescription()) . "\n";
+            }
         }
 
-        $description = $parameter->getDescription();
+        if ($type instanceof IntegerType) {
+            $raml.= $indent . 'type: integer' . "\n";
+        } elseif ($type instanceof NumberType) {
+            $raml.= $indent . 'type: number' . "\n";
+        } elseif ($type instanceof BooleanType) {
+            $raml.= $indent . 'type: boolean' . "\n";
+        } elseif ($type instanceof StringType) {
+            if ($type->getFormat() === TypeAbstract::FORMAT_DATE) {
+                $raml.= $indent . 'type: date-only' . "\n";
+            } elseif ($type->getFormat() === TypeAbstract::FORMAT_DATETIME) {
+                $raml.= $indent . 'type: datetime-only' . "\n";
+            } elseif ($type->getFormat() === TypeAbstract::FORMAT_TIME) {
+                $raml.= $indent . 'type: time-only' . "\n";
+            } else {
+                $raml.= $indent . 'type: string' . "\n";
+            }
 
-        if (!empty($description)) {
-            $raml.= $indent . 'description: ' . Inline::dump($parameter->getDescription()) . "\n";
+            // string
+            $minLength = $type->getMinLength();
+            if ($minLength !== null) {
+                $raml.= $indent . 'minLength: ' . $minLength . "\n";
+            }
+
+            $maxLength = $type->getMaxLength();
+            if ($maxLength !== null) {
+                $raml.= $indent . 'maxLength: ' . $maxLength . "\n";
+            }
+
+            $pattern = $type->getPattern();
+            if (!empty($pattern)) {
+                $raml.= $indent . 'pattern: ' . Inline::dump($pattern) . "\n";
+            }
+        }
+
+        if ($type instanceof ScalarType) {
+            $enum = $type->getEnum();
+            if (!empty($enum)) {
+                $raml.= $indent . 'enum: ' . Inline::dump($enum) . "\n";
+            }
+        }
+
+        if ($type instanceof NumberType) {
+            $minimum = $type->getMinimum();
+            if ($minimum !== null) {
+                $raml.= $indent . 'minimum: ' . $minimum . "\n";
+            }
+
+            $maximum = $type->getMaximum();
+            if ($maximum !== null) {
+                $raml.= $indent . 'maximum: ' . $maximum . "\n";
+            }
+
+            $multipleOf = $type->getMultipleOf();
+            if ($multipleOf !== null) {
+                $raml.= $indent . 'multipleOf: ' . $multipleOf . "\n";
+            }
         }
 
         $raml.= $indent . 'required: ' . ($required ? 'true' : 'false') . "\n";
 
-        // string
-        $minLength = $parameter->getMinLength();
-        if ($minLength !== null) {
-            $raml.= $indent . 'minLength: ' . $minLength . "\n";
-        }
-
-        $maxLength = $parameter->getMaxLength();
-        if ($maxLength !== null) {
-            $raml.= $indent . 'maxLength: ' . $maxLength . "\n";
-        }
-
-        $pattern = $parameter->getPattern();
-        if (!empty($pattern)) {
-            $raml.= $indent . 'pattern: ' . Inline::dump($pattern) . "\n";
-        }
-
-        // number
-        $minimum = $parameter->getMinimum();
-        if ($minimum !== null) {
-            $raml.= $indent . 'minimum: ' . $minimum . "\n";
-        }
-
-        $maximum = $parameter->getMaximum();
-        if ($maximum !== null) {
-            $raml.= $indent . 'maximum: ' . $maximum . "\n";
-        }
-
-        $multipleOf = $parameter->getMultipleOf();
-        if ($multipleOf !== null) {
-            $raml.= $indent . 'multipleOf: ' . $multipleOf . "\n";
-        }
-
-        // common
-        $enum = $parameter->getEnum();
-        if (!empty($enum)) {
-            $raml.= $indent . 'enum: ' . Inline::dump($enum) . "\n";
-        }
-        
         return $raml;
     }
 }

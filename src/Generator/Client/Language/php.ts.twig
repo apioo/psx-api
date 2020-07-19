@@ -3,34 +3,15 @@ namespace {{ namespace }};
 {% endif %}
 
 use GuzzleHttp\Client;
-use PSX\Json\Parser;
-use PSX\Record\RecordInterface;
-use PSX\Schema\Parser\Popo\Dumper;
+use PSX\Api\Generator\Client\Php\ResourceAbstract;
 use PSX\Schema\SchemaManager;
-use PSX\Schema\SchemaTraverser;
-use PSX\Schema\Visitor\TypeVisitor;
 
-class {{ className }}
+class {{ className }} extends ResourceAbstract
 {
     /**
      * @var string
      */
     private $url;
-
-    /**
-     * @var string
-     */
-    private $token;
-
-    /**
-     * @var Client
-     */
-    private $httpClient;
-
-    /**
-     * @var SchemaManager
-     */
-    private $schemaManager;
 
 {% for name, hint in properties %}
     /**
@@ -41,14 +22,12 @@ class {{ className }}
 {% endfor %}
     public function __construct({% for name, hint in properties %}{{ hint }} ${{ name }}, {% endfor %}string $baseUrl, string $token, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
+        parent::__construct($baseUrl, $token, $httpClient, $schemaManager);
+
 {% for name, hint in properties %}
         $this->{{ name }} = ${{ name }};
 {% endfor %}
-
-        $this->url = $baseUrl . '{% for part in urlParts %}/{% if part.type == 'variable' %}' . ${{ part.value }} . '{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}';
-        $this->token = $token;
-        $this->httpClient = $httpClient ? $httpClient : new Client();
-        $this->schemaManager = $schemaManager ? $schemaManager : new SchemaManager();
+        $this->url = $this->baseUrl . '{% for part in urlParts %}/{% if part.type == 'variable' %}' . ${{ part.value }} . '{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}';
     }
 
 {% for methodName, method in methods %}
@@ -85,28 +64,4 @@ class {{ className }}
     }
 
 {% endfor %}
-    private function prepare($object, bool $asArray = false)
-    {
-        $data = (new Dumper())->dump($object);
-        if ($asArray) {
-            if ($data instanceof RecordInterface) {
-                return $data->getProperties();
-            } else {
-                return [];
-            }
-        } else {
-            return $data;
-        }
-    }
-
-    private function parse(string $data, ?string $class)
-    {
-        $data = Parser::decode($data);
-        if ($class !== null) {
-            $schema = $this->schemaManager->getSchema($class);
-            return (new SchemaTraverser(false))->traverse($data, $schema, new TypeVisitor());
-        } else {
-            return $data;
-        }
-    }
 }

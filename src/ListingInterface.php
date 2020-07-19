@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,30 +34,28 @@ use PSX\Api\Listing\FilterInterface;
 interface ListingInterface
 {
     /**
-     * Returns all available resources. Note the index does not contain any
-     * documentation it contains only the path and the available request methods
+     * Returns all available routes
      *
      * @param \PSX\Api\Listing\FilterInterface|null $filter
-     * @return \PSX\Api\Resource[]
+     * @return \PSX\Api\Listing\Route[]
      */
-    public function getResourceIndex(FilterInterface $filter = null);
+    public function getAvailableRoutes(FilterInterface $filter = null): iterable;
 
     /**
-     * Returns a specific resource with complete documentation or null if the
-     * resource was not found
+     * Returns a specification for a specific resource path
      *
-     * @param string $sourcePath
+     * @param string $path
      * @param integer|null $version
-     * @return \PSX\Api\Resource|null
+     * @return \PSX\Api\SpecificationInterface|null
      */
-    public function getResource($sourcePath, $version = null);
+    public function find(string $path, ?int $version = null): ?SpecificationInterface;
 
     /**
      * Returns all available resources
      *
      * @param integer|null $version
      * @param \PSX\Api\Listing\FilterInterface|null $filter
-     * @return \PSX\Api\ResourceCollection
+     * @return \PSX\Api\SpecificationInterface
      */
-    public function getResourceCollection($version = null, FilterInterface $filter = null);
+    public function findAll(?int $version = null, FilterInterface $filter = null): SpecificationInterface;
 }

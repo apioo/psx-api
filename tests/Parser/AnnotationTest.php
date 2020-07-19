@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ namespace PSX\Api\Tests\Parser;
 
 use PSX\Api\ApiManager;
 use PSX\Api\Parser\Annotation as AnnotationParser;
+use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 
 /**
@@ -33,23 +34,26 @@ use PSX\Api\Tests\Parser\Annotation\TestController;
  */
 class AnnotationTest extends ParserTestCase
 {
-    protected function getResource()
+    /**
+     * @inheritDoc
+     */
+    protected function getSpecification(): SpecificationInterface
     {
         return $this->apiManager->getApi(TestController::class, '/foo', ApiManager::TYPE_ANNOTATION);
     }
 
     public function testOperationId()
     {
-        $resource = $this->apiManager->getApi(TestController::class, '/foo');
+        $specification = $this->apiManager->getApi(TestController::class, '/foo');
+        $resource = $specification->getResourceCollection()->get('/foo');
 
         $this->assertEquals('doGet', $resource->getMethod('GET')->getOperationId());
     }
 
-    /**
-     * @expectedException \ReflectionException
-     */
     public function testParseInvalid()
     {
+        $this->expectException(\ReflectionException::class);
+
         $annotation = new AnnotationParser(
             $this->annotationReader,
             $this->schemaManager

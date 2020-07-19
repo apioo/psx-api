@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 namespace PSX\Api\Generator\Spec;
 
 use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
+use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
 use PSX\Model\OpenAPI\Components;
@@ -30,8 +30,8 @@ use PSX\Model\OpenAPI\Info;
 use PSX\Model\OpenAPI\License;
 use PSX\Model\OpenAPI\MediaType;
 use PSX\Model\OpenAPI\MediaTypes;
-use PSX\Model\OpenAPI\OauthFlow;
-use PSX\Model\OpenAPI\OauthFlows;
+use PSX\Model\OpenAPI\OAuthFlow;
+use PSX\Model\OpenAPI\OAuthFlows;
 use PSX\Model\OpenAPI\OpenAPI as Declaration;
 use PSX\Model\OpenAPI\Operation;
 use PSX\Model\OpenAPI\Parameter;
@@ -40,15 +40,18 @@ use PSX\Model\OpenAPI\Paths;
 use PSX\Model\OpenAPI\RequestBody;
 use PSX\Model\OpenAPI\Response;
 use PSX\Model\OpenAPI\Responses;
+use PSX\Model\OpenAPI\Schemas;
 use PSX\Model\OpenAPI\Scopes;
 use PSX\Model\OpenAPI\SecurityRequirement;
 use PSX\Model\OpenAPI\SecurityScheme;
+use PSX\Model\OpenAPI\SecuritySchemes;
 use PSX\Model\OpenAPI\Server;
 use PSX\Model\OpenAPI\Tag;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
-use PSX\Schema\Generator\GeneratorTrait;
-use PSX\Schema\PropertyInterface;
-use PSX\Schema\SchemaInterface;
+use PSX\Schema\Type\StructType;
+use PSX\Schema\TypeFactory;
+use PSX\Schema\TypeInterface;
 
 /**
  * Generates an OpenAPI 3.0 representation of an API resource
@@ -59,50 +62,28 @@ use PSX\Schema\SchemaInterface;
  */
 class OpenAPI extends OpenAPIAbstract
 {
-    use GeneratorTrait;
-
     /**
-     * @param \PSX\Api\Resource $resource
-     * @return string
+     * @inheritDoc
      */
-    public function generate(Resource $resource)
+    public function generate(SpecificationInterface $specification)
     {
-        $paths   = new Paths();
-        $schemas = new \stdClass();
+        $collection = $specification->getResourceCollection();
+        $definitions = $specification->getDefinitions();
 
-        $this->buildDefinitions($resource, $schemas);
-        $this->buildPaths($resource, $paths);
-
-        $schemas = $this->resolveRefs($schemas);
-
-        return $this->buildDeclaration($paths, $schemas);
-    }
-
-    /**
-     * @param \PSX\Api\ResourceCollection $collection
-     * @return string
-     */
-    public function generateAll(ResourceCollection $collection)
-    {
-        $paths   = new Paths();
-        $schemas = new \stdClass();
-
+        $paths = new Paths();
         foreach ($collection as $path => $resource) {
-            $this->buildDefinitions($resource, $schemas);
-            $this->buildPaths($resource, $paths, $this->getIdFromPath($resource->getPath()));
+            $this->buildPaths($resource, $paths, $definitions);
         }
 
-        $schemas = $this->resolveRefs($schemas);
-
-        return $this->buildDeclaration($paths, $schemas);
+        return $this->buildDeclaration($paths, $definitions);
     }
 
     /**
      * @param \PSX\Model\OpenAPI\Paths $paths
-     * @param \stdClass $schemas
+     * @param \PSX\Schema\DefinitionsInterface $definitions
      * @return string
      */
-    protected function buildDeclaration(Paths $paths, \stdClass $schemas)
+    protected function buildDeclaration(Paths $paths, DefinitionsInterface $definitions)
     {
         $info = new Info();
         $info->setTitle($this->title ?: 'PSX');
@@ -131,6 +112,14 @@ class OpenAPI extends OpenAPIAbstract
         $server = new Server();
         $server->setUrl($this->baseUri);
 
+        $generator = new Generator\JsonSchema('#/components/schemas/');
+        $result    = $generator->toArray(TypeFactory::getAny(), $definitions);
+
+        $schemas = new Schemas();
+        foreach ($result['definitions'] as $name => $schema) {
+            $schemas[$name] = $schema;
+        }
+
         $components = new Components();
         $components->setSchemas($schemas);
 
@@ -157,13 +146,13 @@ class OpenAPI extends OpenAPIAbstract
      */
     protected function buildSecuritySchemes(Components $components)
     {
-        $schemes = [];
+        $schemes = new SecuritySchemes();
         foreach ($this->authFlows as $authName => $authFlows) {
-            $flows = new OauthFlows();
+            $flows = new OAuthFlows();
             foreach ($authFlows as $authFlow) {
-                list($flowType, $authorizationUrl, $tokenUrl, $refreshUrl, $scopes) = $authFlow;
+                [$flowType, $authorizationUrl, $tokenUrl, $refreshUrl, $scopes] = $authFlow;
 
-                $flow = new OauthFlow();
+                $flow = new OAuthFlow();
                 $flow->setAuthorizationUrl($authorizationUrl);
                 $flow->setTokenUrl($tokenUrl);
 
@@ -172,7 +161,11 @@ class OpenAPI extends OpenAPIAbstract
                 }
 
                 if (!empty($scopes)) {
-                    $flow->setScopes(new Scopes($scopes));
+                    $result = new Scopes();
+                    foreach ($scopes as $name => $title) {
+                        $result[$name] = $title;
+                    }
+                    $flow->setScopes($result);
                 }
 
                 if ($flowType == self::FLOW_AUTHORIZATION_CODE) {
@@ -193,7 +186,7 @@ class OpenAPI extends OpenAPIAbstract
             $schemes[$authName] = $scheme;
         }
 
-        if (!empty($schemes)) {
+        if (count($schemes->getProperties()) > 0) {
             $components->setSecuritySchemes($schemes);
         }
     }
@@ -201,50 +194,33 @@ class OpenAPI extends OpenAPIAbstract
     /**
      * @param \PSX\Api\Resource $resource
      * @param \PSX\Model\OpenAPI\Paths $paths
-     * @param string $operationPrefix
+     * @param \PSX\Schema\DefinitionsInterface $definitions
      */
-    protected function buildPaths(Resource $resource, Paths $paths, $operationPrefix = null)
+    protected function buildPaths(Resource $resource, Paths $paths, DefinitionsInterface $definitions)
     {
         $path = new PathItem();
 
         // path parameter
         $pathParameters = $resource->getPathParameters();
-        $parameters     = [];
-        $properties     = $pathParameters->getProperties() ?: [];
-        foreach ($properties as $name => $parameter) {
-            $param = $this->getParameter($parameter, true);
-            $param->setName($name);
-            $param->setIn('path');
-
-            $parameters[] = $param;
+        if (!empty($pathParameters) && $definitions->hasType($pathParameters)) {
+            $parameters = $this->getParameters($definitions->getType($pathParameters), 'path');
+            if (!empty($parameters)) {
+                $path->setParameters($parameters);
+            }
         }
-
-        $path->setParameters($parameters);
 
         $methods = $resource->getMethods();
         foreach ($methods as $method) {
-            // get operation name
-            $request     = $method->getRequest();
-            $response    = $this->getSuccessfulResponse($method);
-            $description = $method->getDescription();
-            $operationId = $method->getOperationId();
-
-            if (empty($operationId)) {
-                if ($request instanceof SchemaInterface) {
-                    $operationId = strtolower($method->getName()) . ucfirst($this->getIdentifierForProperty($request->getDefinition()));
-                } elseif ($response instanceof SchemaInterface) {
-                    $operationId = strtolower($method->getName()) . ucfirst($this->getIdentifierForProperty($response->getDefinition()));
-                }
-            }
-
-            // create new operation
             $operation = new Operation();
-            if (empty($operationPrefix)) {
+
+            // operation
+            $operationId = $method->getOperationId();
+            if (!empty($operationId)) {
                 $operation->setOperationId($operationId);
-            } else {
-                $operation->setOperationId($operationPrefix . ucfirst($operationId));
             }
 
+            // description
+            $description = $method->getDescription();
             if (!empty($description)) {
                 $operation->setDescription($description);
             }
@@ -257,32 +233,19 @@ class OpenAPI extends OpenAPIAbstract
 
             // query parameter
             $queryParameters = $method->getQueryParameters();
-            $parameters      = [];
-            $properties      = $queryParameters->getProperties() ?: [];
-            foreach ($properties as $name => $parameter) {
-                $param = $this->getParameter($parameter, in_array($name, $queryParameters->getRequired() ?: []));
-                $param->setName($name);
-                $param->setIn('query');
-
-                $parameters[] = $param;
-            }
-
-            if (!empty($parameters)) {
-                $operation->setParameters($parameters);
+            if (!empty($queryParameters) && $definitions->hasType($queryParameters)) {
+                $parameters = $this->getParameters($definitions->getType($queryParameters), 'query');
+                if (!empty($parameters)) {
+                    $operation->setParameters($parameters);
+                }
             }
 
             // request body
-            if ($request instanceof SchemaInterface) {
-                $property = $request->getDefinition();
-
-                $mediaType = new MediaType();
-                $mediaType->setSchema((object) ['$ref' => '#/components/schemas/' . $this->getIdentifierForProperty($property)]);
-
-                $mediaTypes = new MediaTypes();
-                $mediaTypes->set('application/json', $mediaType);
-
+            $request = $method->getRequest();
+            if (!empty($request)) {
                 $requestBody = new RequestBody();
-                $requestBody->setContent($mediaTypes);
+                $requestBody->setDescription($method->getName() . ' Request');
+                $requestBody->setContent($this->getMediaTypes($request));
 
                 $operation->setRequestBody($requestBody);
             }
@@ -292,29 +255,22 @@ class OpenAPI extends OpenAPIAbstract
             $resps     = new Responses();
 
             foreach ($responses as $statusCode => $response) {
-                /** @var \PSX\Schema\SchemaInterface $response */
-                $property = $response->getDefinition();
-
-                $mediaType = new MediaType();
-                $mediaType->setSchema((object) ['$ref' => '#/components/schemas/' . $this->getIdentifierForProperty($property)]);
-
-                $mediaTypes = new MediaTypes();
-                $mediaTypes->set('application/json', $mediaType);
-
                 $resp = new Response();
-                $resp->setDescription($property->getDescription() ?: $method->getName() . ' ' . $statusCode . ' response');
-                $resp->setContent($mediaTypes);
+                $resp->setDescription($method->getName() . ' ' . $statusCode . ' Response');
+                $resp->setContent($this->getMediaTypes($response));
 
-                $resps->set(strval($statusCode), $resp);
+                $resps[strval($statusCode)] = $resp;
             }
 
             $operation->setResponses($resps);
 
+            // security
             $security = $method->getSecurity();
             if (!empty($security)) {
-                $operation->setSecurity([new SecurityRequirement($security)]);
+                $operation->setSecurity([SecurityRequirement::fromArray($security)]);
             }
 
+            // tags
             $tags = $method->getTags();
             if (!empty($tags)) {
                 $operation->setTags($tags);
@@ -337,68 +293,44 @@ class OpenAPI extends OpenAPIAbstract
             }
         }
 
-        $paths[Inflection::transformRoutePlaceholder($resource->getPath())] = $path;
+        $paths[Inflection::convertPlaceholderToCurly($resource->getPath())] = $path;
     }
 
     /**
-     * @param \PSX\Api\Resource $resource
-     * @param \stdClass $definitions
+     * @param TypeInterface $type
+     * @param string $in
+     * @return array
      */
-    protected function buildDefinitions(Resource $resource, \stdClass $definitions)
+    private function getParameters(TypeInterface $type, string $in): array
     {
-        $generator  = new Generator\JsonSchema($this->targetNamespace);
-        $properties = [];
-        $methods    = $resource->getMethods();
+        if (!$type instanceof StructType) {
+            return [];
+        }
 
-        foreach ($methods as $name => $method) {
-            // request
-            $request = $method->getRequest();
-            if ($request instanceof SchemaInterface) {
-                $properties[$this->getIdentifierForProperty($request->getDefinition())] = $request;
-            }
+        $parameters = [];
+        if ($type instanceof StructType) {
+            foreach ($type->getProperties() as $name => $parameter) {
+                $param = $this->getParameter($parameter, in_array($name, $type->getRequired() ?: []));
+                $param->setName($name);
+                $param->setIn($in);
 
-            // response
-            $responses = $method->getResponses();
-            foreach ($responses as $statusCode => $response) {
-                if ($response instanceof SchemaInterface) {
-                    $properties[$this->getIdentifierForProperty($response->getDefinition())] = $response;
-                }
+                $parameters[] = $param;
             }
         }
 
-        foreach ($properties as $name => $property) {
-            $schema = $generator->toArray($property);
-
-            if (isset($schema['definitions'])) {
-                foreach ($schema['definitions'] as $key => $definition) {
-                    $definitions->{$key} = $definition;
-                }
-
-                unset($schema['definitions']);
-            }
-
-            if (isset($schema['$schema'])) {
-                unset($schema['$schema']);
-            }
-
-            if (isset($schema['id'])) {
-                unset($schema['id']);
-            }
-
-            $definitions->{$name} = $schema;
-        }
+        return $parameters;
     }
 
     /**
-     * @param \PSX\Schema\PropertyInterface $parameter
+     * @param \PSX\Schema\TypeInterface $type
      * @return \PSX\Model\OpenAPI\Parameter $param
      */
-    protected function getParameter(PropertyInterface $parameter, $required)
+    protected function getParameter(TypeInterface $type, $required)
     {
         $param = new Parameter();
-        $param->setDescription($parameter->getDescription());
+        $param->setDescription($type->getDescription());
         $param->setRequired($required);
-        $param->setSchema($parameter->toArray());
+        $param->setSchema($type->toArray());
 
         return $param;
     }
@@ -406,7 +338,7 @@ class OpenAPI extends OpenAPIAbstract
     /**
      * @inheritdoc
      */
-    protected function newTag($name, $description)
+    protected function newTag(string $name, string $description)
     {
         $tag = new Tag();
         $tag->setName($name);
@@ -415,17 +347,14 @@ class OpenAPI extends OpenAPIAbstract
         return $tag;
     }
 
-    /**
-     * @param \stdClass $schemas
-     * @return \stdClass
-     */
-    private function resolveRefs(\stdClass $schemas)
+    private function getMediaTypes(string $type)
     {
-        // @TODO find a better way to replace the internal paths probably
-        // provide the definition path to the json schema generator
-        $json = json_encode($schemas);
-        $json = str_replace('#\/definitions\/', '#\/components\/schemas\/', $json);
+        $mediaType = new MediaType();
+        $mediaType->setSchema((object) ['$ref' => '#/components/schemas/' . $type]);
 
-        return json_decode($json);
+        $mediaTypes = new MediaTypes();
+        $mediaTypes['application/json'] = $mediaType;
+
+        return $mediaTypes;
     }
 }

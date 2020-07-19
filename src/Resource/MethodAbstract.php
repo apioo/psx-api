@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,6 @@
 namespace PSX\Api\Resource;
 
 use PSX\Api\TagableTrait;
-use PSX\Schema\Property;
-use PSX\Schema\PropertyInterface;
-use PSX\Schema\SchemaInterface;
 use RuntimeException;
 
 /**
@@ -48,12 +45,12 @@ abstract class MethodAbstract
     protected $description;
 
     /**
-     * @var \PSX\Schema\PropertyInterface
+     * @var string
      */
     protected $queryParameters;
 
     /**
-     * @var \PSX\Schema\SchemaInterface
+     * @var string
      */
     protected $request;
 
@@ -69,81 +66,121 @@ abstract class MethodAbstract
 
     public function __construct()
     {
-        $this->queryParameters = Property::getObject()->setTitle(ucfirst(strtolower($this->getName())) . 'Query');
-        $this->responses       = [];
+        $this->responses = [];
     }
 
-    public function setOperationId($operationId)
+    /**
+     * @param string $operationId
+     */
+    public function setOperationId(?string $operationId)
     {
         $this->operationId = $operationId;
 
         return $this;
     }
 
-    public function getOperationId()
+    /**
+     * @return string
+     */
+    public function getOperationId(): ?string
     {
         return $this->operationId;
     }
 
-    public function setDescription($description)
+    /**
+     * @param string $description
+     */
+    public function setDescription(?string $description)
     {
         $this->description = $description;
 
         return $this;
     }
 
-    public function getDescription()
+    /**
+     * @return string
+     */
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function addQueryParameter($name, PropertyInterface $property = null)
+    /**
+     * @param string $typeName
+     */
+    public function setQueryParameters(?string $typeName)
     {
-        $this->queryParameters->addProperty($name, $property);
+        $this->queryParameters = $typeName;
 
         return $this;
     }
 
-    public function getQueryParameters()
+    /**
+     * @return string
+     */
+    public function getQueryParameters(): ?string
     {
         return $this->queryParameters;
     }
 
-    public function hasQueryParameters()
+    /**
+     * @return bool
+     */
+    public function hasQueryParameters(): bool
     {
-        return count($this->queryParameters->getProperties() ?: []) > 0;
+        return !empty($this->queryParameters);
     }
 
-    public function setRequest(SchemaInterface $schema)
+    /**
+     * @param string $typeName
+     */
+    public function setRequest(?string $typeName)
     {
-        $this->request = $schema;
+        $this->request = $typeName;
 
         return $this;
     }
 
-    public function getRequest()
+    /**
+     * @return string
+     */
+    public function getRequest(): ?string
     {
         return $this->request;
     }
 
-    public function hasRequest()
+    /**
+     * @return bool
+     */
+    public function hasRequest(): bool
     {
-        return $this->request instanceof SchemaInterface;
+        return !empty($this->request);
     }
 
-    public function addResponse($statusCode, SchemaInterface $schema)
+    /**
+     * @param integer $statusCode
+     * @param string $typeName
+     */
+    public function addResponse(int $statusCode, string $typeName)
     {
-        $this->responses[$statusCode] = $schema;
+        $this->responses[$statusCode] = $typeName;
 
         return $this;
     }
 
-    public function getResponses()
+    /**
+     * @return array
+     */
+    public function getResponses(): array
     {
         return $this->responses;
     }
 
-    public function getResponse($statusCode)
+    /**
+     * @param int $statusCode
+     * @return string
+     */
+    public function getResponse(int $statusCode): ?string
     {
         if (isset($this->responses[$statusCode])) {
             return $this->responses[$statusCode];
@@ -152,24 +189,38 @@ abstract class MethodAbstract
         }
     }
 
-    public function hasResponse($statusCode)
+    /**
+     * @param int $statusCode
+     * @return bool
+     */
+    public function hasResponse($statusCode): bool
     {
         return isset($this->responses[$statusCode]);
     }
 
-    public function setSecurity($name, array $scopes)
+    /**
+     * @param string $name
+     * @param array $scopes
+     */
+    public function setSecurity(string $name, array $scopes)
     {
         $this->security[$name] = $scopes;
 
         return $this;
     }
 
-    public function getSecurity()
+    /**
+     * @return array
+     */
+    public function getSecurity(): ?array
     {
         return $this->security;
     }
 
-    public function hasSecurity()
+    /**
+     * @return bool
+     */
+    public function hasSecurity(): bool
     {
         return !empty($this->security);
     }
@@ -179,5 +230,25 @@ abstract class MethodAbstract
      *
      * @return string
      */
-    abstract public function getName();
+    abstract public function getName(): string;
+
+    public function toArray(): array
+    {
+        $responses = [];
+        foreach ($this->responses as $statusCode => $response) {
+            $responses[$statusCode] = $response;
+        }
+
+        return array_filter([
+            'operationId' => $this->operationId,
+            'description' => $this->description,
+            'security' => $this->security,
+            'tags' => $this->tags,
+            'queryParameters' => $this->queryParameters,
+            'request' => $this->request,
+            'responses' => $responses,
+        ], function($value){
+            return $value !== null;
+        });
+    }
 }

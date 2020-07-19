@@ -3,7 +3,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ interface ApiManagerInterface
     /**
      * @param string $source
      * @param string $path
-     * @param string $type
-     * @return mixed
+     * @param int $type
+     * @return SpecificationInterface
      */
-    public function getApi($source, $path, $type = null);
+    public function getApi(string $source, string $path, ?int $type = null): SpecificationInterface;
 }
