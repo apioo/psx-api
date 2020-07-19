@@ -19,7 +19,7 @@
     "psx/json": "^1.0",
     "psx/model": "^3.0",
     "psx/cache": "^1.0",
-    "psx/schema": "^3.0",
+    "psx/schema": "^3.0-RC4",
     "symfony/console": "^4.0|^5.0",
     "symfony/yaml": "^4.0|^5.0",
     "twig/twig": "^2.4"
@@ -38,6 +38,5 @@
     "psr-4": {
       "PSX\\Api\\Tests\\": "tests/"
     }
-  },
-  "minimum-stability": "RC"
+  }
 }
