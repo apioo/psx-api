@@ -96,8 +96,8 @@ class GenerateCommand extends Command
             $filter = null;
         }
 
-        $resources = $this->listing->getAvailableRoutes($filter);
-        $progress  = new ProgressBar($output, count($resources));
+        $routes   = $this->listing->getAvailableRoutes($filter);
+        $progress = new ProgressBar($output, count($routes));
 
         $dir = $input->getArgument('dir');
         if (!is_dir($dir)) {
@@ -109,7 +109,7 @@ class GenerateCommand extends Command
 
         $progress->start();
 
-        foreach ($resources as $resource) {
+        foreach ($routes as $resource) {
             if (!empty($filterRegexp) && !preg_match('~' . $filterRegexp . '~', $resource->getPath())) {
                 continue;
             }
