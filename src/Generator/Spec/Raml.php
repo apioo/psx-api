@@ -140,7 +140,7 @@ class Raml extends GeneratorAbstract
      */
     protected function getResource(Resource $resource, DefinitionsInterface $definitions)
     {
-        $path = Inflection::transformRoutePlaceholder($resource->getPath() ?: '/');
+        $path = Inflection::convertPlaceholderToCurly($resource->getPath() ?: '/');
         $raml = $path . ':' . "\n";
 
         $description = $resource->getDescription();

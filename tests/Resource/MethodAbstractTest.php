@@ -38,16 +38,16 @@ class MethodAbstractTest extends TestCase
     {
         $method = Factory::getMethod('POST');
         $method->setDescription('foobar');
-        $method->addQueryParameter('foo', Property::getString());
-        $method->setRequest(new Schema(Property::getString()));
-        $method->addResponse(200, new Schema(Property::getString()));
+        $method->setQueryParameters('GetQuery');
+        $method->setRequest('Request');
+        $method->addResponse(200, 'Response');
         $method->setTags(['Foo']);
 
         $this->assertEquals('foobar', $method->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $method->getQueryParameters());
+        $this->assertEquals('GetQuery', $method->getQueryParameters());
         $this->assertTrue($method->hasRequest());
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $method->getRequest());
-        $this->assertInstanceOf('PSX\Schema\SchemaInterface', $method->getResponse(200));
+        $this->assertEquals('Request', $method->getRequest());
+        $this->assertEquals('Response', $method->getResponse(200));
         $this->assertTrue($method->hasResponse(200));
         $this->assertFalse($method->hasResponse(201));
         $this->assertTrue($method->hasQueryParameters());

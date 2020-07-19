@@ -21,8 +21,8 @@
             "description": "Test",
             "required": false,
             "schema": {
-              "type": "string",
-              "description": "Test"
+              "description": "Test",
+              "type": "string"
             }
           },
           {
@@ -38,11 +38,11 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string",
               "enum": [
                 "foo",
                 "bar"
-              ]
+              ],
+              "type": "string"
             }
           },
           {
@@ -96,21 +96,22 @@
           }
         ],
         "requestBody": {
+          "description": "GET Request",
           "content": {
             "application\/json": {
               "schema": {
-                "$ref": "#\/components\/schemas\/Song"
+                "$ref": "#\/components\/schemas\/doGetRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "A canonical song",
+            "description": "GET 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/Song"
+                  "$ref": "#\/components\/schemas\/doGet200Response"
                 }
               }
             }
@@ -131,9 +132,61 @@
   },
   "components": {
     "schemas": {
-      "Rating": {
+      "DogetQuery": {
         "type": "object",
+        "properties": {
+          "foo": {
+            "description": "Test",
+            "type": "string"
+          },
+          "bar": {
+            "type": "string"
+          },
+          "baz": {
+            "enum": [
+              "foo",
+              "bar"
+            ],
+            "type": "string"
+          },
+          "boz": {
+            "type": "string",
+            "pattern": "[A-z]+"
+          },
+          "integer": {
+            "type": "integer"
+          },
+          "number": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string"
+          },
+          "boolean": {
+            "type": "boolean"
+          },
+          "string": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "bar"
+        ]
+      },
+      "Path": {
+        "type": "object",
+        "properties": {
+          "fooId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "fooId"
+        ]
+      },
+      "Rating": {
         "title": "Rating",
+        "type": "object",
         "properties": {
           "author": {
             "type": "string"
@@ -147,9 +200,8 @@
         }
       },
       "Song": {
-        "type": "object",
-        "title": "Song",
         "description": "A canonical song",
+        "type": "object",
         "properties": {
           "title": {
             "type": "string"
@@ -163,7 +215,7 @@
           "ratings": {
             "type": "array",
             "items": {
-              "$ref": "#\/components\/schemas\/Rating"
+              "$ref": "#\/components\/schemas\/rating:Rating"
             }
           }
         },
@@ -171,6 +223,12 @@
           "title",
           "artist"
         ]
+      },
+      "doGet200Response": {
+        "$ref": "#\/components\/schemas\/Song"
+      },
+      "doGetRequest": {
+        "$ref": "#\/components\/schemas\/Song"
       }
     }
   }

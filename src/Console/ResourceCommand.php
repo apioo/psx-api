@@ -69,7 +69,7 @@ class ResourceCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $resource  = $this->listing->getResource($input->getArgument('path'), $input->getOption('version'));
+        $resource  = $this->listing->find($input->getArgument('path'), $input->getOption('version'));
         $generator = $this->factory->getGenerator($input->getOption('format'), $input->getOption('config'));
         $response  = $generator->generate($resource);
 

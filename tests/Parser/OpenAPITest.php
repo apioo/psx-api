@@ -25,7 +25,9 @@ use PSX\Api\ApiManager;
 use PSX\Api\Parser\OpenAPI;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
+use PSX\Api\SpecificationInterface;
 use PSX\Schema\SchemaInterface;
+use PSX\Schema\Type\StructType;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -37,22 +39,28 @@ use PSX\Schema\TypeInterface;
  */
 class OpenAPITest extends ParserTestCase
 {
-    protected function getResource()
+    /**
+     * @inheritDoc
+     */
+    protected function getSpecification(): SpecificationInterface
     {
         return $this->apiManager->getApi(__DIR__ . '/openapi/simple.json', '/foo', ApiManager::TYPE_OPENAPI);
     }
 
     public function testParseComplex()
     {
-        $resource = OpenAPI::fromFile(__DIR__ . '/openapi/complex.json', '/foo');
+        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/complex.json', '/foo');
+
+        $resource = $specification->getResourceCollection()->get('/foo');
+        $definitions = $specification->getDefinitions();
 
         $this->assertEquals('/foo', $resource->getPath());
         $this->assertEquals('Test', $resource->getTitle());
         $this->assertEquals('Test description', $resource->getDescription());
 
-        $path = $resource->getPathParameters();
+        $path = $definitions->getType($resource->getPathParameters());
 
-        $this->assertInstanceOf(TypeInterface::class, $path);
+        $this->assertInstanceOf(StructType::class, $path);
         $this->assertInstanceOf(TypeInterface::class, $path->getProperty('fooId'));
 
         $methods = $resource->getMethods();
@@ -61,39 +69,39 @@ class OpenAPITest extends ParserTestCase
 
         $this->assertEquals('A long **Test** description', $methods['GET']->getDescription());
 
-        $query = $methods['GET']->getQueryParameters();
+        $query = $definitions->getType($methods['GET']->getQueryParameters());
 
+        $this->assertInstanceOf(StructType::class, $query);
         $this->assertInstanceOf(TypeInterface::class, $query->getProperty('bar'));
 
-        $request = $methods['GET']->getRequest();
+        $request = $definitions->getType($methods['GET']->getRequest());
 
-        $this->assertInstanceOf(SchemaInterface::class, $request);
-        $this->assertInstanceOf(TypeInterface::class, $request->getType()->getProperty('artist'));
+        $this->assertInstanceOf(StructType::class, $request);
+        $this->assertInstanceOf(TypeInterface::class, $request->getProperty('artist'));
 
-        $response = $methods['GET']->getResponse(200);
+        $response = $definitions->getType($methods['GET']->getResponse(200));
 
-        $this->assertInstanceOf(SchemaInterface::class, $response);
-        $this->assertInstanceOf(TypeInterface::class, $response->getType()->getProperty('artist'));
+        $this->assertInstanceOf(StructType::class, $response);
+        $this->assertInstanceOf(TypeInterface::class, $response->getProperty('artist'));
 
-        $response = $methods['GET']->getResponse(500);
+        $response = $definitions->getType($methods['GET']->getResponse(500));
 
-        $this->assertInstanceOf(SchemaInterface::class, $response);
-        $this->assertInstanceOf(TypeInterface::class, $response->getType()->getProperty('success'));
+        $this->assertInstanceOf(StructType::class, $response);
+        $this->assertInstanceOf(TypeInterface::class, $response->getProperty('success'));
     }
 
     public function testParsePath()
     {
-        $resource = OpenAPI::fromFile(__DIR__ . '/openapi/test.json', '/foo/:fooId');
+        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/test.json', '/foo/:fooId');
 
-        $this->assertInstanceOf(Resource::class, $resource);
+        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/foo/:fooId'));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testParseInvalidPath()
     {
-        OpenAPI::fromFile(__DIR__ . '/openapi/test.json', '/test');
+        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/test.json', '/test');
+
+        $this->assertEquals(0, count($specification->getResourceCollection()));
     }
 
     public function testParseAll()
@@ -102,9 +110,9 @@ class OpenAPITest extends ParserTestCase
         $reader->addNamespace('PSX\\Schema\\Annotation');
 
         $parser = new OpenAPI($reader, __DIR__ . '/openapi');
-        $result = $parser->parseAll(file_get_contents(__DIR__ . '/openapi/simple.json'));
+        $specification = $parser->parse(file_get_contents(__DIR__ . '/openapi/simple.json'));
 
-        $this->assertInstanceOf(ResourceCollection::class, $result);
-        $this->assertEquals(['/foo'], array_keys($result->getArrayCopy()));
+        $this->assertInstanceOf(ResourceCollection::class, $specification->getResourceCollection());
+        $this->assertEquals(['/foo'], array_keys($specification->getResourceCollection()->getArrayCopy()));
     }
 }

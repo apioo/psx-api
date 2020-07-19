@@ -20,6 +20,8 @@
 
 namespace PSX\Api;
 
+use PSX\Api\Listing\FilterInterface;
+
 /**
  * ResourceCollection
  *
@@ -29,6 +31,15 @@ namespace PSX\Api;
  */
 class ResourceCollection extends \ArrayObject
 {
+    public function __construct(iterable $input = [])
+    {
+        parent::__construct([]);
+
+        foreach ($input as $resource) {
+            $this->set($resource);
+        }
+    }
+
     /**
      * @param \PSX\Api\Resource $resource
      */
@@ -41,7 +52,7 @@ class ResourceCollection extends \ArrayObject
      * @param string $path
      * @return boolean
      */
-    public function has($path)
+    public function has(string $path)
     {
         return $this->offsetExists($path);
     }
@@ -50,8 +61,24 @@ class ResourceCollection extends \ArrayObject
      * @param string $path
      * @return \PSX\Api\Resource
      */
-    public function get($path)
+    public function get(string $path)
     {
         return $this->offsetExists($path) ? $this->offsetGet($path) : null;
+    }
+
+    /**
+     * @param FilterInterface $filter
+     * @return ResourceCollection
+     */
+    public function filter(FilterInterface $filter): ResourceCollection
+    {
+        $collection = new ResourceCollection();
+        foreach ($this->getIterator() as $resource) {
+            if ($filter->match($resource->getPath())) {
+                $collection->set($resource);
+            }
+        }
+
+        return $collection;
     }
 }

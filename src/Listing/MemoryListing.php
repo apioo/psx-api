@@ -23,6 +23,9 @@ namespace PSX\Api\Listing;
 use PSX\Api\ListingInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
+use PSX\Api\Specification;
+use PSX\Api\SpecificationInterface;
+use PSX\Schema\Definitions;
 
 /**
  * MemoryListing
@@ -34,63 +37,85 @@ use PSX\Api\ResourceCollection;
 class MemoryListing implements ListingInterface
 {
     /**
-     * @var \PSX\Api\Resource[]
+     * @var array
      */
-    protected $resources;
+    protected $routes;
+
+    /**
+     * @var \PSX\Api\SpecificationInterface
+     */
+    protected $specification;
 
     public function __construct()
     {
-        $this->resources = [];
+        $this->routes = [];
+        $this->specification = new Specification(
+            new ResourceCollection(),
+            new Definitions()
+        );
     }
 
     /**
      * @inheritdoc
      */
-    public function getResourceIndex(FilterInterface $filter = null)
+    public function getAvailableRoutes(FilterInterface $filter = null): iterable
     {
         if ($filter !== null) {
-            return array_values(array_filter($this->resources, function(\PSX\Api\Resource $resource) use ($filter){
-                return $filter->match($resource->getPath());
+            return array_values(array_filter($this->routes, static function(Route $route) use ($filter){
+                return $filter->match($route->getPath());
             }));
         } else {
-            return $this->resources;
+            return $this->routes;
         }
     }
 
     /**
      * @inheritdoc
      */
-    public function getResource($sourcePath, $version = null)
+    public function find(string $path, int $version = null): ?SpecificationInterface
     {
-        foreach ($this->resources as $resource) {
-            if ($resource->getPath() == $sourcePath) {
-                return $resource;
-            }
+        $resource = $this->specification->getResourceCollection()->get($path);
+        if (!$resource instanceof Resource) {
+            return null;
         }
 
-        return null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getResourceCollection($version = null, FilterInterface $filter = null)
-    {
-        $resources  = $this->getResourceIndex($filter);
         $collection = new ResourceCollection();
+        $collection->set($resource);
 
-        foreach ($resources as $resource) {
-            $collection->set($this->getResource($resource->getPath(), $version));
-        }
-
-        return $collection;
+        return new Specification(
+            $collection,
+            $this->specification->getDefinitions()
+        );
     }
 
     /**
-     * @param \PSX\Api\Resource $resource
+     * @inheritdoc
      */
-    public function addResource(Resource $resource)
+    public function findAll(int $version = null, FilterInterface $filter = null): SpecificationInterface
     {
-        $this->resources[] = $resource;
+        if ($filter !== null) {
+            return new Specification(
+                $this->specification->getResourceCollection()->filter($filter),
+                $this->specification->getDefinitions()
+            );
+        } else {
+            return $this->specification;
+        }
+    }
+
+    /**
+     * @param \PSX\Api\Listing\Route $route
+     */
+    public function addRoute(Route $route)
+    {
+        $this->routes[] = $route;
+    }
+
+    /**
+     * @param SpecificationInterface $specification
+     */
+    public function addSpecification(SpecificationInterface $specification)
+    {
+        $this->specification->merge($specification);
     }
 }

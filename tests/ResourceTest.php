@@ -38,7 +38,7 @@ class ResourceTest extends TestCase
         $resource = new Resource(Resource::STATUS_ACTIVE, '/foo');
         $resource->setTitle('foobar');
         $resource->setDescription('foobar');
-        $resource->addPathParameter('foo', Property::getString());
+        $resource->setPathParameters('Path');
         $resource->addMethod(Resource\Factory::getMethod('GET'));
 
         $this->assertEquals(Resource::STATUS_ACTIVE, $resource->getStatus());
@@ -48,8 +48,8 @@ class ResourceTest extends TestCase
         $this->assertEquals('/foo', $resource->getPath());
         $this->assertEquals('foobar', $resource->getTitle());
         $this->assertEquals('foobar', $resource->getDescription());
-        $this->assertInstanceOf('PSX\Schema\PropertyInterface', $resource->getPathParameters());
-        $this->assertInstanceOf('PSX\Api\Resource\MethodAbstract', $resource->getMethod('GET'));
+        $this->assertEquals('Path', $resource->getPathParameters());
+        $this->assertInstanceOf(Resource\MethodAbstract::class, $resource->getMethod('GET'));
         $this->assertEquals(['GET' => $resource->getMethod('GET')], $resource->getMethods());
         $this->assertEquals(['GET'], $resource->getAllowedMethods());
         $this->assertTrue($resource->hasMethod('GET'));

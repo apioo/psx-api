@@ -48,12 +48,12 @@ trait TagableTrait
         return $this;
     }
 
-    public function getTags()
+    public function getTags(): array
     {
         return $this->tags;
     }
 
-    public function hasTags()
+    public function hasTags(): bool
     {
         return !empty($this->tags);
     }

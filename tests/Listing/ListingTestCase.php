@@ -22,8 +22,10 @@ namespace PSX\Api\Tests\Listing;
 
 use PHPUnit\Framework\TestCase;
 use PSX\Api\Listing\Filter\RegxpFilter;
+use PSX\Api\Listing\Route;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
+use PSX\Api\SpecificationInterface;
 
 /**
  * ListingTestCase
@@ -34,95 +36,95 @@ use PSX\Api\ResourceCollection;
  */
 abstract class ListingTestCase extends TestCase
 {
-    public function testGetResourceIndex()
+    public function testGetAvailableRoutes()
     {
-        $listing   = $this->newListing();
-        $resources = $listing->getResourceIndex();
+        $listing = $this->newListing();
+        $routes  = $listing->getAvailableRoutes();
 
-        $this->assertInternalType('array', $resources);
-        $this->assertEquals(2, count($resources));
-        $this->assertInstanceOf(Resource::class, $resources[0]);
-        $this->assertEquals('/foo', $resources[0]->getPath());
-        $this->assertEquals('/bar', $resources[1]->getPath());
+        $this->assertInternalType('array', $routes);
+        $this->assertEquals(2, count($routes));
+        $this->assertInstanceOf(Route::class, $routes[0]);
+        $this->assertEquals('/foo', $routes[0]->getPath());
+        $this->assertEquals('/bar', $routes[1]->getPath());
 
-        $resources = $listing->getResourceIndex();
+        $routes = $listing->getAvailableRoutes();
 
-        $this->assertInternalType('array', $resources);
-        $this->assertEquals(2, count($resources));
-        $this->assertInstanceOf(Resource::class, $resources[0]);
-        $this->assertEquals('/foo', $resources[0]->getPath());
-        $this->assertEquals('/bar', $resources[1]->getPath());
+        $this->assertInternalType('array', $routes);
+        $this->assertEquals(2, count($routes));
+        $this->assertInstanceOf(Route::class, $routes[0]);
+        $this->assertEquals('/foo', $routes[0]->getPath());
+        $this->assertEquals('/bar', $routes[1]->getPath());
     }
 
-    public function testGetResourceIndexFilter()
+    public function testGetAvailableRoutesFilter()
     {
-        $listing   = $this->newListing();
-        $resources = $listing->getResourceIndex(new RegxpFilter('^/foo'));
+        $listing = $this->newListing();
+        $routes  = $listing->getAvailableRoutes(new RegxpFilter('^/foo'));
 
-        $this->assertInternalType('array', $resources);
-        $this->assertEquals(1, count($resources));
-        $this->assertInstanceOf(Resource::class, $resources[0]);
-        $this->assertEquals('/foo', $resources[0]->getPath());
+        $this->assertInternalType('array', $routes);
+        $this->assertEquals(1, count($routes));
+        $this->assertInstanceOf(Route::class, $routes[0]);
+        $this->assertEquals('/foo', $routes[0]->getPath());
 
-        $resources = $listing->getResourceIndex(new RegxpFilter('^/bar'));
+        $routes = $listing->getAvailableRoutes(new RegxpFilter('^/bar'));
 
-        $this->assertInternalType('array', $resources);
-        $this->assertEquals(1, count($resources));
-        $this->assertInstanceOf(Resource::class, $resources[0]);
-        $this->assertEquals('/bar', $resources[0]->getPath());
+        $this->assertInternalType('array', $routes);
+        $this->assertEquals(1, count($routes));
+        $this->assertInstanceOf(Route::class, $routes[0]);
+        $this->assertEquals('/bar', $routes[0]->getPath());
     }
 
-    public function testGetResource()
+    public function testFind()
     {
-        $listing  = $this->newListing();
-        $resource = $listing->getResource('/foo');
+        $listing = $this->newListing();
+        $specification = $listing->find('/foo');
 
-        $this->assertInstanceOf(Resource::class, $resource);
-        $this->assertEquals('/foo', $resource->getPath());
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
+        $this->assertEquals('/foo', $specification->getResourceCollection()->get('/foo')->getPath());
 
-        $resource = $listing->getResource('/foo');
+        $specification = $listing->find('/foo');
 
-        $this->assertInstanceOf(Resource::class, $resource);
-        $this->assertEquals('/foo', $resource->getPath());
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
+        $this->assertEquals('/foo', $specification->getResourceCollection()->get('/foo')->getPath());
 
-        $resource = $listing->getResource('/bar');
+        $specification = $listing->find('/bar');
 
-        $this->assertInstanceOf(Resource::class, $resource);
-        $this->assertEquals('/bar', $resource->getPath());
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
+        $this->assertEquals('/bar', $specification->getResourceCollection()->get('/bar')->getPath());
     }
 
-    public function testGetResourceCollection()
+    public function testFindAll()
     {
-        $listing    = $this->newListing();
-        $collection = $listing->getResourceCollection();
+        $listing = $this->newListing();
+        $specification = $listing->findAll();
 
-        $this->assertInstanceOf(ResourceCollection::class, $collection);
-        $this->assertEquals(2, $collection->count());
-        $this->assertInstanceOf(Resource::class, $collection->get('/foo'));
-        $this->assertInstanceOf(Resource::class, $collection->get('/bar'));
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
+        $this->assertEquals(2, $specification->getResourceCollection()->count());
+        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/foo'));
+        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/bar'));
 
-        $collection = $listing->getResourceCollection();
+        $specification = $listing->findAll();
 
-        $this->assertInstanceOf(ResourceCollection::class, $collection);
-        $this->assertEquals(2, $collection->count());
-        $this->assertInstanceOf(Resource::class, $collection->get('/foo'));
-        $this->assertInstanceOf(Resource::class, $collection->get('/bar'));
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
+        $this->assertEquals(2, $specification->getResourceCollection()->count());
+        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/foo'));
+        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/bar'));
     }
 
-    public function testGetResourceCollectionFilter()
+    public function testFindAllFilter()
     {
-        $listing    = $this->newListing();
-        $collection = $listing->getResourceCollection(null, new RegxpFilter('^/foo'));
+        $listing = $this->newListing();
+        $specification = $listing->findAll(null, new RegxpFilter('^/foo'));
 
-        $this->assertInstanceOf(ResourceCollection::class, $collection);
-        $this->assertEquals(1, $collection->count());
-        $this->assertInstanceOf(Resource::class, $collection->get('/foo'));
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
+        $this->assertEquals(1, $specification->getResourceCollection()->count());
+        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/foo'));
 
-        $collection = $listing->getResourceCollection(null, new RegxpFilter('^/bar'));
+        $specification = $listing->findAll(null, new RegxpFilter('^/bar'));
 
-        $this->assertInstanceOf(ResourceCollection::class, $collection);
-        $this->assertEquals(1, $collection->count());
-        $this->assertInstanceOf(Resource::class, $collection->get('/bar'));
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
+        $this->assertEquals(1, $specification->getResourceCollection()->count());
+        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/bar'));
     }
 
     /**

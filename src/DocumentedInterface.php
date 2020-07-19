@@ -35,7 +35,7 @@ interface DocumentedInterface
      * version was provided the most recent version should be returned
      *
      * @param integer $version
-     * @return \PSX\Api\Resource
+     * @return SpecificationInterface
      */
-    public function getDocumentation($version = null);
+    public function getDocumentation($version = null): SpecificationInterface;
 }

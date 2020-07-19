@@ -24,13 +24,18 @@ use Doctrine\Common\Annotations\Reader;
 use PSX\Api\Annotation as Anno;
 use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
+use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
+use PSX\Schema\Definitions;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\SchemaInterface;
 use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\Type\NumberType;
+use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\Type\ScalarType;
 use PSX\Schema\Type\StringType;
+use PSX\Schema\Type\StructType;
 use PSX\Schema\Type\TypeAbstract;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
@@ -69,18 +74,21 @@ class Annotation implements ParserInterface
     /**
      * @inheritdoc
      */
-    public function parse(string $schema): SpecificationInterface
+    public function parse(string $schema, ?string $path = null): SpecificationInterface
     {
         if (!is_string($schema)) {
             throw new RuntimeException('Schema must be a class name');
         }
 
         $resource    = new Resource(Resource::STATUS_ACTIVE, $path);
+        $definitions = new Definitions();
+
         $controller  = new ReflectionClass($schema);
         $basePath    = dirname($controller->getFileName());
         $required    = [];
         $annotations = $this->annotationReader->getClassAnnotations($controller);
 
+        $path = TypeFactory::getStruct();
         foreach ($annotations as $annotation) {
             if ($annotation instanceof Anno\Title) {
                 $resource->setTitle($annotation->getTitle());
@@ -89,23 +97,30 @@ class Annotation implements ParserInterface
             } elseif ($annotation instanceof Anno\PathParam) {
                 $required[] = $annotation->getName();
 
-                $resource->setPathParameters($annotation->getName(), $this->getParameter($annotation));
+                $path->addProperty($annotation->getName(), $this->getParameter($annotation));
             }
         }
 
-        $resource->getPathParameters()->setRequired($required);
+        if ($path->getProperties()) {
+            $typeName = 'Path';
 
-        $this->parseMethods($controller, $resource, $basePath);
+            $path->setRequired($required);
+            $definitions->addType($typeName, $path);
+            $resource->setPathParameters($typeName);
+        }
 
-        return $resource;
+        $this->parseMethods($controller, $resource, $definitions, $basePath);
+
+        return Specification::fromResource($resource, $definitions);
     }
 
     /**
      * @param \ReflectionClass $controller
      * @param \PSX\Api\Resource $resource
+     * @param DefinitionsInterface $definitions
      * @param string $basePath
      */
-    private function parseMethods(ReflectionClass $controller, Resource $resource, $basePath)
+    private function parseMethods(ReflectionClass $controller, Resource $resource, DefinitionsInterface $definitions, $basePath)
     {
         $methods = [
             'GET'    => 'doGet',
@@ -128,6 +143,8 @@ class Annotation implements ParserInterface
 
             $method->setOperationId($reflection->getName());
 
+            $query = TypeFactory::getStruct();
+
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof Anno\Description) {
                     $method->setDescription($this->getDescription($annotation, $basePath));
@@ -136,15 +153,15 @@ class Annotation implements ParserInterface
                         $required[] = $annotation->getName();
                     }
 
-                    $method->addQueryParameter($annotation->getName(), $this->getParameter($annotation));
+                    $query->addProperty($annotation->getName(), $this->getParameter($annotation));
                 } elseif ($annotation instanceof Anno\Incoming) {
-                    $schema = $this->getBodySchema($annotation, $basePath);
-                    if ($schema instanceof SchemaInterface) {
+                    $schema = $this->getBodySchema($annotation, $definitions, $basePath, $reflection->getName() . 'Request');
+                    if (!empty($schema)) {
                         $method->setRequest($schema);
                     }
                 } elseif ($annotation instanceof Anno\Outgoing) {
-                    $schema = $this->getBodySchema($annotation, $basePath);
-                    if ($schema instanceof SchemaInterface) {
+                    $schema = $this->getBodySchema($annotation, $definitions, $basePath, $reflection->getName() . $annotation->getCode() . 'Response');
+                    if (!empty($schema)) {
                         $method->addResponse($annotation->getCode(), $schema);
                     }
                 } elseif ($annotation instanceof Anno\Exclude) {
@@ -153,13 +170,19 @@ class Annotation implements ParserInterface
                 }
             }
 
-            $method->getQueryParameters()->setRequired($required);
+            if ($query->getProperties()) {
+                $typeName = ucfirst(strtolower($methodName)) . 'Query';
+
+                $query->setRequired($required);
+                $definitions->addType($typeName, $query);
+                $method->setQueryParameters($typeName);
+            }
 
             $resource->addMethod($method);
         }
     }
 
-    private function getBodySchema(Anno\SchemaAbstract $annotation, $basePath)
+    private function getBodySchema(Anno\SchemaAbstract $annotation, DefinitionsInterface $definitions, string $basePath, string $typeName): string
     {
         $schema = $annotation->getSchema();
         $type   = $annotation->getType();
@@ -170,7 +193,11 @@ class Annotation implements ParserInterface
             $schema = $basePath . '/' . $schema;
         }
 
-        return $this->schemaManager->getSchema($schema, $type);
+        $schema = $this->schemaManager->getSchema($schema, $type);
+
+        $definitions->addSchema($typeName, $schema);
+
+        return $typeName;
     }
 
     private function getDescription(Anno\Description $annotation, $basePath)

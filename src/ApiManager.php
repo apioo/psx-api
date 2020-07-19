@@ -38,7 +38,6 @@ use PSX\Schema\SchemaManagerInterface;
 class ApiManager implements ApiManagerInterface
 {
     const TYPE_ANNOTATION = 1;
-    const TYPE_RAML = 2;
     const TYPE_OPENAPI = 3;
 
     /**
@@ -78,12 +77,8 @@ class ApiManager implements ApiManagerInterface
     /**
      * @inheritdoc
      */
-    public function getApi($source, $path, $type = null)
+    public function getApi(string $source, string $path, ?int $type = null): SpecificationInterface
     {
-        if (!is_string($source)) {
-            throw new \InvalidArgumentException('API name must be a string');
-        }
-
         $item = null;
         if (!$this->debug) {
             $item = $this->cache->getItem($source);
@@ -96,9 +91,7 @@ class ApiManager implements ApiManagerInterface
             $type = $this->guessTypeFromSource($source);
         }
 
-        if ($type === self::TYPE_RAML) {
-            $api = Raml::fromFile($source, $path);
-        } elseif ($type === self::TYPE_OPENAPI) {
+        if ($type === self::TYPE_OPENAPI) {
             $api = OpenAPI::fromFile($source, $path);
         } elseif ($type === self::TYPE_ANNOTATION) {
             $api = $this->parser->parse($source, $path);
@@ -114,11 +107,9 @@ class ApiManager implements ApiManagerInterface
         return $api;
     }
 
-    private function guessTypeFromSource($source)
+    private function guessTypeFromSource($source): ?int
     {
-        if (strpos($source, '.raml') !== false) {
-            return self::TYPE_RAML;
-        } elseif (strpos($source, '.json') !== false) {
+        if (strpos($source, '.json') !== false) {
             return self::TYPE_OPENAPI;
         } elseif (class_exists($source)) {
             return self::TYPE_ANNOTATION;

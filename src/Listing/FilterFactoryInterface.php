@@ -35,5 +35,5 @@ interface FilterFactoryInterface
      * @param string $name
      * @return \PSX\Api\Listing\FilterInterface|null
      */
-    public function getFilter($name);
+    public function getFilter(string $name): ?FilterInterface;
 }

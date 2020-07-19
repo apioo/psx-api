@@ -21,6 +21,7 @@
 namespace PSX\Api\Tests;
 
 use PSX\Api\Resource;
+use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 
 /**
@@ -34,24 +35,24 @@ class ApiManagerTest extends ApiManagerTestCase
 {
     public function testGetApiAnnotation()
     {
-        $resource = $this->apiManager->getApi(TestController::class, '/foo');
+        $specification = $this->apiManager->getApi(TestController::class, '/foo');
 
-        $this->assertInstanceOf(Resource::class, $resource);
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
     }
 
-    public function testGetApiRaml()
+    public function testGetApiOpenAPI()
     {
-        $resource = $this->apiManager->getApi(__DIR__ . '/Parser/raml/test.raml', '/foo');
+        $specification = $this->apiManager->getApi(__DIR__ . '/Parser/openapi/test.json', '/foo/:fooId');
 
-        $this->assertInstanceOf(Resource::class, $resource);
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException \RuntimeException
      */
-    public function testGetApiInvalidDataType()
+    public function testGetApiFileDoesNotExist()
     {
-        $this->apiManager->getApi([], '/foo');
+        $this->apiManager->getApi(__DIR__ . '/Parser/openapi/unknown.json', '/foo/:fooId');
     }
 
     /**

@@ -39,7 +39,7 @@ class RegxpFilter implements FilterInterface
     /**
      * @param string $pattern
      */
-    public function __construct($pattern)
+    public function __construct(string $pattern)
     {
         $this->pattern = $pattern;
     }
@@ -47,7 +47,7 @@ class RegxpFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function match($path)
+    public function match(string $path): bool
     {
         return !!preg_match('~' . $this->pattern . '~', $path);
     }
@@ -55,7 +55,7 @@ class RegxpFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getId()
+    public function getId(): string
     {
         return substr(md5($this->pattern), 0, 8);
     }

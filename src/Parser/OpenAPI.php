@@ -41,11 +41,13 @@ use PSX\Model\OpenAPI\RequestBody;
 use PSX\Model\OpenAPI\Response;
 use PSX\Model\OpenAPI\Responses;
 use PSX\Schema\Definitions;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Parser as SchemaParser;
 use PSX\Schema\Schema;
 use PSX\Schema\SchemaInterface;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Type\ReferenceType;
+use PSX\Schema\Type\StructType;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 use PSX\Schema\Visitor\TypeVisitor;
@@ -99,15 +101,23 @@ class OpenAPI implements ParserInterface
     /**
      * @inheritdoc
      */
-    public function parse(string $schema): SpecificationInterface
+    public function parse(string $schema, ?string $path = null): SpecificationInterface
     {
         $this->parseOpenAPI($schema);
 
         $collection = new ResourceCollection();
 
+        if ($path !== null) {
+            $path = Inflection::convertPlaceholderToCurly($path);
+        }
+
         $paths = $this->document->getPaths();
-        foreach ($paths as $path => $spec) {
-            $resource = $this->parseResource($spec, Inflection::transformRoutePlaceholder($path));
+        foreach ($paths as $key => $spec) {
+            if ($path !== null && $path !== $key) {
+                continue;
+            }
+
+            $resource = $this->parseResource($spec, Inflection::convertPlaceholderToColon($key));
             $collection->set($resource);
         }
 
@@ -135,6 +145,8 @@ class OpenAPI implements ParserInterface
             'patch' => $data->getPatch(),
         ];
 
+        $typePrefix = $this->getTypePrefix($path);
+
         foreach ($methods as $methodName => $operation) {
             if (!$operation instanceof Operation) {
                 continue;
@@ -147,8 +159,8 @@ class OpenAPI implements ParserInterface
             $method->setTags($operation->getTags() ?? []);
 
             $this->parseQueryParameters($method, $operation);
-            $this->parseRequest($method, $operation->getRequestBody());
-            $this->parseResponses($method, $operation);
+            $this->parseRequest($method, $operation->getRequestBody(), $typePrefix);
+            $this->parseResponses($method, $operation, $typePrefix);
 
             $resource->addMethod($method);
         }
@@ -162,15 +174,13 @@ class OpenAPI implements ParserInterface
      */
     private function parseUriParameters(Resource $resource, PathItem $data)
     {
-        [$properties, $required] = $this->parseParameters('path', $data->getParameters() ?? []);
+        $type = $this->parseParameters('path', $data->getParameters() ?? []);
 
-        foreach ($properties as $name => $property) {
-            $resource->addPathParameter($name, $property);
-        }
+        $typeName = 'Path';
+        $this->definitions->addType($typeName, $type);
 
-        if (!empty($required)) {
-            $resource->getPathParameters()->setRequired($required);
-        }
+        $resource->setPathParameters($typeName);
+
     }
 
     /**
@@ -179,25 +189,23 @@ class OpenAPI implements ParserInterface
      */
     private function parseQueryParameters(Resource\MethodAbstract $method, Operation $data)
     {
-        [$properties, $required] = $this->parseParameters('query', $data->getParameters() ?? []);
+        $type = $this->parseParameters('query', $data->getParameters() ?? []);
 
-        foreach ($properties as $name => $property) {
-            $method->addQueryParameter($name, $property);
-        }
+        $typeName = ucfirst(strtolower($method->getName())) . 'Query';
+        $this->definitions->addType($typeName, $type);
 
-        if (!empty($required)) {
-            $method->getQueryParameters()->setRequired($required);
-        }
+        $method->setQueryParameters($typeName);
     }
 
     /**
      * @param string $type
      * @param array $data
-     * @return array
+     * @return StructType
+     * @throws \PSX\Schema\TypeNotFoundException
      */
-    private function parseParameters(string $type, array $data)
+    private function parseParameters(string $type, array $data): StructType
     {
-        $properties = [];
+        $return = TypeFactory::getStruct();
         $required   = [];
 
         foreach ($data as $index => $definition) {
@@ -205,7 +213,7 @@ class OpenAPI implements ParserInterface
 
             if ($name !== null) {
                 if ($property instanceof TypeInterface) {
-                    $properties[$name] = $property;
+                    $return->addProperty($name, $property);
                 }
 
                 if ($isRequired !== null && $isRequired === true) {
@@ -214,10 +222,9 @@ class OpenAPI implements ParserInterface
             }
         }
 
-        return [
-            $properties,
-            $required,
-        ];
+        $return->setRequired($required);
+
+        return $return;
     }
 
     /**
@@ -260,22 +267,22 @@ class OpenAPI implements ParserInterface
         ];
     }
 
-    private function parseRequest(Resource\MethodAbstract $method, $requestBody)
+    private function parseRequest(Resource\MethodAbstract $method, $requestBody, string $typePrefix)
     {
         if ($requestBody instanceof Reference) {
-            return $this->parseRequest($method, $this->resolveReference($requestBody->getRef()));
+            return $this->parseRequest($method, $this->resolveReference($requestBody->getRef()), $typePrefix);
         } elseif ($requestBody instanceof RequestBody) {
             $mediaTypes = $requestBody->getContent();
             if ($mediaTypes instanceof MediaTypes) {
-                $schema = $this->getSchemaFromMediaTypes($mediaTypes);
-                if ($schema instanceof SchemaInterface) {
+                $schema = $this->getSchemaFromMediaTypes($mediaTypes, $typePrefix . ucfirst(strtolower($method->getName())) . 'Request');
+                if (!empty($schema)) {
                     $method->setRequest($schema);
                 }
             }
         }
     }
 
-    private function parseResponses(Resource\MethodAbstract $method, Operation $operation)
+    private function parseResponses(Resource\MethodAbstract $method, Operation $operation, string $typePrefix)
     {
         $responses = $operation->getResponses();
         if ($responses instanceof Responses) {
@@ -288,8 +295,8 @@ class OpenAPI implements ParserInterface
 
                 $mediaTypes = $response->getContent();
                 if ($mediaTypes instanceof MediaTypes) {
-                    $schema = $this->getSchemaFromMediaTypes($mediaTypes);
-                    if ($schema instanceof SchemaInterface) {
+                    $schema = $this->getSchemaFromMediaTypes($mediaTypes, $typePrefix . ucfirst(strtolower($method->getName())) . $statusCode . 'Response');
+                    if (!empty($schema)) {
                         $method->addResponse($statusCode, $schema);
                     }
                 }
@@ -297,7 +304,7 @@ class OpenAPI implements ParserInterface
         }
     }
 
-    private function getSchemaFromMediaTypes(MediaTypes $mediaTypes): ?SchemaInterface
+    private function getSchemaFromMediaTypes(MediaTypes $mediaTypes, string $typeName): ?string
     {
         $mediaType = $mediaTypes['application/json'] ?? null;
         if (!$mediaType instanceof MediaType) {
@@ -311,10 +318,12 @@ class OpenAPI implements ParserInterface
 
         $type = $this->schemaParser->parseType($schema);
         if ($type instanceof ReferenceType) {
-            $type = $this->definitions->getType($type->getRef());
+            return $type->getRef();
         }
 
-        return new Schema($type, $this->definitions);
+        $this->definitions->addType($typeName, $type);
+
+        return $typeName;
     }
 
     private function resolveReference(string $reference)
@@ -355,7 +364,21 @@ class OpenAPI implements ParserInterface
         $this->document    = (new SchemaTraverser())->traverse($data, $schema, new TypeVisitor());
     }
 
-    public static function fromFile(string $file, string $path): Resource
+    /**
+     * @param string $path
+     * @return string
+     */
+    private function getTypePrefix(string $path): string
+    {
+        $parts = explode('/', $path);
+        $parts = array_map(function($part){
+            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
+        }, $parts);
+
+        return implode('', $parts);
+    }
+
+    public static function fromFile(string $file, string $path): SpecificationInterface
     {
         if (!empty($file) && is_file($file)) {
             $reader = new SimpleAnnotationReader();

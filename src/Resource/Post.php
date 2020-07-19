@@ -29,7 +29,7 @@ namespace PSX\Api\Resource;
  */
 class Post extends MethodAbstract
 {
-    public function getName()
+    public function getName(): string
     {
         return 'POST';
     }

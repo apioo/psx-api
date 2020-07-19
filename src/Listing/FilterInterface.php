@@ -35,12 +35,12 @@ interface FilterInterface
      * @param string $path
      * @return boolean
      */
-    public function match($path);
+    public function match(string $path): bool;
 
     /**
      * Returns a string which represents this filter constraint
      * 
      * @return string
      */
-    public function getId();
+    public function getId(): string;
 }

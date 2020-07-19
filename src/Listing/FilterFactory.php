@@ -49,7 +49,7 @@ class FilterFactory implements FilterFactoryInterface
      * @param string $name
      * @param \PSX\Api\Listing\FilterInterface $filter
      */
-    public function addFilter($name, FilterInterface $filter)
+    public function addFilter(string $name, FilterInterface $filter)
     {
         $this->container[$name] = $filter;
     }
@@ -57,7 +57,7 @@ class FilterFactory implements FilterFactoryInterface
     /**
      * @param string $name
      */
-    public function setDefault($name)
+    public function setDefault(string $name)
     {
         $this->default = $name;
     }
@@ -65,7 +65,7 @@ class FilterFactory implements FilterFactoryInterface
     /**
      * @inheritdoc
      */
-    public function getFilter($name)
+    public function getFilter(string $name): ?FilterInterface
     {
         if (isset($this->container[$name])) {
             return $this->container[$name];

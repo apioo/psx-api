@@ -77,7 +77,7 @@ class GenerateCommandTest extends TestCase
         $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
 
         $listing = new MemoryListing();
-        $listing->addResource($apiManager->getApi(TestController::class, '/foo'));
+        $listing->addSpecification($apiManager->getApi(TestController::class, '/foo'));
 
         $factory = new GeneratorFactory($schemaReader, 'urn:phpsx.org:2016#', 'http://foo.com', '');
 

@@ -33,7 +33,7 @@ class Factory
      * @param string $methodName
      * @return \PSX\Api\Resource\MethodAbstract
      */
-    public static function getMethod($methodName)
+    public static function getMethod($methodName): ?MethodAbstract
     {
         switch ($methodName) {
             case 'DELETE':

@@ -36,7 +36,7 @@ class TestController
     {
     }
 
-    public function getDocumentation($version = null)
+    public function getDocumentation(?int $version = null)
     {
         return null;
     }

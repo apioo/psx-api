@@ -96,7 +96,7 @@ class GenerateCommand extends Command
             $filter = null;
         }
 
-        $resources = $this->listing->getResourceIndex($filter);
+        $resources = $this->listing->getAvailableRoutes($filter);
         $progress  = new ProgressBar($output, count($resources));
 
         $dir = $input->getArgument('dir');
@@ -116,7 +116,7 @@ class GenerateCommand extends Command
 
             $progress->setMessage('Generating ' . $resource->getPath());
 
-            $content = $generator->generate($this->listing->getResource($resource->getPath()));
+            $content = $generator->generate($this->listing->find($resource->getPath()));
 
             if ($content instanceof Chunks) {
                 $content->writeTo($dir . '/sdk-' . $format .  '.zip');

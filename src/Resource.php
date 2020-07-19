@@ -80,7 +80,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
      * @param integer $status
      * @param string $path
      */
-    public function __construct($status, $path)
+    public function __construct(int $status, string $path)
     {
         $this->status  = $status;
         $this->path    = $path;
@@ -90,7 +90,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
     /**
      * @return boolean
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->status == self::STATUS_ACTIVE;
     }
@@ -98,7 +98,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
     /**
      * @return boolean
      */
-    public function isDeprecated()
+    public function isDeprecated(): bool
     {
         return $this->status == self::STATUS_DEPRECATED;
     }
@@ -106,7 +106,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
     /**
      * @return boolean
      */
-    public function isClosed()
+    public function isClosed(): bool
     {
         return $this->status == self::STATUS_CLOSED;
     }
@@ -114,7 +114,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
     /**
      * @return boolean
      */
-    public function isDevelopment()
+    public function isDevelopment(): bool
     {
         return $this->status == self::STATUS_DEVELOPMENT;
     }
@@ -122,7 +122,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
     /**
      * @return integer
      */
-    public function getStatus()
+    public function getStatus(): int
     {
         return $this->status;
     }
@@ -130,7 +130,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
     /**
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -138,15 +138,17 @@ class Resource implements IteratorAggregate, \JsonSerializable
     /**
      * @param string $title
      */
-    public function setTitle($title)
+    public function setTitle(?string $title)
     {
         $this->title = $title;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
@@ -154,15 +156,17 @@ class Resource implements IteratorAggregate, \JsonSerializable
     /**
      * @param string $description
      */
-    public function setDescription($description)
+    public function setDescription(?string $description)
     {
         $this->description = $description;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -170,15 +174,17 @@ class Resource implements IteratorAggregate, \JsonSerializable
     /**
      * @param string $typeName
      */
-    public function setPathParameters(string $typeName)
+    public function setPathParameters(?string $typeName)
     {
         $this->pathParameters = $typeName;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getPathParameters()
+    public function getPathParameters(): ?string
     {
         return $this->pathParameters;
     }
@@ -186,7 +192,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
     /**
      * @return bool
      */
-    public function hasPathParameters()
+    public function hasPathParameters(): bool
     {
         return !empty($this->pathParameters);
     }
@@ -197,13 +203,15 @@ class Resource implements IteratorAggregate, \JsonSerializable
     public function addMethod(MethodAbstract $method)
     {
         $this->methods[$method->getName()] = $method;
+
+        return $this;
     }
 
     /**
      * @param string $method
      * @return \PSX\Api\Resource\MethodAbstract
      */
-    public function getMethod($method)
+    public function getMethod($method): ?MethodAbstract
     {
         if (isset($this->methods[$method])) {
             return $this->methods[$method];
@@ -215,7 +223,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
     /**
      * @return \PSX\Api\Resource\MethodAbstract[]
      */
-    public function getMethods()
+    public function getMethods(): array
     {
         return $this->methods;
     }
@@ -223,7 +231,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
     /**
      * @return array
      */
-    public function getAllowedMethods()
+    public function getAllowedMethods(): array
     {
         return array_keys($this->methods);
     }
@@ -232,7 +240,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
      * @param string $method
      * @return boolean
      */
-    public function hasMethod($method)
+    public function hasMethod($method): bool
     {
         return isset($this->methods[$method]);
     }

@@ -32,8 +32,8 @@ interface ApiManagerInterface
     /**
      * @param string $source
      * @param string $path
-     * @param string $type
-     * @return mixed
+     * @param int $type
+     * @return SpecificationInterface
      */
-    public function getApi($source, $path, $type = null);
+    public function getApi(string $source, string $path, ?int $type = null): SpecificationInterface;
 }

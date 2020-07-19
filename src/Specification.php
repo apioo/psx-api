@@ -64,6 +64,18 @@ class Specification implements SpecificationInterface
     }
 
     /**
+     * @param SpecificationInterface $specification
+     */
+    public function merge(SpecificationInterface $specification)
+    {
+        foreach ($specification->getResourceCollection() as $resource) {
+            $this->resourceCollection->set($resource);
+        }
+
+        $this->definitions->merge($specification->getDefinitions());
+    }
+
+    /**
      * @param Resource $resource
      * @param DefinitionsInterface $definitions
      * @return Specification

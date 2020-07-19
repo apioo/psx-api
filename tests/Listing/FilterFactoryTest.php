@@ -66,7 +66,6 @@ class FilterFactoryTest extends TestCase
     {
         $factory = new FilterFactory();
 
-        $this->assertNull($factory->getFilter(null));
         $this->assertNull($factory->getFilter(''));
         $this->assertNull($factory->getFilter('foo'));
     }

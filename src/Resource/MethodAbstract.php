@@ -72,7 +72,7 @@ abstract class MethodAbstract
     /**
      * @param string $operationId
      */
-    public function setOperationId(string $operationId)
+    public function setOperationId(?string $operationId)
     {
         $this->operationId = $operationId;
 
@@ -82,7 +82,7 @@ abstract class MethodAbstract
     /**
      * @return string
      */
-    public function getOperationId()
+    public function getOperationId(): ?string
     {
         return $this->operationId;
     }
@@ -90,7 +90,7 @@ abstract class MethodAbstract
     /**
      * @param string $description
      */
-    public function setDescription(string $description)
+    public function setDescription(?string $description)
     {
         $this->description = $description;
 
@@ -100,7 +100,7 @@ abstract class MethodAbstract
     /**
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -108,7 +108,7 @@ abstract class MethodAbstract
     /**
      * @param string $typeName
      */
-    public function setQueryParameters(string $typeName)
+    public function setQueryParameters(?string $typeName)
     {
         $this->queryParameters = $typeName;
 
@@ -118,7 +118,7 @@ abstract class MethodAbstract
     /**
      * @return string
      */
-    public function getQueryParameters()
+    public function getQueryParameters(): ?string
     {
         return $this->queryParameters;
     }
@@ -126,7 +126,7 @@ abstract class MethodAbstract
     /**
      * @return bool
      */
-    public function hasQueryParameters()
+    public function hasQueryParameters(): bool
     {
         return !empty($this->queryParameters);
     }
@@ -134,7 +134,7 @@ abstract class MethodAbstract
     /**
      * @param string $typeName
      */
-    public function setRequest(string $typeName)
+    public function setRequest(?string $typeName)
     {
         $this->request = $typeName;
 
@@ -144,7 +144,7 @@ abstract class MethodAbstract
     /**
      * @return string
      */
-    public function getRequest()
+    public function getRequest(): ?string
     {
         return $this->request;
     }
@@ -152,7 +152,7 @@ abstract class MethodAbstract
     /**
      * @return bool
      */
-    public function hasRequest()
+    public function hasRequest(): bool
     {
         return !empty($this->request);
     }
@@ -171,7 +171,7 @@ abstract class MethodAbstract
     /**
      * @return array
      */
-    public function getResponses()
+    public function getResponses(): array
     {
         return $this->responses;
     }
@@ -180,7 +180,7 @@ abstract class MethodAbstract
      * @param int $statusCode
      * @return string
      */
-    public function getResponse(int $statusCode)
+    public function getResponse(int $statusCode): ?string
     {
         if (isset($this->responses[$statusCode])) {
             return $this->responses[$statusCode];
@@ -193,7 +193,7 @@ abstract class MethodAbstract
      * @param int $statusCode
      * @return bool
      */
-    public function hasResponse($statusCode)
+    public function hasResponse($statusCode): bool
     {
         return isset($this->responses[$statusCode]);
     }
@@ -212,7 +212,7 @@ abstract class MethodAbstract
     /**
      * @return array
      */
-    public function getSecurity()
+    public function getSecurity(): ?array
     {
         return $this->security;
     }
@@ -220,7 +220,7 @@ abstract class MethodAbstract
     /**
      * @return bool
      */
-    public function hasSecurity()
+    public function hasSecurity(): bool
     {
         return !empty($this->security);
     }
@@ -230,7 +230,7 @@ abstract class MethodAbstract
      *
      * @return string
      */
-    abstract public function getName();
+    abstract public function getName(): string;
 
     public function toArray(): array
     {

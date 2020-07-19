@@ -18,55 +18,69 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Util;
+namespace PSX\Api\Listing;
 
 /**
- * Inflection
+ * Route
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Inflection
+class Route implements \JsonSerializable
 {
     /**
-     * Transforms placeholder of an PSX route "/bar/:foo" into an curly bracket
-     * "/bar/{foo}" route
-     *
-     * @param string $path
-     * @return string
+     * @var string
      */
-    public static function convertPlaceholderToCurly(string $path)
-    {
-        $path = preg_replace('/(\:|\*)(\w+)/i', '{$2}', $path);
-        $path = preg_replace('/(\$)(\w+)(\<(.*)\>)/iU', '{$2}', $path);
+    private $path;
+    
+    /**
+     * @var array
+     */
+    private $methods;
+    
+    /**
+     * @var string
+     */
+    private $version;
 
-        return $path;
+    public function __construct(string $path, array $methods, string $version)
+    {
+        $this->path = $path;
+        $this->methods = $methods;
+        $this->version = $version;
     }
 
     /**
-     * @param string $path
      * @return string
      */
-    public static function convertPlaceholderToColon(string $path)
+    public function getPath(): string
     {
-        $path = preg_replace('/(\{(\w+)\})/i', ':$2', $path);
-
-        return $path;
+        return $this->path;
     }
 
     /**
-     * Generates an title "BarFoo" based on an PSX route "/bar/:foo"
-     *
-     * @param string $path
+     * @return array
+     */
+    public function getMethods(): array
+    {
+        return $this->methods;
+    }
+
+    /**
      * @return string
      */
-    public static function generateTitleFromRoute(string $path)
+    public function getVersion(): string
     {
-        $path = str_replace([':', '*', '$'], '', $path);
-        $path = preg_replace('/\<(.*)\>/iU', '', $path);
-        $path = str_replace(' ', '', ucwords(str_replace('/', ' ', $path)));
+        return $this->version;
+    }
 
-        return $path;
+    public function jsonSerialize()
+    {
+        return [
+            'path' => $this->path,
+            'methods' => $this->methods,
+            'version' => $this->version,
+        ];
     }
 }

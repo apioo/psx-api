@@ -34,7 +34,8 @@ interface ParserInterface
      * Parses a specification and returns a specification object
      *
      * @param string $schema
+     * @param string|null $path
      * @return SpecificationInterface
      */
-    public function parse(string $schema): SpecificationInterface;
+    public function parse(string $schema, ?string $path = null): SpecificationInterface;
 }

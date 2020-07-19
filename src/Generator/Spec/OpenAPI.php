@@ -293,7 +293,7 @@ class OpenAPI extends OpenAPIAbstract
             }
         }
 
-        $paths[Inflection::transformRoutePlaceholder($resource->getPath())] = $path;
+        $paths[Inflection::convertPlaceholderToCurly($resource->getPath())] = $path;
     }
 
     /**

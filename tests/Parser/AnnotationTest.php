@@ -22,6 +22,7 @@ namespace PSX\Api\Tests\Parser;
 
 use PSX\Api\ApiManager;
 use PSX\Api\Parser\Annotation as AnnotationParser;
+use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 
 /**
@@ -33,14 +34,18 @@ use PSX\Api\Tests\Parser\Annotation\TestController;
  */
 class AnnotationTest extends ParserTestCase
 {
-    protected function getResource()
+    /**
+     * @inheritDoc
+     */
+    protected function getSpecification(): SpecificationInterface
     {
         return $this->apiManager->getApi(TestController::class, '/foo', ApiManager::TYPE_ANNOTATION);
     }
 
     public function testOperationId()
     {
-        $resource = $this->apiManager->getApi(TestController::class, '/foo');
+        $specification = $this->apiManager->getApi(TestController::class, '/foo');
+        $resource = $specification->getResourceCollection()->get('/foo');
 
         $this->assertEquals('doGet', $resource->getMethod('GET')->getOperationId());
     }
