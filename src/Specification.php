@@ -64,9 +64,25 @@ class Specification implements SpecificationInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function get(string $path): ?SpecificationInterface
+    {
+        $resource = $this->getResourceCollection()->get($path);
+        if (!$resource instanceof Resource) {
+            return null;
+        }
+
+        return new Specification(
+            new ResourceCollection([$resource]),
+            $this->definitions
+        );
+    }
+
+    /**
      * @param SpecificationInterface $specification
      */
-    public function merge(SpecificationInterface $specification)
+    public function merge(SpecificationInterface $specification): void
     {
         foreach ($specification->getResourceCollection() as $resource) {
             $this->resourceCollection->set($resource);

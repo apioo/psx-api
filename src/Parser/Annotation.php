@@ -144,6 +144,7 @@ class Annotation implements ParserInterface
             $method->setOperationId($reflection->getName());
 
             $query = TypeFactory::getStruct();
+            $typePrefix = str_replace('\\', '', $controller->getName()) . ucfirst(strtolower($httpMethod));
 
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof Anno\Description) {
@@ -155,12 +156,12 @@ class Annotation implements ParserInterface
 
                     $query->addProperty($annotation->getName(), $this->getParameter($annotation));
                 } elseif ($annotation instanceof Anno\Incoming) {
-                    $schema = $this->getBodySchema($annotation, $definitions, $basePath, $reflection->getName() . 'Request');
+                    $schema = $this->getBodySchema($annotation, $definitions, $basePath, $typePrefix . 'Request');
                     if (!empty($schema)) {
                         $method->setRequest($schema);
                     }
                 } elseif ($annotation instanceof Anno\Outgoing) {
-                    $schema = $this->getBodySchema($annotation, $definitions, $basePath, $reflection->getName() . $annotation->getCode() . 'Response');
+                    $schema = $this->getBodySchema($annotation, $definitions, $basePath, $typePrefix . $annotation->getCode() . 'Response');
                     if (!empty($schema)) {
                         $method->addResponse($annotation->getCode(), $schema);
                     }

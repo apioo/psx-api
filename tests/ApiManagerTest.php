@@ -60,6 +60,6 @@ class ApiManagerTest extends ApiManagerTestCase
      */
     public function testGetApiInvalidType()
     {
-        $this->apiManager->getApi('', '/foo', 'foo');
+        $this->apiManager->getApi('', '/foo', 12);
     }
 }

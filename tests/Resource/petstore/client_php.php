@@ -6,51 +6,30 @@
 
 
 use GuzzleHttp\Client;
-use PSX\Json\Parser;
-use PSX\Record\RecordInterface;
-use PSX\Schema\Parser\Popo\Dumper;
+use PSX\Api\Generator\Client\Php\ResourceAbstract;
 use PSX\Schema\SchemaManager;
-use PSX\Schema\SchemaTraverser;
-use PSX\Schema\Visitor\TypeVisitor;
 
-class PetsResource
+class PetsResource extends ResourceAbstract
 {
     /**
      * @var string
      */
     private $url;
 
-    /**
-     * @var string
-     */
-    private $token;
-
-    /**
-     * @var Client
-     */
-    private $httpClient;
-
-    /**
-     * @var SchemaManager
-     */
-    private $schemaManager;
-
     public function __construct(string $baseUrl, string $token, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
+        parent::__construct($baseUrl, $token, $httpClient, $schemaManager);
 
-        $this->url = $baseUrl . '/pets';
-        $this->token = $token;
-        $this->httpClient = $httpClient ? $httpClient : new Client();
-        $this->schemaManager = $schemaManager ? $schemaManager : new SchemaManager();
+        $this->url = $this->baseUrl . '/pets';
     }
 
     /**
      * List all pets
      *
-     * @param GetQuery $query
+     * @param PetsGetQuery $query
      * @return Pets
      */
-    public function listPets(?GetQuery $query): Pets
+    public function listPets(?PetsGetQuery $query): Pets
     {
         $options = [
             'query' => $this->prepare($query, true),
@@ -80,131 +59,73 @@ class PetsResource
         return $this->parse($data, null);
     }
 
-    private function prepare($object, bool $asArray = false)
-    {
-        $data = (new Dumper())->dump($object);
-        if ($asArray) {
-            if ($data instanceof RecordInterface) {
-                return $data->getProperties();
-            } else {
-                return [];
-            }
-        } else {
-            return $data;
-        }
-    }
-
-    private function parse(string $data, ?string $class)
-    {
-        $data = Parser::decode($data);
-        if ($class !== null) {
-            $schema = $this->schemaManager->getSchema($class);
-            return (new SchemaTraverser(false))->traverse($data, $schema, new TypeVisitor());
-        } else {
-            return $data;
-        }
-    }
 }
 
 <?php 
 /**
- * PetsResourceSchema generated on 0000-00-00
+ * Pet generated on 0000-00-00
  * @see https://github.com/apioo
  */
 
 /**
- * @Title("PetsResourceSchema")
+ * @Title("Pet")
+ * @Required({"id", "name"})
  */
-class PetsResourceSchema
+class Pet
 {
     /**
-     * @Key("GetQuery")
-     * @Ref("\GetQuery")
+     * @var int|null
      */
-    protected $GetQuery;
+    protected $id;
     /**
-     * @Key("Pets")
-     * @Ref("\Pets")
+     * @var string|null
      */
-    protected $Pets;
+    protected $name;
     /**
-     * @Key("Pet")
-     * @Ref("\Pet")
+     * @var string|null
      */
-    protected $Pet;
+    protected $tag;
     /**
-     * @param GetQuery $GetQuery
+     * @param int|null $id
      */
-    public function setGetQuery(?GetQuery $GetQuery)
+    public function setId(?int $id) : void
     {
-        $this->GetQuery = $GetQuery;
+        $this->id = $id;
     }
     /**
-     * @return GetQuery
+     * @return int|null
      */
-    public function getGetQuery() : ?GetQuery
+    public function getId() : ?int
     {
-        return $this->GetQuery;
+        return $this->id;
     }
     /**
-     * @param Pets $Pets
+     * @param string|null $name
      */
-    public function setPets(?Pets $Pets)
+    public function setName(?string $name) : void
     {
-        $this->Pets = $Pets;
+        $this->name = $name;
     }
     /**
-     * @return Pets
+     * @return string|null
      */
-    public function getPets() : ?Pets
+    public function getName() : ?string
     {
-        return $this->Pets;
+        return $this->name;
     }
     /**
-     * @param Pet $Pet
+     * @param string|null $tag
      */
-    public function setPet(?Pet $Pet)
+    public function setTag(?string $tag) : void
     {
-        $this->Pet = $Pet;
+        $this->tag = $tag;
     }
     /**
-     * @return Pet
+     * @return string|null
      */
-    public function getPet() : ?Pet
+    public function getTag() : ?string
     {
-        return $this->Pet;
-    }
-}
-<?php 
-/**
- * GetQuery generated on 0000-00-00
- * @see https://github.com/apioo
- */
-
-/**
- * @Title("GetQuery")
- */
-class GetQuery
-{
-    /**
-     * @Key("limit")
-     * @Type("integer")
-     * @Format("int32")
-     */
-    protected $limit;
-    /**
-     * @param int $limit
-     */
-    public function setLimit(?int $limit)
-    {
-        $this->limit = $limit;
-    }
-    /**
-     * @return int
-     */
-    public function getLimit() : ?int
-    {
-        return $this->limit;
+        return $this->tag;
     }
 }
 <?php 
@@ -219,20 +140,18 @@ class GetQuery
 class Pets
 {
     /**
-     * @Key("pets")
-     * @Type("array")
-     * @Items(@Ref("\Pet"))
+     * @var array<Pet>|null
      */
     protected $pets;
     /**
-     * @param array<Pet> $pets
+     * @param array<Pet>|null $pets
      */
-    public function setPets(?array $pets)
+    public function setPets(?array $pets) : void
     {
         $this->pets = $pets;
     }
     /**
-     * @return array<Pet>
+     * @return array<Pet>|null
      */
     public function getPets() : ?array
     {
@@ -241,72 +160,110 @@ class Pets
 }
 <?php 
 /**
- * Pet generated on 0000-00-00
+ * Error generated on 0000-00-00
  * @see https://github.com/apioo
  */
 
 /**
- * @Title("Pet")
- * @Required({"id", "name"})
+ * @Title("Error")
+ * @Required({"code", "message"})
  */
-class Pet
+class Error
 {
     /**
-     * @Key("id")
-     * @Type("integer")
-     * @Format("int64")
+     * @var int|null
      */
-    protected $id;
+    protected $code;
     /**
-     * @Key("name")
-     * @Type("string")
+     * @var string|null
      */
-    protected $name;
+    protected $message;
     /**
-     * @Key("tag")
-     * @Type("string")
+     * @param int|null $code
      */
-    protected $tag;
-    /**
-     * @param int $id
-     */
-    public function setId(?int $id)
+    public function setCode(?int $code) : void
     {
-        $this->id = $id;
+        $this->code = $code;
     }
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId() : ?int
+    public function getCode() : ?int
     {
-        return $this->id;
+        return $this->code;
     }
     /**
-     * @param string $name
+     * @param string|null $message
      */
-    public function setName(?string $name)
+    public function setMessage(?string $message) : void
     {
-        $this->name = $name;
+        $this->message = $message;
     }
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName() : ?string
+    public function getMessage() : ?string
     {
-        return $this->name;
+        return $this->message;
+    }
+}
+<?php 
+/**
+ * PetsGetQuery generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
+
+/**
+ * @Required({})
+ */
+class PetsGetQuery
+{
+    /**
+     * @var int|null
+     */
+    protected $limit;
+    /**
+     * @param int|null $limit
+     */
+    public function setLimit(?int $limit) : void
+    {
+        $this->limit = $limit;
     }
     /**
-     * @param string $tag
+     * @return int|null
      */
-    public function setTag(?string $tag)
+    public function getLimit() : ?int
     {
-        $this->tag = $tag;
+        return $this->limit;
+    }
+}
+<?php 
+/**
+ * PetsPetIdGetQuery generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
+
+/**
+ * @Required({})
+ */
+class PetsPetIdGetQuery
+{
+    /**
+     * @var string|null
+     */
+    protected $petId;
+    /**
+     * @param string|null $petId
+     */
+    public function setPetId(?string $petId) : void
+    {
+        $this->petId = $petId;
     }
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTag() : ?string
+    public function getPetId() : ?string
     {
-        return $this->tag;
+        return $this->petId;
     }
 }

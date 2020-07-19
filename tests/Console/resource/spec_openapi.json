@@ -100,7 +100,7 @@
           "content": {
             "application\/json": {
               "schema": {
-                "$ref": "#\/components\/schemas\/doGetRequest"
+                "$ref": "#\/components\/schemas\/PSXApiTestsParserAnnotationTestControllerGetRequest"
               }
             }
           }
@@ -111,7 +111,7 @@
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/doGet200Response"
+                  "$ref": "#\/components\/schemas\/PSXApiTestsParserAnnotationTestControllerGet200Response"
                 }
               }
             }
@@ -173,6 +173,12 @@
           "bar"
         ]
       },
+      "PSXApiTestsParserAnnotationTestControllerGet200Response": {
+        "$ref": "#\/components\/schemas\/Song"
+      },
+      "PSXApiTestsParserAnnotationTestControllerGetRequest": {
+        "$ref": "#\/components\/schemas\/Song"
+      },
       "Path": {
         "type": "object",
         "properties": {
@@ -223,12 +229,6 @@
           "title",
           "artist"
         ]
-      },
-      "doGet200Response": {
-        "$ref": "#\/components\/schemas\/Song"
-      },
-      "doGetRequest": {
-        "$ref": "#\/components\/schemas\/Song"
       }
     }
   }

@@ -131,11 +131,12 @@ class OpenAPI implements ParserInterface
     {
         $status   = Resource::STATUS_ACTIVE;
         $resource = new Resource($status, $path);
+        $typePrefix = Inflection::generateTitleFromRoute($path);
 
         $resource->setTitle($data->getSummary());
         $resource->setDescription($data->getDescription());
 
-        $this->parseUriParameters($resource, $data);
+        $this->parseUriParameters($resource, $data, $typePrefix);
 
         $methods = [
             'get' => $data->getGet(),
@@ -144,8 +145,6 @@ class OpenAPI implements ParserInterface
             'delete' => $data->getDelete(),
             'patch' => $data->getPatch(),
         ];
-
-        $typePrefix = $this->getTypePrefix($path);
 
         foreach ($methods as $methodName => $operation) {
             if (!$operation instanceof Operation) {
@@ -158,7 +157,7 @@ class OpenAPI implements ParserInterface
             $method->setDescription($operation->getSummary());
             $method->setTags($operation->getTags() ?? []);
 
-            $this->parseQueryParameters($method, $operation);
+            $this->parseQueryParameters($method, $operation, $typePrefix);
             $this->parseRequest($method, $operation->getRequestBody(), $typePrefix);
             $this->parseResponses($method, $operation, $typePrefix);
 
@@ -169,29 +168,38 @@ class OpenAPI implements ParserInterface
     }
 
     /**
-     * @param \PSX\Api\Resource $resource
-     * @param array $data
+     * @param Resource $resource
+     * @param PathItem $data
+     * @param string $typePrefix
+     * @throws \PSX\Schema\TypeNotFoundException
      */
-    private function parseUriParameters(Resource $resource, PathItem $data)
+    private function parseUriParameters(Resource $resource, PathItem $data, string $typePrefix)
     {
         $type = $this->parseParameters('path', $data->getParameters() ?? []);
+        if (!$type instanceof StructType) {
+            return;
+        }
 
-        $typeName = 'Path';
+        $typeName = $typePrefix . 'Path';
         $this->definitions->addType($typeName, $type);
 
         $resource->setPathParameters($typeName);
-
     }
 
     /**
-     * @param \PSX\Api\Resource\MethodAbstract $method
+     * @param Resource\MethodAbstract $method
      * @param Operation $data
+     * @param string $typePrefix
+     * @throws \PSX\Schema\TypeNotFoundException
      */
-    private function parseQueryParameters(Resource\MethodAbstract $method, Operation $data)
+    private function parseQueryParameters(Resource\MethodAbstract $method, Operation $data, string $typePrefix)
     {
         $type = $this->parseParameters('query', $data->getParameters() ?? []);
+        if (!$type instanceof StructType) {
+            return;
+        }
 
-        $typeName = ucfirst(strtolower($method->getName())) . 'Query';
+        $typeName = $typePrefix . ucfirst(strtolower($method->getName())) . 'Query';
         $this->definitions->addType($typeName, $type);
 
         $method->setQueryParameters($typeName);
@@ -203,10 +211,10 @@ class OpenAPI implements ParserInterface
      * @return StructType
      * @throws \PSX\Schema\TypeNotFoundException
      */
-    private function parseParameters(string $type, array $data): StructType
+    private function parseParameters(string $type, array $data): ?StructType
     {
         $return = TypeFactory::getStruct();
-        $required   = [];
+        $required = [];
 
         foreach ($data as $index => $definition) {
             [$name, $property, $isRequired] = $this->parseParameter($type, $definition);
@@ -220,6 +228,10 @@ class OpenAPI implements ParserInterface
                     $required[] = $name;
                 }
             }
+        }
+
+        if (!$return->getProperties()) {
+            return null;
         }
 
         $return->setRequired($required);

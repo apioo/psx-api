@@ -40,4 +40,9 @@ interface SpecificationInterface
      * @return DefinitionsInterface
      */
     public function getDefinitions(): DefinitionsInterface;
+
+    /**
+     * Returns a specification for the specific path
+     */
+    public function get(string $path): ?SpecificationInterface;
 }
