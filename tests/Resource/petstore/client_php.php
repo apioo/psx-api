@@ -71,7 +71,7 @@ class PetsResource extends ResourceAbstract
  * @Title("Pet")
  * @Required({"id", "name"})
  */
-class Pet
+class Pet implements \JsonSerializable
 {
     /**
      * @var int|null
@@ -127,6 +127,12 @@ class Pet
     {
         return $this->tag;
     }
+    public function jsonSerialize()
+    {
+        return array_filter(array('id' => $this->id, 'name' => $this->name, 'tag' => $this->tag), static function ($value) : bool {
+            return $value !== null;
+        });
+    }
 }
 <?php 
 /**
@@ -137,7 +143,7 @@ class Pet
 /**
  * @Title("Pets")
  */
-class Pets
+class Pets implements \JsonSerializable
 {
     /**
      * @var array<Pet>|null
@@ -157,6 +163,12 @@ class Pets
     {
         return $this->pets;
     }
+    public function jsonSerialize()
+    {
+        return array_filter(array('pets' => $this->pets), static function ($value) : bool {
+            return $value !== null;
+        });
+    }
 }
 <?php 
 /**
@@ -168,7 +180,7 @@ class Pets
  * @Title("Error")
  * @Required({"code", "message"})
  */
-class Error
+class Error implements \JsonSerializable
 {
     /**
      * @var int|null
@@ -206,6 +218,12 @@ class Error
     {
         return $this->message;
     }
+    public function jsonSerialize()
+    {
+        return array_filter(array('code' => $this->code, 'message' => $this->message), static function ($value) : bool {
+            return $value !== null;
+        });
+    }
 }
 <?php 
 /**
@@ -216,7 +234,7 @@ class Error
 /**
  * @Required({})
  */
-class PetsGetQuery
+class PetsGetQuery implements \JsonSerializable
 {
     /**
      * @var int|null
@@ -236,6 +254,12 @@ class PetsGetQuery
     {
         return $this->limit;
     }
+    public function jsonSerialize()
+    {
+        return array_filter(array('limit' => $this->limit), static function ($value) : bool {
+            return $value !== null;
+        });
+    }
 }
 <?php 
 /**
@@ -246,7 +270,7 @@ class PetsGetQuery
 /**
  * @Required({})
  */
-class PetsPetIdGetQuery
+class PetsPetIdGetQuery implements \JsonSerializable
 {
     /**
      * @var string|null
@@ -265,5 +289,11 @@ class PetsPetIdGetQuery
     public function getPetId() : ?string
     {
         return $this->petId;
+    }
+    public function jsonSerialize()
+    {
+        return array_filter(array('petId' => $this->petId), static function ($value) : bool {
+            return $value !== null;
+        });
     }
 }
