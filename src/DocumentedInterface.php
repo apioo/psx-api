@@ -31,11 +31,12 @@ namespace PSX\Api;
 interface DocumentedInterface
 {
     /**
-     * Returns an object which describe the format of this resource. If no
-     * version was provided the most recent version should be returned
+     * Returns a specification object which describe the format of this
+     * resource. If no version was provided the most recent version should be
+     * returned
      *
-     * @param integer $version
-     * @return SpecificationInterface
+     * @param string $version
+     * @return SpecificationInterface|null
      */
-    public function getDocumentation($version = null): SpecificationInterface;
+    public function getDocumentation(string $version = null): ?SpecificationInterface;
 }
