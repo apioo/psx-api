@@ -20,31 +20,50 @@
 
 namespace PSX\Api;
 
+use PSX\Api\Resource\MethodAbstract;
+use PSX\Schema\Definitions;
+use PSX\Schema\InvalidSchemaException;
+use PSX\Schema\SchemaManagerInterface;
+use PSX\Schema\Type\ReferenceType;
+
 /**
- * ApiManagerInterface
+ * BuilderInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-interface ApiManagerInterface
+interface BuilderInterface
 {
     /**
-     * Returns the specification for the provided source
-     * 
-     * @param string $source
-     * @param string $path
-     * @param int $type
-     * @return SpecificationInterface
+     * @param string $title
      */
-    public function getApi(string $source, string $path, ?int $type = null): SpecificationInterface;
+    public function setTitle(string $title): void;
 
     /**
-     * Returns a builder which helps to create a specification
-     * 
-     * @param int $status
-     * @param string $path
-     * @return BuilderInterface
+     * @param string $description
      */
-    public function getBuilder(int $status, string $path): BuilderInterface;
+    public function setDescription(string $description): void;
+
+    /**
+     * @param string $class
+     */
+    public function setPathParameters(string $class): void;
+
+    /**
+     * @param MethodAbstract $method
+     * @return MethodAbstract
+     */
+    public function addMethod(MethodAbstract $method): MethodAbstract;
+
+    /**
+     * @param string $class
+     * @return string
+     */
+    public function getSchema(string $class): string;
+
+    /**
+     * @return SpecificationInterface
+     */
+    public function getSpecification(): SpecificationInterface;
 }

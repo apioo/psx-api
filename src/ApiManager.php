@@ -45,6 +45,11 @@ class ApiManager implements ApiManagerInterface
     protected $reader;
 
     /**
+     * @var \PSX\Schema\SchemaManagerInterface
+     */
+    protected $schemaManager;
+
+    /**
      * @var \PSX\Api\Parser\Annotation
      */
     protected $parser;
@@ -68,6 +73,7 @@ class ApiManager implements ApiManagerInterface
     public function __construct(Reader $reader, SchemaManagerInterface $schemaManager, CacheItemPoolInterface $cache = null, $debug = false)
     {
         $this->reader = $reader;
+        $this->schemaManager = $schemaManager;
         $this->parser = new Parser\Annotation($reader, $schemaManager);
         $this->cache  = $cache === null ? new Pool(new ArrayCache()) : $cache;
         $this->debug  = $debug;
@@ -104,6 +110,14 @@ class ApiManager implements ApiManagerInterface
         }
 
         return $api;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getBuilder(int $status, string $path): BuilderInterface
+    {
+        return new Builder($this->schemaManager, $status, $path);
     }
 
     private function guessTypeFromSource($source): ?int
