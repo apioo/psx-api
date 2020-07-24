@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests;
 
+use PSX\Api\Resource;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Annotation\TestController;
 
@@ -58,5 +59,18 @@ class ApiManagerTest extends ApiManagerTestCase
         $this->expectException(\RuntimeException::class);
 
         $this->apiManager->getApi('', '/foo', 12);
+    }
+    
+    public function testGetBuilder()
+    {
+        $builder = $this->apiManager->getBuilder(Resource::STATUS_ACTIVE, '/foo');
+
+        $builder->addMethod(Resource\Factory::getMethod('POST')
+            ->setRequest($builder->getSchema(__DIR__ . '/Parser/schema/schema.json'))
+            ->addResponse(200, $builder->getSchema(__DIR__ . '/Parser/schema/schema.json')));
+
+        $specification = $builder->getSpecification();
+
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
     }
 }
