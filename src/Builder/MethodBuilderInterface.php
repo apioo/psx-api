@@ -18,52 +18,60 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
+namespace PSX\Api\Builder;
 
 use PSX\Api\Resource\MethodAbstract;
-use PSX\Schema\Definitions;
-use PSX\Schema\InvalidSchemaException;
-use PSX\Schema\SchemaManagerInterface;
-use PSX\Schema\Type\ReferenceType;
+use PSX\Schema\Builder;
 
 /**
- * BuilderInterface
+ * MethodBuilderInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-interface BuilderInterface
+interface MethodBuilderInterface
 {
     /**
-     * @param string $title
+     * @param string|null $operationId
      */
-    public function setTitle(string $title): void;
+    public function setOperationId(?string $operationId): void;
 
     /**
-     * @param string $description
+     * @param string|null $description
      */
-    public function setDescription(string $description): void;
+    public function setDescription(?string $description): void;
 
     /**
-     * @param string $class
+     * @param string|null $typeName
+     * @return Builder
      */
-    public function setPathParameters(string $class): void;
+    public function setQueryParameters(?string $typeName): Builder;
 
     /**
-     * @param MethodAbstract $method
+     * @param string $schemaName
+     */
+    public function setRequest(string $schemaName): void;
+
+    /**
+     * @param int $statusCode
+     * @param string $schemaName
+     */
+    public function addResponse(int $statusCode, string $schemaName): void;
+
+    /**
+     * @param string $name
+     * @param array $scopes
+     */
+    public function setSecurity(string $name, array $scopes): void;
+
+    /**
+     * @param array $tags
+     */
+    public function setTags(array $tags): void;
+
+    /**
      * @return MethodAbstract
      */
-    public function addMethod(MethodAbstract $method): MethodAbstract;
-
-    /**
-     * @param string $class
-     * @return string
-     */
-    public function getSchema(string $class): string;
-
-    /**
-     * @return SpecificationInterface
-     */
-    public function getSpecification(): SpecificationInterface;
+    public function getMethod(): MethodAbstract;
 }

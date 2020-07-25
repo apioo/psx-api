@@ -18,35 +18,49 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
+namespace PSX\Api\Builder;
 
-use PSX\Api\Builder\ResourceBuilderInterface;
+use PSX\Api\SpecificationInterface;
+use PSX\Schema\Builder;
 
 /**
- * ApiManagerInterface
+ * ResourceBuilderInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-interface ApiManagerInterface
+interface ResourceBuilderInterface
 {
     /**
-     * Returns the specification for the provided source
-     * 
-     * @param string $source
-     * @param string $path
-     * @param int $type
-     * @return SpecificationInterface
+     * @param string $title
      */
-    public function getApi(string $source, string $path, ?int $type = null): SpecificationInterface;
+    public function setTitle(string $title): void;
 
     /**
-     * Returns a builder which helps to create a specification
-     * 
-     * @param int $status
-     * @param string $path
-     * @return ResourceBuilderInterface
+     * @param string $description
      */
-    public function getBuilder(int $status, string $path): ResourceBuilderInterface;
+    public function setDescription(string $description): void;
+
+    /**
+     * @param string $typeName
+     * @return Builder
+     */
+    public function setPathParameters(string $typeName): Builder;
+
+    /**
+     * @param string $methodName
+     * @return MethodBuilderInterface
+     */
+    public function addMethod(string $methodName): MethodBuilderInterface;
+
+    /**
+     * @param array $tags
+     */
+    public function setTags(array $tags): void;
+
+    /**
+     * @return SpecificationInterface
+     */
+    public function getSpecification(): SpecificationInterface;
 }

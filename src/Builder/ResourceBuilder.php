@@ -18,13 +18,14 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
+namespace PSX\Api\Builder;
 
-use PSX\Api\Resource\MethodAbstract;
+use PSX\Api\Resource;
+use PSX\Api\Specification;
+use PSX\Api\SpecificationInterface;
+use PSX\Schema\Builder;
 use PSX\Schema\Definitions;
-use PSX\Schema\InvalidSchemaException;
 use PSX\Schema\SchemaManagerInterface;
-use PSX\Schema\Type\ReferenceType;
 
 /**
  * Builder
@@ -33,7 +34,7 @@ use PSX\Schema\Type\ReferenceType;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Builder implements BuilderInterface
+class ResourceBuilder implements ResourceBuilderInterface
 {
     /**
      * @var SchemaManagerInterface
@@ -76,36 +77,32 @@ class Builder implements BuilderInterface
     /**
      * @inheritDoc
      */
-    public function setPathParameters(string $class): void
+    public function setPathParameters(string $typeName): Builder
     {
-        $this->resource->setPathParameters($this->getSchema($class));
+        $builder = new Builder();
+        $this->definitions->addType($typeName, $builder->getType());
+        $this->resource->setPathParameters($typeName);
+
+        return $builder;
     }
 
     /**
      * @inheritDoc
      */
-    public function addMethod(MethodAbstract $method): MethodAbstract
+    public function addMethod(string $methodName): MethodBuilderInterface
     {
-        $this->resource->addMethod($method);
+        $builder = new MethodBuilder($this->schemaManager, $this->definitions, $methodName);
+        $this->resource->addMethod($builder->getMethod());
 
-        return $method;
+        return $builder;
     }
 
     /**
      * @inheritDoc
      */
-    public function getSchema(string $class): string
+    public function setTags(array $tags): void
     {
-        $schema = $this->schemaManager->getSchema($class);
-        $type = $schema->getType();
-
-        if (!$type instanceof ReferenceType) {
-            throw new InvalidSchemaException('Provided schema contains not a reference');
-        }
-
-        $this->definitions->merge($schema->getDefinitions());
-
-        return $type->getRef();
+        $this->resource->setTags($tags);
     }
 
     /**
