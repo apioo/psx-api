@@ -60,6 +60,13 @@ interface ResourceBuilderInterface
     public function setTags(array $tags): void;
 
     /**
+     * @param int $status
+     * @param string $path
+     * @return ResourceBuilderInterface
+     */
+    public function addResource(int $status, string $path): ResourceBuilderInterface;
+
+    /**
      * @return SpecificationInterface
      */
     public function getSpecification(): SpecificationInterface;

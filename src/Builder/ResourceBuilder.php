@@ -51,11 +51,17 @@ class ResourceBuilder implements ResourceBuilderInterface
      */
     private $definitions;
 
+    /**
+     * @var SpecificationInterface
+     */
+    private $specification;
+
     public function __construct(SchemaManagerInterface $schemaManager, int $status, string $path)
     {
         $this->schemaManager = $schemaManager;
-        $this->resource = new Resource($status, $path);
-        $this->definitions = new Definitions();
+        $this->resource      = new Resource($status, $path);
+        $this->definitions   = new Definitions();
+        $this->specification = Specification::fromResource($this->resource, $this->definitions);
     }
 
     /**
@@ -108,8 +114,22 @@ class ResourceBuilder implements ResourceBuilderInterface
     /**
      * @inheritDoc
      */
+    public function addResource(int $status, string $path): ResourceBuilderInterface
+    {
+        $builder = new static($this->schemaManager, $status, $path);
+        $builder->definitions = $this->definitions;
+        $builder->specification = $this->specification;
+
+        $this->specification->getResourceCollection()->set($builder->resource);
+
+        return $builder;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getSpecification(): SpecificationInterface
     {
-        return Specification::fromResource($this->resource, $this->definitions);
+        return $this->specification;
     }
 }
