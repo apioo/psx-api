@@ -141,8 +141,6 @@ class Resource implements IteratorAggregate, \JsonSerializable
     public function setTitle(?string $title)
     {
         $this->title = $title;
-
-        return $this;
     }
 
     /**
@@ -159,8 +157,6 @@ class Resource implements IteratorAggregate, \JsonSerializable
     public function setDescription(?string $description)
     {
         $this->description = $description;
-
-        return $this;
     }
 
     /**
@@ -177,8 +173,6 @@ class Resource implements IteratorAggregate, \JsonSerializable
     public function setPathParameters(?string $typeName)
     {
         $this->pathParameters = $typeName;
-
-        return $this;
     }
 
     /**
@@ -203,8 +197,6 @@ class Resource implements IteratorAggregate, \JsonSerializable
     public function addMethod(MethodAbstract $method)
     {
         $this->methods[$method->getName()] = $method;
-
-        return $this;
     }
 
     /**

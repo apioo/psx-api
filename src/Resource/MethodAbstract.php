@@ -75,8 +75,6 @@ abstract class MethodAbstract
     public function setOperationId(?string $operationId)
     {
         $this->operationId = $operationId;
-
-        return $this;
     }
 
     /**
@@ -93,8 +91,6 @@ abstract class MethodAbstract
     public function setDescription(?string $description)
     {
         $this->description = $description;
-
-        return $this;
     }
 
     /**
@@ -111,8 +107,6 @@ abstract class MethodAbstract
     public function setQueryParameters(?string $typeName)
     {
         $this->queryParameters = $typeName;
-
-        return $this;
     }
 
     /**
@@ -137,8 +131,6 @@ abstract class MethodAbstract
     public function setRequest(?string $typeName)
     {
         $this->request = $typeName;
-
-        return $this;
     }
 
     /**
@@ -164,8 +156,6 @@ abstract class MethodAbstract
     public function addResponse(int $statusCode, string $typeName)
     {
         $this->responses[$statusCode] = $typeName;
-
-        return $this;
     }
 
     /**
@@ -205,8 +195,6 @@ abstract class MethodAbstract
     public function setSecurity(string $name, array $scopes)
     {
         $this->security[$name] = $scopes;
-
-        return $this;
     }
 
     /**
