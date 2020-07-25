@@ -35,8 +35,8 @@ interface DocumentedInterface
      * resource. If no version was provided the most recent version should be
      * returned
      *
-     * @param string $version
+     * @param string|null $version
      * @return SpecificationInterface|null
      */
-    public function getDocumentation(string $version = null): ?SpecificationInterface;
+    public function getDocumentation(?string $version = null): ?SpecificationInterface;
 }
