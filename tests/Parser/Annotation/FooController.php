@@ -20,6 +20,9 @@
 
 namespace PSX\Api\Tests\Parser\Annotation;
 
+use PSX\Api\DocumentedInterface;
+use PSX\Api\SpecificationInterface;
+
 /**
  * FooController
  *
@@ -29,13 +32,13 @@ namespace PSX\Api\Tests\Parser\Annotation;
  * @Title("Foo")
  * @Description("Foo endpoint")
  */
-class FooController
+class FooController implements DocumentedInterface
 {
     public function __construct()
     {
     }
 
-    public function getDocumentation($version = null)
+    public function getDocumentation(?string $version = null): ?SpecificationInterface
     {
         return null;
     }

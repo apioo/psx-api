@@ -20,6 +20,9 @@
 
 namespace PSX\Api\Tests\Parser\Annotation;
 
+use PSX\Api\DocumentedInterface;
+use PSX\Api\SpecificationInterface;
+
 /**
  * TestController
  *
@@ -30,13 +33,13 @@ namespace PSX\Api\Tests\Parser\Annotation;
  * @Description("Test description")
  * @PathParam(name="fooId", type="string")
  */
-class TestController
+class TestController implements DocumentedInterface
 {
     public function __construct()
     {
     }
 
-    public function getDocumentation(?int $version = null)
+    public function getDocumentation(?string $version = null): ?SpecificationInterface
     {
         return null;
     }
