@@ -64,10 +64,19 @@ class ApiManagerTest extends ApiManagerTestCase
     public function testGetBuilder()
     {
         $builder = $this->apiManager->getBuilder(Resource::STATUS_ACTIVE, '/foo');
-
-        $builder->addMethod(Resource\Factory::getMethod('POST')
-            ->setRequest($builder->getSchema(__DIR__ . '/Parser/schema/schema.json'))
-            ->addResponse(200, $builder->getSchema(__DIR__ . '/Parser/schema/schema.json')));
+        $builder->setTitle('My_Resource');
+        $builder->setDescription('My super resource');
+        $builder->setPathParameters('Path')->addInteger('todo_id');
+        $builder->setTags(['my_tag']);
+        
+        $post = $builder->addMethod('POST');
+        $post->setOperationId('my_action');
+        $post->setQueryParameters('PostQuery')->addInteger('startIndex');
+        $post->setDescription('My method description');
+        $post->setRequest(__DIR__ . '/Parser/schema/schema.json');
+        $post->addResponse(200, __DIR__ . '/Parser/schema/schema.json');
+        $post->setSecurity('OAuth2', ['foo']);
+        $post->setTags(['my_tag']);
 
         $specification = $builder->getSpecification();
 
