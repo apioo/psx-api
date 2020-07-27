@@ -20,9 +20,7 @@
 
 namespace PSX\Api\Tests\Generator\Schema;
 
-use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\SchemaAbstract;
-use PSX\Schema\TypeFactory;
 
 /**
  * Collection
@@ -33,13 +31,9 @@ use PSX\Schema\TypeFactory;
  */
 class Collection extends SchemaAbstract
 {
-    public function build(DefinitionsInterface $definitions): string
+    public function build(): void
     {
-        $this->load(Entry::class);
-
-        $sb = $this->newType('EntryCollection');
-        $sb->addArray('entry', TypeFactory::getReference('Entry'));
-
-        return 'EntryCollection';
+        $sb = $this->newStruct('EntryCollection');
+        $sb->addArray('entry', $this->get(Entry::class));
     }
 }

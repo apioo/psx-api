@@ -32,13 +32,9 @@ use PSX\Schema\SchemaAbstract;
  */
 class Delete extends SchemaAbstract
 {
-    public function build(DefinitionsInterface $definitions): string
+    public function build(): void
     {
-        $this->load(Entry::class);
-
-        $entry = $this->modify('Entry', 'EntryDelete');
+        $entry = $this->modify(Entry::class, 'EntryDelete');
         $entry->setRequired(['id']);
-
-        return 'EntryDelete';
     }
 }

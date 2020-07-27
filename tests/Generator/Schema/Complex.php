@@ -33,16 +33,13 @@ use PSX\Schema\TypeFactory;
  */
 class Complex extends SchemaAbstract
 {
-    public function build(DefinitionsInterface $definitions): string
+    public function build(): void
     {
-        $this->load(Entry::class);
-        $this->load(Message::class);
-
-        $definitions->addType('EntryOrMessage', TypeFactory::getUnion([
-            TypeFactory::getReference('Entry'),
-            TypeFactory::getReference('EntryMessage')
+        $this->add('EntryOrMessage', TypeFactory::getUnion([
+            $this->get(Entry::class),
+            $this->get(Message::class)
         ]));
 
-        return 'EntryOrMessage';
+        $this->setRoot('EntryOrMessage');
     }
 }

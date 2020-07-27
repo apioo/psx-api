@@ -32,13 +32,9 @@ use PSX\Schema\SchemaAbstract;
  */
 class Create extends SchemaAbstract
 {
-    public function build(DefinitionsInterface $definitions): string
+    public function build(): void
     {
-        $this->load(Entry::class);
-
-        $entry = $this->modify('Entry', 'EntryCreate');
+        $entry = $this->modify(Entry::class, 'EntryCreate');
         $entry->setRequired(['title', 'date']);
-
-        return 'EntryCreate';
     }
 }

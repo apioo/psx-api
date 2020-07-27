@@ -32,13 +32,9 @@ use PSX\Schema\SchemaAbstract;
  */
 class Patch extends SchemaAbstract
 {
-    public function build(DefinitionsInterface $definitions): string
+    public function build(): void
     {
-        $this->load(Entry::class);
-
-        $entry = $this->modify('Entry', 'EntryPatch');
+        $entry = $this->modify(Entry::class, 'EntryPatch');
         $entry->setRequired(['id']);
-
-        return 'EntryPatch';
     }
 }

@@ -32,17 +32,15 @@ use PSX\Schema\SchemaAbstract;
  */
 class Entry extends SchemaAbstract
 {
-    public function build(DefinitionsInterface $definitions): string
+    public function build(): void
     {
-        $sb = $this->newType('Entry');
-        $sb->addInteger('id');
-        $sb->addInteger('userId');
-        $sb->addString('title')
+        $type = $this->newStruct('Entry');
+        $type->addInteger('id');
+        $type->addInteger('userId');
+        $type->addString('title')
             ->setMinLength(3)
             ->setMaxLength(16)
             ->setPattern('[A-z]+');
-        $sb->addDateTime('date');
-
-        return 'Entry';
+        $type->addDateTime('date');
     }
 }

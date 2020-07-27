@@ -32,13 +32,9 @@ use PSX\Schema\SchemaAbstract;
  */
 class Update extends SchemaAbstract
 {
-    public function build(DefinitionsInterface $definitions): string
+    public function build(): void
     {
-        $this->load(Entry::class);
-
-        $entry = $this->modify('Entry', 'EntryUpdate');
+        $entry = $this->modify(Entry::class, 'EntryUpdate');
         $entry->setRequired(['id']);
-
-        return 'EntryUpdate';
     }
 }

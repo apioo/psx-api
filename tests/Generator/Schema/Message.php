@@ -32,12 +32,10 @@ use PSX\Schema\SchemaAbstract;
  */
 class Message extends SchemaAbstract
 {
-    public function build(DefinitionsInterface $definitions): string
+    public function build(): void
     {
-        $sb = $this->newType('EntryMessage');
-        $sb->addBoolean('success');
-        $sb->addString('message');
-
-        return 'EntryMessage';
+        $type = $this->newStruct('EntryMessage');
+        $type->addBoolean('success');
+        $type->addString('message');
     }
 }
