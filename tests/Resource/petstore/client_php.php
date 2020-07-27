@@ -129,7 +129,7 @@ class Pet implements \JsonSerializable
     }
     public function jsonSerialize()
     {
-        return array_filter(array('id' => $this->id, 'name' => $this->name, 'tag' => $this->tag), static function ($value) : bool {
+        return (object) array_filter(array('id' => $this->id, 'name' => $this->name, 'tag' => $this->tag), static function ($value) : bool {
             return $value !== null;
         });
     }
@@ -165,7 +165,7 @@ class Pets implements \JsonSerializable
     }
     public function jsonSerialize()
     {
-        return array_filter(array('pets' => $this->pets), static function ($value) : bool {
+        return (object) array_filter(array('pets' => $this->pets), static function ($value) : bool {
             return $value !== null;
         });
     }
@@ -220,7 +220,7 @@ class Error implements \JsonSerializable
     }
     public function jsonSerialize()
     {
-        return array_filter(array('code' => $this->code, 'message' => $this->message), static function ($value) : bool {
+        return (object) array_filter(array('code' => $this->code, 'message' => $this->message), static function ($value) : bool {
             return $value !== null;
         });
     }
@@ -256,7 +256,7 @@ class PetsGetQuery implements \JsonSerializable
     }
     public function jsonSerialize()
     {
-        return array_filter(array('limit' => $this->limit), static function ($value) : bool {
+        return (object) array_filter(array('limit' => $this->limit), static function ($value) : bool {
             return $value !== null;
         });
     }
@@ -292,7 +292,7 @@ class PetsPetIdGetQuery implements \JsonSerializable
     }
     public function jsonSerialize()
     {
-        return array_filter(array('petId' => $this->petId), static function ($value) : bool {
+        return (object) array_filter(array('petId' => $this->petId), static function ($value) : bool {
             return $value !== null;
         });
     }
