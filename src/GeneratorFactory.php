@@ -100,6 +100,10 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 $generator = new Generator\Spec\Raml(1, $baseUri, $namespace);
                 break;
 
+            case GeneratorFactoryInterface::SPEC_TYPESCHEMA:
+                $generator = new Generator\Spec\TypeSchema();
+                break;
+
             default:
             case GeneratorFactoryInterface::SPEC_OPENAPI:
                 $baseUri   = $this->url . '/' . $this->dispatch;
@@ -161,6 +165,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
             case GeneratorFactoryInterface::MARKUP_MARKDOWN:
                 return 'text/markdown';
 
+            case GeneratorFactoryInterface::SPEC_TYPESCHEMA:
             case GeneratorFactoryInterface::SPEC_OPENAPI:
                 return 'application/json';
             case GeneratorFactoryInterface::SPEC_RAML:
@@ -193,6 +198,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
             GeneratorFactoryInterface::MARKUP_HTML,
             GeneratorFactoryInterface::MARKUP_MARKDOWN,
 
+            GeneratorFactoryInterface::SPEC_TYPESCHEMA,
             GeneratorFactoryInterface::SPEC_OPENAPI,
             GeneratorFactoryInterface::SPEC_RAML,
         ];
