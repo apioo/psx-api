@@ -84,7 +84,7 @@ class CachedListing implements ListingInterface
     /**
      * @inheritdoc
      */
-    public function find(string $path, ?int $version = null): ?SpecificationInterface
+    public function find(string $path, ?string $version = null): ?SpecificationInterface
     {
         $item = $this->cache->getItem($this->getResourceKey($path, $version));
 
@@ -108,7 +108,7 @@ class CachedListing implements ListingInterface
     /**
      * @inheritdoc
      */
-    public function findAll(?int $version = null, FilterInterface $filter = null): SpecificationInterface
+    public function findAll(?string $version = null, FilterInterface $filter = null): SpecificationInterface
     {
         $item = $this->cache->getItem($this->getResourceCollectionKey($version, $filter));
 

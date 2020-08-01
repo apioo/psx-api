@@ -45,17 +45,17 @@ interface ListingInterface
      * Returns a specification for a specific resource path
      *
      * @param string $path
-     * @param integer|null $version
+     * @param string|null $version
      * @return \PSX\Api\SpecificationInterface|null
      */
-    public function find(string $path, ?int $version = null): ?SpecificationInterface;
+    public function find(string $path, ?string $version = null): ?SpecificationInterface;
 
     /**
      * Returns all available resources
      *
-     * @param integer|null $version
+     * @param string|null $version
      * @param \PSX\Api\Listing\FilterInterface|null $filter
      * @return \PSX\Api\SpecificationInterface
      */
-    public function findAll(?int $version = null, FilterInterface $filter = null): SpecificationInterface;
+    public function findAll(?string $version = null, FilterInterface $filter = null): SpecificationInterface;
 }

@@ -72,7 +72,7 @@ class MemoryListing implements ListingInterface
     /**
      * @inheritdoc
      */
-    public function find(string $path, int $version = null): ?SpecificationInterface
+    public function find(string $path, ?string $version = null): ?SpecificationInterface
     {
         $resource = $this->specification->getResourceCollection()->get($path);
         if (!$resource instanceof Resource) {
@@ -91,7 +91,7 @@ class MemoryListing implements ListingInterface
     /**
      * @inheritdoc
      */
-    public function findAll(int $version = null, FilterInterface $filter = null): SpecificationInterface
+    public function findAll(?string $version = null, FilterInterface $filter = null): SpecificationInterface
     {
         if ($filter !== null) {
             return new Specification(
