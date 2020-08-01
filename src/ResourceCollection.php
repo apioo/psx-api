@@ -67,6 +67,18 @@ class ResourceCollection extends \ArrayObject
     }
 
     /**
+     * Returns the first resource of this collection
+     * 
+     * @return \PSX\Api\Resource
+     */
+    public function getFirst()
+    {
+        $iterator = $this->getIterator();
+        $iterator->rewind();
+        return $iterator->current();
+    }
+
+    /**
      * @param FilterInterface $filter
      * @return ResourceCollection
      */
