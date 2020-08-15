@@ -30,7 +30,7 @@ use PSX\Schema\TypeFactory;
 /**
  * TypeSchema
  *
- * @see     http://tools.ietf.org/html/draft-zyp-json-schema-04
+ * @see     https://typeschema.org/
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
