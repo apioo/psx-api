@@ -50,8 +50,13 @@ class TypeSchema extends GeneratorAbstract
             $resources[$path] = $resource->toArray();
         }
 
-        $data = [];
-        $data['paths'] = $resources;
+        if (count($resources) === 1) {
+            $data = reset($resources);
+        } else {
+            $data = [];
+            $data['paths'] = $resources;
+        }
+
         $data['definitions'] = $this->generateDefinitions($definitions);
 
         return Parser::encode($data, \JSON_PRETTY_PRINT);
