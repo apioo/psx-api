@@ -1,50 +1,46 @@
 {
-  "paths": {
-    "\/foo\/:name\/:type": {
-      "status": 1,
-      "path": "\/foo\/:name\/:type",
-      "title": "foo",
-      "description": "lorem ipsum",
-      "pathParameters": "Path",
-      "methods": {
-        "GET": {
-          "operationId": "list.foo",
-          "description": "Returns a collection",
-          "tags": [],
-          "queryParameters": "GetQuery",
-          "responses": {
-            "200": "EntryCollection"
-          }
-        },
-        "POST": {
-          "operationId": "create.foo",
-          "tags": [],
-          "request": "EntryCreate",
-          "responses": {
-            "201": "EntryMessage"
-          }
-        },
-        "PUT": {
-          "tags": [],
-          "request": "EntryUpdate",
-          "responses": {
-            "200": "EntryMessage"
-          }
-        },
-        "DELETE": {
-          "tags": [],
-          "request": "EntryDelete",
-          "responses": {
-            "200": "EntryMessage"
-          }
-        },
-        "PATCH": {
-          "tags": [],
-          "request": "EntryPatch",
-          "responses": {
-            "200": "EntryMessage"
-          }
-        }
+  "status": 1,
+  "path": "\/foo\/:name\/:type",
+  "title": "foo",
+  "description": "lorem ipsum",
+  "pathParameters": "Path",
+  "methods": {
+    "GET": {
+      "operationId": "list.foo",
+      "description": "Returns a collection",
+      "tags": [],
+      "queryParameters": "GetQuery",
+      "responses": {
+        "200": "EntryCollection"
+      }
+    },
+    "POST": {
+      "operationId": "create.foo",
+      "tags": [],
+      "request": "EntryCreate",
+      "responses": {
+        "201": "EntryMessage"
+      }
+    },
+    "PUT": {
+      "tags": [],
+      "request": "EntryUpdate",
+      "responses": {
+        "200": "EntryMessage"
+      }
+    },
+    "DELETE": {
+      "tags": [],
+      "request": "EntryDelete",
+      "responses": {
+        "200": "EntryMessage"
+      }
+    },
+    "PATCH": {
+      "tags": [],
+      "request": "EntryPatch",
+      "responses": {
+        "200": "EntryMessage"
       }
     }
   },
