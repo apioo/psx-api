@@ -56,11 +56,6 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * @var string
      */
-    protected $targetNamespace;
-
-    /**
-     * @var string
-     */
     protected $title;
 
     /**
@@ -112,15 +107,13 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
      * @param \Doctrine\Common\Annotations\Reader $reader
      * @param integer $apiVersion
      * @param string $baseUri
-     * @param string $targetNamespace
      */
-    public function __construct(Reader $reader, $apiVersion, $baseUri, $targetNamespace)
+    public function __construct(Reader $reader, $apiVersion, $baseUri)
     {
-        $this->dumper          = new Dumper($reader);
-        $this->apiVersion      = $apiVersion;
-        $this->baseUri         = $baseUri;
-        $this->targetNamespace = $targetNamespace;
-        $this->authFlows       = [];
+        $this->dumper     = new Dumper($reader);
+        $this->apiVersion = $apiVersion;
+        $this->baseUri    = $baseUri;
+        $this->authFlows  = [];
     }
 
     /**
@@ -137,9 +130,9 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
      * A short description of the application. CommonMark syntax MAY be used for
      * rich text representation
      *
-     * @param string $description
+     * @param string|null $description
      */
-    public function setDescription(string $description)
+    public function setDescription(?string $description)
     {
         $this->description = $description;
     }
@@ -147,9 +140,9 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * A URL to the Terms of Service for the API. MUST be in the format of a URL
      *
-     * @param string $tos
+     * @param string|null $tos
      */
-    public function setTermsOfService(string $tos)
+    public function setTermsOfService(?string $tos)
     {
         $this->tos = $tos;
     }
@@ -157,9 +150,9 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * The identifying name of the contact person/organization
      *
-     * @param string $contactName
+     * @param string|null $contactName
      */
-    public function setContactName(string $contactName)
+    public function setContactName(?string $contactName)
     {
         $this->contactName = $contactName;
     }
@@ -168,9 +161,9 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
      * The URL pointing to the contact information. MUST be in the format of a
      * URL
      *
-     * @param string $contactUrl
+     * @param string|null $contactUrl
      */
-    public function setContactUrl(string $contactUrl)
+    public function setContactUrl(?string $contactUrl)
     {
         $this->contactUrl = $contactUrl;
     }
@@ -179,9 +172,9 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
      * The email address of the contact person/organization. MUST be in the
      * format of an email address
      *
-     * @param string $contactEmail
+     * @param string|null $contactEmail
      */
-    public function setContactEmail(string $contactEmail)
+    public function setContactEmail(?string $contactEmail)
     {
         $this->contactEmail = $contactEmail;
     }
@@ -189,9 +182,9 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * The license name used for the API
      *
-     * @param string $licenseName
+     * @param string|null $licenseName
      */
-    public function setLicenseName(string $licenseName)
+    public function setLicenseName(?string $licenseName)
     {
         $this->licenseName = $licenseName;
     }
@@ -199,9 +192,9 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * A URL to the license used for the API. MUST be in the format of a URL
      *
-     * @param string $licenseUrl
+     * @param string|null $licenseUrl
      */
-    public function setLicenseUrl(string $licenseUrl)
+    public function setLicenseUrl(?string $licenseUrl)
     {
         $this->licenseUrl = $licenseUrl;
     }
