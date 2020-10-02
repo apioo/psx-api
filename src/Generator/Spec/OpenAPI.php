@@ -308,8 +308,9 @@ class OpenAPI extends OpenAPIAbstract
         }
 
         $parameters = [];
-        if ($type instanceof StructType) {
-            foreach ($type->getProperties() as $name => $parameter) {
+        $properties = $type->getProperties();
+        if ($properties) {
+            foreach ($properties as $name => $parameter) {
                 $param = $this->getParameter($parameter, in_array($name, $type->getRequired() ?: []));
                 $param->setName($name);
                 $param->setIn($in);

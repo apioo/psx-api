@@ -204,12 +204,12 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
      * 
      * @param string $name
      * @param integer $flow
-     * @param string $authorizationUrl
+     * @param string|null $authorizationUrl
      * @param string $tokenUrl
      * @param string|null $refreshUrl
      * @param array|null $scopes
      */
-    public function setAuthorizationFlow(string $name, int $flow, string $authorizationUrl, string $tokenUrl, ?string $refreshUrl = null, ?array $scopes = null)
+    public function setAuthorizationFlow(string $name, int $flow, ?string $authorizationUrl, string $tokenUrl, ?string $refreshUrl = null, ?array $scopes = null)
     {
         if (!isset($this->authFlows[$name])) {
             $this->authFlows[$name] = [];
