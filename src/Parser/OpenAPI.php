@@ -47,6 +47,7 @@ use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 use PSX\Schema\Visitor\TypeVisitor;
 use RuntimeException;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * OpenAPI
@@ -371,32 +372,25 @@ class OpenAPI implements ParserInterface
         $this->document    = (new SchemaTraverser())->traverse($data, $schema, new TypeVisitor());
     }
 
-    /**
-     * @param string $path
-     * @return string
-     */
-    private function getTypePrefix(string $path): string
-    {
-        $parts = explode('/', $path);
-        $parts = array_map(function($part){
-            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
-        }, $parts);
-
-        return implode('', $parts);
-    }
-
     public static function fromFile(string $file, string $path): SpecificationInterface
     {
-        if (!empty($file) && is_file($file)) {
-            $reader = new SimpleAnnotationReader();
-            $reader->addNamespace('PSX\\Schema\\Annotation');
-
-            $basePath = pathinfo($file, PATHINFO_DIRNAME);
-            $parser   = new OpenAPI($reader, $basePath);
-
-            return $parser->parse(file_get_contents($file), $path);
-        } else {
+        if (empty($file) || !is_file($file)) {
             throw new RuntimeException('Could not load OpenAPI schema ' . $file);
         }
+
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\\Schema\\Annotation');
+
+        $extension = pathinfo($file, PATHINFO_EXTENSION);
+        if (in_array($extension, ['yaml', 'yml'])) {
+            $data = json_encode(Yaml::parse(file_get_contents($file)));
+        } else {
+            $data = file_get_contents($file);
+        }
+
+        $basePath = pathinfo($file, PATHINFO_DIRNAME);
+        $parser   = new OpenAPI($reader, $basePath);
+
+        return $parser->parse($data, $path);
     }
 }
