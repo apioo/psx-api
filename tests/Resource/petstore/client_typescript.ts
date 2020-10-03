@@ -56,7 +56,7 @@ export default class PetsResource {
  * {@link https://github.com/apioo}
  */
 
-interface Pet {
+export interface Pet {
     id: number
     name: string
     tag?: string
@@ -67,7 +67,7 @@ interface Pet {
  * {@link https://github.com/apioo}
  */
 
-interface Pets {
+export interface Pets {
     pets?: Array<Pet>
 }
 
@@ -76,7 +76,7 @@ interface Pets {
  * {@link https://github.com/apioo}
  */
 
-interface Error {
+export interface Error {
     code: number
     message: string
 }
@@ -86,7 +86,7 @@ interface Error {
  * {@link https://github.com/apioo}
  */
 
-interface PetsGetQuery {
+export interface PetsGetQuery {
     limit?: number
 }
 
@@ -95,6 +95,6 @@ interface PetsGetQuery {
  * {@link https://github.com/apioo}
  */
 
-interface PetsPetIdGetQuery {
+export interface PetsPetIdGetQuery {
     petId?: string
 }

@@ -132,6 +132,21 @@
   },
   "components": {
     "schemas": {
+      "rating:Rating": {
+        "title": "Rating",
+        "type": "object",
+        "properties": {
+          "author": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
       "DogetQuery": {
         "type": "object",
         "properties": {
@@ -189,21 +204,6 @@
         "required": [
           "fooId"
         ]
-      },
-      "Rating": {
-        "title": "Rating",
-        "type": "object",
-        "properties": {
-          "author": {
-            "type": "string"
-          },
-          "rating": {
-            "type": "integer"
-          },
-          "text": {
-            "type": "string"
-          }
-        }
       },
       "Song": {
         "description": "A canonical song",
