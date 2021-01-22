@@ -45,7 +45,7 @@ class {{ className }} extends ResourceAbstract
     {
         $options = [
 {% if method.args.query is defined %}
-            'query' => $this->prepare($query, true),
+            'query' => (array) $query->jsonSerialize(),
 {% endif %}
 {% if method.secure %}
             'headers' => [
@@ -53,7 +53,7 @@ class {{ className }} extends ResourceAbstract
             ],
 {% endif %}
 {% if method.args.data is defined %}
-            'json' => $this->prepare($data)
+            'json' => $data
 {% endif %}
         ];
 

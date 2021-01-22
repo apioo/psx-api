@@ -7,7 +7,7 @@
 /**
  * @Required({"startIndex"})
  */
-class GetQuery
+class GetQuery implements \JsonSerializable
 {
     /**
      * @var int|null
@@ -101,5 +101,11 @@ class GetQuery
     public function getDatetime() : ?\DateTime
     {
         return $this->datetime;
+    }
+    public function jsonSerialize()
+    {
+        return (object) array_filter(array('startIndex' => $this->startIndex, 'float' => $this->float, 'boolean' => $this->boolean, 'date' => $this->date, 'datetime' => $this->datetime), static function ($value) : bool {
+            return $value !== null;
+        });
     }
 }

@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-interface EntryUpdate {
+export interface EntryUpdate {
     id: number
     userId?: number
     title?: string

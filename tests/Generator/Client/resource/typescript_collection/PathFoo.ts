@@ -3,6 +3,6 @@
  * {@link https://github.com/apioo}
  */
 
-interface PathFoo {
+export interface PathFoo {
     foo?: string
 }

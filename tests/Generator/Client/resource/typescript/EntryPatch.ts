@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-interface EntryPatch {
+export interface EntryPatch {
     id: number
     userId?: number
     title?: string

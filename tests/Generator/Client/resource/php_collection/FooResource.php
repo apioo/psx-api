@@ -47,7 +47,7 @@ class FooResource extends ResourceAbstract
     public function post(?EntryCreate $data): EntryMessage
     {
         $options = [
-            'json' => $this->prepare($data)
+            'json' => $data
         ];
 
         $response = $this->httpClient->request('POST', $this->url, $options);

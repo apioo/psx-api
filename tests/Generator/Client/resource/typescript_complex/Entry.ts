@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-interface Entry {
+export interface Entry {
     id?: number
     userId?: number
     title?: string

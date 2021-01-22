@@ -67,6 +67,16 @@ abstract class ResourceAbstract
 
     protected function prepare($object, bool $asArray = false)
     {
+        if (!$object instanceof \JsonSerializable) {
+            throw new \InvalidArgumentException('');
+        }
+
+        if ($asArray) {
+        } else {
+            return $object->jsonSerialize();
+        }
+        
+        
         $data = (new Dumper())->dump($object);
         if ($asArray) {
             if ($data instanceof RecordInterface) {

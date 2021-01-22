@@ -7,7 +7,7 @@
 namespace Foo\Bar;
 
 
-class EntryMessage
+class EntryMessage implements \JsonSerializable
 {
     /**
      * @var bool|null
@@ -44,5 +44,11 @@ class EntryMessage
     public function getMessage() : ?string
     {
         return $this->message;
+    }
+    public function jsonSerialize()
+    {
+        return (object) array_filter(array('success' => $this->success, 'message' => $this->message), static function ($value) : bool {
+            return $value !== null;
+        });
     }
 }

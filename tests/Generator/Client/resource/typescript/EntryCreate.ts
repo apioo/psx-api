@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-interface EntryCreate {
+export interface EntryCreate {
     id?: number
     userId?: number
     title: string

@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-interface Path {
+export interface Path {
     name: string
     type: string
 }

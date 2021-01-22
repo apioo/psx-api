@@ -7,7 +7,7 @@
 /**
  * @Required({"name"})
  */
-class Path
+class Path implements \JsonSerializable
 {
     /**
      * @var string|null
@@ -49,5 +49,11 @@ class Path
     public function getType() : ?string
     {
         return $this->type;
+    }
+    public function jsonSerialize()
+    {
+        return (object) array_filter(array('name' => $this->name, 'type' => $this->type), static function ($value) : bool {
+            return $value !== null;
+        });
     }
 }

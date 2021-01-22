@@ -3,6 +3,6 @@
  * {@link https://github.com/apioo}
  */
 
-interface EntryCollection {
+export interface EntryCollection {
     entry?: Array<Entry>
 }

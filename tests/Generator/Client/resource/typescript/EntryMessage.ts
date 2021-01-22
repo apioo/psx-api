@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-interface EntryMessage {
+export interface EntryMessage {
     success?: boolean
     message?: string
 }

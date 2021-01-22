@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-interface EntryDelete {
+export interface EntryDelete {
     id: number
     userId?: number
     title?: string

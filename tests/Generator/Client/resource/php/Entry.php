@@ -4,7 +4,7 @@
  * @see https://github.com/apioo
  */
 
-class Entry
+class Entry implements \JsonSerializable
 {
     /**
      * @var int|null
@@ -80,5 +80,11 @@ class Entry
     public function getDate() : ?\DateTime
     {
         return $this->date;
+    }
+    public function jsonSerialize()
+    {
+        return (object) array_filter(array('id' => $this->id, 'userId' => $this->userId, 'title' => $this->title, 'date' => $this->date), static function ($value) : bool {
+            return $value !== null;
+        });
     }
 }

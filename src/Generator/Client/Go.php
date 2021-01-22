@@ -43,6 +43,14 @@ class Go extends LanguageAbstract
     /**
      * @inheritdoc
      */
+    protected function getClientTemplate(): string
+    {
+        return 'go-client.go.twig';
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function getGenerator(): GeneratorInterface
     {
         return new Schema\Generator\Go($this->namespace);

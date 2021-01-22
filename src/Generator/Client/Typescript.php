@@ -43,6 +43,14 @@ class Typescript extends LanguageAbstract
     /**
      * @inheritdoc
      */
+    protected function getClientTemplate(): string
+    {
+        return 'typescript-client.ts.twig';
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function getGenerator(): GeneratorInterface
     {
         return new Schema\Generator\TypeScript($this->namespace);

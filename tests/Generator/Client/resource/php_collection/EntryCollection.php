@@ -7,7 +7,7 @@
 namespace Foo\Bar;
 
 
-class EntryCollection
+class EntryCollection implements \JsonSerializable
 {
     /**
      * @var array<Entry>|null
@@ -26,5 +26,11 @@ class EntryCollection
     public function getEntry() : ?array
     {
         return $this->entry;
+    }
+    public function jsonSerialize()
+    {
+        return (object) array_filter(array('entry' => $this->entry), static function ($value) : bool {
+            return $value !== null;
+        });
     }
 }

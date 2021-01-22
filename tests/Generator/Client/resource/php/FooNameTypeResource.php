@@ -44,7 +44,7 @@ class FooNameTypeResource extends ResourceAbstract
     public function listFoo(?GetQuery $query): EntryCollection
     {
         $options = [
-            'query' => $this->prepare($query, true),
+            'query' => (array) $query->jsonSerialize(),
         ];
 
         $response = $this->httpClient->request('GET', $this->url, $options);
@@ -60,7 +60,7 @@ class FooNameTypeResource extends ResourceAbstract
     public function createFoo(?EntryCreate $data): EntryMessage
     {
         $options = [
-            'json' => $this->prepare($data)
+            'json' => $data
         ];
 
         $response = $this->httpClient->request('POST', $this->url, $options);
@@ -76,7 +76,7 @@ class FooNameTypeResource extends ResourceAbstract
     public function put(?EntryUpdate $data): EntryMessage
     {
         $options = [
-            'json' => $this->prepare($data)
+            'json' => $data
         ];
 
         $response = $this->httpClient->request('PUT', $this->url, $options);
@@ -106,7 +106,7 @@ class FooNameTypeResource extends ResourceAbstract
     public function patch(?EntryPatch $data): EntryMessage
     {
         $options = [
-            'json' => $this->prepare($data)
+            'json' => $data
         ];
 
         $response = $this->httpClient->request('PATCH', $this->url, $options);

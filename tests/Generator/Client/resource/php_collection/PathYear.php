@@ -7,7 +7,7 @@
 namespace Foo\Bar;
 
 
-class PathYear
+class PathYear implements \JsonSerializable
 {
     /**
      * @var string|null
@@ -26,5 +26,11 @@ class PathYear
     public function getYear() : ?string
     {
         return $this->year;
+    }
+    public function jsonSerialize()
+    {
+        return (object) array_filter(array('year' => $this->year), static function ($value) : bool {
+            return $value !== null;
+        });
     }
 }

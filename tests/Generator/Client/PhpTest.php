@@ -41,6 +41,7 @@ class PhpTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
+        $this->assertFileExists($target . '/Client.php');
         $this->assertFileExists($target . '/Entry.php');
         $this->assertFileExists($target . '/EntryCollection.php');
         $this->assertFileExists($target . '/EntryCreate.php');
@@ -64,6 +65,7 @@ class PhpTest extends GeneratorTestCase
 
         $this->assertFileExists($target . '/BarFooResource.php');
         $this->assertFileExists($target . '/BarYear09Resource.php');
+        $this->assertFileExists($target . '/Client.php');
         $this->assertFileExists($target . '/Entry.php');
         $this->assertFileExists($target . '/EntryCollection.php');
         $this->assertFileExists($target . '/EntryCreate.php');
@@ -82,6 +84,7 @@ class PhpTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
+        $this->assertFileExists($target . '/Client.php');
         $this->assertFileExists($target . '/Entry.php');
         $this->assertFileExists($target . '/EntryMessage.php');
         $this->assertFileExists($target . '/FooNameTypeResource.php');

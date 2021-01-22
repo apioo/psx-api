@@ -7,7 +7,7 @@
 /**
  * @Required({"id"})
  */
-class EntryPatch
+class EntryPatch implements \JsonSerializable
 {
     /**
      * @var int|null
@@ -83,5 +83,11 @@ class EntryPatch
     public function getDate() : ?\DateTime
     {
         return $this->date;
+    }
+    public function jsonSerialize()
+    {
+        return (object) array_filter(array('id' => $this->id, 'userId' => $this->userId, 'title' => $this->title, 'date' => $this->date), static function ($value) : bool {
+            return $value !== null;
+        });
     }
 }

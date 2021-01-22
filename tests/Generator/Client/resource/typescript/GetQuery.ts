@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-interface GetQuery {
+export interface GetQuery {
     startIndex: number
     float?: number
     boolean?: boolean

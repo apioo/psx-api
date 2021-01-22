@@ -43,6 +43,14 @@ class Php extends LanguageAbstract
     /**
      * @inheritdoc
      */
+    protected function getClientTemplate(): string
+    {
+        return 'php-client.ts.twig';
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function getGenerator(): GeneratorInterface
     {
         return new Schema\Generator\Php($this->namespace);

@@ -48,7 +48,7 @@ class FooNameTypeResource extends ResourceAbstract
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->token
             ],
-            'json' => $this->prepare($data)
+            'json' => $data
         ];
 
         $response = $this->httpClient->request('POST', $this->url, $options);

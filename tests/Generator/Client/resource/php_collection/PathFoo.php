@@ -7,7 +7,7 @@
 namespace Foo\Bar;
 
 
-class PathFoo
+class PathFoo implements \JsonSerializable
 {
     /**
      * @var string|null
@@ -26,5 +26,11 @@ class PathFoo
     public function getFoo() : ?string
     {
         return $this->foo;
+    }
+    public function jsonSerialize()
+    {
+        return (object) array_filter(array('foo' => $this->foo), static function ($value) : bool {
+            return $value !== null;
+        });
     }
 }
