@@ -22,8 +22,6 @@ namespace PSX\Api\Generator\Client\Php;
 
 use GuzzleHttp\Client;
 use PSX\Json\Parser;
-use PSX\Record\RecordInterface;
-use PSX\Schema\Parser\Popo\Dumper;
 use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Visitor\TypeVisitor;
@@ -63,30 +61,6 @@ abstract class ResourceAbstract
         $this->token = $token;
         $this->httpClient = $httpClient ? $httpClient : new Client();
         $this->schemaManager = $schemaManager ? $schemaManager : new SchemaManager();
-    }
-
-    protected function prepare($object, bool $asArray = false)
-    {
-        if (!$object instanceof \JsonSerializable) {
-            throw new \InvalidArgumentException('');
-        }
-
-        if ($asArray) {
-        } else {
-            return $object->jsonSerialize();
-        }
-        
-        
-        $data = (new Dumper())->dump($object);
-        if ($asArray) {
-            if ($data instanceof RecordInterface) {
-                return $data->getProperties();
-            } else {
-                return [];
-            }
-        } else {
-            return $data;
-        }
     }
 
     protected function parse(string $data, ?string $class)
