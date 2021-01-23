@@ -30,6 +30,7 @@ namespace PSX\Api;
 interface GeneratorFactoryInterface
 {
     const CLIENT_GO = 'client-go';
+    const CLIENT_JAVA = 'client-java';
     const CLIENT_PHP = 'client-php';
     const CLIENT_TYPESCRIPT = 'client-typescript';
 

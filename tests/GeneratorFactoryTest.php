@@ -52,6 +52,7 @@ class GeneratorFactoryTest extends TestCase
     {
         return [
             [GeneratorFactoryInterface::CLIENT_GO],
+            [GeneratorFactoryInterface::CLIENT_JAVA],
             [GeneratorFactoryInterface::CLIENT_PHP],
             [GeneratorFactoryInterface::CLIENT_TYPESCRIPT],
 

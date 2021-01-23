@@ -76,6 +76,11 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 $generator = new Generator\Client\Go($baseUri, $config);
                 break;
 
+            case GeneratorFactoryInterface::CLIENT_JAVA:
+                $baseUri   = $this->url . '/' . $this->dispatch;
+                $generator = new Generator\Client\Java($baseUri, $config);
+                break;
+
             case GeneratorFactoryInterface::CLIENT_PHP:
                 $baseUri   = $this->url . '/' . $this->dispatch;
                 $generator = new Generator\Client\Php($baseUri, $config);
@@ -125,6 +130,8 @@ class GeneratorFactory implements GeneratorFactoryInterface
         switch ($format) {
             case GeneratorFactoryInterface::CLIENT_GO:
                 return 'go';
+            case GeneratorFactoryInterface::CLIENT_JAVA:
+                return 'java';
             case GeneratorFactoryInterface::CLIENT_PHP:
                 return 'php';
             case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
@@ -155,6 +162,8 @@ class GeneratorFactory implements GeneratorFactoryInterface
         switch ($format) {
             case GeneratorFactoryInterface::CLIENT_GO:
                 return 'application/go';
+            case GeneratorFactoryInterface::CLIENT_JAVA:
+                return 'application/java';
             case GeneratorFactoryInterface::CLIENT_PHP:
                 return 'application/php';
             case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
@@ -192,6 +201,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
     {
         return [
             GeneratorFactoryInterface::CLIENT_GO,
+            GeneratorFactoryInterface::CLIENT_JAVA,
             GeneratorFactoryInterface::CLIENT_PHP,
             GeneratorFactoryInterface::CLIENT_TYPESCRIPT,
 

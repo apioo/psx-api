@@ -1,0 +1,37 @@
+{% if namespace %}
+package {{ namespace }} {
+{% endif %}
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+
+public class Client
+{
+    private final String baseUrl;
+    private final String token;
+    private final HttpClient httpClient;
+
+    public Client(String baseUrl, String token, HttpClient httpClient)
+    {
+        this.baseUrl = baseUrl;
+        this.token = token;
+        this.httpClient = httpClient != null ? httpClient : HttpClientBuilder.create().build();
+    }
+
+{% for className, resource in resources %}
+    /**
+     * {{ resource.description|raw }}
+     */
+    public {{ className }} {{ resource.methodName }}({% for name, hint in resource.properties %}{{ hint|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %})
+    {
+        return new {{ className }}(
+            {% for name, hint in resource.properties %}{{ name }},
+            {% endfor %}
+this.baseUrl,
+            this.token,
+            this.httpClient
+        );
+    }
+
+{% endfor %}
+}

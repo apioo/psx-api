@@ -1,0 +1,78 @@
+{% if namespace %}
+package {{ namespace }} {
+{% endif %}
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.*;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Map;
+
+public class {{ className }}
+{
+    private final String url;
+    private final String token;
+    private final HttpClient httpClient;
+    private final ObjectMapper objectMapper;
+
+{% for name, hint in properties %}
+    private {{ hint }} {{ name }};
+{% endfor %}
+
+    public {{ className }}({% for name, hint in properties %}{{ hint|raw }} {{ name }}, {% endfor %}String baseUrl, String token, HttpClient httpClient)
+    {
+{% for name, hint in properties %}
+        this.{{ name }} = {{ name }};
+{% endfor %}
+
+        this.url = baseUrl + "{% for part in urlParts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}";
+        this.token = token;
+        this.httpClient = httpClient != null ? httpClient : HttpClientBuilder.create().build();
+        this.objectMapper = new ObjectMapper();
+    }
+
+{% for methodName, method in methods %}
+{% if method.description %}
+    /**
+     * {{ method.description }}
+     */
+{% endif %}
+    public {% if method.return %}{{ method.return|raw }}{% else %}void{% endif %} {{ methodName }}({% for name, hint in method.args %}{{ hint|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws URISyntaxException, IOException
+    {
+        URIBuilder builder = new URIBuilder(this.url);
+    
+{% if method.args.query is defined %}
+        Map<String, Object> params = this.objectMapper.convertValue(query, Map.class);
+        for(Map.Entry<String, Object> entry : params.entrySet()) {
+            builder.setParameter(entry.getKey(), entry.getValue().toString());
+        }
+{% endif %}
+
+        Http{{ method.httpMethod|lower|capitalize }} request = new Http{{ method.httpMethod|lower|capitalize }}(builder.build());
+{% if method.secure %}
+        request.addHeader("Authorization", "Bearer " + this.token);
+{% endif %}
+{% if method.args.data is defined %}
+        request.addHeader("Content-Type", "application/json");
+{% endif %}
+{% if method.args.data is defined %}
+        request.setEntity(new StringEntity(this.objectMapper.writeValueAsString(data), ContentType.APPLICATION_JSON));
+{% endif %}
+
+        HttpResponse response = this.httpClient.execute(request);
+
+{% if method.return %}
+        return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), {{ method.return }}.class);
+{% endif %}
+    }
+
+{% endfor %}
+}
