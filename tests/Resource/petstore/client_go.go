@@ -4,8 +4,6 @@
 
 
 
-package petsresource
-
 import (
     "encoding/json"
     "io/ioutil"
@@ -13,22 +11,16 @@ import (
     "time"
 )
 
-var baseURL = ""
-
-
-
-var url = "/pets"
-
-// SetBaseURL sets the base url
-func SetBaseURL(url string) {
-    baseURL = url
+type PetsResource struct {
+    BaseUrl string
+    Token string
 }
 
 // Listpets List all pets
-func Listpets(query PetsGetQuery) Pets {
+func (r PetsResource) Listpets(query PetsGetQuery) Pets {
 
 
-    req, err := http.NewRequest("GET", baseURL + url, nil)
+    req, err := http.NewRequest("GET", r.BaseURL + url, nil)
 
     client := &http.Client{}
     resp, err := client.Do(req)
@@ -47,7 +39,7 @@ func Listpets(query PetsGetQuery) Pets {
 }
 
 // Createpets Create a pet
-func Createpets(data Pet)  {
+func (r PetsResource) Createpets(data Pet)  {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -55,7 +47,7 @@ func Createpets(data Pet)  {
     }
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("POST", baseURL + url, reqBody)
+    req, err := http.NewRequest("POST", r.BaseURL + url, reqBody)
     req.Header.Set("Content-Type", "application/json")
 
     client := &http.Client{}
@@ -74,6 +66,14 @@ func Createpets(data Pet)  {
     return response
 }
 
+
+func NewPetsResource(baseUrl string, token string) PetsResource {
+    r := PetsResource {
+        BaseUrl: baseUrl + "/pets",
+        Token: token
+    }
+    return r
+}
 
 
 // Pet generated on 0000-00-00
@@ -126,4 +126,39 @@ type PetsGetQuery struct {
 // PetsPetIdGetQuery
 type PetsPetIdGetQuery struct {
     PetId string `json:"petId"`
+}
+
+
+// Client generated on 0000-00-00
+// {@link https://github.com/apioo}
+
+
+
+import (
+    "encoding/json"
+    "io/ioutil"
+    "net/http"
+    "time"
+)
+
+type Client struct {
+    BaseUrl string
+    Token   string
+}
+
+// Endpoint: /pets
+func (client Client) getPets() PetsResource {
+    r := PetsResource {
+        BaseUrl: client.BaseUrl,
+        Token: client.Token
+    }
+    return r
+}
+
+func NewClient(baseUrl string, token string) Client {
+    c := Client {
+        BaseUrl: baseUrl,
+        Token: token
+    }
+    return c
 }

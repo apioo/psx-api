@@ -1,5 +1,6 @@
-
-package {{ className|lower }}
+{% if namespace %}
+package {{ namespace|lower }}
+{% endif %}
 
 import (
     "encoding/json"
@@ -8,54 +9,28 @@ import (
     "time"
 )
 
-var baseURL = ""
-
-{% for name, hint in properties %}
-var {{ name }} = "";
-{% endfor %}
-
-
-var url = "{% for part in urlParts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}"
-
-// SetBaseURL sets the base url
-func SetBaseURL(url string) {
-    baseURL = url
+type Client struct {
+    BaseUrl string
+    Token   string
 }
 
-{% for methodName, method in methods %}
-// {{ methodName|capitalize }} {{ method.description }}
-func {{ methodName|capitalize }}({% for name, hint in method.args %}{{ name }} {{ hint }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ method.return }} {
-
-{% if method.httpMethod != "GET" and method.httpMethod != "DELETE" %}
-    raw, err := json.Marshal(data)
-    if err != nil {
-        panic(err)
+{% for className, resource in resources %}
+// {{ resource.description|raw }}
+func (client Client) {{ resource.methodName }}({% for name, hint in resource.properties %}{% if hint %}{{ hint }} {% endif %}{{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ className }} {
+    r := {{ className }} {
+        {% for name, hint in resource.properties %}{{ name|capitalize }}: {{ name }},
+        {% endfor %}
+BaseUrl: client.BaseUrl,
+        Token: client.Token
     }
-    var reqBody = bytes.NewReader(raw)
-{% endif %}
-
-    req, err := http.NewRequest("{{ method.httpMethod }}", baseURL + url, {% if method.httpMethod != "GET" and method.httpMethod != "DELETE" %}reqBody{% else %}nil{% endif %})
-{% if method.httpMethod != "GET" and method.httpMethod != "DELETE" %}
-    req.Header.Set("Content-Type", "application/json")
-{% endif %}
-{% if method.secure %}
-    req.Header.Set("Authorization", "Bearer " + token)
-{% endif %}
-
-    client := &http.Client{}
-    resp, err := client.Do(req)
-
-    if err != nil {
-        panic(err)
-    }
-
-    defer resp.Body.Close()
-    respBody, _ := ioutil.ReadAll(resp.Body)
-
-    var response {{ method.return }}
-    json.Unmarshal(respBody, &response)
-
-    return response
+    return r
 }
-
 {% endfor %}
+
+func NewClient(baseUrl string, token string) Client {
+    c := Client {
+        BaseUrl: baseUrl,
+        Token: token
+    }
+    return c
+}

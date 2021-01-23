@@ -32,7 +32,7 @@ class PetsResource extends ResourceAbstract
     public function listPets(?PetsGetQuery $query): Pets
     {
         $options = [
-            'query' => $this->prepare($query, true),
+            'query' => $query !== null ? (array) $query->jsonSerialize() : [],
         ];
 
         $response = $this->httpClient->request('GET', $this->url, $options);
@@ -50,7 +50,7 @@ class PetsResource extends ResourceAbstract
     public function createPets(?Pet $data)
     {
         $options = [
-            'json' => $this->prepare($data)
+            'json' => $data
         ];
 
         $response = $this->httpClient->request('POST', $this->url, $options);
@@ -296,4 +296,31 @@ class PetsPetIdGetQuery implements \JsonSerializable
             return $value !== null;
         });
     }
+}
+<?php 
+/**
+ * Client generated on 0000-00-00
+ * @see https://github.com/apioo
+ */
+
+
+use PSX\Api\Generator\Client\Php\ResourceAbstract;
+
+class Client extends ResourceAbstract
+{
+    /**
+     * Endpoint: /pets
+     *
+     * @return PetsResource
+     */
+    public function getPets(): PetsResource
+    {
+        return new PetsResource(
+            $this->baseUrl,
+            $this->token,
+            $this->httpClient,
+            $this->schemaManager
+        );
+    }
+
 }

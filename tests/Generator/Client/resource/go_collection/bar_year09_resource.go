@@ -4,8 +4,6 @@
 
 
 
-package baryear09resource
-
 import (
     "encoding/json"
     "io/ioutil"
@@ -13,23 +11,17 @@ import (
     "time"
 )
 
-var baseURL = ""
-
-var year = "";
-
-
-var url = "/bar/"+year+""
-
-// SetBaseURL sets the base url
-func SetBaseURL(url string) {
-    baseURL = url
+type BarYear09Resource struct {
+    BaseUrl string
+    Token string
+    Year string
 }
 
 // Get Returns a collection
-func Get() EntryCollection {
+func (r BarYear09Resource) Get() EntryCollection {
 
 
-    req, err := http.NewRequest("GET", baseURL + url, nil)
+    req, err := http.NewRequest("GET", r.BaseURL + url, nil)
 
     client := &http.Client{}
     resp, err := client.Do(req)
@@ -48,7 +40,7 @@ func Get() EntryCollection {
 }
 
 // Post 
-func Post(data EntryCreate) EntryMessage {
+func (r BarYear09Resource) Post(data EntryCreate) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -56,7 +48,7 @@ func Post(data EntryCreate) EntryMessage {
     }
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("POST", baseURL + url, reqBody)
+    req, err := http.NewRequest("POST", r.BaseURL + url, reqBody)
     req.Header.Set("Content-Type", "application/json")
 
     client := &http.Client{}
@@ -75,3 +67,11 @@ func Post(data EntryCreate) EntryMessage {
     return response
 }
 
+
+func NewBarYear09Resource(year string, baseUrl string, token string) BarYear09Resource {
+    r := BarYear09Resource {
+        BaseUrl: baseUrl + "/bar/"+year+"",
+        Token: token
+    }
+    return r
+}

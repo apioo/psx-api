@@ -4,8 +4,6 @@
 
 
 
-package 
-
 import (
     "encoding/json"
     "io/ioutil"
@@ -13,14 +11,26 @@ import (
     "time"
 )
 
-var baseURL = ""
-
-
-
-var url = ""
-
-// SetBaseURL sets the base url
-func SetBaseURL(url string) {
-    baseURL = url
+type Client struct {
+    BaseUrl string
+    Token   string
 }
 
+// Endpoint: /foo/:name/:type
+func (client Client) getFooNameType(string name, string type) FooNameTypeResource {
+    r := FooNameTypeResource {
+        Name: name,
+        Type: type,
+        BaseUrl: client.BaseUrl,
+        Token: client.Token
+    }
+    return r
+}
+
+func NewClient(baseUrl string, token string) Client {
+    c := Client {
+        BaseUrl: baseUrl,
+        Token: token
+    }
+    return c
+}

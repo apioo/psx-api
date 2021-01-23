@@ -4,8 +4,6 @@
 
 
 
-package foonametyperesource
-
 import (
     "encoding/json"
     "io/ioutil"
@@ -13,24 +11,18 @@ import (
     "time"
 )
 
-var baseURL = ""
-
-var name = "";
-var type = "";
-
-
-var url = "/foo/"+name+"/"+type+""
-
-// SetBaseURL sets the base url
-func SetBaseURL(url string) {
-    baseURL = url
+type FooNameTypeResource struct {
+    BaseUrl string
+    Token string
+    Name string
+    Type string
 }
 
 // Listfoo Returns a collection
-func Listfoo(query GetQuery) EntryCollection {
+func (r FooNameTypeResource) Listfoo(query GetQuery) EntryCollection {
 
 
-    req, err := http.NewRequest("GET", baseURL + url, nil)
+    req, err := http.NewRequest("GET", r.BaseURL + url, nil)
 
     client := &http.Client{}
     resp, err := client.Do(req)
@@ -49,7 +41,7 @@ func Listfoo(query GetQuery) EntryCollection {
 }
 
 // Createfoo 
-func Createfoo(data EntryCreate) EntryMessage {
+func (r FooNameTypeResource) Createfoo(data EntryCreate) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -57,7 +49,7 @@ func Createfoo(data EntryCreate) EntryMessage {
     }
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("POST", baseURL + url, reqBody)
+    req, err := http.NewRequest("POST", r.BaseURL + url, reqBody)
     req.Header.Set("Content-Type", "application/json")
 
     client := &http.Client{}
@@ -77,7 +69,7 @@ func Createfoo(data EntryCreate) EntryMessage {
 }
 
 // Put 
-func Put(data EntryUpdate) EntryMessage {
+func (r FooNameTypeResource) Put(data EntryUpdate) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -85,7 +77,7 @@ func Put(data EntryUpdate) EntryMessage {
     }
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("PUT", baseURL + url, reqBody)
+    req, err := http.NewRequest("PUT", r.BaseURL + url, reqBody)
     req.Header.Set("Content-Type", "application/json")
 
     client := &http.Client{}
@@ -105,10 +97,10 @@ func Put(data EntryUpdate) EntryMessage {
 }
 
 // Delete 
-func Delete() EntryMessage {
+func (r FooNameTypeResource) Delete() EntryMessage {
 
 
-    req, err := http.NewRequest("DELETE", baseURL + url, nil)
+    req, err := http.NewRequest("DELETE", r.BaseURL + url, nil)
 
     client := &http.Client{}
     resp, err := client.Do(req)
@@ -127,7 +119,7 @@ func Delete() EntryMessage {
 }
 
 // Patch 
-func Patch(data EntryPatch) EntryMessage {
+func (r FooNameTypeResource) Patch(data EntryPatch) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -135,7 +127,7 @@ func Patch(data EntryPatch) EntryMessage {
     }
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("PATCH", baseURL + url, reqBody)
+    req, err := http.NewRequest("PATCH", r.BaseURL + url, reqBody)
     req.Header.Set("Content-Type", "application/json")
 
     client := &http.Client{}
@@ -154,3 +146,11 @@ func Patch(data EntryPatch) EntryMessage {
     return response
 }
 
+
+func NewFooNameTypeResource(name string, type string, baseUrl string, token string) FooNameTypeResource {
+    r := FooNameTypeResource {
+        BaseUrl: baseUrl + "/foo/"+name+"/"+type+"",
+        Token: token
+    }
+    return r
+}

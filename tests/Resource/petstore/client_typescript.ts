@@ -98,3 +98,40 @@ export interface PetsGetQuery {
 export interface PetsPetIdGetQuery {
     petId?: string
 }
+
+/**
+ * Client generated on 0000-00-00
+ * {@link https://github.com/apioo}
+ */
+
+import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import PetsResource from "./PetsResource";
+
+
+export default class  {
+    private baseUrl: string;
+    private token: string;
+    private httpClient: AxiosInstance;
+
+    public constructor(baseUrl: string, token: string, httpClient?: AxiosInstance) {
+        this.baseUrl = baseUrl;
+        this.token = token;
+        this.httpClient = httpClient ? httpClient : Axios.create();
+    }
+
+    /**
+     * Endpoint: /pets
+     * 
+     * @returns PetsResource
+     */
+    public getPets(): PetsResource
+    {
+        return new PetsResource(
+            this.baseUrl,
+            this.token,
+            this.httpClient
+        );
+    }
+
+}
+

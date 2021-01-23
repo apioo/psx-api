@@ -1,5 +1,6 @@
-
-package {{ className|lower }}
+{% if namespace %}
+package {{ namespace|lower }}
+{% endif %}
 
 import (
     "encoding/json"
@@ -8,23 +9,17 @@ import (
     "time"
 )
 
-var baseURL = ""
-
+type {{ className }} struct {
+    BaseUrl string
+    Token string
 {% for name, hint in properties %}
-var {{ name }} = "";
+    {{ name|capitalize }} {{ hint }}
 {% endfor %}
-
-
-var url = "{% for part in urlParts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}"
-
-// SetBaseURL sets the base url
-func SetBaseURL(url string) {
-    baseURL = url
 }
 
 {% for methodName, method in methods %}
 // {{ methodName|capitalize }} {{ method.description }}
-func {{ methodName|capitalize }}({% for name, hint in method.args %}{{ name }} {{ hint }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ method.return }} {
+func (r {{ className }}) {{ methodName|capitalize }}({% for name, hint in method.args %}{{ name }} {{ hint }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ method.return }} {
 
 {% if method.httpMethod != "GET" and method.httpMethod != "DELETE" %}
     raw, err := json.Marshal(data)
@@ -34,12 +29,12 @@ func {{ methodName|capitalize }}({% for name, hint in method.args %}{{ name }} {
     var reqBody = bytes.NewReader(raw)
 {% endif %}
 
-    req, err := http.NewRequest("{{ method.httpMethod }}", baseURL + url, {% if method.httpMethod != "GET" and method.httpMethod != "DELETE" %}reqBody{% else %}nil{% endif %})
+    req, err := http.NewRequest("{{ method.httpMethod }}", r.BaseURL + url, {% if method.httpMethod != "GET" and method.httpMethod != "DELETE" %}reqBody{% else %}nil{% endif %})
 {% if method.httpMethod != "GET" and method.httpMethod != "DELETE" %}
     req.Header.Set("Content-Type", "application/json")
 {% endif %}
 {% if method.secure %}
-    req.Header.Set("Authorization", "Bearer " + token)
+    req.Header.Set("Authorization", "Bearer " + r.Token)
 {% endif %}
 
     client := &http.Client{}
@@ -59,3 +54,11 @@ func {{ methodName|capitalize }}({% for name, hint in method.args %}{{ name }} {
 }
 
 {% endfor %}
+
+func New{{ className }}({% for name, hint in properties %}{{ name }} {{ hint }}, {% endfor %}baseUrl string, token string) {{ className }} {
+    r := {{ className }} {
+        BaseUrl: baseUrl + "{% for part in urlParts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}",
+        Token: token
+    }
+    return r
+}

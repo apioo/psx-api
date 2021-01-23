@@ -45,7 +45,7 @@ class {{ className }} extends ResourceAbstract
     {
         $options = [
 {% if method.args.query is defined %}
-            'query' => (array) $query->jsonSerialize(),
+            'query' => $query !== null ? (array) $query->jsonSerialize() : [],
 {% endif %}
 {% if method.secure %}
             'headers' => [

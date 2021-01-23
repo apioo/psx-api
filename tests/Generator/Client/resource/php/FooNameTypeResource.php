@@ -44,7 +44,7 @@ class FooNameTypeResource extends ResourceAbstract
     public function listFoo(?GetQuery $query): EntryCollection
     {
         $options = [
-            'query' => (array) $query->jsonSerialize(),
+            'query' => $query !== null ? (array) $query->jsonSerialize() : [],
         ];
 
         $response = $this->httpClient->request('GET', $this->url, $options);

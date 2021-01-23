@@ -4,8 +4,6 @@
 
 
 
-package foonametyperesource
-
 import (
     "encoding/json"
     "io/ioutil"
@@ -13,21 +11,15 @@ import (
     "time"
 )
 
-var baseURL = ""
-
-var name = "";
-var type = "";
-
-
-var url = "/foo/"+name+"/"+type+""
-
-// SetBaseURL sets the base url
-func SetBaseURL(url string) {
-    baseURL = url
+type FooNameTypeResource struct {
+    BaseUrl string
+    Token string
+    Name string
+    Type string
 }
 
 // Postentryormessage Returns a collection
-func Postentryormessage(data interface{}) interface{} {
+func (r FooNameTypeResource) Postentryormessage(data interface{}) interface{} {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -35,9 +27,9 @@ func Postentryormessage(data interface{}) interface{} {
     }
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("POST", baseURL + url, reqBody)
+    req, err := http.NewRequest("POST", r.BaseURL + url, reqBody)
     req.Header.Set("Content-Type", "application/json")
-    req.Header.Set("Authorization", "Bearer " + token)
+    req.Header.Set("Authorization", "Bearer " + r.Token)
 
     client := &http.Client{}
     resp, err := client.Do(req)
@@ -55,3 +47,11 @@ func Postentryormessage(data interface{}) interface{} {
     return response
 }
 
+
+func NewFooNameTypeResource(name string, type string, baseUrl string, token string) FooNameTypeResource {
+    r := FooNameTypeResource {
+        BaseUrl: baseUrl + "/foo/"+name+"/"+type+"",
+        Token: token
+    }
+    return r
+}
