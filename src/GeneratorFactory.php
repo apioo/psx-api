@@ -101,8 +101,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
 
             case GeneratorFactoryInterface::SPEC_RAML:
                 $baseUri   = $this->url . '/' . $this->dispatch;
-                $namespace = $config ?: $this->namespace;
-                $generator = new Generator\Spec\Raml(1, $baseUri, $namespace);
+                $generator = new Generator\Spec\Raml(1, $baseUri);
                 break;
 
             case GeneratorFactoryInterface::SPEC_TYPESCHEMA:
@@ -112,8 +111,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
             default:
             case GeneratorFactoryInterface::SPEC_OPENAPI:
                 $baseUri   = $this->url . '/' . $this->dispatch;
-                $namespace = $config ?: $this->namespace;
-                $generator = new Generator\Spec\OpenAPI($this->reader, 1, $baseUri, $namespace);
+                $generator = new Generator\Spec\OpenAPI($this->reader, 1, $baseUri);
                 break;
         }
 
