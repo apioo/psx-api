@@ -82,10 +82,7 @@ abstract class LanguageAbstract implements GeneratorInterface
 
         $chunks = new Generator\Code\Chunks();
         foreach ($collection as $path => $resource) {
-            $return = $this->generateResource($resource, $definitions, $resources);
-            if ($return instanceof Generator\Code\Chunks) {
-                $chunks->merge($return);
-            }
+            $this->generateResource($resource, $definitions, $chunks, $resources);
         }
 
         $this->generateSchema($definitions, $chunks);
@@ -97,18 +94,15 @@ abstract class LanguageAbstract implements GeneratorInterface
     /**
      * @param Resource $resource
      * @param DefinitionsInterface $definitions
+     * @param Generator\Code\Chunks $chunks
      * @param array $resources
-     * @return Generator\Code\Chunks|null
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
+     * @return void
      */
-    public function generateResource(Resource $resource, DefinitionsInterface $definitions, array &$resources): ?Generator\Code\Chunks
+    public function generateResource(Resource $resource, DefinitionsInterface $definitions, Generator\Code\Chunks $chunks, array &$resources): void
     {
         $className = $this->getClassName($resource->getPath());
-
         if (empty($className)) {
-            return null;
+            return;
         }
 
         $properties = $this->getPathParameterTypes($resource, $definitions);
@@ -178,10 +172,7 @@ abstract class LanguageAbstract implements GeneratorInterface
             'methods' => $methods,
         ]);
 
-        $chunks = new Generator\Code\Chunks();
         $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
-
-        return $chunks;
     }
 
     /**

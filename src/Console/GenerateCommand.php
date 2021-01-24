@@ -78,26 +78,20 @@ class GenerateCommand extends Command
             ->addArgument('dir', InputArgument::REQUIRED, 'The target directory')
             ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Optional the output format possible values are: ' . implode(', ', GeneratorFactory::getPossibleTypes()))
             ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Optional a config value which gets passed to the generator')
-            ->addOption('filter', 'i', InputOption::VALUE_REQUIRED, 'Optional a specific filter name i.e. internal or external')
-            ->addOption('regexp', 'r', InputOption::VALUE_REQUIRED, 'Optional a path regexp filter');
+            ->addOption('filter', 'i', InputOption::VALUE_REQUIRED, 'Optional a specific filter');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $format = $input->getOption('format');
         $config = $input->getOption('config');
-
-        $filterName   = $input->getOption('filter');
-        $filterRegexp = $input->getOption('regexp');
+        $filterName = $input->getOption('filter');
 
         if ($this->filterFactory instanceof FilterFactoryInterface && !empty($filterName)) {
             $filter = $this->filterFactory->getFilter($filterName);
         } else {
             $filter = null;
         }
-
-        $routes   = $this->listing->getAvailableRoutes($filter);
-        $progress = new ProgressBar($output, count($routes));
 
         $dir = $input->getArgument('dir');
         if (!is_dir($dir)) {
@@ -107,43 +101,20 @@ class GenerateCommand extends Command
         $generator = $this->factory->getGenerator($format, $config);
         $extension = $this->factory->getFileExtension($format, $config);
 
-        $progress->start();
+        $output->writeln('Generating ...');
 
-        foreach ($routes as $resource) {
-            if (!empty($filterRegexp) && !preg_match('~' . $filterRegexp . '~', $resource->getPath())) {
-                continue;
-            }
+        $content = $generator->generate($this->listing->findAll(null, $filter));
 
-            $progress->setMessage('Generating ' . $resource->getPath());
+        if ($content instanceof Chunks) {
+            $content->writeTo($dir . '/sdk-' . $format .  '.zip');
+        } else {
 
-            $content = $generator->generate($this->listing->find($resource->getPath()));
-
-            if ($content instanceof Chunks) {
-                $content->writeTo($dir . '/sdk-' . $format .  '.zip');
-            } else {
-                $fileName = $this->getFileName($resource->getPath(), $extension);
-                file_put_contents($dir . '/' . $fileName, $content);
-            }
-
-            $progress->advance();
+            $fileName = 'output.' . $extension;
+            file_put_contents($dir . '/' . $fileName, $content);
         }
-
-        $progress->finish();
 
         $output->writeln('Successful!');
 
         return 0;
-    }
-
-    private function getFileName($path, $extension)
-    {
-        $path = trim($path, '/');
-        $path = preg_replace('/[^A-Za-z0-9]/', '_', $path);
-
-        if (empty($path)) {
-            return null;
-        }
-
-        return $path . '.' . $extension;
     }
 }
