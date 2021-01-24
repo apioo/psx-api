@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-public static class EntryCollection {
+public class EntryCollection {
     private Entry[] entry;
     public void setEntry(Entry[] entry) {
         this.entry = entry;

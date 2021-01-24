@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-public static class EntryUpdate {
+public class EntryUpdate {
     private int id;
     private int userId;
     private String title;

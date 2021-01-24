@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-public static class GetQuery {
+public class GetQuery {
     private int startIndex;
     private float float;
     private boolean boolean;

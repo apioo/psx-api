@@ -3,6 +3,8 @@
 // {@link https://github.com/apioo}
 
 
+
+
 // GetQuery
 type GetQuery struct {
     StartIndex int `json:"startIndex"`

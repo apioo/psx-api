@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-public static class EntryDelete {
+public class EntryDelete {
     private int id;
     private int userId;
     private String title;

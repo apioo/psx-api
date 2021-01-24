@@ -3,6 +3,8 @@
 // {@link https://github.com/apioo}
 
 
+
+
 // PathFoo
 type PathFoo struct {
     Foo string `json:"foo"`

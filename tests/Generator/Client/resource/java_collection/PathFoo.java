@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-public static class PathFoo {
+public class PathFoo {
     private String foo;
     public void setFoo(String foo) {
         this.foo = foo;

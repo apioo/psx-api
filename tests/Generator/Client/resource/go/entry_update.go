@@ -3,6 +3,8 @@
 // {@link https://github.com/apioo}
 
 
+
+
 // EntryUpdate
 type EntryUpdate struct {
     Id int `json:"id"`

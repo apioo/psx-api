@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-public static class Entry {
+public class Entry {
     private int id;
     private int userId;
     private String title;

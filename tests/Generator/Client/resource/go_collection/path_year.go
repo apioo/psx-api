@@ -3,6 +3,8 @@
 // {@link https://github.com/apioo}
 
 
+
+
 // PathYear
 type PathYear struct {
     Year string `json:"year"`

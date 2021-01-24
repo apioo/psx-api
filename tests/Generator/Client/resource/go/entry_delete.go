@@ -3,6 +3,8 @@
 // {@link https://github.com/apioo}
 
 
+
+
 // EntryDelete
 type EntryDelete struct {
     Id int `json:"id"`

@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-public static class Path {
+public class Path {
     private String name;
     private String type;
     public void setName(String name) {

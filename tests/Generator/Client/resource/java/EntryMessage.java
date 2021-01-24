@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-public static class EntryMessage {
+public class EntryMessage {
     private boolean success;
     private String message;
     public void setSuccess(boolean success) {

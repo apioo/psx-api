@@ -3,6 +3,8 @@
 // {@link https://github.com/apioo}
 
 
+
+
 // EntryCreate
 type EntryCreate struct {
     Id int `json:"id"`

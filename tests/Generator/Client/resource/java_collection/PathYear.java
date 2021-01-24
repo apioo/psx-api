@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-public static class PathYear {
+public class PathYear {
     private String year;
     public void setYear(String year) {
         this.year = year;

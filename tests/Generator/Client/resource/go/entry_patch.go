@@ -3,6 +3,8 @@
 // {@link https://github.com/apioo}
 
 
+
+
 // EntryPatch
 type EntryPatch struct {
     Id int `json:"id"`
