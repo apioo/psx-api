@@ -25,8 +25,8 @@ func (client Client) getFoo() FooResource {
     return r
 }
 // Endpoint: /bar/:foo
-func (client Client) getBarFoo(string foo) BarFooResource {
-    r := BarFooResource {
+func (client Client) getBarByFoo(string foo) BarByFooResource {
+    r := BarByFooResource {
         Foo: foo,
         BaseUrl: client.BaseUrl,
         Token: client.Token
@@ -34,8 +34,8 @@ func (client Client) getBarFoo(string foo) BarFooResource {
     return r
 }
 // Endpoint: /bar/$year<[0-9]+>
-func (client Client) getBarYear09(string year) BarYear09Resource {
-    r := BarYear09Resource {
+func (client Client) getBarByYear(string year) BarByYearResource {
+    r := BarByYearResource {
         Year: year,
         BaseUrl: client.BaseUrl,
         Token: client.Token

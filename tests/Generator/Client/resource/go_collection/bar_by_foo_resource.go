@@ -1,5 +1,5 @@
 
-// BarFooResource generated on 0000-00-00
+// BarByFooResource generated on 0000-00-00
 // {@link https://github.com/apioo}
 
 
@@ -11,14 +11,14 @@ import (
     "time"
 )
 
-type BarFooResource struct {
+type BarByFooResource struct {
     BaseUrl string
     Token string
     Foo string
 }
 
 // Get Returns a collection
-func (r BarFooResource) Get() EntryCollection {
+func (r BarByFooResource) Get() EntryCollection {
 
 
     req, err := http.NewRequest("GET", r.BaseURL + url, nil)
@@ -40,7 +40,7 @@ func (r BarFooResource) Get() EntryCollection {
 }
 
 // Post 
-func (r BarFooResource) Post(data EntryCreate) EntryMessage {
+func (r BarByFooResource) Post(data EntryCreate) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -68,8 +68,8 @@ func (r BarFooResource) Post(data EntryCreate) EntryMessage {
 }
 
 
-func NewBarFooResource(foo string, baseUrl string, token string) BarFooResource {
-    r := BarFooResource {
+func NewBarByFooResource(foo string, baseUrl string, token string) BarByFooResource {
+    r := BarByFooResource {
         BaseUrl: baseUrl + "/bar/"+foo+"",
         Token: token
     }

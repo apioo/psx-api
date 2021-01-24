@@ -12,11 +12,11 @@ class Client extends ResourceAbstract
     /**
      * Endpoint: /foo/:name/:type
      *
-     * @return FooNameTypeResource
+     * @return FooByNameAndTypeResource
      */
-    public function getFooNameType(?string $name, ?string $type): FooNameTypeResource
+    public function getFooByNameAndType(?string $name, ?string $type): FooByNameAndTypeResource
     {
-        return new FooNameTypeResource(
+        return new FooByNameAndTypeResource(
             $name,
             $type,
             $this->baseUrl,

@@ -1,6 +1,6 @@
 <?php 
 /**
- * FooNameTypeResource generated on 0000-00-00
+ * FooByNameAndTypeResource generated on 0000-00-00
  * @see https://github.com/apioo
  */
 
@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 use PSX\Api\Generator\Client\Php\ResourceAbstract;
 use PSX\Schema\SchemaManager;
 
-class FooNameTypeResource extends ResourceAbstract
+class FooByNameAndTypeResource extends ResourceAbstract
 {
     /**
      * @var string

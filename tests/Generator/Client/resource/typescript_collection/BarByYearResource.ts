@@ -1,12 +1,12 @@
 /**
- * BarYear09Resource generated on 0000-00-00
+ * BarByYearResource generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 
 
-export default class BarYear09Resource {
+export default class BarByYearResource {
     private url: string;
     private token: string;
     private httpClient: AxiosInstance;

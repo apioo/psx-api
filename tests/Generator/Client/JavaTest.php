@@ -49,7 +49,7 @@ class JavaTest extends GeneratorTestCase
         $this->assertFileExists($target . '/EntryMessage.java');
         $this->assertFileExists($target . '/EntryPatch.java');
         $this->assertFileExists($target . '/EntryUpdate.java');
-        $this->assertFileExists($target . '/FooNameTypeResource.java');
+        $this->assertFileExists($target . '/FooByNameAndTypeResource.java');
         $this->assertFileExists($target . '/GetQuery.java');
         $this->assertFileExists($target . '/Path.java');
     }
@@ -63,8 +63,8 @@ class JavaTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/BarFooResource.java');
-        $this->assertFileExists($target . '/BarYear09Resource.java');
+        $this->assertFileExists($target . '/BarByFooResource.java');
+        $this->assertFileExists($target . '/BarByYearResource.java');
         $this->assertFileExists($target . '/Client.java');
         $this->assertFileExists($target . '/Entry.java');
         $this->assertFileExists($target . '/EntryCollection.java');
@@ -88,7 +88,7 @@ class JavaTest extends GeneratorTestCase
         $this->assertFileExists($target . '/Entry.java');
         $this->assertFileExists($target . '/EntryMessage.java');
         $this->assertFileExists($target . '/EntryOrMessage.java');
-        $this->assertFileExists($target . '/FooNameTypeResource.java');
+        $this->assertFileExists($target . '/FooByNameAndTypeResource.java');
         $this->assertFileExists($target . '/Path.java');
     }
 }

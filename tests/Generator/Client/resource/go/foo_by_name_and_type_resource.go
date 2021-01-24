@@ -1,5 +1,5 @@
 
-// FooNameTypeResource generated on 0000-00-00
+// FooByNameAndTypeResource generated on 0000-00-00
 // {@link https://github.com/apioo}
 
 
@@ -11,7 +11,7 @@ import (
     "time"
 )
 
-type FooNameTypeResource struct {
+type FooByNameAndTypeResource struct {
     BaseUrl string
     Token string
     Name string
@@ -19,7 +19,7 @@ type FooNameTypeResource struct {
 }
 
 // Listfoo Returns a collection
-func (r FooNameTypeResource) Listfoo(query GetQuery) EntryCollection {
+func (r FooByNameAndTypeResource) Listfoo(query GetQuery) EntryCollection {
 
 
     req, err := http.NewRequest("GET", r.BaseURL + url, nil)
@@ -41,7 +41,7 @@ func (r FooNameTypeResource) Listfoo(query GetQuery) EntryCollection {
 }
 
 // Createfoo 
-func (r FooNameTypeResource) Createfoo(data EntryCreate) EntryMessage {
+func (r FooByNameAndTypeResource) Createfoo(data EntryCreate) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -69,7 +69,7 @@ func (r FooNameTypeResource) Createfoo(data EntryCreate) EntryMessage {
 }
 
 // Put 
-func (r FooNameTypeResource) Put(data EntryUpdate) EntryMessage {
+func (r FooByNameAndTypeResource) Put(data EntryUpdate) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -97,7 +97,7 @@ func (r FooNameTypeResource) Put(data EntryUpdate) EntryMessage {
 }
 
 // Delete 
-func (r FooNameTypeResource) Delete() EntryMessage {
+func (r FooByNameAndTypeResource) Delete() EntryMessage {
 
 
     req, err := http.NewRequest("DELETE", r.BaseURL + url, nil)
@@ -119,7 +119,7 @@ func (r FooNameTypeResource) Delete() EntryMessage {
 }
 
 // Patch 
-func (r FooNameTypeResource) Patch(data EntryPatch) EntryMessage {
+func (r FooByNameAndTypeResource) Patch(data EntryPatch) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -147,8 +147,8 @@ func (r FooNameTypeResource) Patch(data EntryPatch) EntryMessage {
 }
 
 
-func NewFooNameTypeResource(name string, type string, baseUrl string, token string) FooNameTypeResource {
-    r := FooNameTypeResource {
+func NewFooByNameAndTypeResource(name string, type string, baseUrl string, token string) FooByNameAndTypeResource {
+    r := FooByNameAndTypeResource {
         BaseUrl: baseUrl + "/foo/"+name+"/"+type+"",
         Token: token
     }

@@ -1,5 +1,5 @@
 /**
- * FooNameTypeResource generated on 0000-00-00
+ * FooByNameAndTypeResource generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class FooNameTypeResource
+public class FooByNameAndTypeResource
 {
     private final String url;
     private final String token;
@@ -28,7 +28,7 @@ public class FooNameTypeResource
     private String name;
     private String type;
 
-    public FooNameTypeResource(String name, String type, String baseUrl, String token, HttpClient httpClient)
+    public FooByNameAndTypeResource(String name, String type, String baseUrl, String token, HttpClient httpClient)
     {
         this.name = name;
         this.type = type;

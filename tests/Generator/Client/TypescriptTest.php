@@ -49,7 +49,7 @@ class TypescriptTest extends GeneratorTestCase
         $this->assertFileExists($target . '/EntryMessage.ts');
         $this->assertFileExists($target . '/EntryPatch.ts');
         $this->assertFileExists($target . '/EntryUpdate.ts');
-        $this->assertFileExists($target . '/FooNameTypeResource.ts');
+        $this->assertFileExists($target . '/FooByNameAndTypeResource.ts');
         $this->assertFileExists($target . '/GetQuery.ts');
         $this->assertFileExists($target . '/Path.ts');
     }
@@ -63,8 +63,8 @@ class TypescriptTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/BarFooResource.ts');
-        $this->assertFileExists($target . '/BarYear09Resource.ts');
+        $this->assertFileExists($target . '/BarByFooResource.ts');
+        $this->assertFileExists($target . '/BarByYearResource.ts');
         $this->assertFileExists($target . '/Client.ts');
         $this->assertFileExists($target . '/Entry.ts');
         $this->assertFileExists($target . '/EntryCollection.ts');
@@ -88,7 +88,7 @@ class TypescriptTest extends GeneratorTestCase
         $this->assertFileExists($target . '/Entry.ts');
         $this->assertFileExists($target . '/EntryMessage.ts');
         $this->assertFileExists($target . '/EntryOrMessage.ts');
-        $this->assertFileExists($target . '/FooNameTypeResource.ts');
+        $this->assertFileExists($target . '/FooByNameAndTypeResource.ts');
         $this->assertFileExists($target . '/Path.ts');
     }
 }

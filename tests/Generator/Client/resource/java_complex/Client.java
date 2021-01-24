@@ -23,9 +23,9 @@ public class Client
     /**
      * Endpoint: /foo/:name/:type
      */
-    public FooNameTypeResource getFooNameType(String name, String type)
+    public FooByNameAndTypeResource getFooByNameAndType(String name, String type)
     {
-        return new FooNameTypeResource(
+        return new FooByNameAndTypeResource(
             name,
             type,
             this.baseUrl,

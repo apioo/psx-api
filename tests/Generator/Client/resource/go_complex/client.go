@@ -17,8 +17,8 @@ type Client struct {
 }
 
 // Endpoint: /foo/:name/:type
-func (client Client) getFooNameType(string name, string type) FooNameTypeResource {
-    r := FooNameTypeResource {
+func (client Client) getFooByNameAndType(string name, string type) FooByNameAndTypeResource {
+    r := FooByNameAndTypeResource {
         Name: name,
         Type: type,
         BaseUrl: client.BaseUrl,

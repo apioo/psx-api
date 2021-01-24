@@ -1,5 +1,5 @@
 /**
- * BarYear09Resource generated on 0000-00-00
+ * BarByFooResource generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
@@ -18,20 +18,20 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class BarYear09Resource
+public class BarByFooResource
 {
     private final String url;
     private final String token;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-    private String year;
+    private String foo;
 
-    public BarYear09Resource(String year, String baseUrl, String token, HttpClient httpClient)
+    public BarByFooResource(String foo, String baseUrl, String token, HttpClient httpClient)
     {
-        this.year = year;
+        this.foo = foo;
 
-        this.url = baseUrl + "/bar/"+year+"";
+        this.url = baseUrl + "/bar/"+foo+"";
         this.token = token;
         this.httpClient = httpClient != null ? httpClient : HttpClientBuilder.create().build();
         this.objectMapper = new ObjectMapper();

@@ -1,12 +1,12 @@
 /**
- * FooNameTypeResource generated on 0000-00-00
+ * FooByNameAndTypeResource generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 
 
-export default class FooNameTypeResource {
+export default class FooByNameAndTypeResource {
     private url: string;
     private token: string;
     private httpClient: AxiosInstance;

@@ -35,9 +35,9 @@ public class Client
     /**
      * Endpoint: /bar/:foo
      */
-    public BarFooResource getBarFoo(String foo)
+    public BarByFooResource getBarByFoo(String foo)
     {
-        return new BarFooResource(
+        return new BarByFooResource(
             foo,
             this.baseUrl,
             this.token,
@@ -48,9 +48,9 @@ public class Client
     /**
      * Endpoint: /bar/$year<[0-9]+>
      */
-    public BarYear09Resource getBarYear09(String year)
+    public BarByYearResource getBarByYear(String year)
     {
-        return new BarYear09Resource(
+        return new BarByYearResource(
             year,
             this.baseUrl,
             this.token,

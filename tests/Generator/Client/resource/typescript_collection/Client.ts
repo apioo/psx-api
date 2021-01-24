@@ -5,8 +5,8 @@
 
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 import FooResource from "./FooResource";
-import BarFooResource from "./BarFooResource";
-import BarYear09Resource from "./BarYear09Resource";
+import BarByFooResource from "./BarByFooResource";
+import BarByYearResource from "./BarByYearResource";
 
 
 export default class  {
@@ -37,11 +37,11 @@ export default class  {
     /**
      * Endpoint: /bar/:foo
      * 
-     * @returns BarFooResource
+     * @returns BarByFooResource
      */
-    public getBarFoo(foo: string): BarFooResource
+    public getBarByFoo(foo: string): BarByFooResource
     {
-        return new BarFooResource(
+        return new BarByFooResource(
             foo,
             this.baseUrl,
             this.token,
@@ -52,11 +52,11 @@ export default class  {
     /**
      * Endpoint: /bar/$year<[0-9]+>
      * 
-     * @returns BarYear09Resource
+     * @returns BarByYearResource
      */
-    public getBarYear09(year: string): BarYear09Resource
+    public getBarByYear(year: string): BarByYearResource
     {
-        return new BarYear09Resource(
+        return new BarByYearResource(
             year,
             this.baseUrl,
             this.token,

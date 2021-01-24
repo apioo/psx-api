@@ -28,11 +28,11 @@ class Client extends ResourceAbstract
     /**
      * Endpoint: /bar/:foo
      *
-     * @return BarFooResource
+     * @return BarByFooResource
      */
-    public function getBarFoo(?string $foo): BarFooResource
+    public function getBarByFoo(?string $foo): BarByFooResource
     {
-        return new BarFooResource(
+        return new BarByFooResource(
             $foo,
             $this->baseUrl,
             $this->token,
@@ -44,11 +44,11 @@ class Client extends ResourceAbstract
     /**
      * Endpoint: /bar/$year<[0-9]+>
      *
-     * @return BarYear09Resource
+     * @return BarByYearResource
      */
-    public function getBarYear09(?string $year): BarYear09Resource
+    public function getBarByYear(?string $year): BarByYearResource
     {
-        return new BarYear09Resource(
+        return new BarByYearResource(
             $year,
             $this->baseUrl,
             $this->token,

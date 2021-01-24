@@ -4,7 +4,7 @@
  */
 
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
-import FooNameTypeResource from "./FooNameTypeResource";
+import FooByNameAndTypeResource from "./FooByNameAndTypeResource";
 
 
 export default class  {
@@ -21,11 +21,11 @@ export default class  {
     /**
      * Endpoint: /foo/:name/:type
      * 
-     * @returns FooNameTypeResource
+     * @returns FooByNameAndTypeResource
      */
-    public getFooNameType(name: string, type: string): FooNameTypeResource
+    public getFooByNameAndType(name: string, type: string): FooByNameAndTypeResource
     {
-        return new FooNameTypeResource(
+        return new FooByNameAndTypeResource(
             name,
             type,
             this.baseUrl,

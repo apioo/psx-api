@@ -1,6 +1,6 @@
 <?php 
 /**
- * BarYear09Resource generated on 0000-00-00
+ * BarByYearResource generated on 0000-00-00
  * @see https://github.com/apioo
  */
 
@@ -10,7 +10,7 @@ use GuzzleHttp\Client;
 use PSX\Api\Generator\Client\Php\ResourceAbstract;
 use PSX\Schema\SchemaManager;
 
-class BarYear09Resource extends ResourceAbstract
+class BarByYearResource extends ResourceAbstract
 {
     /**
      * @var string

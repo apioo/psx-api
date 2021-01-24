@@ -1,5 +1,5 @@
 
-// FooNameTypeResource generated on 0000-00-00
+// FooByNameAndTypeResource generated on 0000-00-00
 // {@link https://github.com/apioo}
 
 
@@ -11,7 +11,7 @@ import (
     "time"
 )
 
-type FooNameTypeResource struct {
+type FooByNameAndTypeResource struct {
     BaseUrl string
     Token string
     Name string
@@ -19,7 +19,7 @@ type FooNameTypeResource struct {
 }
 
 // Postentryormessage Returns a collection
-func (r FooNameTypeResource) Postentryormessage(data interface{}) interface{} {
+func (r FooByNameAndTypeResource) Postentryormessage(data interface{}) interface{} {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -48,8 +48,8 @@ func (r FooNameTypeResource) Postentryormessage(data interface{}) interface{} {
 }
 
 
-func NewFooNameTypeResource(name string, type string, baseUrl string, token string) FooNameTypeResource {
-    r := FooNameTypeResource {
+func NewFooByNameAndTypeResource(name string, type string, baseUrl string, token string) FooByNameAndTypeResource {
+    r := FooByNameAndTypeResource {
         BaseUrl: baseUrl + "/foo/"+name+"/"+type+"",
         Token: token
     }

@@ -328,11 +328,25 @@ abstract class LanguageAbstract implements GeneratorInterface
     protected function getClassName(string $path): string
     {
         $parts = explode('/', $path);
-        $parts = array_map(function($part){
-            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
-        }, $parts);
 
-        return implode('', $parts) . 'Resource';
+        $result = [];
+        $i = 0;
+        foreach ($parts as $part) {
+            if (substr($part, 0, 1) === ':') {
+                $part = ($i === 0 ? 'By' : 'And') . ucfirst(substr($part, 1));
+                $i++;
+            } elseif (substr($part, 0, 1) === '$') {
+                $part = ($i === 0 ? 'By' : 'And') . ucfirst(substr($part, 1, strpos($part, '<')));
+                $i++;
+            }
+
+            $result[] = ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
+        }
+
+        $className = implode('', $result);
+        $className = str_replace(' ', '', ucwords(str_replace('_', ' ', $className)));
+
+        return $className . 'Resource';
     }
 
     /**

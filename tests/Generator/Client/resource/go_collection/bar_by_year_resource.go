@@ -1,5 +1,5 @@
 
-// BarYear09Resource generated on 0000-00-00
+// BarByYearResource generated on 0000-00-00
 // {@link https://github.com/apioo}
 
 
@@ -11,14 +11,14 @@ import (
     "time"
 )
 
-type BarYear09Resource struct {
+type BarByYearResource struct {
     BaseUrl string
     Token string
     Year string
 }
 
 // Get Returns a collection
-func (r BarYear09Resource) Get() EntryCollection {
+func (r BarByYearResource) Get() EntryCollection {
 
 
     req, err := http.NewRequest("GET", r.BaseURL + url, nil)
@@ -40,7 +40,7 @@ func (r BarYear09Resource) Get() EntryCollection {
 }
 
 // Post 
-func (r BarYear09Resource) Post(data EntryCreate) EntryMessage {
+func (r BarByYearResource) Post(data EntryCreate) EntryMessage {
 
     raw, err := json.Marshal(data)
     if err != nil {
@@ -68,8 +68,8 @@ func (r BarYear09Resource) Post(data EntryCreate) EntryMessage {
 }
 
 
-func NewBarYear09Resource(year string, baseUrl string, token string) BarYear09Resource {
-    r := BarYear09Resource {
+func NewBarByYearResource(year string, baseUrl string, token string) BarByYearResource {
+    r := BarByYearResource {
         BaseUrl: baseUrl + "/bar/"+year+"",
         Token: token
     }
