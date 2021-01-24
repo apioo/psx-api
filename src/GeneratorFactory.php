@@ -70,24 +70,22 @@ class GeneratorFactory implements GeneratorFactoryInterface
      */
     public function getGenerator($format, $config = null)
     {
+        $baseUri = $this->url . '/' . $this->dispatch;
+
         switch ($format) {
             case GeneratorFactoryInterface::CLIENT_GO:
-                $baseUri   = $this->url . '/' . $this->dispatch;
                 $generator = new Generator\Client\Go($baseUri, $config);
                 break;
 
             case GeneratorFactoryInterface::CLIENT_JAVA:
-                $baseUri   = $this->url . '/' . $this->dispatch;
                 $generator = new Generator\Client\Java($baseUri, $config);
                 break;
 
             case GeneratorFactoryInterface::CLIENT_PHP:
-                $baseUri   = $this->url . '/' . $this->dispatch;
                 $generator = new Generator\Client\Php($baseUri, $config);
                 break;
 
             case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
-                $baseUri   = $this->url . '/' . $this->dispatch;
                 $generator = new Generator\Client\Typescript($baseUri, $config);
                 break;
 
@@ -100,7 +98,6 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 break;
 
             case GeneratorFactoryInterface::SPEC_RAML:
-                $baseUri   = $this->url . '/' . $this->dispatch;
                 $generator = new Generator\Spec\Raml(1, $baseUri);
                 break;
 
@@ -110,7 +107,6 @@ class GeneratorFactory implements GeneratorFactoryInterface
 
             default:
             case GeneratorFactoryInterface::SPEC_OPENAPI:
-                $baseUri   = $this->url . '/' . $this->dispatch;
                 $generator = new Generator\Spec\OpenAPI($this->reader, 1, $baseUri);
                 break;
         }
