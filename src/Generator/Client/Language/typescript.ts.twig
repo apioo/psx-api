@@ -1,9 +1,5 @@
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 
-{% if namespace %}
-namespace {{ namespace }} {
-{% endif %}
-
 export default class {{ className }} {
     private url: string;
     private token: string;
@@ -56,7 +52,3 @@ export default class {{ className }} {
 
 {% endfor %}
 }
-
-{% if namespace %}
-}
-{% endif %}

@@ -3,11 +3,7 @@ import Axios, {AxiosInstance, AxiosPromise} from "axios";
 import {{ className }} from "./{{ className }}";
 {% endfor %}
 
-{% if namespace %}
-namespace {{ namespace }} {
-{% endif %}
-
-export default class {{ className }} {
+export default class Client {
     private baseUrl: string;
     private token: string;
     private httpClient: AxiosInstance;
@@ -37,7 +33,3 @@ this.baseUrl,
 
 {% endfor %}
 }
-
-{% if namespace %}
-}
-{% endif %}
