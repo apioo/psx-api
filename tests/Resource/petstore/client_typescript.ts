@@ -5,7 +5,6 @@
 
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 
-
 export default class PetsResource {
     private url: string;
     private token: string;
@@ -50,11 +49,11 @@ export default class PetsResource {
 
 }
 
-
 /**
  * Pet generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
+
 
 export interface Pet {
     id: number
@@ -62,42 +61,53 @@ export interface Pet {
     tag?: string
 }
 
+
 /**
  * Pets generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
+
+import {Pet} from "./Pet";
+
 export interface Pets {
     pets?: Array<Pet>
 }
+
 
 /**
  * Error generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
+
 export interface Error {
     code: number
     message: string
 }
+
 
 /**
  * PetsGetQuery generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
+
 export interface PetsGetQuery {
     limit?: number
 }
+
 
 /**
  * PetsPetIdGetQuery generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
+
 export interface PetsPetIdGetQuery {
     petId?: string
 }
+
 
 /**
  * Client generated on 0000-00-00
@@ -107,8 +117,7 @@ export interface PetsPetIdGetQuery {
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 import PetsResource from "./PetsResource";
 
-
-export default class  {
+export default class Client {
     private baseUrl: string;
     private token: string;
     private httpClient: AxiosInstance;
@@ -134,4 +143,3 @@ export default class  {
     }
 
 }
-

@@ -5,7 +5,6 @@
 
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 
-
 export default class BarByFooResource {
     private url: string;
     private token: string;
@@ -47,4 +46,3 @@ export default class BarByFooResource {
     }
 
 }
-

@@ -19,3 +19,4 @@ public class Path {
         return this.type;
     }
 }
+

@@ -15,3 +15,4 @@ public class EntryOrMessage {
         return this.value;
     }
 }
+

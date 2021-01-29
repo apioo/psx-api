@@ -3,6 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
+
 export interface GetQuery {
     startIndex: number
     float?: number
@@ -10,3 +11,4 @@ export interface GetQuery {
     date?: string
     datetime?: string
 }
+

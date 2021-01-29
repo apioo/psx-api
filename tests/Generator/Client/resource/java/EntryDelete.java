@@ -33,3 +33,4 @@ public class EntryDelete {
         return this.date;
     }
 }
+

@@ -6,8 +6,7 @@
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 import FooByNameAndTypeResource from "./FooByNameAndTypeResource";
 
-
-export default class  {
+export default class Client {
     private baseUrl: string;
     private token: string;
     private httpClient: AxiosInstance;
@@ -35,4 +34,3 @@ export default class  {
     }
 
 }
-

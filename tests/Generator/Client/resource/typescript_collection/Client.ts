@@ -8,8 +8,7 @@ import FooResource from "./FooResource";
 import BarByFooResource from "./BarByFooResource";
 import BarByYearResource from "./BarByYearResource";
 
-
-export default class  {
+export default class Client {
     private baseUrl: string;
     private token: string;
     private httpClient: AxiosInstance;
@@ -65,4 +64,3 @@ export default class  {
     }
 
 }
-

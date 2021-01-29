@@ -19,3 +19,4 @@ public class EntryMessage {
         return this.message;
     }
 }
+

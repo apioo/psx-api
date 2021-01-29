@@ -3,4 +3,9 @@
  * {@link https://github.com/apioo}
  */
 
-type EntryOrMessage = Entry | EntryMessage;
+
+import {Entry} from "./Entry";
+import {EntryMessage} from "./EntryMessage";
+
+export type EntryOrMessage = Entry | EntryMessage;
+

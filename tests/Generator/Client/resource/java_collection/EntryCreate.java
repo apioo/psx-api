@@ -33,3 +33,4 @@ public class EntryCreate {
         return this.date;
     }
 }
+

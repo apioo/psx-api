@@ -5,7 +5,6 @@
 
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
 
-
 export default class FooByNameAndTypeResource {
     private url: string;
     private token: string;
@@ -41,4 +40,3 @@ export default class FooByNameAndTypeResource {
     }
 
 }
-
