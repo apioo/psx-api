@@ -106,11 +106,21 @@ class GenerateCommand extends Command
         $content = $generator->generate($this->listing->findAll(null, $filter));
 
         if ($content instanceof Chunks) {
-            $content->writeTo($dir . '/sdk-' . $format .  '.zip');
-        } else {
+            if (!empty($filterName)) {
+                $file = 'sdk-' . $format .  '-' . $filterName . '.zip';
+            } else {
+                $file = 'sdk-' . $format .  '.zip';
+            }
 
-            $fileName = 'output.' . $extension;
-            file_put_contents($dir . '/' . $fileName, $content);
+            $content->writeTo($dir . '/' . $file);
+        } else {
+            if (!empty($filterName)) {
+                $file = 'output-' . $format . '-' . $filterName . '.' . $extension;
+            } else {
+                $file = 'output-' . $format . '.' . $extension;
+            }
+
+            file_put_contents($dir . '/' . $file, $content);
         }
 
         $output->writeln('Successful!');
