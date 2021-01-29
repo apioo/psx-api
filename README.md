@@ -3,47 +3,36 @@ PSX Api
 
 ## About
 
-Currently there are several API specification formats (OpenAPI, RAML, Swagger, 
-etc.) which describe the functionality of an API endpoint. This project provides 
-a data model which contains the common information of an API endpoint. There are
-parser classes which create such models based on a specification and it is also
-possible to generate a specification from a model object. We have also created 
-an [online tool](http://phpsx.org/tools/openapi) to test those conversions.
-
-### Parser
-
-- Annotation (Parses a class which contains annotations)
-- OpenAPI ([OpenAPI 3.0](https://www.openapis.org/) specification)
-- RAML ([RAML 0.8/1.0](http://raml.org/) specification)
-- Swagger ([Swagger 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) specification)
+This library provides model classes to describe your API. Based on those models
+it is possible to generate i.e. API specification formats like OpenAPI and
+also client code which can be used at an SDK. It is also possible to generate
+those model classes either via annotations or from an OpenAPI specification.
+We have also created an [online tool](http://phpsx.org/tools/openapi) to test
+those conversions.
 
 ### Generator
 
 #### Client
 
-- PHP (Generates a PHP client stub)
-- Typescript (Generates a Typescript based client stub)
+- Go (in development)
+- Java (in development)
+- PHP (stable)
+- Typescript (stable)
 
 #### Markup
 
-- HTML (Generates a HTML representation of the resource)
-- Markdown (Generates a Markdown representation of the resource)
-- Template (Generates a representation based on a [Twig](https://twig.symfony.com/) template)
-
-#### Server
-
-- PHP (Generates a PHP controller class which represents the API resource)
+- HTML
+- Markdown
 
 #### Spec
 
-- JsonSchema (Generates a [JsonSchema](http://json-schema.org/) which contains all schemas of the specification)
 - OpenAPI (Generates a [OpenAPI 3.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md) specification)
 - RAML (Generates a [RAML 1.0](http://raml.org/) specification)
-- Swagger (Generates a [Swagger 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) specification)
+- TypeSchema (Generates a [TypeSchema](https://typeschema.org/) specification)
 
 ## Usage
 
-The root model object is called `resource` which represents a specific API
+The root model object is called `Resource` which represents a specific API
 endpoint. The following is a simple showcase of the resource API so you get a
 basic understanding how it is designed.
 
