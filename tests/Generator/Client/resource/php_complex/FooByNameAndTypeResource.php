@@ -42,7 +42,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
      * @param Entry|EntryMessage $data
      * @return Entry|EntryMessage
      */
-    public function postEntryOrMessage($data)
+    public function postEntryOrMessage($data = null)
     {
         $options = [
             'headers' => [

@@ -38,7 +38,7 @@ export default class FooResource {
      * @param {EntryCreate} data
      * @returns {AxiosPromise<EntryMessage>}
      */
-    public post(data: EntryCreate): AxiosPromise<EntryMessage> {
+    public post(data?: EntryCreate): AxiosPromise<EntryMessage> {
         let params = {
             method: "POST",
         };

@@ -41,7 +41,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
      * @param GetQuery $query
      * @return EntryCollection
      */
-    public function listFoo(?GetQuery $query): EntryCollection
+    public function listFoo(?GetQuery $query = null): EntryCollection
     {
         $options = [
             'query' => $query !== null ? (array) $query->jsonSerialize() : [],
@@ -57,7 +57,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
      * @param EntryCreate $data
      * @return EntryMessage
      */
-    public function createFoo(?EntryCreate $data): EntryMessage
+    public function createFoo(?EntryCreate $data = null): EntryMessage
     {
         $options = [
             'json' => $data
@@ -73,7 +73,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
      * @param EntryUpdate $data
      * @return EntryMessage
      */
-    public function put(?EntryUpdate $data): EntryMessage
+    public function put(?EntryUpdate $data = null): EntryMessage
     {
         $options = [
             'json' => $data
@@ -103,7 +103,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
      * @param EntryPatch $data
      * @return EntryMessage
      */
-    public function patch(?EntryPatch $data): EntryMessage
+    public function patch(?EntryPatch $data = null): EntryMessage
     {
         $options = [
             'json' => $data

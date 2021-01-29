@@ -34,7 +34,7 @@ export default class FooByNameAndTypeResource {
      * @param {GetQuery} query
      * @returns {AxiosPromise<EntryCollection>}
      */
-    public listFoo(query: GetQuery): AxiosPromise<EntryCollection> {
+    public listFoo(query?: GetQuery): AxiosPromise<EntryCollection> {
         let params = {
             method: "GET",
             params: query,
@@ -47,7 +47,7 @@ export default class FooByNameAndTypeResource {
      * @param {EntryCreate} data
      * @returns {AxiosPromise<EntryMessage>}
      */
-    public createFoo(data: EntryCreate): AxiosPromise<EntryMessage> {
+    public createFoo(data?: EntryCreate): AxiosPromise<EntryMessage> {
         let params = {
             method: "POST",
         };
@@ -59,7 +59,7 @@ export default class FooByNameAndTypeResource {
      * @param {EntryUpdate} data
      * @returns {AxiosPromise<EntryMessage>}
      */
-    public put(data: EntryUpdate): AxiosPromise<EntryMessage> {
+    public put(data?: EntryUpdate): AxiosPromise<EntryMessage> {
         let params = {
             method: "PUT",
         };
@@ -82,7 +82,7 @@ export default class FooByNameAndTypeResource {
      * @param {EntryPatch} data
      * @returns {AxiosPromise<EntryMessage>}
      */
-    public patch(data: EntryPatch): AxiosPromise<EntryMessage> {
+    public patch(data?: EntryPatch): AxiosPromise<EntryMessage> {
         let params = {
             method: "PATCH",
         };

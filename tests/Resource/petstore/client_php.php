@@ -29,7 +29,7 @@ class PetsResource extends ResourceAbstract
      * @param PetsGetQuery $query
      * @return Pets
      */
-    public function listPets(?PetsGetQuery $query): Pets
+    public function listPets(?PetsGetQuery $query = null): Pets
     {
         $options = [
             'query' => $query !== null ? (array) $query->jsonSerialize() : [],
@@ -47,7 +47,7 @@ class PetsResource extends ResourceAbstract
      * @param Pet $data
      * @return void
      */
-    public function createPets(?Pet $data)
+    public function createPets(?Pet $data = null)
     {
         $options = [
             'json' => $data

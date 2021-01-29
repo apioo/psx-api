@@ -44,7 +44,7 @@ class FooResource extends ResourceAbstract
      * @param EntryCreate $data
      * @return EntryMessage
      */
-    public function post(?EntryCreate $data): EntryMessage
+    public function post(?EntryCreate $data = null): EntryMessage
     {
         $options = [
             'json' => $data

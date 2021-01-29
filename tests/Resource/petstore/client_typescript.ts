@@ -4,6 +4,9 @@
  */
 
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import {PetsGetQuery} from "./PetsGetQuery";
+import {Pets} from "./Pets";
+import {Pet} from "./Pet";
 
 export default class PetsResource {
     private url: string;
@@ -24,7 +27,7 @@ export default class PetsResource {
      * @param {PetsGetQuery} query
      * @returns {AxiosPromise<Pets>}
      */
-    public listPets(query: PetsGetQuery): AxiosPromise<Pets> {
+    public listPets(query?: PetsGetQuery): AxiosPromise<Pets> {
         let params = {
             method: "GET",
             params: query,
@@ -39,7 +42,7 @@ export default class PetsResource {
      * @param {Pet} data
      * @returns {AxiosPromise<void>}
      */
-    public createPets(data: Pet) {
+    public createPets(data?: Pet) {
         let params = {
             method: "POST",
         };

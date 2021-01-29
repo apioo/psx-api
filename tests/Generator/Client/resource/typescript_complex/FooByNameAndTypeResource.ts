@@ -30,7 +30,7 @@ export default class FooByNameAndTypeResource {
      * @param {Entry | EntryMessage} data
      * @returns {AxiosPromise<Entry | EntryMessage>}
      */
-    public postEntryOrMessage(data: Entry | EntryMessage): AxiosPromise<Entry | EntryMessage> {
+    public postEntryOrMessage(data?: Entry | EntryMessage): AxiosPromise<Entry | EntryMessage> {
         let params = {
             method: "POST",
             headers: {

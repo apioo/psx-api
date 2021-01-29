@@ -31,7 +31,7 @@ export default class {{ className }} {
 {% endfor %}
      * @returns {{ '{' }}AxiosPromise<{% if method.returnDoc %}{{ method.returnDoc|raw }}{% else %}void{% endif %}>{{ '}' }}
      */
-    public {{ methodName }}({% for name, hint in method.args %}{{ name }}: {{ hint|raw }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: AxiosPromise<{% if method.return %}{{ method.return|raw }}{% else %}any{% endif %}>{% endif %} {
+    public {{ methodName }}({% for name, hint in method.args %}{{ name }}?: {{ hint|raw }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: AxiosPromise<{% if method.return %}{{ method.return|raw }}{% else %}any{% endif %}>{% endif %} {
         let params = {
             method: "{{ method.httpMethod }}",
 {% if method.args.query is defined %}
