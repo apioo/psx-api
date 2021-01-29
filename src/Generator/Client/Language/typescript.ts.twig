@@ -1,4 +1,7 @@
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
+{% for className in imports %}
+import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
+{% endfor %}
 
 export default class {{ className }} {
     private url: string;

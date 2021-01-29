@@ -4,6 +4,8 @@
  */
 
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import {Entry} from "./Entry";
+import {EntryMessage} from "./EntryMessage";
 
 export default class FooByNameAndTypeResource {
     private url: string;

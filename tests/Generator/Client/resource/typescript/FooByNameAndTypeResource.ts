@@ -4,6 +4,12 @@
  */
 
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import {GetQuery} from "./GetQuery";
+import {EntryCollection} from "./EntryCollection";
+import {EntryCreate} from "./EntryCreate";
+import {EntryMessage} from "./EntryMessage";
+import {EntryUpdate} from "./EntryUpdate";
+import {EntryPatch} from "./EntryPatch";
 
 export default class FooByNameAndTypeResource {
     private url: string;

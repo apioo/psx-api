@@ -4,6 +4,9 @@
  */
 
 import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import {EntryCollection} from "./EntryCollection";
+import {EntryCreate} from "./EntryCreate";
+import {EntryMessage} from "./EntryMessage";
 
 export default class BarByYearResource {
     private url: string;

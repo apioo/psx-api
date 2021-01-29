@@ -27,9 +27,12 @@ use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\Schema;
+use PSX\Schema\Type\ArrayType;
+use PSX\Schema\Type\IntersectionType;
 use PSX\Schema\Type\MapType;
 use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\Type\StructType;
+use PSX\Schema\Type\UnionType;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 use Twig\Environment;
@@ -105,6 +108,7 @@ abstract class LanguageAbstract implements GeneratorInterface
             return;
         }
 
+        $imports = [];
         $properties = $this->getPathParameterTypes($resource, $definitions);
         $urlParts = $this->getUrlParts($resource, $properties ?? []);
 
@@ -124,10 +128,12 @@ abstract class LanguageAbstract implements GeneratorInterface
 
             // query parameters
             if ($method->hasQueryParameters()) {
-                $queryParameters = $method->getQueryParameters();
+                $query = TypeFactory::getReference($method->getQueryParameters());
 
-                $args['query'] = $this->getType(TypeFactory::getReference($queryParameters));
-                $docs['query'] = $this->getDocType(TypeFactory::getReference($queryParameters));
+                $args['query'] = $this->getType($query);
+                $docs['query'] = $this->getDocType($query);
+
+                $this->resolveImport($query, $imports);
             }
 
             // request
@@ -137,6 +143,8 @@ abstract class LanguageAbstract implements GeneratorInterface
 
                 $args['data'] = $this->getType($type);
                 $docs['data'] = $this->getDocType($type);
+
+                $this->resolveImport($type, $imports);
             }
 
             // response
@@ -146,6 +154,8 @@ abstract class LanguageAbstract implements GeneratorInterface
 
                 $return = $this->getType($type);
                 $returnDoc = $this->getDocType($type);
+
+                $this->resolveImport($type, $imports);
             } else {
                 $return = null;
                 $returnDoc = null;
@@ -170,6 +180,7 @@ abstract class LanguageAbstract implements GeneratorInterface
             'resource' => $resource,
             'properties' => $properties,
             'methods' => $methods,
+            'imports' => $imports,
         ]);
 
         $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
@@ -283,7 +294,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         $code = $this->engine->render($this->getClientTemplate(), [
             'baseUrl' => $this->baseUrl,
             'namespace' => $this->namespace,
-            'resources' => $resources
+            'resources' => $resources,
         ]);
 
         $chunks->append($this->getFileName($identifier), $this->getFileContent($code, $identifier));
@@ -409,6 +420,30 @@ abstract class LanguageAbstract implements GeneratorInterface
         }
 
         return TypeFactory::getReference($name);
+    }
+
+    private function resolveImport(TypeInterface $type, array &$imports)
+    {
+        if ($type instanceof ReferenceType) {
+            $imports[$type->getRef()] = $type->getRef();
+            if ($type->getTemplate()) {
+                foreach ($type->getTemplate() as $t) {
+                    $imports[$t] = $t;
+                }
+            }
+        } elseif ($type instanceof MapType && $type->getAdditionalProperties() instanceof TypeInterface) {
+            $this->resolveImport($type->getAdditionalProperties(), $imports);
+        } elseif ($type instanceof ArrayType && $type->getItems() instanceof TypeInterface) {
+            $this->resolveImport($type->getItems(), $imports);
+        } elseif ($type instanceof UnionType && $type->getOneOf()) {
+            foreach ($type->getOneOf() as $item) {
+                $this->resolveImport($item, $imports);
+            }
+        } elseif ($type instanceof IntersectionType) {
+            foreach ($type->getAllOf() as $item) {
+                $this->resolveImport($item, $imports);
+            }
+        }
     }
 
     /**
