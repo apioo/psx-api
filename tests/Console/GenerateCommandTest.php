@@ -64,7 +64,7 @@ class GenerateCommandTest extends TestCase
             '--format' => GeneratorFactoryInterface::SPEC_OPENAPI,
         ));
 
-        $this->assertFileExists(__DIR__ . '/output/foo.json');
+        $this->assertFileExists(__DIR__ . '/output/output-spec-openapi.json');
     }
 
     protected function getGenerateCommand()
