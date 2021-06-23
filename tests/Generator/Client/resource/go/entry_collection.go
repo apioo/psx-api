@@ -3,9 +3,6 @@
 // {@link https://github.com/apioo}
 
 
-
-
-// EntryCollection
 type EntryCollection struct {
     Entry []Entry `json:"entry"`
 }

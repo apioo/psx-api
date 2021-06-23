@@ -12,4 +12,3 @@ public class PathFoo {
         return this.foo;
     }
 }
-

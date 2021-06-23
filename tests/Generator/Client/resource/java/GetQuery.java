@@ -40,4 +40,3 @@ public class GetQuery {
         return this.datetime;
     }
 }
-

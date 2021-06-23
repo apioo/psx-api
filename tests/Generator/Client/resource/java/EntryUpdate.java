@@ -33,4 +33,3 @@ public class EntryUpdate {
         return this.date;
     }
 }
-

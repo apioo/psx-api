@@ -33,4 +33,3 @@ public class EntryPatch {
         return this.date;
     }
 }
-

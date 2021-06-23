@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import Axios, {AxiosInstance, AxiosPromise, Method} from "axios";
 import {PetsGetQuery} from "./PetsGetQuery";
 import {Pets} from "./Pets";
 import {Pet} from "./Pet";
@@ -29,7 +29,7 @@ export default class PetsResource {
      */
     public listPets(query?: PetsGetQuery): AxiosPromise<Pets> {
         let params = {
-            method: "GET",
+            method: <Method> "GET",
             params: query,
         };
 
@@ -44,7 +44,7 @@ export default class PetsResource {
      */
     public createPets(data?: Pet) {
         let params = {
-            method: "POST",
+            method: <Method> "POST",
         };
 
         return this.httpClient.post(this.url, data, params);
@@ -57,60 +57,49 @@ export default class PetsResource {
  * {@link https://github.com/apioo}
  */
 
-
 export interface Pet {
     id: number
     name: string
     tag?: string
 }
 
-
 /**
  * Pets generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
-
 import {Pet} from "./Pet";
-
 export interface Pets {
     pets?: Array<Pet>
 }
-
 
 /**
  * Error generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
-
 export interface Error {
     code: number
     message: string
 }
-
 
 /**
  * PetsGetQuery generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
-
 export interface PetsGetQuery {
     limit?: number
 }
-
 
 /**
  * PetsPetIdGetQuery generated on 0000-00-00
  * {@link https://github.com/apioo}
  */
 
-
 export interface PetsPetIdGetQuery {
     petId?: string
 }
-
 
 /**
  * Client generated on 0000-00-00

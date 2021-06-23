@@ -33,4 +33,3 @@ public class Entry {
         return this.date;
     }
 }
-

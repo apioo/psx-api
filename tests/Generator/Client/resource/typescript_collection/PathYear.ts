@@ -3,8 +3,6 @@
  * {@link https://github.com/apioo}
  */
 
-
 export interface PathYear {
     year?: string
 }
-

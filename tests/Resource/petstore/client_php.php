@@ -134,6 +134,7 @@ class Pet implements \JsonSerializable
         });
     }
 }
+
 <?php 
 /**
  * Pets generated on 0000-00-00
@@ -170,6 +171,7 @@ class Pets implements \JsonSerializable
         });
     }
 }
+
 <?php 
 /**
  * Error generated on 0000-00-00
@@ -225,6 +227,7 @@ class Error implements \JsonSerializable
         });
     }
 }
+
 <?php 
 /**
  * PetsGetQuery generated on 0000-00-00
@@ -261,6 +264,7 @@ class PetsGetQuery implements \JsonSerializable
         });
     }
 }
+
 <?php 
 /**
  * PetsPetIdGetQuery generated on 0000-00-00
@@ -297,6 +301,7 @@ class PetsPetIdGetQuery implements \JsonSerializable
         });
     }
 }
+
 <?php 
 /**
  * Client generated on 0000-00-00

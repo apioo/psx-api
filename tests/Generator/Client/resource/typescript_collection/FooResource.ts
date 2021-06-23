@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import Axios, {AxiosInstance, AxiosPromise, Method} from "axios";
 import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
 import {EntryMessage} from "./EntryMessage";
@@ -28,7 +28,7 @@ export default class FooResource {
      */
     public get(): AxiosPromise<EntryCollection> {
         let params = {
-            method: "GET",
+            method: <Method> "GET",
         };
 
         return this.httpClient.get<EntryCollection>(this.url, params);
@@ -40,7 +40,7 @@ export default class FooResource {
      */
     public post(data?: EntryCreate): AxiosPromise<EntryMessage> {
         let params = {
-            method: "POST",
+            method: <Method> "POST",
         };
 
         return this.httpClient.post<EntryMessage>(this.url, data, params);

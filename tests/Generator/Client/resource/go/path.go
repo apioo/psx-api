@@ -3,9 +3,6 @@
 // {@link https://github.com/apioo}
 
 
-
-
-// Path
 type Path struct {
     Name string `json:"name"`
     Type string `json:"type"`

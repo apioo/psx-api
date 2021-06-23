@@ -3,9 +3,6 @@
  * {@link https://github.com/apioo}
  */
 
-
 import {Entry} from "./Entry";
 import {EntryMessage} from "./EntryMessage";
-
 export type EntryOrMessage = Entry | EntryMessage;
-

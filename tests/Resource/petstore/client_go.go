@@ -80,9 +80,6 @@ func NewPetsResource(baseUrl string, token string) PetsResource {
 // {@link https://github.com/apioo}
 
 
-
-
-// Pet
 type Pet struct {
     Id int64 `json:"id"`
     Name string `json:"name"`
@@ -94,9 +91,6 @@ type Pet struct {
 // {@link https://github.com/apioo}
 
 
-
-
-// Pets
 type Pets struct {
     Pets []Pet `json:"pets"`
 }
@@ -106,9 +100,6 @@ type Pets struct {
 // {@link https://github.com/apioo}
 
 
-
-
-// Error
 type Error struct {
     Code int32 `json:"code"`
     Message string `json:"message"`
@@ -119,9 +110,6 @@ type Error struct {
 // {@link https://github.com/apioo}
 
 
-
-
-// PetsGetQuery
 type PetsGetQuery struct {
     Limit int32 `json:"limit"`
 }
@@ -131,9 +119,6 @@ type PetsGetQuery struct {
 // {@link https://github.com/apioo}
 
 
-
-
-// PetsPetIdGetQuery
 type PetsPetIdGetQuery struct {
     PetId string `json:"petId"`
 }

@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import Axios, {AxiosInstance, AxiosPromise, Method} from "axios";
 import {GetQuery} from "./GetQuery";
 import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
@@ -36,7 +36,7 @@ export default class FooByNameAndTypeResource {
      */
     public listFoo(query?: GetQuery): AxiosPromise<EntryCollection> {
         let params = {
-            method: "GET",
+            method: <Method> "GET",
             params: query,
         };
 
@@ -49,7 +49,7 @@ export default class FooByNameAndTypeResource {
      */
     public createFoo(data?: EntryCreate): AxiosPromise<EntryMessage> {
         let params = {
-            method: "POST",
+            method: <Method> "POST",
         };
 
         return this.httpClient.post<EntryMessage>(this.url, data, params);
@@ -61,7 +61,7 @@ export default class FooByNameAndTypeResource {
      */
     public put(data?: EntryUpdate): AxiosPromise<EntryMessage> {
         let params = {
-            method: "PUT",
+            method: <Method> "PUT",
         };
 
         return this.httpClient.put<EntryMessage>(this.url, data, params);
@@ -72,7 +72,7 @@ export default class FooByNameAndTypeResource {
      */
     public delete(): AxiosPromise<EntryMessage> {
         let params = {
-            method: "DELETE",
+            method: <Method> "DELETE",
         };
 
         return this.httpClient.delete(this.url, params);
@@ -84,7 +84,7 @@ export default class FooByNameAndTypeResource {
      */
     public patch(data?: EntryPatch): AxiosPromise<EntryMessage> {
         let params = {
-            method: "PATCH",
+            method: <Method> "PATCH",
         };
 
         return this.httpClient.patch<EntryMessage>(this.url, data, params);

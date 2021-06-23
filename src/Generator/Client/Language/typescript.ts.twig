@@ -1,4 +1,4 @@
-import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import Axios, {AxiosInstance, AxiosPromise, Method} from "axios";
 {% for className in imports %}
 import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
 {% endfor %}
@@ -33,7 +33,7 @@ export default class {{ className }} {
      */
     public {{ methodName }}({% for name, hint in method.args %}{{ name }}?: {{ hint|raw }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: AxiosPromise<{% if method.return %}{{ method.return|raw }}{% else %}any{% endif %}>{% endif %} {
         let params = {
-            method: "{{ method.httpMethod }}",
+            method: <Method> "{{ method.httpMethod }}",
 {% if method.args.query is defined %}
             params: query,
 {% endif %}

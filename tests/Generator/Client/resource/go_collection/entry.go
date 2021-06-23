@@ -3,9 +3,6 @@
 // {@link https://github.com/apioo}
 
 
-
-
-// Entry
 type Entry struct {
     Id int `json:"id"`
     UserId int `json:"userId"`

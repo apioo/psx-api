@@ -3,7 +3,7 @@
  * {@link https://github.com/apioo}
  */
 
-import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import Axios, {AxiosInstance, AxiosPromise, Method} from "axios";
 import {Entry} from "./Entry";
 import {EntryMessage} from "./EntryMessage";
 
@@ -32,7 +32,7 @@ export default class FooByNameAndTypeResource {
      */
     public postEntryOrMessage(data?: Entry | EntryMessage): AxiosPromise<Entry | EntryMessage> {
         let params = {
-            method: "POST",
+            method: <Method> "POST",
             headers: {
                 'Authorization': 'Bearer ' + this.token
             },

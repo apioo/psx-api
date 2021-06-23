@@ -3,11 +3,9 @@
  * {@link https://github.com/apioo}
  */
 
-
 export interface Entry {
     id?: number
     userId?: number
     title?: string
     date?: string
 }
-

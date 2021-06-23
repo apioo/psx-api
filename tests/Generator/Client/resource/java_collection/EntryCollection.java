@@ -12,4 +12,3 @@ public class EntryCollection {
         return this.entry;
     }
 }
-
