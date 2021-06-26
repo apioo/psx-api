@@ -44,10 +44,10 @@ export default class {{ className }} {
 {% endif %}
         };
 
-{% if method.httpMethod == "DELETE" %}
+{% if method.httpMethod in ["DELETE"] %}
         return this.httpClient.{{ method.httpMethod|lower }}(this.url, params);
-{% elseif method.args.data is defined %}
-        return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return }}>{% endif %}(this.url, data, params);
+{% elseif method.httpMethod in ["POST", "PUT", "PATCH"] %}
+        return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return }}>{% endif %}(this.url, {% if method.args.data is defined %}data{% else %}null{% endif %}, params);
 {% else %}
         return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return }}>{% endif %}(this.url, params);
 {% endif %}
