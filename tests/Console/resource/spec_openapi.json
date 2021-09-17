@@ -147,63 +147,11 @@
           }
         }
       },
-      "DogetQuery": {
-        "type": "object",
-        "properties": {
-          "foo": {
-            "description": "Test",
-            "type": "string"
-          },
-          "bar": {
-            "type": "string"
-          },
-          "baz": {
-            "enum": [
-              "foo",
-              "bar"
-            ],
-            "type": "string"
-          },
-          "boz": {
-            "type": "string",
-            "pattern": "[A-z]+"
-          },
-          "integer": {
-            "type": "integer"
-          },
-          "number": {
-            "type": "number"
-          },
-          "date": {
-            "type": "string"
-          },
-          "boolean": {
-            "type": "boolean"
-          },
-          "string": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "bar"
-        ]
-      },
       "PSXApiTestsParserAnnotationTestControllerGet200Response": {
         "$ref": "#\/components\/schemas\/Song"
       },
       "PSXApiTestsParserAnnotationTestControllerGetRequest": {
         "$ref": "#\/components\/schemas\/Song"
-      },
-      "Path": {
-        "type": "object",
-        "properties": {
-          "fooId": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "fooId"
-        ]
       },
       "Song": {
         "description": "A canonical song",

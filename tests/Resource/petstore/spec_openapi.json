@@ -173,25 +173,6 @@
             }
           }
         }
-      },
-      "PetsGetQuery": {
-        "type": "object",
-        "properties": {
-          "limit": {
-            "format": "int32",
-            "type": "integer"
-          }
-        },
-        "required": []
-      },
-      "PetsPetIdGetQuery": {
-        "type": "object",
-        "properties": {
-          "petId": {
-            "type": "string"
-          }
-        },
-        "required": []
       }
     }
   }

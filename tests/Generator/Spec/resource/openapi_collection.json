@@ -223,22 +223,6 @@
             "type": "string"
           }
         }
-      },
-      "PathFoo": {
-        "type": "object",
-        "properties": {
-          "foo": {
-            "type": "string"
-          }
-        }
-      },
-      "PathYear": {
-        "type": "object",
-        "properties": {
-          "year": {
-            "type": "string"
-          }
-        }
       }
     }
   }

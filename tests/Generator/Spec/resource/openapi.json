@@ -342,56 +342,6 @@
         "required": [
           "id"
         ]
-      },
-      "GetQuery": {
-        "type": "object",
-        "properties": {
-          "startIndex": {
-            "description": "startIndex parameter",
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 32
-          },
-          "float": {
-            "type": "number"
-          },
-          "boolean": {
-            "type": "boolean"
-          },
-          "date": {
-            "format": "date",
-            "type": "string"
-          },
-          "datetime": {
-            "format": "date-time",
-            "type": "string"
-          }
-        },
-        "required": [
-          "startIndex"
-        ]
-      },
-      "Path": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "Name parameter",
-            "type": "string",
-            "pattern": "[A-z]+",
-            "minLength": 0,
-            "maxLength": 16
-          },
-          "type": {
-            "enum": [
-              "foo",
-              "bar"
-            ],
-            "type": "string"
-          }
-        },
-        "required": [
-          "name"
-        ]
       }
     }
   }

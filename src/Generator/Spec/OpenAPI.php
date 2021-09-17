@@ -206,6 +206,7 @@ class OpenAPI extends OpenAPIAbstract
             $parameters = $this->getParameters($definitions->getType($pathParameters), 'path');
             if (!empty($parameters)) {
                 $path->setParameters($parameters);
+                $definitions->removeType($pathParameters);
             }
         }
 
@@ -237,6 +238,7 @@ class OpenAPI extends OpenAPIAbstract
                 $parameters = $this->getParameters($definitions->getType($queryParameters), 'query');
                 if (!empty($parameters)) {
                     $operation->setParameters($parameters);
+                    $definitions->removeType($queryParameters);
                 }
             }
 
