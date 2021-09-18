@@ -3,12 +3,14 @@
  * {@link https://github.com/apioo}
  */
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 public class GetQuery {
     private int startIndex;
     private float float;
     private boolean boolean;
-    private String date;
-    private String datetime;
+    private LocalDate date;
+    private LocalDateTime datetime;
     public void setStartIndex(int startIndex) {
         this.startIndex = startIndex;
     }
@@ -27,16 +29,16 @@ public class GetQuery {
     public boolean getBoolean() {
         return this.boolean;
     }
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
-    public String getDate() {
+    public LocalDate getDate() {
         return this.date;
     }
-    public void setDatetime(String datetime) {
+    public void setDatetime(LocalDateTime datetime) {
         this.datetime = datetime;
     }
-    public String getDatetime() {
+    public LocalDateTime getDatetime() {
         return this.datetime;
     }
 }

@@ -3,6 +3,7 @@
 // {@link https://github.com/apioo}
 
 
+import "time"
 type EntryCreate struct {
     Id int `json:"id"`
     UserId int `json:"userId"`

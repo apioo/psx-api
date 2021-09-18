@@ -3,11 +3,12 @@
  * {@link https://github.com/apioo}
  */
 
+import java.time.LocalDateTime;
 public class EntryCreate {
     private int id;
     private int userId;
     private String title;
-    private String date;
+    private LocalDateTime date;
     public void setId(int id) {
         this.id = id;
     }
@@ -26,10 +27,10 @@ public class EntryCreate {
     public String getTitle() {
         return this.title;
     }
-    public void setDate(String date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
-    public String getDate() {
+    public LocalDateTime getDate() {
         return this.date;
     }
 }

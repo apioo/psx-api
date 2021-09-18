@@ -3,6 +3,7 @@
 // {@link https://github.com/apioo}
 
 
+import "time"
 type GetQuery struct {
     StartIndex int `json:"startIndex"`
     Float float64 `json:"float"`
