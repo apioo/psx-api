@@ -132,7 +132,7 @@
   },
   "components": {
     "schemas": {
-      "rating:Rating": {
+      "Rating": {
         "title": "Rating",
         "type": "object",
         "properties": {
@@ -169,7 +169,7 @@
           "ratings": {
             "type": "array",
             "items": {
-              "$ref": "#\/components\/schemas\/rating:Rating"
+              "$ref": "#\/components\/schemas\/Rating"
             }
           }
         },
