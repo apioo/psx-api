@@ -70,9 +70,15 @@ class OpenAPI extends OpenAPIAbstract
         $collection = $specification->getResourceCollection();
         $definitions = $specification->getDefinitions();
 
+        $removeTypes = [];
         $paths = new Paths();
         foreach ($collection as $path => $resource) {
-            $this->buildPaths($resource, $paths, $definitions);
+            $this->buildPaths($resource, $paths, $definitions, $removeTypes);
+        }
+
+        // the definitions contain types for path and query parameters which we can remove
+        foreach ($removeTypes as $type) {
+            $definitions->removeType($type);
         }
 
         return $this->buildDeclaration($paths, $definitions);
@@ -196,17 +202,17 @@ class OpenAPI extends OpenAPIAbstract
      * @param \PSX\Model\OpenAPI\Paths $paths
      * @param \PSX\Schema\DefinitionsInterface $definitions
      */
-    protected function buildPaths(Resource $resource, Paths $paths, DefinitionsInterface $definitions)
+    protected function buildPaths(Resource $resource, Paths $paths, DefinitionsInterface $definitions, array &$removeTypes)
     {
         $path = new PathItem();
 
         // path parameter
         $pathParameters = $resource->getPathParameters();
         if (!empty($pathParameters) && $definitions->hasType($pathParameters)) {
-            $parameters = $this->getParameters($definitions->getType($pathParameters), 'path');
+            $parameters = $this->newParameters($definitions->getType($pathParameters), 'path', $definitions);
             if (!empty($parameters)) {
                 $path->setParameters($parameters);
-                $definitions->removeType($pathParameters);
+                $removeTypes[] = $pathParameters;
             }
         }
 
@@ -235,10 +241,10 @@ class OpenAPI extends OpenAPIAbstract
             // query parameter
             $queryParameters = $method->getQueryParameters();
             if (!empty($queryParameters) && $definitions->hasType($queryParameters)) {
-                $parameters = $this->getParameters($definitions->getType($queryParameters), 'query');
+                $parameters = $this->newParameters($definitions->getType($queryParameters), 'query', $definitions);
                 if (!empty($parameters)) {
                     $operation->setParameters($parameters);
-                    $definitions->removeType($queryParameters);
+                    $removeTypes[] = $queryParameters;
                 }
             }
 
@@ -303,17 +309,21 @@ class OpenAPI extends OpenAPIAbstract
      * @param string $in
      * @return array
      */
-    private function getParameters(TypeInterface $type, string $in): array
+    private function newParameters(TypeInterface $type, string $in, DefinitionsInterface $definitions): array
     {
         if (!$type instanceof StructType) {
             return [];
         }
 
         $parameters = [];
+        if ($type->getExtends() && $definitions->hasType($type->getExtends())) {
+            $parameters = $this->newParameters($definitions->getType($type->getExtends()), $in, $definitions);
+        }
+
         $properties = $type->getProperties();
         if ($properties) {
             foreach ($properties as $name => $parameter) {
-                $param = $this->getParameter($parameter, in_array($name, $type->getRequired() ?: []));
+                $param = $this->newParameter($parameter, in_array($name, $type->getRequired() ?: []));
                 $param->setName($name);
                 $param->setIn($in);
 
@@ -328,7 +338,7 @@ class OpenAPI extends OpenAPIAbstract
      * @param \PSX\Schema\TypeInterface $type
      * @return \PSX\Model\OpenAPI\Parameter $param
      */
-    protected function getParameter(TypeInterface $type, $required)
+    protected function newParameter(TypeInterface $type, $required)
     {
         $param = new Parameter();
         $param->setDescription($type->getDescription());
