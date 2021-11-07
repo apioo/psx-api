@@ -6,10 +6,17 @@
 
 namespace Foo\Bar;
 
-use PSX\Api\Generator\Client\Php\ResourceAbstract;
+use Sdkgen\Client\ClientAbstract;
+use Sdkgen\Client\Credentials;
 
-class Client extends ResourceAbstract
+class Client extends ClientAbstract
 {
+    public function __construct(string $baseUri, ?TokenStoreInterface $tokenStore = null)
+    {
+        parent::__construct($baseUri, $tokenStore);
+
+    }
+
     /**
      * Endpoint: /foo/:name/:type
      *
@@ -21,7 +28,7 @@ class Client extends ResourceAbstract
             $name,
             $type,
             $this->baseUrl,
-            $this->token,
+            $this->getAccessToken(),
             $this->httpClient,
             $this->schemaManager
         );

@@ -6,8 +6,8 @@
 
 
 use GuzzleHttp\Client;
-use PSX\Api\Generator\Client\Php\ResourceAbstract;
 use PSX\Schema\SchemaManager;
+use Sdkgen\Client\ResourceAbstract;
 
 class FooByNameAndTypeResource extends ResourceAbstract
 {

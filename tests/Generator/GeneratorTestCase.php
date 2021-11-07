@@ -36,11 +36,12 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
 {
     protected function getSpecification(): SpecificationInterface
     {
-        $builder = $this->apiManager->getBuilder(Resource::STATUS_ACTIVE, '/foo/:name/:type');
+        $builder = $this->apiManager->getBuilder();
+        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
 
-        $builder->setTitle('foo');
-        $builder->setDescription('lorem ipsum');
-        $path = $builder->setPathParameters('Path');
+        $resource->setTitle('foo');
+        $resource->setDescription('lorem ipsum');
+        $path = $resource->setPathParameters('Path');
         $path->addString('name')
             ->setDescription('Name parameter')
             ->setMinLength(0)
@@ -50,7 +51,7 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
             ->setEnum(['foo', 'bar']);
         $path->setRequired(['name']);
 
-        $get = $builder->addMethod('GET');
+        $get = $resource->addMethod('GET');
         $get->setDescription('Returns a collection');
         $get->setOperationId('list.foo');
         $query = $get->setQueryParameters('GetQuery');
@@ -65,20 +66,20 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $query->setRequired(['startIndex']);
         $get->addResponse(200, Schema\Collection::class);
 
-        $post = $builder->addMethod('POST');
+        $post = $resource->addMethod('POST');
         $post->setOperationId('create.foo');
         $post->setRequest(Schema\Create::class);
         $post->addResponse(201, Schema\Message::class);
 
-        $put = $builder->addMethod('PUT');
+        $put = $resource->addMethod('PUT');
         $put->setRequest(Schema\Update::class);
         $put->addResponse(200, Schema\Message::class);
 
-        $delete = $builder->addMethod('DELETE');
+        $delete = $resource->addMethod('DELETE');
         $delete->setRequest(Schema\Delete::class);
         $delete->addResponse(200, Schema\Message::class);
 
-        $patch = $builder->addMethod('PATCH');
+        $patch = $resource->addMethod('PATCH');
         $patch->setRequest(Schema\Patch::class);
         $patch->addResponse(200, Schema\Message::class);
 
@@ -87,38 +88,42 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
 
     protected function getSpecificationCollection(): SpecificationInterface
     {
-        $builder = $this->apiManager->getBuilder(Resource::STATUS_ACTIVE, '/foo');
-        $builder->setTitle('foo');
+        $builder = $this->apiManager->getBuilder();
+        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo');
+        $resource->setTitle('foo');
+        $resource->setTags(['foo']);
 
-        $get = $builder->addMethod('GET');
+        $get = $resource->addMethod('GET');
         $get->setDescription('Returns a collection');
         $get->addResponse(200, Schema\Collection::class);
 
-        $post = $builder->addMethod('POST');
+        $post = $resource->addMethod('POST');
         $post->setRequest(Schema\Create::class);
         $post->addResponse(201, Schema\Message::class);
 
-        $builder = $builder->addResource(Resource::STATUS_ACTIVE, '/bar/:foo');
-        $builder->setTitle('bar');
-        $builder->setPathParameters('PathFoo')->addString('foo');
+        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/bar/:foo');
+        $resource->setTitle('bar');
+        $resource->setPathParameters('PathFoo')->addString('foo');
+        $resource->setTags(['bar']);
 
-        $get = $builder->addMethod('GET');
+        $get = $resource->addMethod('GET');
         $get->setDescription('Returns a collection');
         $get->addResponse(200, Schema\Collection::class);
 
-        $post = $builder->addMethod('POST');
+        $post = $resource->addMethod('POST');
         $post->setRequest(Schema\Create::class);
         $post->addResponse(201, Schema\Message::class);
 
-        $builder = $builder->addResource(Resource::STATUS_ACTIVE, '/bar/$year<[0-9]+>');
-        $builder->setTitle('bar');
-        $builder->setPathParameters('PathYear')->addString('year');
+        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/bar/$year<[0-9]+>');
+        $resource->setTitle('bar');
+        $resource->setPathParameters('PathYear')->addString('year');
+        $resource->setTags(['bar']);
 
-        $get = $builder->addMethod('GET');
+        $get = $resource->addMethod('GET');
         $get->setDescription('Returns a collection');
         $get->addResponse(200, Schema\Collection::class);
 
-        $post = $builder->addMethod('POST');
+        $post = $resource->addMethod('POST');
         $post->setRequest(Schema\Create::class);
         $post->addResponse(201, Schema\Message::class);
 
@@ -127,15 +132,16 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
 
     protected function getSpecificationComplex(): SpecificationInterface
     {
-        $builder = $this->apiManager->getBuilder(Resource::STATUS_ACTIVE, '/foo/:name/:type');
-        $builder->setTitle('foo');
-        $builder->setDescription('lorem ipsum');
-        $path = $builder->setPathParameters('Path');
+        $builder = $this->apiManager->getBuilder();
+        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
+        $resource->setTitle('foo');
+        $resource->setDescription('lorem ipsum');
+        $path = $resource->setPathParameters('Path');
         $path->addString('name');
         $path->addString('type');
         $path->setRequired(['name', 'type']);
 
-        $post = $builder->addMethod('POST');
+        $post = $resource->addMethod('POST');
         $post->setDescription('Returns a collection');
         $post->setOperationId('postEntryOrMessage');
         $post->setTags(['foo']);
