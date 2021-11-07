@@ -43,6 +43,23 @@ interface SpecificationInterface
 
     /**
      * Returns a specification for the specific path
+     *
+     * @param string $path
+     * @return SpecificationInterface|null
      */
     public function get(string $path): ?SpecificationInterface;
+
+    /**
+     * Returns the configured security definition
+     *
+     * @return SecurityInterface|null
+     */
+    public function getSecurity(): ?SecurityInterface;
+
+    /**
+     * Merges all resource and type definitions into the specification
+     *
+     * @param SpecificationInterface $specification
+     */
+    public function merge(SpecificationInterface $specification): void;
 }

@@ -18,34 +18,58 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
+namespace PSX\Api\Security;
 
-use PSX\Api\Builder\ResourceBuilderInterface;
-use PSX\Api\Builder\SpecificationBuilderInterface;
+use PSX\Api\SecurityInterface;
 
 /**
- * ApiManagerInterface
+ * ApiKey
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-interface ApiManagerInterface
+class ApiKey implements SecurityInterface
 {
     /**
-     * Returns the specification for the provided source
-     * 
-     * @param string $source
-     * @param string $path
-     * @param int $type
-     * @return SpecificationInterface
+     * @var string
      */
-    public function getApi(string $source, string $path, ?int $type = null): SpecificationInterface;
+    private $name;
 
     /**
-     * Returns a builder which helps to create a specification
-     * 
-     * @return SpecificationBuilderInterface
+     * @var string
      */
-    public function getBuilder(): SpecificationBuilderInterface;
+    private $in;
+
+    public function __construct(string $name, string $in)
+    {
+        $this->name = $name;
+        $this->in = $in;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getIn(): string
+    {
+        return $this->in;
+    }
+
+    public function toArray(): array
+    {
+        return array_filter([
+            'type' => 'apiKey',
+            'name' => $this->name,
+            'in' => $this->in,
+        ], function($value){
+            return $value !== null;
+        });
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
 }

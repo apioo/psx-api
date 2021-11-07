@@ -20,8 +20,10 @@
 
 namespace PSX\Api\Builder;
 
+use PSX\Api\Resource;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\Builder;
+use PSX\Schema\DefinitionsInterface;
 
 /**
  * ResourceBuilderInterface
@@ -60,14 +62,12 @@ interface ResourceBuilderInterface
     public function setTags(array $tags): void;
 
     /**
-     * @param int $status
-     * @param string $path
-     * @return ResourceBuilderInterface
+     * @return Resource
      */
-    public function addResource(int $status, string $path): ResourceBuilderInterface;
+    public function getResource(): Resource;
 
     /**
-     * @return SpecificationInterface
+     * @return DefinitionsInterface
      */
-    public function getSpecification(): SpecificationInterface;
+    public function getDefinitions(): DefinitionsInterface;
 }

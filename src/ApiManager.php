@@ -25,6 +25,8 @@ use Doctrine\Common\Cache\ArrayCache;
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\Builder\ResourceBuilder;
 use PSX\Api\Builder\ResourceBuilderInterface;
+use PSX\Api\Builder\SpecificationBuilder;
+use PSX\Api\Builder\SpecificationBuilderInterface;
 use PSX\Api\Parser\OpenAPI;
 use PSX\Cache\Pool;
 use PSX\Schema\SchemaManagerInterface;
@@ -117,9 +119,9 @@ class ApiManager implements ApiManagerInterface
     /**
      * @inheritDoc
      */
-    public function getBuilder(int $status, string $path): ResourceBuilderInterface
+    public function getBuilder(): SpecificationBuilderInterface
     {
-        return new ResourceBuilder($this->schemaManager, $status, $path);
+        return new SpecificationBuilder($this->schemaManager);
     }
 
     private function guessTypeFromSource($source): ?int

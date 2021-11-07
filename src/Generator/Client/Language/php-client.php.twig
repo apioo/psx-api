@@ -1,0 +1,46 @@
+{% if namespace %}
+namespace {{ namespace }};
+{% endif %}
+
+use Sdkgen\Client\ClientAbstract;
+use Sdkgen\Client\Credentials;
+
+class Client extends ClientAbstract
+{
+    public function __construct({% if security.type == 'httpBasic' %}string $userName, string $password, {% elseif security.type in ['httpBearer', 'apiKey'] %}string $token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}string $clientId, string $clientSecret, {% endif %}string $baseUri, ?TokenStoreInterface $tokenStore = null)
+    {
+        parent::__construct($baseUri, $tokenStore);
+
+{% if security.type == 'httpBasic' %}
+        $this->credentials = new Credentials\HttpBasic($userName, $password);
+{% elseif security.type == 'httpBearer' %}
+        $this->credentials = new Credentials\HttpBearer($token);
+{% elseif security.type == 'apiKey' %}
+        $this->credentials = new Credentials\ApiKey($token, '{{ security.name }}', '{{ security.in }}');
+{% elseif security.type == 'clientCredentials' %}
+        $this->credentials = new Credentials\ClientCredentials($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}');
+{% elseif security.type == 'authorizationCode' %}
+        $this->credentials = new Credentials\AuthorizationCode($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}');
+{% endif %}
+    }
+
+{% for className, resource in resources %}
+    /**
+     * {{ resource.description|raw }}
+     *
+     * @return {{ className }}
+     */
+    public function {{ resource.methodName }}({% for name, hint in resource.properties %}{% if hint %}?{{ hint }} {% endif %}${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}): {{ className }}
+    {
+        return new {{ className }}(
+            {% for name, hint in resource.properties %}${{ name }},
+            {% endfor %}
+$this->baseUrl,
+            $this->getAccessToken(),
+            $this->httpClient,
+            $this->schemaManager
+        );
+    }
+
+{% endfor %}
+}

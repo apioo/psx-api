@@ -2,9 +2,9 @@
 namespace {{ namespace }};
 {% endif %}
 
-use PSX\Api\Generator\Client\Php\ResourceAbstract;
+use Sdkgen\Client\ResourceAbstract;
 
-class Client extends ResourceAbstract
+class {{ className }} extends ResourceAbstract
 {
 {% for className, resource in resources %}
     /**
@@ -18,7 +18,6 @@ class Client extends ResourceAbstract
             {% for name, hint in resource.properties %}${{ name }},
             {% endfor %}
 $this->baseUrl,
-            $this->token,
             $this->httpClient,
             $this->schemaManager
         );

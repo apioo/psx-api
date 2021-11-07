@@ -3,8 +3,8 @@ namespace {{ namespace }};
 {% endif %}
 
 use GuzzleHttp\Client;
-use PSX\Api\Generator\Client\Php\ResourceAbstract;
 use PSX\Schema\SchemaManager;
+use Sdkgen\Client\ResourceAbstract;
 
 class {{ className }} extends ResourceAbstract
 {
@@ -20,9 +20,9 @@ class {{ className }} extends ResourceAbstract
     private ${{ name }};
 
 {% endfor %}
-    public function __construct({% for name, hint in properties %}{{ hint }} ${{ name }}, {% endfor %}string $baseUrl, string $token, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
+    public function __construct({% for name, hint in properties %}{{ hint }} ${{ name }}, {% endfor %}string $baseUrl, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
-        parent::__construct($baseUrl, $token, $httpClient, $schemaManager);
+        parent::__construct($baseUrl, $httpClient, $schemaManager);
 
 {% for name, hint in properties %}
         $this->{{ name }} = ${{ name }};

@@ -18,34 +18,27 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
-
-use PSX\Api\Builder\ResourceBuilderInterface;
-use PSX\Api\Builder\SpecificationBuilderInterface;
+namespace PSX\Api\Security;
 
 /**
- * ApiManagerInterface
+ * AuthorizationCode
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-interface ApiManagerInterface
+class AuthorizationCode extends OAuth2Abstract
 {
-    /**
-     * Returns the specification for the provided source
-     * 
-     * @param string $source
-     * @param string $path
-     * @param int $type
-     * @return SpecificationInterface
-     */
-    public function getApi(string $source, string $path, ?int $type = null): SpecificationInterface;
-
-    /**
-     * Returns a builder which helps to create a specification
-     * 
-     * @return SpecificationBuilderInterface
-     */
-    public function getBuilder(): SpecificationBuilderInterface;
+    public function toArray(): array
+    {
+        return array_filter([
+            'type' => 'authorizationCode',
+            'tokenUrl' => $this->tokenUrl,
+            'authorizationUrl' => $this->authorizationUrl,
+            'refreshUrl' => $this->refreshUrl,
+            'scopes' => $this->scopes,
+        ], function($value){
+            return $value !== null;
+        });
+    }
 }

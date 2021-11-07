@@ -20,6 +20,7 @@
 
 namespace PSX\Api;
 
+use PSX\Schema\Definitions;
 use PSX\Schema\DefinitionsInterface;
 
 /**
@@ -41,10 +42,16 @@ class Specification implements SpecificationInterface
      */
     private $definitions;
 
-    public function __construct(ResourceCollection $resourceCollection, DefinitionsInterface $definitions)
+    /**
+     * @var SecurityInterface|null
+     */
+    private $security;
+
+    public function __construct(?ResourceCollection $resourceCollection = null, ?DefinitionsInterface $definitions = null, ?SecurityInterface $security = null)
     {
-        $this->resourceCollection = $resourceCollection;
-        $this->definitions = $definitions;
+        $this->resourceCollection = $resourceCollection ?? new ResourceCollection();
+        $this->definitions = $definitions ?? new Definitions();
+        $this->security = $security;
     }
 
     /**
@@ -80,7 +87,23 @@ class Specification implements SpecificationInterface
     }
 
     /**
-     * @param SpecificationInterface $specification
+     * @inheritDoc
+     */
+    public function getSecurity(): ?SecurityInterface
+    {
+        return $this->security;
+    }
+
+    /**
+     * @param SecurityInterface $security
+     */
+    public function setSecurity(SecurityInterface $security): void
+    {
+        $this->security = $security;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function merge(SpecificationInterface $specification): void
     {

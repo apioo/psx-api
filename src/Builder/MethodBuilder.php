@@ -24,7 +24,7 @@ use PSX\Api\Resource\Factory;
 use PSX\Api\Resource\MethodAbstract;
 use PSX\Schema\Builder;
 use PSX\Schema\DefinitionsInterface;
-use PSX\Schema\InvalidSchemaException;
+use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\Type\ReferenceType;
 

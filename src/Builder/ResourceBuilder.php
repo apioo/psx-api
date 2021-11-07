@@ -21,14 +21,13 @@
 namespace PSX\Api\Builder;
 
 use PSX\Api\Resource;
-use PSX\Api\Specification;
-use PSX\Api\SpecificationInterface;
 use PSX\Schema\Builder;
 use PSX\Schema\Definitions;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\SchemaManagerInterface;
 
 /**
- * Builder
+ * ResourceBuilder
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -47,21 +46,15 @@ class ResourceBuilder implements ResourceBuilderInterface
     private $resource;
 
     /**
-     * @var Definitions
+     * @var DefinitionsInterface
      */
     private $definitions;
 
-    /**
-     * @var SpecificationInterface
-     */
-    private $specification;
-
-    public function __construct(SchemaManagerInterface $schemaManager, int $status, string $path)
+    public function __construct(SchemaManagerInterface $schemaManager, int $status, string $path, ?DefinitionsInterface $definitions = null)
     {
         $this->schemaManager = $schemaManager;
         $this->resource      = new Resource($status, $path);
-        $this->definitions   = new Definitions();
-        $this->specification = Specification::fromResource($this->resource, $this->definitions);
+        $this->definitions   = $definitions ?? new Definitions();
     }
 
     /**
@@ -114,22 +107,16 @@ class ResourceBuilder implements ResourceBuilderInterface
     /**
      * @inheritDoc
      */
-    public function addResource(int $status, string $path): ResourceBuilderInterface
+    public function getResource(): Resource
     {
-        $builder = new static($this->schemaManager, $status, $path);
-        $builder->definitions = $this->definitions;
-        $builder->specification = $this->specification;
-
-        $this->specification->getResourceCollection()->set($builder->resource);
-
-        return $builder;
+        return $this->resource;
     }
 
     /**
      * @inheritDoc
      */
-    public function getSpecification(): SpecificationInterface
+    public function getDefinitions(): DefinitionsInterface
     {
-        return $this->specification;
+        return $this->definitions;
     }
 }

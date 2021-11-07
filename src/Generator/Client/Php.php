@@ -37,7 +37,15 @@ class Php extends LanguageAbstract
      */
     protected function getTemplate(): string
     {
-        return 'php.ts.twig';
+        return 'php.php.twig';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getGroupTemplate(): string
+    {
+        return 'php-group.php.twig';
     }
 
     /**
@@ -45,7 +53,7 @@ class Php extends LanguageAbstract
      */
     protected function getClientTemplate(): string
     {
-        return 'php-client.ts.twig';
+        return 'php-client.php.twig';
     }
 
     /**

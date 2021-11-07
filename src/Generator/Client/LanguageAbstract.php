@@ -22,6 +22,7 @@ namespace PSX\Api\Generator\Client;
 
 use PSX\Api\GeneratorInterface;
 use PSX\Api\Resource;
+use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
@@ -64,7 +65,7 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     /**
      * @param string $baseUrl
-     * @param string $namespace
+     * @param string|null $namespace
      */
     public function __construct(string $baseUrl, ?string $namespace = null)
     {
@@ -89,7 +90,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         }
 
         $this->generateSchema($definitions, $chunks);
-        $this->generateClient($resources, $chunks);
+        $this->generateClient($resources, $specification, $chunks);
 
         return $chunks;
     }
@@ -116,7 +117,8 @@ abstract class LanguageAbstract implements GeneratorInterface
             'description' => 'Endpoint: ' . $resource->getPath(),
             'methodName' => 'get' . substr($className, 0, -8),
             'path' => $resource->getPath(),
-            'properties' => $properties
+            'tags' => $resource->getTags(),
+            'properties' => $properties,
         ];
 
         $methods = [];
@@ -281,23 +283,92 @@ abstract class LanguageAbstract implements GeneratorInterface
     }
 
     /**
-     * @param array $resources
+     * @param Resource[] $resources
+     * @param SpecificationInterface $specification
      * @param Generator\Code\Chunks $chunks
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    protected function generateClient(array $resources, Generator\Code\Chunks $chunks)
+    protected function generateClient(array $resources, SpecificationInterface $specification, Generator\Code\Chunks $chunks)
     {
-        $identifier = 'Client';
+        $security = null;
+        if ($specification->getSecurity() instanceof SecurityInterface) {
+            $security = $specification->getSecurity()->toArray();
+        }
 
-        $code = $this->engine->render($this->getClientTemplate(), [
-            'baseUrl' => $this->baseUrl,
-            'namespace' => $this->namespace,
-            'resources' => $resources,
-        ]);
+        $groups = $this->groupByTag($resources);
+        if (count($groups) > 1) {
+            // in case we have tags we create group layer
+            $groupResources = [];
+            foreach ($groups as $tag => $resources) {
+                $className = ucfirst($tag) . 'Group';
 
-        $chunks->append($this->getFileName($identifier), $this->getFileContent($code, $identifier));
+                $code = $this->engine->render($this->getGroupTemplate(), [
+                    'baseUrl' => $this->baseUrl,
+                    'namespace' => $this->namespace,
+                    'className' => $className,
+                    'resources' => $resources,
+                ]);
+
+                $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
+
+                $groupResources[$className] = [
+                    'description' => 'Tag: ' . $tag,
+                    'methodName' => $tag,
+                    'properties' => [],
+                ];
+            }
+
+            $className = 'Client';
+            $code = $this->engine->render($this->getClientTemplate(), [
+                'baseUrl' => $this->baseUrl,
+                'namespace' => $this->namespace,
+                'className' => $className,
+                'resources' => $groupResources,
+                'security' => $security,
+            ]);
+
+            $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
+        } else {
+            $className = 'Client';
+            $code = $this->engine->render($this->getClientTemplate(), [
+                'baseUrl' => $this->baseUrl,
+                'namespace' => $this->namespace,
+                'className' => $className,
+                'resources' => $resources,
+                'security' => $security,
+            ]);
+
+            $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
+        }
+    }
+
+    /**
+     * Group resources by tag
+     *
+     * @param array $resources
+     * @return array
+     */
+    private function groupByTag(array $resources)
+    {
+        $groups = [];
+        foreach ($resources as $className => $resource) {
+            $firstTag = $resource['tags'][0] ?? null;
+            if (!empty($firstTag)) {
+                $key = $firstTag;
+            } else {
+                $key = 'default';
+            }
+
+            if (!isset($groups[$key])) {
+                $groups[$key] = [];
+            }
+
+            $groups[$key][$className] = $resource;
+        }
+
+        return $groups;
     }
 
     /**
@@ -374,6 +445,11 @@ abstract class LanguageAbstract implements GeneratorInterface
      * @return string
      */
     abstract protected function getTemplate(): string;
+
+    /**
+     * @return string
+     */
+    abstract protected function getGroupTemplate(): string;
 
     /**
      * @return string

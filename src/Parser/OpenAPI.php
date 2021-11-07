@@ -25,12 +25,19 @@ use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
+use PSX\Api\Security\ApiKey;
+use PSX\Api\Security\AuthorizationCode;
+use PSX\Api\Security\ClientCredentials;
+use PSX\Api\Security\HttpBasic;
+use PSX\Api\Security\HttpBearer;
+use PSX\Api\SecurityInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
 use PSX\Model\OpenAPI\MediaType;
 use PSX\Model\OpenAPI\MediaTypes;
+use PSX\Model\OpenAPI\OAuthFlow;
 use PSX\Model\OpenAPI\OpenAPI as OpenAPIModel;
 use PSX\Model\OpenAPI\Operation;
 use PSX\Model\OpenAPI\Parameter;
@@ -39,6 +46,9 @@ use PSX\Model\OpenAPI\Reference;
 use PSX\Model\OpenAPI\RequestBody;
 use PSX\Model\OpenAPI\Response;
 use PSX\Model\OpenAPI\Responses;
+use PSX\Model\OpenAPI\SecurityScheme;
+use PSX\Model\OpenAPI\SecuritySchemes;
+use PSX\Schema\Exception\TypeNotFoundException;
 use PSX\Schema\Parser as SchemaParser;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Type\ReferenceType;
@@ -119,7 +129,8 @@ class OpenAPI implements ParserInterface
 
         return new Specification(
             $collection,
-            $this->definitions
+            $this->definitions,
+            $this->parseSecurity()
         );
     }
 
@@ -164,10 +175,49 @@ class OpenAPI implements ParserInterface
     }
 
     /**
+     * Currently we only use one security object for the complete API since this simplifies the usage of the generated
+     * client since a user has not to configure multiple ways, in most cases an API has also only one way to authenticate.
+     *
+     * @return SecurityInterface|null
+     */
+    private function parseSecurity(): ?SecurityInterface
+    {
+        $securitySchemas = $this->document->getComponents()->getSecuritySchemes();
+        if (!$securitySchemas instanceof SecuritySchemes) {
+            return null;
+        }
+
+        foreach ($securitySchemas as $securityObject) {
+            if (!$securityObject instanceof SecurityScheme) {
+                continue;
+            }
+
+            if (strtolower($securityObject->getType()) === 'http' && strtolower($securityObject->getScheme()) === 'basic') {
+                return new HttpBasic();
+            } elseif (strtolower($securityObject->getType()) === 'http' && strtolower($securityObject->getScheme()) === 'bearer') {
+                return new HttpBearer();
+            } elseif (strtolower($securityObject->getType()) === 'apikey') {
+                return new ApiKey($securityObject->getName(), $securityObject->getIn());
+            } elseif (strtolower($securityObject->getType()) === 'oauth2') {
+                $flows = $securityObject->getFlows();
+                $clientCredentials = $flows->getClientCredentials();
+                $authorizationCode = $flows->getAuthorizationCode();
+                if ($clientCredentials instanceof OAuthFlow) {
+                    return new ClientCredentials($clientCredentials->getTokenUrl(), $clientCredentials->getAuthorizationUrl(), $clientCredentials->getRefreshUrl());
+                } elseif ($authorizationCode instanceof OAuthFlow) {
+                    return new AuthorizationCode($authorizationCode->getTokenUrl(), $authorizationCode->getAuthorizationUrl(), $authorizationCode->getRefreshUrl());
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param Resource $resource
      * @param PathItem $data
      * @param string $typePrefix
-     * @throws \PSX\Schema\TypeNotFoundException
+     * @throws TypeNotFoundException
      */
     private function parseUriParameters(Resource $resource, PathItem $data, string $typePrefix)
     {
@@ -186,7 +236,7 @@ class OpenAPI implements ParserInterface
      * @param Resource\MethodAbstract $method
      * @param Operation $data
      * @param string $typePrefix
-     * @throws \PSX\Schema\TypeNotFoundException
+     * @throws TypeNotFoundException
      */
     private function parseQueryParameters(Resource\MethodAbstract $method, Operation $data, string $typePrefix)
     {
@@ -205,7 +255,7 @@ class OpenAPI implements ParserInterface
      * @param string $type
      * @param array $data
      * @return StructType
-     * @throws \PSX\Schema\TypeNotFoundException
+     * @throws TypeNotFoundException
      */
     private function parseParameters(string $type, array $data): ?StructType
     {
@@ -238,8 +288,8 @@ class OpenAPI implements ParserInterface
     /**
      * @param string $in
      * @param Parameter|Reference $data
-     * @return array|\PSX\Schema\TypeInterface
-     * @throws \PSX\Schema\TypeNotFoundException
+     * @return array|TypeInterface
+     * @throws TypeNotFoundException
      */
     private function parseParameter(string $in, $data)
     {
