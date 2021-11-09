@@ -21,6 +21,7 @@
 namespace PSX\Api\Tests\Generator;
 
 use PSX\Api\Resource;
+use PSX\Api\Security\HttpBearer;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
 use PSX\Schema\Generator\Code\Chunks;
@@ -37,6 +38,7 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
     protected function getSpecification(): SpecificationInterface
     {
         $builder = $this->apiManager->getBuilder();
+        $builder->setSecurity(new HttpBearer());
         $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
 
         $resource->setTitle('foo');
@@ -89,6 +91,7 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
     protected function getSpecificationCollection(): SpecificationInterface
     {
         $builder = $this->apiManager->getBuilder();
+        $builder->setSecurity(new HttpBearer());
         $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo');
         $resource->setTitle('foo');
         $resource->setTags(['foo']);

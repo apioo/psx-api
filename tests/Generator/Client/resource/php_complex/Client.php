@@ -1,19 +1,20 @@
 <?php 
 /**
  * Client generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 namespace Foo\Bar;
 
 use Sdkgen\Client\ClientAbstract;
 use Sdkgen\Client\Credentials;
+use Sdkgen\Client\TokenStoreInterface;
 
 class Client extends ClientAbstract
 {
-    public function __construct(string $baseUri, ?TokenStoreInterface $tokenStore = null)
+    public function __construct(string $baseUrl, ?TokenStoreInterface $tokenStore = null)
     {
-        parent::__construct($baseUri, $tokenStore);
+        parent::__construct($baseUrl, $tokenStore);
 
     }
 
@@ -28,8 +29,7 @@ class Client extends ClientAbstract
             $name,
             $type,
             $this->baseUrl,
-            $this->getAccessToken(),
-            $this->httpClient,
+            $this->newHttpClient($this->credentials),
             $this->schemaManager
         );
     }

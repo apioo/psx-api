@@ -1,7 +1,7 @@
 <?php 
 /**
  * GetQuery generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 /**

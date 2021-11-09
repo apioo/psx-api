@@ -79,7 +79,7 @@ class Php extends LanguageAbstract
     {
         $comment = '/**' . "\n";
         $comment.= ' * ' . $identifier . ' generated on ' . date('Y-m-d') . "\n";
-        $comment.= ' * @see https://github.com/apioo' . "\n";
+        $comment.= ' * @see https://sdkgen.app' . "\n";
         $comment.= ' */' . "\n";
 
         return '<?php ' . "\n" . $comment . "\n" . $code;

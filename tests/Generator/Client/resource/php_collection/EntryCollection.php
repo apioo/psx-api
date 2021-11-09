@@ -4,6 +4,9 @@
  * @see https://sdkgen.app
  */
 
+namespace Foo\Bar;
+
+
 class EntryCollection implements \JsonSerializable
 {
     /**

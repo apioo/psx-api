@@ -4,6 +4,7 @@
  * @see https://sdkgen.app
  */
 
+namespace Foo\Bar;
 
 use Sdkgen\Client\ClientAbstract;
 use Sdkgen\Client\Credentials;
@@ -19,15 +20,27 @@ class Client extends ClientAbstract
     }
 
     /**
-     * Endpoint: /foo/:name/:type
+     * Tag: foo
      *
-     * @return FooByNameAndTypeResource
+     * @return FooGroup
      */
-    public function getFooByNameAndType(?string $name, ?string $type): FooByNameAndTypeResource
+    public function foo(): FooGroup
     {
-        return new FooByNameAndTypeResource(
-            $name,
-            $type,
+        return new FooGroup(
+            $this->baseUrl,
+            $this->newHttpClient($this->credentials),
+            $this->schemaManager
+        );
+    }
+
+    /**
+     * Tag: bar
+     *
+     * @return BarGroup
+     */
+    public function bar(): BarGroup
+    {
+        return new BarGroup(
             $this->baseUrl,
             $this->newHttpClient($this->credentials),
             $this->schemaManager

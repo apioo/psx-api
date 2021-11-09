@@ -4,12 +4,13 @@ namespace {{ namespace }};
 
 use Sdkgen\Client\ClientAbstract;
 use Sdkgen\Client\Credentials;
+use Sdkgen\Client\TokenStoreInterface;
 
 class Client extends ClientAbstract
 {
-    public function __construct({% if security.type == 'httpBasic' %}string $userName, string $password, {% elseif security.type in ['httpBearer', 'apiKey'] %}string $token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}string $clientId, string $clientSecret, {% endif %}string $baseUri, ?TokenStoreInterface $tokenStore = null)
+    public function __construct({% if security.type == 'httpBasic' %}string $userName, string $password, {% elseif security.type in ['httpBearer', 'apiKey'] %}string $token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}string $clientId, string $clientSecret, {% endif %}string $baseUrl, ?TokenStoreInterface $tokenStore = null)
     {
-        parent::__construct($baseUri, $tokenStore);
+        parent::__construct($baseUrl, $tokenStore);
 
 {% if security.type == 'httpBasic' %}
         $this->credentials = new Credentials\HttpBasic($userName, $password);
@@ -36,8 +37,7 @@ class Client extends ClientAbstract
             {% for name, hint in resource.properties %}${{ name }},
             {% endfor %}
 $this->baseUrl,
-            $this->getAccessToken(),
-            $this->httpClient,
+            $this->newHttpClient($this->credentials),
             $this->schemaManager
         );
     }

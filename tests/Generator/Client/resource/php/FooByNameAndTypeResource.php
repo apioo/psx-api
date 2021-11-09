@@ -1,7 +1,7 @@
 <?php 
 /**
  * FooByNameAndTypeResource generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 
@@ -26,9 +26,9 @@ class FooByNameAndTypeResource extends ResourceAbstract
      */
     private $type;
 
-    public function __construct(string $name, string $type, string $baseUrl, string $token, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
+    public function __construct(string $name, string $type, string $baseUrl, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
-        parent::__construct($baseUrl, $token, $httpClient, $schemaManager);
+        parent::__construct($baseUrl, $httpClient, $schemaManager);
 
         $this->name = $name;
         $this->type = $type;

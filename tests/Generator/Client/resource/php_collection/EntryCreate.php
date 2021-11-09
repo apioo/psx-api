@@ -4,6 +4,8 @@
  * @see https://sdkgen.app
  */
 
+namespace Foo\Bar;
+
 /**
  * @Required({"title", "date"})
  */
