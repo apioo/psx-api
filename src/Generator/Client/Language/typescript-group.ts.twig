@@ -1,0 +1,24 @@
+import {ResourceAbstract} from "sdkgen-client"
+{% for className, resource in resources %}
+import {{ className }} from "./{{ className }}";
+{% endfor %}
+
+export default class {{ className }} extends ResourceAbstract {
+{% for className, resource in resources %}
+    /**
+     * {{ resource.description|raw }}
+     * 
+     * @returns {{ className }}
+     */
+    public {{ resource.methodName }}({% for name, hint in resource.properties %}{{ name }}: {{ hint|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): {{ className }}
+    {
+        return new {{ className }}(
+            {% for name, hint in resource.properties %}{{ name }},
+            {% endfor %}
+this.baseUrl,
+            this.httpClient
+        );
+    }
+
+{% endfor %}
+}

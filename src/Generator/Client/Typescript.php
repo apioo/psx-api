@@ -43,6 +43,14 @@ class Typescript extends LanguageAbstract
     /**
      * @inheritdoc
      */
+    protected function getGroupTemplate(): string
+    {
+        return 'typescript-group.ts.twig';
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function getClientTemplate(): string
     {
         return 'typescript-client.ts.twig';
@@ -71,7 +79,7 @@ class Typescript extends LanguageAbstract
     {
         $comment = '/**' . "\n";
         $comment.= ' * ' . $identifier . ' generated on ' . date('Y-m-d') . "\n";
-        $comment.= ' * {@link https://github.com/apioo}' . "\n";
+        $comment.= ' * {@link https://sdkgen.app}' . "\n";
         $comment.= ' */' . "\n";
 
         return $comment . "\n" . $code;

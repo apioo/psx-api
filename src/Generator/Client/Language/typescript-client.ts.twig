@@ -1,17 +1,35 @@
-import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
+{% if security.type == 'httpBasic' %}
+import {HttpBasic} from "sdkgen-client"
+{% elseif security.type == 'httpBearer' %}
+import {HttpBearer} from "sdkgen-client"
+{% elseif security.type == 'apiKey' %}
+import {ApiKey} from "sdkgen-client"
+{% elseif security.type == 'clientCredentials' %}
+import {ClientCredentials} from "sdkgen-client"
+{% elseif security.type == 'authorizationCode' %}
+import {AuthorizationCode} from "sdkgen-client"
+{% endif %}
+
 {% for className, resource in resources %}
 import {{ className }} from "./{{ className }}";
 {% endfor %}
 
-export default class {{ className }} {
-    private baseUrl: string;
-    private token: string;
-    private httpClient: AxiosInstance;
+export default class {{ className }} extends ClientAbstract {
+    public constructor({% if security.type == 'httpBasic' %}userName: string, password: string, {% elseif security.type in ['httpBearer', 'apiKey'] %}token: string, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}clientId: string, clientSecret: string, {% endif %}baseUrl: string, tokenStore: TokenStoreInterface) {
+        super(baseUrl, tokenStore);
 
-    public constructor(baseUrl: string, token: string, httpClient?: AxiosInstance) {
-        this.baseUrl = baseUrl;
-        this.token = token;
-        this.httpClient = httpClient ? httpClient : Axios.create();
+{% if security.type == 'httpBasic' %}
+        this.credentials = new HttpBasic(userName, password);
+{% elseif security.type == 'httpBearer' %}
+        this.credentials = new HttpBearer(token);
+{% elseif security.type == 'apiKey' %}
+        this.credentials = new ApiKey(token, '{{ security.name }}', '{{ security.in }}');
+{% elseif security.type == 'clientCredentials' %}
+        this.credentials = new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}');
+{% elseif security.type == 'authorizationCode' %}
+        this.credentials = new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}');
+{% endif %}
     }
 
 {% for className, resource in resources %}
@@ -26,8 +44,7 @@ export default class {{ className }} {
             {% for name, hint in resource.properties %}{{ name }},
             {% endfor %}
 this.baseUrl,
-            this.token,
-            this.httpClient
+            this.newHttpClient(this.credentials)
         );
     }
 
