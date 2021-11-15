@@ -1,6 +1,6 @@
 /**
  * FooResource generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * {@link https://sdkgen.app}
  */
 
 import Axios, {AxiosInstance, AxiosPromise, Method} from "axios";
@@ -8,17 +8,15 @@ import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
 import {EntryMessage} from "./EntryMessage";
 
-export default class FooResource {
+export default class FooResource extends ResourceAbstract {
     private url: string;
-    private token: string;
-    private httpClient: AxiosInstance;
 
 
-    public constructor(baseUrl: string, token: string, httpClient?: AxiosInstance) {
+    public constructor(baseUrl: string, httpClient?: AxiosInstance) {
+        super(baseUrl, httpClient);
+
 
         this.url = baseUrl + "/foo";
-        this.token = token;
-        this.httpClient = httpClient ? httpClient : Axios.create();
     }
 
     /**

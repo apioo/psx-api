@@ -71,7 +71,7 @@ class Java extends LanguageAbstract
     {
         $comment = '/**' . "\n";
         $comment.= ' * ' . $identifier . ' generated on ' . date('Y-m-d') . "\n";
-        $comment.= ' * {@link https://github.com/apioo}' . "\n";
+        $comment.= ' * @see https://sdkgen.app' . "\n";
         $comment.= ' */' . "\n";
 
         return $comment . "\n" . $code;

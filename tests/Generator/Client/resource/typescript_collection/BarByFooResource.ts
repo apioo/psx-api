@@ -1,6 +1,6 @@
 /**
  * BarByFooResource generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * {@link https://sdkgen.app}
  */
 
 import Axios, {AxiosInstance, AxiosPromise, Method} from "axios";
@@ -8,19 +8,17 @@ import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
 import {EntryMessage} from "./EntryMessage";
 
-export default class BarByFooResource {
+export default class BarByFooResource extends ResourceAbstract {
     private url: string;
-    private token: string;
-    private httpClient: AxiosInstance;
 
     private foo: string;
 
-    public constructor(foo: string, baseUrl: string, token: string, httpClient?: AxiosInstance) {
+    public constructor(foo: string, baseUrl: string, httpClient?: AxiosInstance) {
+        super(baseUrl, httpClient);
+
         this.foo = foo;
 
         this.url = baseUrl + "/bar/"+foo+"";
-        this.token = token;
-        this.httpClient = httpClient ? httpClient : Axios.create();
     }
 
     /**
