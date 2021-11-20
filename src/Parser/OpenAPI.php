@@ -35,6 +35,7 @@ use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
+use PSX\Model\OpenAPI\Components;
 use PSX\Model\OpenAPI\MediaType;
 use PSX\Model\OpenAPI\MediaTypes;
 use PSX\Model\OpenAPI\OAuthFlow;
@@ -182,7 +183,12 @@ class OpenAPI implements ParserInterface
      */
     private function parseSecurity(): ?SecurityInterface
     {
-        $securitySchemas = $this->document->getComponents()->getSecuritySchemes();
+        $components = $this->document->getComponents();
+        if (!$components instanceof Components) {
+            return null;
+        }
+
+        $securitySchemas = $components->getSecuritySchemes();
         if (!$securitySchemas instanceof SecuritySchemes) {
             return null;
         }
