@@ -75,7 +75,7 @@ class GenerateCommand extends Command
         $this
             ->setName('api:generate')
             ->setDescription('Generates for each API resource a file in a specific format')
-            ->addArgument('dir', InputArgument::REQUIRED, 'The target directory')
+            ->addArgument('dir', InputArgument::OPTIONAL, 'The target directory')
             ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Optional the output format possible values are: ' . implode(', ', GeneratorFactory::getPossibleTypes()))
             ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Optional a config value which gets passed to the generator')
             ->addOption('filter', 'i', InputOption::VALUE_REQUIRED, 'Optional a specific filter');
@@ -88,7 +88,7 @@ class GenerateCommand extends Command
             throw new \InvalidArgumentException('Provided an invalid format');
         }
 
-        $dir = $input->getArgument('dir');
+        $dir = $input->getArgument('dir') ?? getcwd();
         if (!is_dir($dir)) {
             throw new \InvalidArgumentException('Directory does not exist');
         }

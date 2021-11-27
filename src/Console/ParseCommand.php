@@ -76,7 +76,7 @@ class ParseCommand extends Command
             throw new \InvalidArgumentException('Provided an invalid format');
         }
 
-        $dir = $input->getOption('dir');
+        $dir = $input->getOption('dir') ?? getcwd();
         if (!is_dir($dir)) {
             throw new \InvalidArgumentException('Directory does not exist');
         }
