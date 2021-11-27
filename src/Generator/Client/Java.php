@@ -43,6 +43,14 @@ class Java extends LanguageAbstract
     /**
      * @inheritdoc
      */
+    protected function getGroupTemplate(): string
+    {
+        return 'java-group.java.twig';
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function getClientTemplate(): string
     {
         return 'java-client.java.twig';

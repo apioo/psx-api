@@ -7,7 +7,7 @@ export default class {{ className }} extends ResourceAbstract {
 {% for className, resource in resources %}
     /**
      * {{ resource.description|raw }}
-     * 
+     *
      * @returns {{ className }}
      */
     public {{ resource.methodName }}({% for name, hint in resource.properties %}{{ name }}: {{ hint|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): {{ className }}

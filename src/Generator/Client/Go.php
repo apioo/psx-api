@@ -43,6 +43,14 @@ class Go extends LanguageAbstract
     /**
      * @inheritdoc
      */
+    protected function getGroupTemplate(): string
+    {
+        return 'go-group.go.twig';
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function getClientTemplate(): string
     {
         return 'go-client.go.twig';

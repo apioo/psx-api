@@ -46,10 +46,11 @@ class ParseCommandTest extends TestCase
         $commandTester->execute(array(
             'source'   => TestController::class,
             'path'     => '/foo',
+            '--dir'    => __DIR__ . '/output',
             '--format' => GeneratorFactoryInterface::SPEC_OPENAPI,
         ));
 
-        $actual = $commandTester->getDisplay();
+        $actual = file_get_contents(__DIR__ . '/output/output-spec-openapi.json');
         $expect = file_get_contents(__DIR__ . '/resource/spec_openapi.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);

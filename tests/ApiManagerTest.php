@@ -63,13 +63,15 @@ class ApiManagerTest extends ApiManagerTestCase
     
     public function testGetBuilder()
     {
-        $builder = $this->apiManager->getBuilder(Resource::STATUS_ACTIVE, '/foo');
-        $builder->setTitle('My_Resource');
-        $builder->setDescription('My super resource');
-        $builder->setPathParameters('Path')->addInteger('todo_id');
-        $builder->setTags(['my_tag']);
+        $builder = $this->apiManager->getBuilder();
+
+        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo');
+        $resource->setTitle('My_Resource');
+        $resource->setDescription('My super resource');
+        $resource->setPathParameters('Path')->addInteger('todo_id');
+        $resource->setTags(['my_tag']);
         
-        $post = $builder->addMethod('POST');
+        $post = $resource->addMethod('POST');
         $post->setOperationId('my_action');
         $post->setQueryParameters('PostQuery')->addInteger('startIndex');
         $post->setDescription('My method description');

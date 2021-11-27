@@ -83,7 +83,16 @@ class GenerateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $format = $input->getOption('format');
+        $format = $input->getOption('format') ?? GeneratorFactoryInterface::SPEC_OPENAPI;
+        if (!in_array($format, GeneratorFactory::getPossibleTypes())) {
+            throw new \InvalidArgumentException('Provided an invalid format');
+        }
+
+        $dir = $input->getArgument('dir');
+        if (!is_dir($dir)) {
+            throw new \InvalidArgumentException('Directory does not exist');
+        }
+
         $config = $input->getOption('config');
         $filterName = $input->getOption('filter');
 
@@ -91,11 +100,6 @@ class GenerateCommand extends Command
             $filter = $this->filterFactory->getFilter($filterName);
         } else {
             $filter = null;
-        }
-
-        $dir = $input->getArgument('dir');
-        if (!is_dir($dir)) {
-            throw new \InvalidArgumentException('Directory does not exist');
         }
 
         $generator = $this->factory->getGenerator($format, $config);

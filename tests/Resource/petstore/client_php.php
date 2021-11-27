@@ -1,13 +1,13 @@
-<?php 
+<?php
 /**
  * PetsResource generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 
 use GuzzleHttp\Client;
-use PSX\Api\Generator\Client\Php\ResourceAbstract;
 use PSX\Schema\SchemaManager;
+use Sdkgen\Client\ResourceAbstract;
 
 class PetsResource extends ResourceAbstract
 {
@@ -16,9 +16,9 @@ class PetsResource extends ResourceAbstract
      */
     private $url;
 
-    public function __construct(string $baseUrl, string $token, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
+    public function __construct(string $baseUrl, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
-        parent::__construct($baseUrl, $token, $httpClient, $schemaManager);
+        parent::__construct($baseUrl, $httpClient, $schemaManager);
 
         $this->url = $this->baseUrl . '/pets';
     }
@@ -61,10 +61,10 @@ class PetsResource extends ResourceAbstract
 
 }
 
-<?php 
+<?php
 /**
  * Pet generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 /**
@@ -135,10 +135,10 @@ class Pet implements \JsonSerializable
     }
 }
 
-<?php 
+<?php
 /**
  * Pets generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 /**
@@ -172,10 +172,10 @@ class Pets implements \JsonSerializable
     }
 }
 
-<?php 
+<?php
 /**
  * Error generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 /**
@@ -228,10 +228,10 @@ class Error implements \JsonSerializable
     }
 }
 
-<?php 
+<?php
 /**
  * PetsGetQuery generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 /**
@@ -265,10 +265,10 @@ class PetsGetQuery implements \JsonSerializable
     }
 }
 
-<?php 
+<?php
 /**
  * PetsPetIdGetQuery generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 /**
@@ -302,17 +302,24 @@ class PetsPetIdGetQuery implements \JsonSerializable
     }
 }
 
-<?php 
+<?php
 /**
  * Client generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 
-use PSX\Api\Generator\Client\Php\ResourceAbstract;
+use Sdkgen\Client\ClientAbstract;
+use Sdkgen\Client\Credentials;
+use Sdkgen\Client\TokenStoreInterface;
 
-class Client extends ResourceAbstract
+class Client extends ClientAbstract
 {
+    public function __construct(string $baseUrl, ?TokenStoreInterface $tokenStore = null)
+    {
+        parent::__construct($baseUrl, null, $tokenStore);
+    }
+
     /**
      * Endpoint: /pets
      *
@@ -322,8 +329,7 @@ class Client extends ResourceAbstract
     {
         return new PetsResource(
             $this->baseUrl,
-            $this->token,
-            $this->httpClient,
+            $this->newHttpClient(),
             $this->schemaManager
         );
     }

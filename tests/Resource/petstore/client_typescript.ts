@@ -1,24 +1,23 @@
 /**
  * PetsResource generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * {@link https://sdkgen.app}
  */
 
-import Axios, {AxiosInstance, AxiosPromise, Method} from "axios";
+import {AxiosInstance, AxiosPromise, Method} from "axios";
+import {ResourceAbstract} from "sdkgen-client"
 import {PetsGetQuery} from "./PetsGetQuery";
 import {Pets} from "./Pets";
 import {Pet} from "./Pet";
 
-export default class PetsResource {
+export default class PetsResource extends ResourceAbstract {
     private url: string;
-    private token: string;
-    private httpClient: AxiosInstance;
 
 
-    public constructor(baseUrl: string, token: string, httpClient?: AxiosInstance) {
+    public constructor(baseUrl: string, httpClient?: AxiosInstance) {
+        super(baseUrl, httpClient);
+
 
         this.url = baseUrl + "/pets";
-        this.token = token;
-        this.httpClient = httpClient ? httpClient : Axios.create();
     }
 
     /**
@@ -54,7 +53,7 @@ export default class PetsResource {
 
 /**
  * Pet generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * {@link https://sdkgen.app}
  */
 
 export interface Pet {
@@ -65,7 +64,7 @@ export interface Pet {
 
 /**
  * Pets generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * {@link https://sdkgen.app}
  */
 
 import {Pet} from "./Pet";
@@ -75,7 +74,7 @@ export interface Pets {
 
 /**
  * Error generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * {@link https://sdkgen.app}
  */
 
 export interface Error {
@@ -85,7 +84,7 @@ export interface Error {
 
 /**
  * PetsGetQuery generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * {@link https://sdkgen.app}
  */
 
 export interface PetsGetQuery {
@@ -94,7 +93,7 @@ export interface PetsGetQuery {
 
 /**
  * PetsPetIdGetQuery generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * {@link https://sdkgen.app}
  */
 
 export interface PetsPetIdGetQuery {
@@ -103,34 +102,28 @@ export interface PetsPetIdGetQuery {
 
 /**
  * Client generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * {@link https://sdkgen.app}
  */
 
-import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
+
 import PetsResource from "./PetsResource";
 
-export default class Client {
-    private baseUrl: string;
-    private token: string;
-    private httpClient: AxiosInstance;
-
-    public constructor(baseUrl: string, token: string, httpClient?: AxiosInstance) {
-        this.baseUrl = baseUrl;
-        this.token = token;
-        this.httpClient = httpClient ? httpClient : Axios.create();
+export default class Client extends ClientAbstract {
+    public constructor(baseUrl: string, , tokenStore: TokenStoreInterface|null = null) {
+        super(baseUrl, null, tokenStore);
     }
 
     /**
      * Endpoint: /pets
-     * 
+     *
      * @returns PetsResource
      */
     public getPets(): PetsResource
     {
         return new PetsResource(
             this.baseUrl,
-            this.token,
-            this.httpClient
+            this.newHttpClient()
         );
     }
 

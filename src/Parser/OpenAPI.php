@@ -334,7 +334,7 @@ class OpenAPI implements ParserInterface
     private function parseRequest(Resource\MethodAbstract $method, $requestBody, string $typePrefix)
     {
         if ($requestBody instanceof Reference) {
-            return $this->parseRequest($method, $this->resolveReference($requestBody->getRef()), $typePrefix);
+            $this->parseRequest($method, $this->resolveReference($requestBody->getRef()), $typePrefix);
         } elseif ($requestBody instanceof RequestBody) {
             $mediaTypes = $requestBody->getContent();
             if ($mediaTypes instanceof MediaTypes) {
@@ -428,7 +428,7 @@ class OpenAPI implements ParserInterface
         $this->document    = (new SchemaTraverser())->traverse($data, $schema, new TypeVisitor());
     }
 
-    public static function fromFile(string $file, string $path): SpecificationInterface
+    public static function fromFile(string $file, ?string $path = null): SpecificationInterface
     {
         if (empty($file) || !is_file($file)) {
             throw new RuntimeException('Could not load OpenAPI schema ' . $file);

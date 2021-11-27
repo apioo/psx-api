@@ -44,6 +44,5 @@ class BinTest extends TestCase
 
         $this->assertRegExp('/api:generate/', $actual);
         $this->assertRegExp('/api:parse/', $actual);
-        $this->assertRegExp('/api:resource/', $actual);
     }
 }

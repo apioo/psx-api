@@ -1,0 +1,36 @@
+{% if namespace %}
+package {{ namespace|lower }}
+{% endif %}
+
+import (
+    "encoding/json"
+    "io/ioutil"
+    "net/http"
+    "time"
+)
+
+type {{ className }} struct {
+    BaseUrl string
+    Token   string
+}
+
+{% for className, resource in resources %}
+// {{ resource.description|raw }}
+func (client Client) {{ resource.methodName }}({% for name, hint in resource.properties %}{% if hint %}{{ hint }} {% endif %}{{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ className }} {
+    r := {{ className }} {
+        {% for name, hint in resource.properties %}{{ name|capitalize }}: {{ name }},
+        {% endfor %}
+BaseUrl: client.BaseUrl,
+        Token: client.Token
+    }
+    return r
+}
+{% endfor %}
+
+func NewClient(baseUrl string, token string) Client {
+    c := Client {
+        BaseUrl: baseUrl,
+        Token: token
+    }
+    return c
+}

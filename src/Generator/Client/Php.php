@@ -82,6 +82,6 @@ class Php extends LanguageAbstract
         $comment.= ' * @see https://sdkgen.app' . "\n";
         $comment.= ' */' . "\n";
 
-        return '<?php ' . "\n" . $comment . "\n" . $code;
+        return '<?php' . "\n" . $comment . "\n" . $code;
     }
 }

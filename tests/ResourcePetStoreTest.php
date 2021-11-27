@@ -61,19 +61,6 @@ class ResourceConversionTest extends ApiManagerTestCase
         $this->assertEquals($expect, $actual, $actual);
     }
 
-    public function testClientGo()
-    {
-        $specification = $this->getSpecification();
-        $generator = new Generator\Client\Go('http://api.phpsx.org');
-
-        $actual = (string) $generator->generate($specification->get('/pets'));
-        $actual = str_replace(date('Y-m-d'), '0000-00-00', $actual);
-        $expect = file_get_contents(__DIR__ . '/Resource/petstore/client_go.go');
-        $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
-
-        $this->assertEquals($expect, $actual, $actual);
-    }
-
     public function testMarkupHtml()
     {
         $specification = $this->getSpecification();

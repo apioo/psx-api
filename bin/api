@@ -52,7 +52,6 @@ if (!empty($autoloadFile)) {
     $application->add(new \PSX\Schema\Console\ParseCommand($schemaManager));
     $application->add(new \PSX\Api\Console\GenerateCommand($listing, $factory));
     $application->add(new \PSX\Api\Console\ParseCommand($apiManager, $factory));
-    $application->add(new \PSX\Api\Console\ResourceCommand($listing, $factory));
     $application->run();
 } else {
     die('You need to set up the project dependencies through composer');
