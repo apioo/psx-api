@@ -8,14 +8,13 @@ import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
 import FooByNameAndTypeResource from "./FooByNameAndTypeResource";
 
 export default class Client extends ClientAbstract {
-    public constructor(baseUrl: string, tokenStore: TokenStoreInterface) {
-        super(baseUrl, tokenStore);
-
+    public constructor(baseUrl: string, , tokenStore: TokenStoreInterface|null = null) {
+        super(baseUrl, null, tokenStore);
     }
 
     /**
      * Endpoint: /foo/:name/:type
-     * 
+     *
      * @returns FooByNameAndTypeResource
      */
     public getFooByNameAndType(name: string, type: string): FooByNameAndTypeResource
@@ -24,7 +23,7 @@ export default class Client extends ClientAbstract {
             name,
             type,
             this.baseUrl,
-            this.newHttpClient(this.credentials)
+            this.newHttpClient()
         );
     }
 

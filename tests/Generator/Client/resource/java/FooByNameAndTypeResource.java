@@ -1,9 +1,10 @@
 /**
  * FooByNameAndTypeResource generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * @see https://sdkgen.app
  */
 
 
+import app.sdkgen.client.ResourceAbstract;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -18,18 +19,19 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class FooByNameAndTypeResource
+public class FooByNameAndTypeResource extends ResourceAbstract
 {
     private final String url;
-    private final String token;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
     private String name;
     private String type;
 
-    public FooByNameAndTypeResource(String name, String type, String baseUrl, String token, HttpClient httpClient)
+    public FooByNameAndTypeResource(String name, String type, String baseUrl, HttpClient httpClient, ObjectMapper objectMapper)
     {
+        super(baseUrl, httpClient, objectMapper);
+
         this.name = name;
         this.type = type;
 

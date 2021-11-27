@@ -1,9 +1,10 @@
 /**
  * FooResource generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * @see https://sdkgen.app
  */
 
 
+import app.sdkgen.client.ResourceAbstract;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -18,16 +19,17 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class FooResource
+public class FooResource extends ResourceAbstract
 {
     private final String url;
-    private final String token;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
 
-    public FooResource(String baseUrl, String token, HttpClient httpClient)
+    public FooResource(String baseUrl, HttpClient httpClient, ObjectMapper objectMapper)
     {
+        super(baseUrl, httpClient, objectMapper);
+
 
         this.url = baseUrl + "/foo";
         this.token = token;

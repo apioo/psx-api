@@ -3,7 +3,8 @@
  * {@link https://sdkgen.app}
  */
 
-import Axios, {AxiosInstance, AxiosPromise, Method} from "axios";
+import {AxiosInstance, AxiosPromise, Method} from "axios";
+import {ResourceAbstract} from "sdkgen-client"
 import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
 import {EntryMessage} from "./EntryMessage";

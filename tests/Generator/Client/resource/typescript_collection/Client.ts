@@ -10,35 +10,33 @@ import FooGroup from "./FooGroup";
 import BarGroup from "./BarGroup";
 
 export default class Client extends ClientAbstract {
-    public constructor(token: string, baseUrl: string, tokenStore: TokenStoreInterface) {
-        super(baseUrl, tokenStore);
-
-        this.credentials = new HttpBearer(token);
+    public constructor(baseUrl: string, token: string, , tokenStore: TokenStoreInterface|null = null) {
+        super(baseUrl, new HttpBearer(token), tokenStore);
     }
 
     /**
      * Tag: foo
-     * 
+     *
      * @returns FooGroup
      */
     public foo(): FooGroup
     {
         return new FooGroup(
             this.baseUrl,
-            this.newHttpClient(this.credentials)
+            this.newHttpClient()
         );
     }
 
     /**
      * Tag: bar
-     * 
+     *
      * @returns BarGroup
      */
     public bar(): BarGroup
     {
         return new BarGroup(
             this.baseUrl,
-            this.newHttpClient(this.credentials)
+            this.newHttpClient()
         );
     }
 

@@ -1,23 +1,23 @@
 /**
  * Client generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * @see https://sdkgen.app
  */
 
 
+import app.sdkgen.client.ClientAbstract;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-public class Client
+public class Client extends ClientAbstract
 {
-    private final String baseUrl;
-    private final String token;
-    private final HttpClient httpClient;
-
-    public Client(String baseUrl, String token, HttpClient httpClient)
+    public function Client(String baseUrl, TokenStoreInterface tokenStore)
     {
-        this.baseUrl = baseUrl;
-        this.token = token;
-        this.httpClient = httpClient != null ? httpClient : HttpClientBuilder.create().build();
+        super(baseUrl, null, tokenStore);
+    }
+
+    public function Client(String baseUrl, )
+    {
+        super(baseUrl, null, null);
     }
 
     /**
@@ -29,7 +29,7 @@ public class Client
             name,
             type,
             this.baseUrl,
-            this.token,
+            this.newHttpClient(),
             this.httpClient
         );
     }

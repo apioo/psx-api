@@ -9,15 +9,13 @@ import {HttpBearer} from "sdkgen-client"
 import FooByNameAndTypeResource from "./FooByNameAndTypeResource";
 
 export default class Client extends ClientAbstract {
-    public constructor(token: string, baseUrl: string, tokenStore: TokenStoreInterface) {
-        super(baseUrl, tokenStore);
-
-        this.credentials = new HttpBearer(token);
+    public constructor(baseUrl: string, token: string, , tokenStore: TokenStoreInterface|null = null) {
+        super(baseUrl, new HttpBearer(token), tokenStore);
     }
 
     /**
      * Endpoint: /foo/:name/:type
-     * 
+     *
      * @returns FooByNameAndTypeResource
      */
     public getFooByNameAndType(name: string, type: string): FooByNameAndTypeResource
@@ -26,7 +24,7 @@ export default class Client extends ClientAbstract {
             name,
             type,
             this.baseUrl,
-            this.newHttpClient(this.credentials)
+            this.newHttpClient()
         );
     }
 

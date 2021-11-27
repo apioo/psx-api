@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * Client generated on 0000-00-00
  * @see https://sdkgen.app
@@ -12,11 +12,9 @@ use Sdkgen\Client\TokenStoreInterface;
 
 class Client extends ClientAbstract
 {
-    public function __construct(string $token, string $baseUrl, ?TokenStoreInterface $tokenStore = null)
+    public function __construct(string $baseUrl, string $token, ?TokenStoreInterface $tokenStore = null)
     {
-        parent::__construct($baseUrl, $tokenStore);
-
-        $this->credentials = new Credentials\HttpBearer($token);
+        parent::__construct($baseUrl, new Credentials\HttpBearer($token), $tokenStore);
     }
 
     /**
@@ -28,7 +26,7 @@ class Client extends ClientAbstract
     {
         return new FooGroup(
             $this->baseUrl,
-            $this->newHttpClient($this->credentials),
+            $this->newHttpClient(),
             $this->schemaManager
         );
     }
@@ -42,7 +40,7 @@ class Client extends ClientAbstract
     {
         return new BarGroup(
             $this->baseUrl,
-            $this->newHttpClient($this->credentials),
+            $this->newHttpClient(),
             $this->schemaManager
         );
     }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * BarByYearResource generated on 0000-00-00
  * @see https://sdkgen.app
