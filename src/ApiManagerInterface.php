@@ -20,7 +20,6 @@
 
 namespace PSX\Api;
 
-use PSX\Api\Builder\ResourceBuilderInterface;
 use PSX\Api\Builder\SpecificationBuilderInterface;
 
 /**
@@ -36,11 +35,11 @@ interface ApiManagerInterface
      * Returns the specification for the provided source
      * 
      * @param string $source
-     * @param string $path
-     * @param int $type
+     * @param string|null $path
+     * @param int|null $type
      * @return SpecificationInterface
      */
-    public function getApi(string $source, string $path, ?int $type = null): SpecificationInterface;
+    public function getApi(string $source, ?string $path, ?int $type = null): SpecificationInterface;
 
     /**
      * Returns a builder which helps to create a specification

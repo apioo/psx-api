@@ -23,8 +23,6 @@ namespace PSX\Api;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Cache\ArrayCache;
 use Psr\Cache\CacheItemPoolInterface;
-use PSX\Api\Builder\ResourceBuilder;
-use PSX\Api\Builder\ResourceBuilderInterface;
 use PSX\Api\Builder\SpecificationBuilder;
 use PSX\Api\Builder\SpecificationBuilderInterface;
 use PSX\Api\Parser\OpenAPI;
@@ -86,7 +84,7 @@ class ApiManager implements ApiManagerInterface
     /**
      * @inheritdoc
      */
-    public function getApi(string $source, string $path, ?int $type = null): SpecificationInterface
+    public function getApi(string $source, ?string $path, ?int $type = null): SpecificationInterface
     {
         $item = null;
         if (!$this->debug) {
@@ -126,12 +124,10 @@ class ApiManager implements ApiManagerInterface
 
     private function guessTypeFromSource($source): ?int
     {
-        if (strpos($source, '.json') !== false) {
-            return self::TYPE_OPENAPI;
-        } elseif (class_exists($source)) {
+        if (class_exists($source)) {
             return self::TYPE_ANNOTATION;
         } else {
-            return null;
+            return self::TYPE_OPENAPI;
         }
     }
 }
