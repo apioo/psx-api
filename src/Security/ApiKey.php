@@ -31,15 +31,8 @@ use PSX\Api\SecurityInterface;
  */
 class ApiKey implements SecurityInterface
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $in;
+    private string $name;
+    private string $in;
 
     public function __construct(string $name, string $in)
     {
@@ -68,7 +61,7 @@ class ApiKey implements SecurityInterface
         });
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

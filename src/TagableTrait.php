@@ -29,10 +29,7 @@ namespace PSX\Api;
  */
 trait TagableTrait
 {
-    /**
-     * @var array
-     */
-    protected $tags = [];
+    private array $tags = [];
 
     public function setTags(array $tags)
     {

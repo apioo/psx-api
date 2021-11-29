@@ -34,15 +34,8 @@ use PSX\Schema\SchemaManagerInterface;
  */
 class SpecificationBuilder implements SpecificationBuilderInterface
 {
-    /**
-     * @var SchemaManagerInterface
-     */
-    private $schemaManager;
-
-    /**
-     * @var SpecificationInterface
-     */
-    private $specification;
+    private SchemaManagerInterface $schemaManager;
+    private SpecificationInterface $specification;
 
     public function __construct(SchemaManagerInterface $schemaManager)
     {

@@ -41,9 +41,9 @@ class ResourceCollection extends \ArrayObject
     }
 
     /**
-     * @param \PSX\Api\Resource $resource
+     * @param Resource $resource
      */
-    public function set(Resource $resource)
+    public function set(Resource $resource): void
     {
         $this->offsetSet($resource->getPath(), $resource);
     }
@@ -52,16 +52,16 @@ class ResourceCollection extends \ArrayObject
      * @param string $path
      * @return boolean
      */
-    public function has(string $path)
+    public function has(string $path): bool
     {
         return $this->offsetExists($path);
     }
 
     /**
      * @param string $path
-     * @return \PSX\Api\Resource
+     * @return Resource
      */
-    public function get(string $path)
+    public function get(string $path): ?Resource
     {
         return $this->offsetExists($path) ? $this->offsetGet($path) : null;
     }
@@ -69,13 +69,13 @@ class ResourceCollection extends \ArrayObject
     /**
      * Returns the first resource of this collection
      * 
-     * @return \PSX\Api\Resource
+     * @return Resource
      */
-    public function getFirst()
+    public function getFirst(): ?Resource
     {
         $iterator = $this->getIterator();
         $iterator->rewind();
-        return $iterator->current();
+        return $iterator->current() ?: null;
     }
 
     /**

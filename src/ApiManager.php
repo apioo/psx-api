@@ -21,13 +21,13 @@
 namespace PSX\Api;
 
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Cache\ArrayCache;
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\Builder\SpecificationBuilder;
 use PSX\Api\Builder\SpecificationBuilderInterface;
+use PSX\Api\Parser\Annotation;
 use PSX\Api\Parser\OpenAPI;
-use PSX\Cache\Pool;
 use PSX\Schema\SchemaManagerInterface;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
  * ApiManager
@@ -38,46 +38,19 @@ use PSX\Schema\SchemaManagerInterface;
  */
 class ApiManager implements ApiManagerInterface
 {
-    const TYPE_ANNOTATION = 1;
-    const TYPE_OPENAPI = 3;
+    public const TYPE_ANNOTATION = 1;
+    public const TYPE_OPENAPI = 3;
 
-    /**
-     * @var \Doctrine\Common\Annotations\Reader
-     */
-    protected $reader;
+    private SchemaManagerInterface $schemaManager;
+    private Annotation $parser;
+    private CacheItemPoolInterface $cache;
+    private bool $debug;
 
-    /**
-     * @var \PSX\Schema\SchemaManagerInterface
-     */
-    protected $schemaManager;
-
-    /**
-     * @var \PSX\Api\Parser\Annotation
-     */
-    protected $parser;
-
-    /**
-     * @var \Psr\Cache\CacheItemPoolInterface
-     */
-    protected $cache;
-
-    /**
-     * @var boolean
-     */
-    protected $debug;
-
-    /**
-     * @param \Doctrine\Common\Annotations\Reader $reader
-     * @param \PSX\Schema\SchemaManagerInterface $schemaManager
-     * @param \Psr\Cache\CacheItemPoolInterface|null $cache
-     * @param bool $debug
-     */
-    public function __construct(Reader $reader, SchemaManagerInterface $schemaManager, CacheItemPoolInterface $cache = null, $debug = false)
+    public function __construct(Reader $reader, SchemaManagerInterface $schemaManager, CacheItemPoolInterface $cache = null, bool $debug = false)
     {
-        $this->reader = $reader;
         $this->schemaManager = $schemaManager;
         $this->parser = new Parser\Annotation($reader, $schemaManager);
-        $this->cache  = $cache === null ? new Pool(new ArrayCache()) : $cache;
+        $this->cache  = $cache === null ? new ArrayAdapter() : $cache;
         $this->debug  = $debug;
     }
 

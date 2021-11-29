@@ -31,14 +31,8 @@ use PSX\Api\Listing\FilterInterface;
  */
 class RegxpFilter implements FilterInterface
 {
-    /**
-     * @var string
-     */
-    protected $pattern;
+    private string $pattern;
 
-    /**
-     * @param string $pattern
-     */
     public function __construct(string $pattern)
     {
         $this->pattern = $pattern;

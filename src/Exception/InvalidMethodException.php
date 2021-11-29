@@ -18,28 +18,15 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Security;
-
-use PSX\Api\SecurityInterface;
+namespace PSX\Api\Exception;
 
 /**
- * HttpBasic
+ * InvalidMethodException
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class HttpBasic implements SecurityInterface
+class InvalidMethodException extends \Exception
 {
-    public function toArray(): array
-    {
-        return [
-            'type' => 'httpBasic',
-        ];
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->toArray();
-    }
 }

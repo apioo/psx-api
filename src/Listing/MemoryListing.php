@@ -36,15 +36,8 @@ use PSX\Schema\Definitions;
  */
 class MemoryListing implements ListingInterface
 {
-    /**
-     * @var array
-     */
-    protected $routes;
-
-    /**
-     * @var \PSX\Api\SpecificationInterface
-     */
-    protected $specification;
+    private array $routes;
+    private SpecificationInterface $specification;
 
     public function __construct()
     {

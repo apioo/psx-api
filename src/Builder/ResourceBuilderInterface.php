@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Builder;
 
+use PSX\Api\Exception\InvalidMethodException;
 use PSX\Api\Resource;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\Builder;
@@ -53,6 +54,7 @@ interface ResourceBuilderInterface
     /**
      * @param string $methodName
      * @return MethodBuilderInterface
+     * @throws InvalidMethodException
      */
     public function addMethod(string $methodName): MethodBuilderInterface;
 

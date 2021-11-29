@@ -31,25 +31,10 @@ use PSX\Api\SecurityInterface;
  */
 abstract class OAuth2Abstract implements SecurityInterface
 {
-    /**
-     * @var string
-     */
-    protected $tokenUrl;
-
-    /**
-     * @var string|null
-     */
-    protected $authorizationUrl;
-
-    /**
-     * @var string|null
-     */
-    protected $refreshUrl;
-
-    /**
-     * @var array|null
-     */
-    protected $scopes;
+    protected string $tokenUrl;
+    protected ?string $authorizationUrl;
+    protected ?string $refreshUrl;
+    protected ?array $scopes;
 
     public function __construct(string $tokenUrl, ?string $authorizationUrl, ?string $refreshUrl, ?array $scopes = null)
     {

@@ -36,7 +36,7 @@ class Inflection
      * @param string $path
      * @return string
      */
-    public static function convertPlaceholderToCurly(string $path)
+    public static function convertPlaceholderToCurly(string $path): string
     {
         $path = preg_replace('/(\:|\*)(\w+)/i', '{$2}', $path);
         $path = preg_replace('/(\$)(\w+)(\<(.*)\>)/iU', '{$2}', $path);
@@ -48,7 +48,7 @@ class Inflection
      * @param string $path
      * @return string
      */
-    public static function convertPlaceholderToColon(string $path)
+    public static function convertPlaceholderToColon(string $path): string
     {
         $path = preg_replace('/(\{(\w+)\})/i', ':$2', $path);
 
@@ -61,7 +61,7 @@ class Inflection
      * @param string $path
      * @return string
      */
-    public static function generateTitleFromRoute(string $path)
+    public static function generateTitleFromRoute(string $path): string
     {
         $path = str_replace([':', '*', '$'], '', $path);
         $path = preg_replace('/\<(.*)\>/iU', '', $path);

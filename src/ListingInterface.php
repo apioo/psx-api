@@ -21,6 +21,7 @@
 namespace PSX\Api;
 
 use PSX\Api\Listing\FilterInterface;
+use PSX\Api\Listing\Route;
 
 /**
  * A listing knows all API endpoints in a system and can be used to get resource
@@ -36,17 +37,17 @@ interface ListingInterface
     /**
      * Returns all available routes
      *
-     * @param \PSX\Api\Listing\FilterInterface|null $filter
-     * @return \PSX\Api\Listing\Route[]
+     * @param FilterInterface|null $filter
+     * @return Route[]
      */
-    public function getAvailableRoutes(FilterInterface $filter = null): iterable;
+    public function getAvailableRoutes(?FilterInterface $filter = null): iterable;
 
     /**
      * Returns a specification for a specific resource path
      *
      * @param string $path
      * @param string|null $version
-     * @return \PSX\Api\SpecificationInterface|null
+     * @return SpecificationInterface|null
      */
     public function find(string $path, ?string $version = null): ?SpecificationInterface;
 
@@ -54,8 +55,8 @@ interface ListingInterface
      * Returns all available resources
      *
      * @param string|null $version
-     * @param \PSX\Api\Listing\FilterInterface|null $filter
-     * @return \PSX\Api\SpecificationInterface
+     * @param FilterInterface|null $filter
+     * @return SpecificationInterface
      */
     public function findAll(?string $version = null, FilterInterface $filter = null): SpecificationInterface;
 }

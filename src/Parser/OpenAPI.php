@@ -49,6 +49,7 @@ use PSX\Model\OpenAPI\Response;
 use PSX\Model\OpenAPI\Responses;
 use PSX\Model\OpenAPI\SecurityScheme;
 use PSX\Model\OpenAPI\SecuritySchemes;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\TypeNotFoundException;
 use PSX\Schema\Parser as SchemaParser;
 use PSX\Schema\SchemaTraverser;
@@ -69,35 +70,12 @@ use Symfony\Component\Yaml\Yaml;
  */
 class OpenAPI implements ParserInterface
 {
-    /**
-     * @var Reader
-     */
-    private $annotationReader;
+    private Reader $annotationReader;
+    private ?string $basePath;
+    private SchemaParser\TypeSchema $schemaParser;
+    private ?DefinitionsInterface $definitions = null;
+    private ?OpenAPI $document = null;
 
-    /**
-     * @var string|null
-     */
-    private $basePath;
-
-    /**
-     * @var \PSX\Schema\Parser\TypeSchema
-     */
-    private $schemaParser;
-
-    /**
-     * @var \PSX\Schema\DefinitionsInterface
-     */
-    private $definitions;
-
-    /**
-     * @var \PSX\Model\OpenAPI\OpenAPI
-     */
-    private $document;
-
-    /**
-     * @param Reader $annotationReader
-     * @param string|null $basePath
-     */
     public function __construct(Reader $annotationReader, ?string $basePath = null)
     {
         $this->annotationReader = $annotationReader;

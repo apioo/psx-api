@@ -35,20 +35,9 @@ use PSX\Schema\SchemaManagerInterface;
  */
 class ResourceBuilder implements ResourceBuilderInterface
 {
-    /**
-     * @var SchemaManagerInterface
-     */
-    private $schemaManager;
-
-    /**
-     * @var Resource
-     */
-    private $resource;
-
-    /**
-     * @var DefinitionsInterface
-     */
-    private $definitions;
+    private SchemaManagerInterface $schemaManager;
+    private Resource $resource;
+    private DefinitionsInterface $definitions;
 
     public function __construct(SchemaManagerInterface $schemaManager, int $status, string $path, ?DefinitionsInterface $definitions = null)
     {

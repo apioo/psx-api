@@ -29,20 +29,9 @@ namespace PSX\Api\Listing;
  */
 class Route implements \JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $path;
-    
-    /**
-     * @var array
-     */
-    private $methods;
-    
-    /**
-     * @var string
-     */
-    private $version;
+    private string $path;
+    private array $methods;
+    private string $version;
 
     public function __construct(string $path, array $methods, string $version)
     {

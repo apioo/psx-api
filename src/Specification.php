@@ -32,20 +32,9 @@ use PSX\Schema\DefinitionsInterface;
  */
 class Specification implements SpecificationInterface
 {
-    /**
-     * @var ResourceCollection
-     */
-    private $resourceCollection;
-
-    /**
-     * @var DefinitionsInterface
-     */
-    private $definitions;
-
-    /**
-     * @var SecurityInterface|null
-     */
-    private $security;
+    private ResourceCollection $resourceCollection;
+    private DefinitionsInterface $definitions;
+    private ?SecurityInterface $security;
 
     public function __construct(?ResourceCollection $resourceCollection = null, ?DefinitionsInterface $definitions = null, ?SecurityInterface $security = null)
     {

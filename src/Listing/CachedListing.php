@@ -33,27 +33,16 @@ use PSX\Api\SpecificationInterface;
  */
 class CachedListing implements ListingInterface
 {
-    /**
-     * @var \PSX\Api\ListingInterface
-     */
-    protected $listing;
+    private ListingInterface $listing;
+    private CacheItemPoolInterface $cache;
+    private ?int $expire;
 
     /**
-     * @var \Psr\Cache\CacheItemPoolInterface
+     * @param ListingInterface $listing
+     * @param CacheItemPoolInterface $cache
+     * @param int|null $expire
      */
-    protected $cache;
-
-    /**
-     * @var integer|null
-     */
-    protected $expire;
-
-    /**
-     * @param \PSX\Api\ListingInterface $listing
-     * @param \Psr\Cache\CacheItemPoolInterface $cache
-     * @param integer|null $expire
-     */
-    public function __construct(ListingInterface $listing, CacheItemPoolInterface $cache, $expire = null)
+    public function __construct(ListingInterface $listing, CacheItemPoolInterface $cache, ?int $expire = null)
     {
         $this->listing = $listing;
         $this->cache   = $cache;
@@ -140,7 +129,7 @@ class CachedListing implements ListingInterface
      * @param string $sourcePath
      * @param integer|null $version
      */
-    public function invalidateResource($sourcePath, $version = null)
+    public function invalidateResource(string $sourcePath, ?int $version = null)
     {
         $this->cache->deleteItem($this->getResourceKey($sourcePath, $version));
     }
@@ -150,7 +139,7 @@ class CachedListing implements ListingInterface
      * 
      * @param integer|null $version
      */
-    public function invalidateResourceCollection($version = null, FilterInterface $filter = null)
+    public function invalidateResourceCollection(?int $version = null, ?FilterInterface $filter = null)
     {
         $this->cache->deleteItem($this->getResourceCollectionKey($version, $filter));
     }
@@ -158,7 +147,7 @@ class CachedListing implements ListingInterface
     /**
      * @return string
      */
-    protected function getResourceIndexKey(FilterInterface $filter = null)
+    protected function getResourceIndexKey(?FilterInterface $filter = null): string
     {
         return 'api-resource-index' . ($filter !== null ? '-' . $filter->getId() : '');
     }
@@ -168,7 +157,7 @@ class CachedListing implements ListingInterface
      * @param integer|null $version
      * @return string
      */
-    protected function getResourceKey($path, $version = null)
+    protected function getResourceKey(string $path, ?int $version = null): string
     {
         return 'api-resource-' . substr(md5($path), 0, 16) . '-' . intval($version);
     }
@@ -177,7 +166,7 @@ class CachedListing implements ListingInterface
      * @param integer|null $version
      * @return string
      */
-    protected function getResourceCollectionKey($version = null, FilterInterface $filter = null)
+    protected function getResourceCollectionKey(?int $version = null, ?FilterInterface $filter = null): string
     {
         return 'api-resource-collection-' . intval($version) . ($filter !== null ? '-' . $filter->getId() : '');
     }

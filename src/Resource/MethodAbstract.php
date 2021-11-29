@@ -34,142 +34,78 @@ abstract class MethodAbstract
 {
     use TagableTrait;
 
-    /**
-     * @var string
-     */
-    protected $operationId;
-
-    /**
-     * @var string
-     */
-    protected $description;
-
-    /**
-     * @var string
-     */
-    protected $queryParameters;
-
-    /**
-     * @var string
-     */
-    protected $request;
-
-    /**
-     * @var array
-     */
-    protected $responses;
-
-    /**
-     * @var array
-     */
-    protected $security;
+    private ?string $operationId = null;
+    private ?string $description = null;
+    private ?string $queryParameters = null;
+    private ?string $request = null;
+    private array $responses;
+    private ?array $security = null;
 
     public function __construct()
     {
         $this->responses = [];
     }
 
-    /**
-     * @param string $operationId
-     */
-    public function setOperationId(?string $operationId)
+    public function setOperationId(?string $operationId): void
     {
         $this->operationId = $operationId;
     }
 
-    /**
-     * @return string
-     */
     public function getOperationId(): ?string
     {
         return $this->operationId;
     }
 
-    /**
-     * @param string $description
-     */
-    public function setDescription(?string $description)
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $typeName
-     */
-    public function setQueryParameters(?string $typeName)
+    public function setQueryParameters(?string $typeName): void
     {
         $this->queryParameters = $typeName;
     }
 
-    /**
-     * @return string
-     */
     public function getQueryParameters(): ?string
     {
         return $this->queryParameters;
     }
 
-    /**
-     * @return bool
-     */
     public function hasQueryParameters(): bool
     {
         return !empty($this->queryParameters);
     }
 
-    /**
-     * @param string $typeName
-     */
-    public function setRequest(?string $typeName)
+    public function setRequest(?string $typeName): void
     {
         $this->request = $typeName;
     }
 
-    /**
-     * @return string
-     */
     public function getRequest(): ?string
     {
         return $this->request;
     }
 
-    /**
-     * @return bool
-     */
     public function hasRequest(): bool
     {
         return !empty($this->request);
     }
 
-    /**
-     * @param integer $statusCode
-     * @param string $typeName
-     */
-    public function addResponse(int $statusCode, string $typeName)
+    public function addResponse(int $statusCode, string $typeName): void
     {
         $this->responses[$statusCode] = $typeName;
     }
 
-    /**
-     * @return array
-     */
     public function getResponses(): array
     {
         return $this->responses;
     }
 
-    /**
-     * @param int $statusCode
-     * @return string
-     */
     public function getResponse(int $statusCode): ?string
     {
         if (isset($this->responses[$statusCode])) {
@@ -179,35 +115,21 @@ abstract class MethodAbstract
         }
     }
 
-    /**
-     * @param int $statusCode
-     * @return bool
-     */
-    public function hasResponse($statusCode): bool
+    public function hasResponse(int $statusCode): bool
     {
         return isset($this->responses[$statusCode]);
     }
 
-    /**
-     * @param string $name
-     * @param array $scopes
-     */
-    public function setSecurity(string $name, array $scopes)
+    public function setSecurity(string $name, array $scopes): void
     {
         $this->security[$name] = $scopes;
     }
 
-    /**
-     * @return array
-     */
     public function getSecurity(): ?array
     {
         return $this->security;
     }
 
-    /**
-     * @return bool
-     */
     public function hasSecurity(): bool
     {
         return !empty($this->security);

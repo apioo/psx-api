@@ -31,33 +31,12 @@ use Doctrine\Common\Annotations\Reader;
  */
 class GeneratorFactory implements GeneratorFactoryInterface
 {
-    /**
-     * @var \Doctrine\Common\Annotations\Reader
-     */
-    protected $reader;
+    private Reader $reader;
+    private string $namespace;
+    private string $url;
+    private string $dispatch;
 
-    /**
-     * @var string
-     */
-    protected $namespace;
-
-    /**
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * @var string
-     */
-    protected $dispatch;
-
-    /**
-     * @param \Doctrine\Common\Annotations\Reader $reader
-     * @param string $namespace
-     * @param string $url
-     * @param string $dispatch
-     */
-    public function __construct(Reader $reader, $namespace, $url, $dispatch)
+    public function __construct(Reader $reader, string $namespace, string $url, string $dispatch)
     {
         $this->reader    = $reader;
         $this->namespace = $namespace;
@@ -68,7 +47,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
     /**
      * @inheritdoc
      */
-    public function getGenerator($format, $config = null)
+    public function getGenerator($format, $config = null): GeneratorInterface
     {
         $baseUri = $this->url . '/' . $this->dispatch;
 
@@ -119,7 +98,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
     /**
      * @inheritdoc
      */
-    public function getFileExtension($format, $config = null)
+    public function getFileExtension($format, $config = null): string
     {
         switch ($format) {
             case GeneratorFactoryInterface::CLIENT_GO:
@@ -151,7 +130,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
     /**
      * @inheritdoc
      */
-    public function getMime($format, $config = null)
+    public function getMime($format, $config = null): string
     {
         switch ($format) {
             case GeneratorFactoryInterface::CLIENT_GO:
@@ -182,16 +161,16 @@ class GeneratorFactory implements GeneratorFactoryInterface
     /**
      * Callback method to optional configure the created generator
      * 
-     * @param \PSX\Api\GeneratorInterface $generator
+     * @param GeneratorInterface $generator
      */
-    protected function configure(GeneratorInterface $generator)
+    protected function configure(GeneratorInterface $generator): void
     {
     }
 
     /**
      * @return array
      */
-    public static function getPossibleTypes()
+    public static function getPossibleTypes(): array
     {
         return [
             GeneratorFactoryInterface::CLIENT_GO,

@@ -33,7 +33,7 @@ interface FilterFactoryInterface
      * Returns a specific filter by name
      *
      * @param string $name
-     * @return \PSX\Api\Listing\FilterInterface|null
+     * @return FilterInterface|null
      */
     public function getFilter(string $name): ?FilterInterface;
 }

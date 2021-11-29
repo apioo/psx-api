@@ -46,9 +46,9 @@ interface GeneratorFactoryInterface
      * 
      * @param string $format
      * @param string|null $config
-     * @return \PSX\Api\GeneratorInterface
+     * @return GeneratorInterface
      */
-    public function getGenerator($format, $config = null);
+    public function getGenerator(string $format, ?string $config = null): GeneratorInterface;
 
     /**
      * Returns the preferred file extension for the provided format
@@ -57,7 +57,7 @@ interface GeneratorFactoryInterface
      * @param string|null $config
      * @return string
      */
-    public function getFileExtension($format, $config = null);
+    public function getFileExtension(string $format, ?string $config = null): string;
 
     /**
      * Returns the preferred mime for the provided format
@@ -66,5 +66,5 @@ interface GeneratorFactoryInterface
      * @param string|null $config
      * @return string
      */
-    public function getMime($format, $config = null);
+    public function getMime(string $format, ?string $config = null): string;
 }

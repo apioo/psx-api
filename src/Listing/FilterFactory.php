@@ -29,15 +29,8 @@ namespace PSX\Api\Listing;
  */
 class FilterFactory implements FilterFactoryInterface
 {
-    /**
-     * @var array
-     */
-    protected $container;
-
-    /**
-     * @var string
-     */
-    protected $default;
+    private array $container;
+    private ?string $default;
 
     public function __construct()
     {
@@ -47,7 +40,7 @@ class FilterFactory implements FilterFactoryInterface
 
     /**
      * @param string $name
-     * @param \PSX\Api\Listing\FilterInterface $filter
+     * @param FilterInterface $filter
      */
     public function addFilter(string $name, FilterInterface $filter)
     {
@@ -57,7 +50,7 @@ class FilterFactory implements FilterFactoryInterface
     /**
      * @param string $name
      */
-    public function setDefault(string $name)
+    public function setDefault(string $name): void
     {
         $this->default = $name;
     }

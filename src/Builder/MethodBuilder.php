@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Builder;
 
+use PSX\Api\Exception\InvalidMethodException;
 use PSX\Api\Resource\Factory;
 use PSX\Api\Resource\MethodAbstract;
 use PSX\Schema\Builder;
@@ -37,21 +38,13 @@ use PSX\Schema\Type\ReferenceType;
  */
 class MethodBuilder implements MethodBuilderInterface
 {
-    /**
-     * @var SchemaManagerInterface
-     */
-    private $schemaManager;
+    private SchemaManagerInterface $schemaManager;
+    private DefinitionsInterface $definitions;
+    private MethodAbstract $method;
 
     /**
-     * @var DefinitionsInterface
+     * @throws InvalidMethodException
      */
-    private $definitions;
-
-    /**
-     * @var MethodAbstract
-     */
-    private $method;
-
     public function __construct(SchemaManagerInterface $schemaManager, DefinitionsInterface $definitions, string $methodName)
     {
         $this->schemaManager = $schemaManager;

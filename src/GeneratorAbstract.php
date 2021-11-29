@@ -21,6 +21,7 @@
 namespace PSX\Api;
 
 use PSX\Api\Resource\MethodAbstract;
+use PSX\Schema\SchemaInterface;
 
 /**
  * GeneratorAbstract
@@ -34,10 +35,10 @@ abstract class GeneratorAbstract implements GeneratorInterface
     /**
      * Returns the successful response of a method or null if no is available
      *
-     * @param \PSX\Api\Resource\MethodAbstract $method
-     * @return \PSX\Schema\SchemaInterface
+     * @param MethodAbstract $method
+     * @return SchemaInterface
      */
-    protected function getSuccessfulResponse(MethodAbstract $method)
+    protected function getSuccessfulResponse(MethodAbstract $method): ?SchemaInterface
     {
         $responses = $method->getResponses();
         $codes     = [200, 201];
@@ -55,7 +56,7 @@ abstract class GeneratorAbstract implements GeneratorInterface
      * @param string $path
      * @return string
      */
-    protected function getIdFromPath($path)
+    protected function getIdFromPath(string $path): string
     {
         $parts  = explode('/', trim($path, '/'));
         $prefix = '';

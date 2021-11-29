@@ -20,6 +20,8 @@
 
 namespace PSX\Api\Resource;
 
+use PSX\Api\Exception\InvalidMethodException;
+
 /**
  * Factory
  *
@@ -31,33 +33,29 @@ class Factory
 {
     /**
      * @param string $methodName
-     * @return \PSX\Api\Resource\MethodAbstract
+     * @return MethodAbstract
+     * @throws InvalidMethodException
      */
-    public static function getMethod($methodName): ?MethodAbstract
+    public static function getMethod(string $methodName): MethodAbstract
     {
-        switch ($methodName) {
+        switch (strtoupper($methodName)) {
             case 'DELETE':
                 return new Delete();
-                break;
 
             case 'GET':
                 return new Get();
-                break;
 
             case 'PATCH':
                 return new Patch();
-                break;
 
             case 'POST':
                 return new Post();
-                break;
 
             case 'PUT':
                 return new Put();
-                break;
 
             default:
-                return null;
+                throw new InvalidMethodException('Provided an invalid method name ' . $methodName);
         }
     }
 }
