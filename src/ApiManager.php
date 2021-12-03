@@ -21,10 +21,10 @@
 namespace PSX\Api;
 
 use Doctrine\Common\Annotations\Reader;
+use Prophecy\Doubler\ClassPatch\ReflectionClassNewInstancePatch;
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\Builder\SpecificationBuilder;
 use PSX\Api\Builder\SpecificationBuilderInterface;
-use PSX\Api\Parser\Annotation;
 use PSX\Api\Parser\OpenAPI;
 use PSX\Schema\SchemaManagerInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -39,19 +39,22 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 class ApiManager implements ApiManagerInterface
 {
     public const TYPE_ANNOTATION = 1;
+    public const TYPE_ATTRIBUTE = 2;
     public const TYPE_OPENAPI = 3;
 
     private SchemaManagerInterface $schemaManager;
-    private Annotation $parser;
+    private Parser\Annotation $annotationParser;
+    private Parser\Attribute $attributeParser;
     private CacheItemPoolInterface $cache;
     private bool $debug;
 
     public function __construct(Reader $reader, SchemaManagerInterface $schemaManager, CacheItemPoolInterface $cache = null, bool $debug = false)
     {
         $this->schemaManager = $schemaManager;
-        $this->parser = new Parser\Annotation($reader, $schemaManager);
-        $this->cache  = $cache === null ? new ArrayAdapter() : $cache;
-        $this->debug  = $debug;
+        $this->annotationParser = new Parser\Annotation($reader, $schemaManager);
+        $this->attributeParser = new Parser\Attribute($schemaManager);
+        $this->cache = $cache === null ? new ArrayAdapter() : $cache;
+        $this->debug = $debug;
     }
 
     /**
@@ -61,7 +64,7 @@ class ApiManager implements ApiManagerInterface
     {
         $item = null;
         if (!$this->debug) {
-            $item = $this->cache->getItem($source);
+            $item = $this->cache->getItem(md5($source));
             if ($item->isHit()) {
                 return $item->get();
             }
@@ -74,7 +77,9 @@ class ApiManager implements ApiManagerInterface
         if ($type === self::TYPE_OPENAPI) {
             $api = OpenAPI::fromFile($source, $path);
         } elseif ($type === self::TYPE_ANNOTATION) {
-            $api = $this->parser->parse($source, $path);
+            $api = $this->annotationParser->parse($source, $path);
+        } elseif ($type === self::TYPE_ATTRIBUTE) {
+            $api = $this->attributeParser->parse($source, $path);
         } else {
             throw new \RuntimeException('Schema ' . $source . ' does not exist');
         }
@@ -98,7 +103,11 @@ class ApiManager implements ApiManagerInterface
     private function guessTypeFromSource($source): ?int
     {
         if (class_exists($source)) {
-            return self::TYPE_ANNOTATION;
+            if (PHP_VERSION_ID > 80000 && count((new \ReflectionClass($source))->getAttributes()) > 0) {
+                return self::TYPE_ATTRIBUTE;
+            } else {
+                return self::TYPE_ANNOTATION;
+            }
         } else {
             return self::TYPE_OPENAPI;
         }

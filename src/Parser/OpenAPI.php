@@ -74,7 +74,7 @@ class OpenAPI implements ParserInterface
     private ?string $basePath;
     private SchemaParser\TypeSchema $schemaParser;
     private ?DefinitionsInterface $definitions = null;
-    private ?OpenAPI $document = null;
+    private ?\PSX\Model\OpenAPI\OpenAPI $document = null;
 
     public function __construct(Reader $annotationReader, ?string $basePath = null)
     {
