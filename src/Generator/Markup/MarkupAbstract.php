@@ -82,24 +82,24 @@ abstract class MarkupAbstract implements GeneratorInterface
         foreach ($methods as $method) {
             $text.= $this->startMethod($method);
 
-            // query parameters
+            $operationId = $method->getOperationId();
+            if (!empty($operationId)) {
+                $text.= $this->renderMeta('Operation-Id', $operationId);
+            }
+
             $queryParameters = $method->getQueryParameters();
             if (!empty($queryParameters)) {
                 $text.= $this->renderSchema('Query-Parameters', $queryParameters);
             }
 
-            // request
             $request = $method->getRequest();
             if (!empty($request)) {
                 $text.= $this->renderSchema('Request', $request);
             }
 
-            // responses
             $responses = $method->getResponses();
             foreach ($responses as $statusCode => $response) {
-                $message = isset(Http::$codes[$statusCode]) ? Http::$codes[$statusCode] : 'Unknown';
-
-                $text.= $this->renderSchema('Response - ' . $statusCode . ' ' . $message, $response);
+                $text.= $this->renderSchema('Response ' . $statusCode, $response);
             }
 
             $text.= $this->endMethod();
@@ -142,4 +142,11 @@ abstract class MarkupAbstract implements GeneratorInterface
      * @return string
      */
     abstract protected function renderSchema(string $title, string $schema);
+
+    /**
+     * @param string $title
+     * @param string $value
+     * @return string
+     */
+    abstract protected function renderMeta(string $title, string $value);
 }

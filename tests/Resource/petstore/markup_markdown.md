@@ -8,16 +8,19 @@ foobar
 
 List all pets
 
-* Query-Parameters: [PetsGetQuery](#PetsGetQuery)
-* Response - 200 OK: [Pets](#Pets)
-* Response - 500 Internal Server Error: [Error](#Error)
+* pets
+
+<table>
+<tr><td><span class="psx-property-name">Operation-Id</span></td><td>listPets</td></tr><tr><td><span class="psx-property-name">Query-Parameters</span></td><td><a data-name="PetsGetQuery" class="psx-type-link">PetsGetQuery</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="Pets" class="psx-type-link">Pets</a></td></tr><tr><td><span class="psx-property-name">Response 500</span></td><td><a data-name="Error" class="psx-type-link">Error</a></td></tr></table>
 
 ## POST
 
 Create a pet
 
-* Request: [Pet](#Pet)
-* Response - 500 Internal Server Error: [Error](#Error)
+* pets
+
+<table>
+<tr><td><span class="psx-property-name">Operation-Id</span></td><td>createPets</td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="Pet" class="psx-type-link">Pet</a></td></tr><tr><td><span class="psx-property-name">Response 500</span></td><td><a data-name="Error" class="psx-type-link">Error</a></td></tr></table>
 
 
 

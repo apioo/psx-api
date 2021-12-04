@@ -30,7 +30,7 @@ use PSX\Schema\DefinitionsInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Specification implements SpecificationInterface
+class Specification implements SpecificationInterface, \JsonSerializable
 {
     private ResourceCollection $resourceCollection;
     private DefinitionsInterface $definitions;
@@ -103,11 +103,15 @@ class Specification implements SpecificationInterface
         $this->definitions->merge($specification->getDefinitions());
     }
 
-    /**
-     * @param Resource $resource
-     * @param DefinitionsInterface $definitions
-     * @return Specification
-     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'security' => $this->security,
+            'resources' => $this->resourceCollection,
+            'definitions' => $this->definitions,
+        ];
+    }
+
     public static function fromResource(Resource $resource, DefinitionsInterface $definitions): Specification
     {
         $collection = new ResourceCollection();

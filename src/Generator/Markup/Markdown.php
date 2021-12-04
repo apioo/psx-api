@@ -31,18 +31,8 @@ use PSX\Schema\GeneratorInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Markdown extends MarkupAbstract
+class Markdown extends Html
 {
-    /**
-     * @param \PSX\Schema\GeneratorInterface|null $generator
-     */
-    public function __construct(GeneratorInterface $generator = null)
-    {
-        // by default we use the html generator since the markdown renderer uses
-        // a table syntax which is not supported everywhere
-        $this->generator = $generator === null ? new Generator\Html(4) : $generator;
-    }
-
     /**
      * @param \PSX\Api\Resource $resource
      * @return string
@@ -85,7 +75,17 @@ class Markdown extends MarkupAbstract
             $md.= $description . "\n";
             $md.= '' . "\n";
         }
-        
+
+        $tags = $method->getTags();
+        if (!empty($tags)) {
+            foreach ($tags as $tag) {
+                $md.= '* ' . htmlspecialchars($tag) . "\n";
+            }
+            $md.= '' . "\n";
+        }
+
+        $md.= '<table>' . "\n";
+
         return $md;
     }
 
@@ -94,15 +94,8 @@ class Markdown extends MarkupAbstract
      */
     protected function endMethod()
     {
-    }
+        $md = '</table>' . "\n";
 
-    /**
-     * @inheritDoc
-     */
-    protected function renderSchema(string $title, string $schema)
-    {
-        $html = '### ' . $title . "\n";
-        $html = '* ' . $title . ': [' . $schema . '](#' . $schema . ')' . "\n";
-        return $html;
+        return $md;
     }
 }

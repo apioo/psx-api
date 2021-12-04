@@ -3,34 +3,33 @@
 
 lorem ipsum
 
-* Path-Parameters: [Path](#Path)
-
+<tr><td><span class="psx-property-name">Path-Parameters</span></td><td><a data-name="Path" class="psx-type-link">Path</a></td></tr>
 ## GET
 
 Returns a collection
 
-* Query-Parameters: [GetQuery](#GetQuery)
-* Response - 200 OK: [EntryCollection](#EntryCollection)
+<table>
+<tr><td><span class="psx-property-name">Operation-Id</span></td><td>list.foo</td></tr><tr><td><span class="psx-property-name">Query-Parameters</span></td><td><a data-name="GetQuery" class="psx-type-link">GetQuery</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryCollection" class="psx-type-link">EntryCollection</a></td></tr></table>
 
 ## POST
 
-* Request: [EntryCreate](#EntryCreate)
-* Response - 201 Created: [EntryMessage](#EntryMessage)
+<table>
+<tr><td><span class="psx-property-name">Operation-Id</span></td><td>create.foo</td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryCreate" class="psx-type-link">EntryCreate</a></td></tr><tr><td><span class="psx-property-name">Response 201</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr></table>
 
 ## PUT
 
-* Request: [EntryUpdate](#EntryUpdate)
-* Response - 200 OK: [EntryMessage](#EntryMessage)
+<table>
+<tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryUpdate" class="psx-type-link">EntryUpdate</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr></table>
 
 ## DELETE
 
-* Request: [EntryDelete](#EntryDelete)
-* Response - 200 OK: [EntryMessage](#EntryMessage)
+<table>
+<tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryDelete" class="psx-type-link">EntryDelete</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr></table>
 
 ## PATCH
 
-* Request: [EntryPatch](#EntryPatch)
-* Response - 200 OK: [EntryMessage](#EntryMessage)
+<table>
+<tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryPatch" class="psx-type-link">EntryPatch</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr></table>
 
 
 
