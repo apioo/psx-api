@@ -1,37 +1,4 @@
-
-# /foo/:name/:type
-
-lorem ipsum
-
-<tr><td><span class="psx-property-name">Path-Parameters</span></td><td><a data-name="Path" class="psx-type-link">Path</a></td></tr>
-## GET
-
-Returns a collection
-
-<table>
-<tr><td><span class="psx-property-name">Operation-Id</span></td><td>list.foo</td></tr><tr><td><span class="psx-property-name">Query-Parameters</span></td><td><a data-name="GetQuery" class="psx-type-link">GetQuery</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryCollection" class="psx-type-link">EntryCollection</a></td></tr></table>
-
-## POST
-
-<table>
-<tr><td><span class="psx-property-name">Operation-Id</span></td><td>create.foo</td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryCreate" class="psx-type-link">EntryCreate</a></td></tr><tr><td><span class="psx-property-name">Response 201</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr></table>
-
-## PUT
-
-<table>
-<tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryUpdate" class="psx-type-link">EntryUpdate</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr></table>
-
-## DELETE
-
-<table>
-<tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryDelete" class="psx-type-link">EntryDelete</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr></table>
-
-## PATCH
-
-<table>
-<tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryPatch" class="psx-type-link">EntryPatch</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr></table>
-
-
+<div class="psx-resource" data-status="1" data-path="/foo/:name/:type"><h1 class="psx-resource-path">/foo/:name/:type</h1><div class="psx-resource-description">lorem ipsum</div><table><colgroup><col width="30%" /><col width="70%" /></colgroup><tr><td><span class="psx-property-name">Path-Parameters</span></td><td><a data-name="Path" class="psx-type-link">Path</a></td></tr><tr><td colspan="2" class="psx-resource-method"><h2 class="psx-resource-method-name">GET</h2></td></tr><tr><td colspan="2"><small class="psx-resource-method-description">Returns a collection</small></td></tr><tr><td><span class="psx-property-name">Operation-Id</span></td><td>list.foo</td></tr><tr><td><span class="psx-property-name">Query-Parameters</span></td><td><a data-name="GetQuery" class="psx-type-link">GetQuery</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryCollection" class="psx-type-link">EntryCollection</a></td></tr><tr><td colspan="2" class="psx-resource-method"><h2 class="psx-resource-method-name">POST</h2></td></tr><tr><td colspan="2"></td></tr><tr><td><span class="psx-property-name">Operation-Id</span></td><td>create.foo</td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryCreate" class="psx-type-link">EntryCreate</a></td></tr><tr><td><span class="psx-property-name">Response 201</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr><tr><td colspan="2" class="psx-resource-method"><h2 class="psx-resource-method-name">PUT</h2></td></tr><tr><td colspan="2"></td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryUpdate" class="psx-type-link">EntryUpdate</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr><tr><td colspan="2" class="psx-resource-method"><h2 class="psx-resource-method-name">DELETE</h2></td></tr><tr><td colspan="2"></td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryDelete" class="psx-type-link">EntryDelete</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr><tr><td colspan="2" class="psx-resource-method"><h2 class="psx-resource-method-name">PATCH</h2></td></tr><tr><td colspan="2"></td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryPatch" class="psx-type-link">EntryPatch</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr></table></div>
 
 <div id="Path" class="psx-object psx-struct"><h4><a class="psx-type-link" data-name="Path">Path</a></h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
   <span class="psx-object-json-key">"name"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">String</span><span class="psx-object-json-pun">,</span>

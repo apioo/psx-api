@@ -1,28 +1,4 @@
-
-# /pets
-
-foobar
-
-
-## GET
-
-List all pets
-
-* pets
-
-<table>
-<tr><td><span class="psx-property-name">Operation-Id</span></td><td>listPets</td></tr><tr><td><span class="psx-property-name">Query-Parameters</span></td><td><a data-name="PetsGetQuery" class="psx-type-link">PetsGetQuery</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="Pets" class="psx-type-link">Pets</a></td></tr><tr><td><span class="psx-property-name">Response 500</span></td><td><a data-name="Error" class="psx-type-link">Error</a></td></tr></table>
-
-## POST
-
-Create a pet
-
-* pets
-
-<table>
-<tr><td><span class="psx-property-name">Operation-Id</span></td><td>createPets</td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="Pet" class="psx-type-link">Pet</a></td></tr><tr><td><span class="psx-property-name">Response 500</span></td><td><a data-name="Error" class="psx-type-link">Error</a></td></tr></table>
-
-
+<div class="psx-resource" data-status="1" data-path="/pets"><h1 class="psx-resource-path">/pets</h1><div class="psx-resource-description">foobar</div><table><colgroup><col width="30%" /><col width="70%" /></colgroup><tr><td colspan="2" class="psx-resource-method"><h2 class="psx-resource-method-name">GET</h2><span class="psx-resource-method-tags"><span class="psx-resource-method-tag">pets</span></span></td></tr><tr><td colspan="2"><small class="psx-resource-method-description">List all pets</small></td></tr><tr><td><span class="psx-property-name">Operation-Id</span></td><td>listPets</td></tr><tr><td><span class="psx-property-name">Query-Parameters</span></td><td><a data-name="PetsGetQuery" class="psx-type-link">PetsGetQuery</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="Pets" class="psx-type-link">Pets</a></td></tr><tr><td><span class="psx-property-name">Response 500</span></td><td><a data-name="Error" class="psx-type-link">Error</a></td></tr><tr><td colspan="2" class="psx-resource-method"><h2 class="psx-resource-method-name">POST</h2><span class="psx-resource-method-tags"><span class="psx-resource-method-tag">pets</span></span></td></tr><tr><td colspan="2"><small class="psx-resource-method-description">Create a pet</small></td></tr><tr><td><span class="psx-property-name">Operation-Id</span></td><td>createPets</td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="Pet" class="psx-type-link">Pet</a></td></tr><tr><td><span class="psx-property-name">Response 500</span></td><td><a data-name="Error" class="psx-type-link">Error</a></td></tr></table></div>
 
 <div id="Pet" class="psx-object psx-struct"><h4><a class="psx-type-link" data-name="Pet">Pet</a></h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
   <span class="psx-object-json-key">"id"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Integer</span><span class="psx-object-json-pun">,</span>
