@@ -27,7 +27,7 @@ namespace PSX\Api\Annotation;
  * @Target({"CLASS", "METHOD"})
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class Description
 {
