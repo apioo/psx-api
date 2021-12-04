@@ -20,14 +20,11 @@
 
 namespace PSX\Api\Attribute;
 
-use Attribute;
-
 /**
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-#[Attribute(Attribute::TARGET_METHOD)]
 abstract class SchemaAbstract
 {
     public function __construct(
