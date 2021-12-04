@@ -3,21 +3,19 @@ PSX Api
 
 ## About
 
-This library provides model classes to describe your API. Based on those models
-it is possible to generate i.e. API specification formats like OpenAPI and
+This library provides model classes to describe an API specification. Based on those
+models it is possible to generate i.e. API specification formats like OpenAPI and
 also client code which can be used at an SDK. It is also possible to generate
-those model classes either via annotations or from an OpenAPI specification.
-We have also created an [online tool](http://phpsx.org/tools/openapi) to test
-those conversions.
+those model classes either via attributes or from an OpenAPI specification.
 
 ### Generator
 
 #### Client
 
-- Go (in development)
-- Java (in development)
 - PHP (stable)
 - Typescript (stable)
+- Go (in development)
+- Java (in development)
 
 #### Markup
 
@@ -32,21 +30,23 @@ those conversions.
 
 ## Usage
 
-The root model object is called `Resource` which represents a specific API
-endpoint. The following is a simple showcase of the resource API so you get a
-basic understanding how it is designed.
+The root model object is called `Specification` which represents an API specification.
+In the following an example how you can use the API:
 
 ```php
 <?php
 
 // reads the OpenAPI specification and generates a resource object which was
 // defined under the path /foo
-$resource = \PSX\Api\Parser\OpenAPI::fromFile('openapi.json', '/foo');
+$specification = \PSX\Api\Parser\OpenAPI::fromFile('openapi.json');
 
-// returns the title
-$resource->getTitle();
+// contains all schema type definitions
+$definitions = $specification->getDefinitions();
 
-// returns available path parameters as PSX\Schema\PropertyInterface
+// returns the resource foo from the specification
+$resource = $specification->get('/foo');
+
+// returns path parameters type as string
 $resource->getPathParameters();
 
 // checks whether a specific request method is supported
@@ -55,19 +55,19 @@ $resource->hasMethod('POST');
 // returns all allowed methods
 $resource->getAllowedMethods();
 
-// returns the available query parameters per method as PSX\Schema\PropertyInterface
+// returns the available query parameters type as string
 $resource->getMethod('POST')->getQueryParameters();
 
 // checks whether the method has a request specification
 $resource->getMethod('POST')->hasRequest();
 
-// returns the request body specification as PSX\Schema\SchemaInterface
+// returns the request type as string
 $resource->getMethod('POST')->getRequest();
 
 // checks whether the method has a response with the status code 201
 $resource->getMethod('POST')->hasResponse(201);
 
-// returns the response body specification as PSX\Schema\SchemaInterface
+// returns the response type as string
 $resource->getMethod('POST')->getResponse(201);
 
 // creates a PHP client which consumes the defined /foo resource
