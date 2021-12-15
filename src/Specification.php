@@ -96,8 +96,14 @@ class Specification implements SpecificationInterface, \JsonSerializable
      */
     public function merge(SpecificationInterface $specification): void
     {
-        foreach ($specification->getResourceCollection() as $resource) {
-            $this->resourceCollection->set($resource);
+        foreach ($specification->getResourceCollection() as $path => $resource) {
+            if ($this->resourceCollection->has($path)) {
+                foreach ($resource->getMethods() as $method) {
+                    $this->resourceCollection->get($path)->addMethod($method);
+                }
+            } else {
+                $this->resourceCollection->set($resource);
+            }
         }
 
         $this->definitions->merge($specification->getDefinitions());

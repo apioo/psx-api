@@ -28,6 +28,7 @@ use PSX\Api\Listing\FilterInterface;
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
+ * @extends \Traversable<string, Resource>
  */
 class ResourceCollection extends \ArrayObject
 {
@@ -40,27 +41,16 @@ class ResourceCollection extends \ArrayObject
         }
     }
 
-    /**
-     * @param Resource $resource
-     */
     public function set(Resource $resource): void
     {
         $this->offsetSet($resource->getPath(), $resource);
     }
 
-    /**
-     * @param string $path
-     * @return boolean
-     */
     public function has(string $path): bool
     {
         return $this->offsetExists($path);
     }
 
-    /**
-     * @param string $path
-     * @return Resource
-     */
     public function get(string $path): ?Resource
     {
         return $this->offsetExists($path) ? $this->offsetGet($path) : null;
@@ -68,8 +58,6 @@ class ResourceCollection extends \ArrayObject
 
     /**
      * Returns the first resource of this collection
-     * 
-     * @return Resource
      */
     public function getFirst(): ?Resource
     {
@@ -78,10 +66,6 @@ class ResourceCollection extends \ArrayObject
         return $iterator->current() ?: null;
     }
 
-    /**
-     * @param FilterInterface $filter
-     * @return ResourceCollection
-     */
     public function filter(FilterInterface $filter): ResourceCollection
     {
         $collection = new ResourceCollection();

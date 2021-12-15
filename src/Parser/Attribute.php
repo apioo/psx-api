@@ -21,17 +21,18 @@
 namespace PSX\Api\Parser;
 
 use PSX\Api\Attribute as Attr;
+use PSX\Api\Parser\Attribute\Meta;
 use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
-use PSX\Schema\Definitions;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\Type\NumberType;
 use PSX\Schema\Type\ScalarType;
 use PSX\Schema\Type\StringType;
+use PSX\Schema\Type\StructType;
 use PSX\Schema\Type\TypeAbstract;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
@@ -49,6 +50,14 @@ class Attribute implements ParserInterface
 {
     private SchemaManagerInterface $schemaManager;
 
+    private const METHOD_MAPPING = [
+        'doGet' => 'GET',
+        'doPost' => 'POST',
+        'doPut' => 'PUT',
+        'doDelete' => 'DELETE',
+        'doPatch' => 'PATCH',
+    ];
+
     public function __construct(SchemaManagerInterface $schemaManager)
     {
         $this->schemaManager = $schemaManager;
@@ -56,6 +65,9 @@ class Attribute implements ParserInterface
 
     /**
      * @inheritdoc
+     * @throws \PSX\Schema\Exception\InvalidSchemaException
+     * @throws \PSX\Api\Exception\InvalidMethodException
+     * @throws \ReflectionException
      */
     public function parse(string $schema, ?string $path = null): SpecificationInterface
     {
@@ -63,111 +75,127 @@ class Attribute implements ParserInterface
             throw new RuntimeException('Schema must be a class name');
         }
 
-        $resource    = new Resource(Resource::STATUS_ACTIVE, $path);
-        $definitions = new Definitions();
-
         $controller = new ReflectionClass($schema);
         $basePath   = dirname($controller->getFileName());
-        $required   = [];
-        $attributes = $controller->getAttributes();
 
-        $path = TypeFactory::getStruct();
-        foreach ($attributes as $attribute) {
-            if ($attribute instanceof Attr\Title) {
-                $resource->setTitle($attribute->title);
-            } elseif ($attribute instanceof Attr\Description) {
-                $resource->setDescription($this->getDescription($attribute, $basePath));
-            } elseif ($attribute instanceof Attr\PathParam) {
-                if ($attribute->required) {
-                    $required[] = $attribute->name;
-                }
+        $rootMeta = Meta::fromAttributes($controller->getAttributes());
+        $specification = new Specification();
 
-                $path->addProperty($attribute->name, $this->getParameter($attribute));
-            }
-        }
+        $this->parseMethods($controller, $specification, $basePath, $rootMeta, $path);
 
-        if ($path->getProperties()) {
-            $typeName = 'Path';
-
-            $path->setRequired($required);
-            $definitions->addType($typeName, $path);
-            $resource->setPathParameters($typeName);
-        }
-
-        $this->parseMethods($controller, $resource, $definitions, $basePath);
-
-        return Specification::fromResource($resource, $definitions);
+        return $specification;
     }
 
     /**
-     * @param \ReflectionClass $controller
-     * @param \PSX\Api\Resource $resource
-     * @param DefinitionsInterface $definitions
-     * @param string $basePath
+     * @throws \PSX\Schema\Exception\InvalidSchemaException
+     * @throws \PSX\Api\Exception\InvalidMethodException
      */
-    private function parseMethods(ReflectionClass $controller, Resource $resource, DefinitionsInterface $definitions, string $basePath)
+    private function parseMethods(ReflectionClass $controller, SpecificationInterface $specification, string $basePath, Meta $rootMeta, ?string $path)
     {
-        $methods = [
-            'GET'    => 'doGet',
-            'POST'   => 'doPost',
-            'PUT'    => 'doPut',
-            'DELETE' => 'doDelete',
-            'PATCH'  => 'doPatch'
-        ];
+        foreach ($controller->getMethods() as $method) {
+            $meta = Meta::fromAttributes($method->getAttributes());
+            $meta->merge($rootMeta);
 
-        foreach ($methods as $httpMethod => $methodName) {
-            // check whether method exists
-            if (!$controller->hasMethod($methodName)) {
+            if ($meta->isExcluded()) {
                 continue;
             }
 
-            $method     = Resource\Factory::getMethod($httpMethod);
-            $reflection = $controller->getMethod($methodName);
-            $required   = [];
-            $attributes = $reflection->getAttributes();
+            if ($meta->hasPath()) {
+                $path = $meta->getPath()->path;
+            }
 
-            $method->setOperationId($reflection->getName());
+            if (empty($path)) {
+                continue;
+            }
 
-            $query = TypeFactory::getStruct();
-            $typePrefix = str_replace('\\', '', $controller->getName()) . ucfirst(strtolower($httpMethod));
+            $typePrefix = $path;
 
-            foreach ($attributes as $attribute) {
-                if ($attribute instanceof Attr\Description) {
-                    $method->setDescription($this->getDescription($attribute, $basePath));
-                } elseif ($attribute instanceof Attr\QueryParam) {
-                    if ($attribute->required) {
-                        $required[] = $attribute->name;
-                    }
+            if ($specification->getResourceCollection()->has($path)) {
+                $resource = $specification->getResourceCollection()->get($path);
 
-                    $query->addProperty($attribute->name, $this->getParameter($attribute));
-                } elseif ($attribute instanceof Attr\Incoming) {
-                    $schema = $this->getBodySchema($attribute, $definitions, $basePath, $typePrefix . 'Request');
-                    if (!empty($schema)) {
-                        $method->setRequest($schema);
-                    }
-                } elseif ($attribute instanceof Attr\Outgoing) {
-                    $schema = $this->getBodySchema($attribute, $definitions, $basePath, $typePrefix . $attribute->code . 'Response');
-                    if (!empty($schema)) {
-                        $method->addResponse($attribute->code, $schema);
-                    }
-                } elseif ($attribute instanceof Attr\Exclude) {
-                    // skip this method
-                    continue 2;
+                $pathType = $this->getParamType($meta->getPathParams());
+                if ($pathType instanceof StructType) {
+                    $typeName = $typePrefix . 'Path';
+                    $specification->getDefinitions()->addType($typeName, $pathType);
+                    $resource->setPathParameters($typeName);
                 }
+            } else {
+                $specification->getResourceCollection()->set($resource = new Resource(Resource::STATUS_ACTIVE, $path));
             }
 
-            if ($query->getProperties()) {
-                $typeName = ucfirst(strtolower($methodName)) . 'Query';
-
-                $query->setRequired($required);
-                $definitions->addType($typeName, $query);
-                $method->setQueryParameters($typeName);
+            if (!$meta->hasMethod()) {
+                // legacy way to detect the http method based on the method name
+                $httpMethod = self::METHOD_MAPPING[$method->getName()] ?? null;
+            } else {
+                $httpMethod = $meta->getMethod()->method;
             }
 
-            $resource->addMethod($method);
+            if (empty($httpMethod)) {
+                continue;
+            }
+
+            $resource->addMethod($this->parseMethod(
+                $httpMethod,
+                $meta,
+                $specification->getDefinitions(),
+                $typePrefix,
+                $basePath
+            ));
         }
     }
 
+    /**
+     * @throws \PSX\Api\Exception\InvalidMethodException
+     * @throws \PSX\Schema\Exception\InvalidSchemaException
+     */
+    private function parseMethod(string $httpMethod, Meta $meta, DefinitionsInterface $definitions, string $typePrefix, string $basePath): Resource\MethodAbstract
+    {
+        $typePrefix = $typePrefix . $httpMethod;
+        $method = Resource\Factory::getMethod($httpMethod);
+
+        if ($meta->getOperationId() instanceof Attr\OperationId) {
+            $method->setOperationId($meta->getOperationId()->operationId);
+        }
+
+        if ($meta->getDescription() instanceof Attr\Description) {
+            $method->setDescription($meta->getDescription()->description);
+        }
+
+        $queryType = $this->getParamType($meta->getQueryParams());
+        if ($queryType instanceof StructType) {
+            $typeName = $typePrefix . 'Query';
+            $definitions->addType($typeName, $queryType);
+            $method->setQueryParameters($typeName);
+        }
+
+        if ($meta->getIncoming() instanceof Attr\Incoming) {
+            $schema = $this->getBodySchema($meta->getIncoming(), $definitions, $basePath, $typePrefix . 'Request');
+            if (!empty($schema)) {
+                $method->setRequest($schema);
+            }
+        }
+
+        foreach ($meta->getOutgoing() as $outgoing) {
+            $schema = $this->getBodySchema($outgoing, $definitions, $basePath, $typePrefix . $outgoing->code . 'Response');
+            if (!empty($schema)) {
+                $method->addResponse($outgoing->code, $schema);
+            }
+        }
+
+        if ($meta->getTags() instanceof Attr\Tags) {
+            $method->setTags($meta->getTags()->tags);
+        }
+
+        if ($meta->getSecurity() instanceof Attr\Security) {
+            $method->setSecurity($meta->getSecurity()->name, $meta->getSecurity()->scopes);
+        }
+
+        return $method;
+    }
+
+    /**
+     * @throws \PSX\Schema\Exception\InvalidSchemaException
+     */
     private function getBodySchema(Attr\SchemaAbstract $annotation, DefinitionsInterface $definitions, string $basePath, string $typeName): string
     {
         $schema = $annotation->schema;
@@ -186,19 +214,34 @@ class Attribute implements ParserInterface
         return $typeName;
     }
 
-    private function getDescription(Attr\Description $annotation, $basePath)
+    /**
+     * @throws \PSX\Schema\Exception\InvalidSchemaException
+     */
+    private function getParamType(array $params): ?StructType
     {
-        $description = $annotation->description;
-        if (substr($description, 0, 8) === '!include') {
-            $file = $basePath . '/' . trim(substr($description, 9));
-            if (is_file($file)) {
-                return file_get_contents($file);
-            } else {
-                throw new RuntimeException('Could not include file ' . $file);
-            }
-        } else {
-            return $description;
+        if (empty($params)) {
+            return null;
         }
+
+        $required = [];
+        $struct = TypeFactory::getStruct();
+        foreach ($params as $attribute) {
+            if (!$attribute instanceof Attr\ParamAbstract) {
+                continue;
+            }
+
+            if ($attribute->required) {
+                $required[] = $attribute->name;
+            }
+
+            $struct->addProperty($attribute->name, $this->getParameter($attribute));
+        }
+
+        if (!empty($required)) {
+            $struct->setRequired($required);
+        }
+
+        return $struct;
     }
 
     /**

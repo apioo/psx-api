@@ -102,7 +102,7 @@ class ApiManager implements ApiManagerInterface
     private function guessTypeFromSource($source): ?int
     {
         if (class_exists($source)) {
-            if (PHP_VERSION_ID > 80000 && count((new \ReflectionClass($source))->getAttributes()) > 0) {
+            if (PHP_VERSION_ID > 80000) {
                 return self::TYPE_ATTRIBUTE;
             } else {
                 return self::TYPE_ANNOTATION;
