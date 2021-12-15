@@ -23,13 +23,17 @@ namespace PSX\Api\Attribute;
 use Attribute;
 
 /**
- * Exclude
+ * Patch
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
-class Exclude
+class Patch extends MethodAbstract
 {
+    public function __construct()
+    {
+        parent::__construct('PATCH');
+    }
 }

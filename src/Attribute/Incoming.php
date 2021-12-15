@@ -29,7 +29,7 @@ use Attribute;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-#[Attribute(Attribute::TARGET_METHOD)]
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
 class Incoming extends SchemaAbstract
 {
 }

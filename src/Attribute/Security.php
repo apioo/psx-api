@@ -23,13 +23,16 @@ namespace PSX\Api\Attribute;
 use Attribute;
 
 /**
- * Exclude
+ * Security
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
-class Exclude
+class Security
 {
+    public function __construct(public string $name, public array $scopes)
+    {
+    }
 }

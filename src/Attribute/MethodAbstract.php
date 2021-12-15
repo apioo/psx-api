@@ -20,19 +20,16 @@
 
 namespace PSX\Api\Attribute;
 
-use Attribute;
-
 /**
- * Description
+ * MethodAbstract
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-#[Attribute(Attribute::TARGET_CLASS)]
-class Title
+abstract class MethodAbstract
 {
-    public function __construct(public string $title)
+    public function __construct(public string $method)
     {
     }
 }
