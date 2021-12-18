@@ -7,8 +7,8 @@ specification or client SDKs.
 
 ## Usage
 
-The root model object is called a `Specification` which then contains a resources and definitions. The resources contain
-all available metadata of your endpoints and the definitions represent the available schemas.
+The root model object is called a `Specification` which then contains `Resources` and `Definitions`. The resources
+contain all available metadata of your endpoints and the definitions represent the available schemas.
 
 ### Framework
 
