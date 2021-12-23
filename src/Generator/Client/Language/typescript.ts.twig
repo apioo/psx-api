@@ -1,25 +1,24 @@
-import Axios, {AxiosInstance, AxiosPromise, Method} from "axios";
+import {AxiosInstance, AxiosPromise, Method} from "axios";
+import {ResourceAbstract} from "sdkgen-client"
 {% for className in imports %}
 import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
 {% endfor %}
 
-export default class {{ className }} {
+export default class {{ className }} extends ResourceAbstract {
     private url: string;
-    private token: string;
-    private httpClient: AxiosInstance;
 
 {% for name, hint in properties %}
     private {{ name }}: {{ hint }};
 {% endfor %}
 
-    public constructor({% for name, hint in properties %}{{ name }}: {{ hint|raw }}, {% endfor %}baseUrl: string, token: string, httpClient?: AxiosInstance) {
+    public constructor({% for name, hint in properties %}{{ name }}: {{ hint|raw }}, {% endfor %}baseUrl: string, httpClient?: AxiosInstance) {
+        super(baseUrl, httpClient);
+
 {% for name, hint in properties %}
         this.{{ name }} = {{ name }};
 {% endfor %}
 
         this.url = baseUrl + "{% for part in urlParts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}";
-        this.token = token;
-        this.httpClient = httpClient ? httpClient : Axios.create();
     }
 
 {% for methodName, method in methods %}
@@ -36,11 +35,6 @@ export default class {{ className }} {
             method: <Method> "{{ method.httpMethod }}",
 {% if method.args.query is defined %}
             params: query,
-{% endif %}
-{% if method.secure %}
-            headers: {
-                'Authorization': 'Bearer ' + this.token
-            },
 {% endif %}
         };
 

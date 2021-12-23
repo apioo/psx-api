@@ -1,7 +1,7 @@
-<?php 
+<?php
 /**
  * PathFoo generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 namespace Foo\Bar;
@@ -9,20 +9,11 @@ namespace Foo\Bar;
 
 class PathFoo implements \JsonSerializable
 {
-    /**
-     * @var string|null
-     */
-    protected $foo;
-    /**
-     * @param string|null $foo
-     */
+    protected ?string $foo = null;
     public function setFoo(?string $foo) : void
     {
         $this->foo = $foo;
     }
-    /**
-     * @return string|null
-     */
     public function getFoo() : ?string
     {
         return $this->foo;

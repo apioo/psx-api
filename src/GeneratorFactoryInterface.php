@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ namespace PSX\Api;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 interface GeneratorFactoryInterface
 {
@@ -46,9 +46,9 @@ interface GeneratorFactoryInterface
      * 
      * @param string $format
      * @param string|null $config
-     * @return \PSX\Api\GeneratorInterface
+     * @return GeneratorInterface
      */
-    public function getGenerator($format, $config = null);
+    public function getGenerator(string $format, ?string $config = null): GeneratorInterface;
 
     /**
      * Returns the preferred file extension for the provided format
@@ -57,7 +57,7 @@ interface GeneratorFactoryInterface
      * @param string|null $config
      * @return string
      */
-    public function getFileExtension($format, $config = null);
+    public function getFileExtension(string $format, ?string $config = null): string;
 
     /**
      * Returns the preferred mime for the provided format
@@ -66,5 +66,5 @@ interface GeneratorFactoryInterface
      * @param string|null $config
      * @return string
      */
-    public function getMime($format, $config = null);
+    public function getMime(string $format, ?string $config = null): string;
 }

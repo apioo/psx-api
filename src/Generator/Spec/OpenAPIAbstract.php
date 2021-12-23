@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ use PSX\Schema\Parser\Popo\Dumper;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 abstract class OpenAPIAbstract extends GeneratorAbstract
 {
@@ -38,79 +38,23 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     const FLOW_PASSWORD = 2;
     const FLOW_CLIENT_CREDENTIALS = 3;
 
-    /**
-     * @var \PSX\Schema\Parser\Popo\Dumper
-     */
-    protected $dumper;
+    protected Dumper $dumper;
+    protected int $apiVersion;
+    protected string $baseUri;
+    protected ?string $title = null;
+    protected ?string $description = null;
+    protected ?string $tos = null;
+    protected ?string $contactName = null;
+    protected ?string $contactUrl = null;
+    protected ?string $contactEmail = null;
+    protected ?string $licenseName = null;
+    protected ?string $licenseUrl = null;
+    protected array $authFlows = [];
+    protected array $tags = [];
 
-    /**
-     * @var string
-     */
-    protected $apiVersion;
-
-    /**
-     * @var string
-     */
-    protected $baseUri;
-
-    /**
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @var string
-     */
-    protected $description;
-
-    /**
-     * @var string
-     */
-    protected $tos;
-
-    /**
-     * @var string
-     */
-    protected $contactName;
-
-    /**
-     * @var string
-     */
-    protected $contactUrl;
-
-    /**
-     * @var string
-     */
-    protected $contactEmail;
-
-    /**
-     * @var string
-     */
-    protected $licenseName;
-
-    /**
-     * @var string
-     */
-    protected $licenseUrl;
-
-    /**
-     * @var array
-     */
-    protected $authFlows = [];
-
-    /**
-     * @var array
-     */
-    protected $tags = [];
-
-    /**
-     * @param \Doctrine\Common\Annotations\Reader $reader
-     * @param integer $apiVersion
-     * @param string $baseUri
-     */
-    public function __construct(Reader $reader, $apiVersion, $baseUri)
+    public function __construct(int $apiVersion, string $baseUri)
     {
-        $this->dumper     = new Dumper($reader);
+        $this->dumper     = new Dumper();
         $this->apiVersion = $apiVersion;
         $this->baseUri    = $baseUri;
         $this->authFlows  = [];
@@ -118,8 +62,6 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
 
     /**
      * The title of the application
-     *
-     * @param string $title
      */
     public function setTitle(string $title)
     {
@@ -129,8 +71,6 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * A short description of the application. CommonMark syntax MAY be used for
      * rich text representation
-     *
-     * @param string|null $description
      */
     public function setDescription(?string $description)
     {
@@ -139,8 +79,6 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
 
     /**
      * A URL to the Terms of Service for the API. MUST be in the format of a URL
-     *
-     * @param string|null $tos
      */
     public function setTermsOfService(?string $tos)
     {
@@ -149,8 +87,6 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
 
     /**
      * The identifying name of the contact person/organization
-     *
-     * @param string|null $contactName
      */
     public function setContactName(?string $contactName)
     {
@@ -158,10 +94,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     }
 
     /**
-     * The URL pointing to the contact information. MUST be in the format of a
-     * URL
-     *
-     * @param string|null $contactUrl
+     * The URL pointing to the contact information. MUST be in the format of a URL
      */
     public function setContactUrl(?string $contactUrl)
     {
@@ -169,10 +102,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     }
 
     /**
-     * The email address of the contact person/organization. MUST be in the
-     * format of an email address
-     *
-     * @param string|null $contactEmail
+     * The email address of the contact person/organization. MUST be in the format of an email address
      */
     public function setContactEmail(?string $contactEmail)
     {
@@ -181,8 +111,6 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
 
     /**
      * The license name used for the API
-     *
-     * @param string|null $licenseName
      */
     public function setLicenseName(?string $licenseName)
     {
@@ -191,8 +119,6 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
 
     /**
      * A URL to the license used for the API. MUST be in the format of a URL
-     *
-     * @param string|null $licenseUrl
      */
     public function setLicenseUrl(?string $licenseUrl)
     {
@@ -201,13 +127,6 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
 
     /**
      * Configuration details for a supported OAuth Flow
-     * 
-     * @param string $name
-     * @param integer $flow
-     * @param string|null $authorizationUrl
-     * @param string $tokenUrl
-     * @param string|null $refreshUrl
-     * @param array|null $scopes
      */
     public function setAuthorizationFlow(string $name, int $flow, ?string $authorizationUrl, string $tokenUrl, ?string $refreshUrl = null, ?array $scopes = null)
     {
@@ -222,19 +141,11 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
      * Adds metadata to a single tag that is used by the Operation Object. It is
      * not mandatory to have a Tag Object per tag defined in the Operation 
      * Object instances
-     * 
-     * @param string $name
-     * @param string $description
      */
     public function addTag(string $name, string $description)
     {
         $this->tags[] = $this->newTag($name, $description);
     }
 
-    /**
-     * @param string $name
-     * @param string $description
-     * @return object
-     */
     abstract protected function newTag(string $name, string $description);
 }

@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class GenerateCommand extends Command
 {
@@ -75,7 +75,7 @@ class GenerateCommand extends Command
         $this
             ->setName('api:generate')
             ->setDescription('Generates for each API resource a file in a specific format')
-            ->addArgument('dir', InputArgument::REQUIRED, 'The target directory')
+            ->addArgument('dir', InputArgument::OPTIONAL, 'The target directory')
             ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Optional the output format possible values are: ' . implode(', ', GeneratorFactory::getPossibleTypes()))
             ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Optional a config value which gets passed to the generator')
             ->addOption('filter', 'i', InputOption::VALUE_REQUIRED, 'Optional a specific filter');
@@ -83,7 +83,16 @@ class GenerateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $format = $input->getOption('format');
+        $format = $input->getOption('format') ?? GeneratorFactoryInterface::SPEC_OPENAPI;
+        if (!in_array($format, GeneratorFactory::getPossibleTypes())) {
+            throw new \InvalidArgumentException('Provided an invalid format');
+        }
+
+        $dir = $input->getArgument('dir') ?? getcwd();
+        if (!is_dir($dir)) {
+            throw new \InvalidArgumentException('Directory does not exist');
+        }
+
         $config = $input->getOption('config');
         $filterName = $input->getOption('filter');
 
@@ -91,11 +100,6 @@ class GenerateCommand extends Command
             $filter = $this->filterFactory->getFilter($filterName);
         } else {
             $filter = null;
-        }
-
-        $dir = $input->getArgument('dir');
-        if (!is_dir($dir)) {
-            throw new \InvalidArgumentException('Directory does not exist');
         }
 
         $generator = $this->factory->getGenerator($format, $config);

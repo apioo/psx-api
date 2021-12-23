@@ -1,51 +1,38 @@
-<?php 
+<?php
 /**
  * Path generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
-/**
- * @Required({"name"})
- */
+use PSX\Schema\Attribute\Description;
+use PSX\Schema\Attribute\Enum;
+use PSX\Schema\Attribute\MaxLength;
+use PSX\Schema\Attribute\MinLength;
+use PSX\Schema\Attribute\Pattern;
+use PSX\Schema\Attribute\Required;
+
+#[Required(array('name'))]
 class Path implements \JsonSerializable
 {
-    /**
-     * @var string|null
-     * @Description("Name parameter")
-     * @Pattern("[A-z]+")
-     * @MinLength(0)
-     * @MaxLength(16)
-     */
-    protected $name;
-    /**
-     * @var string|null
-     * @Enum({"foo", "bar"})
-     */
-    protected $type;
-    /**
-     * @param string|null $name
-     */
+    #[Description('Name parameter')]
+    #[Pattern('[A-z]+')]
+    #[MinLength(0)]
+    #[MaxLength(16)]
+    protected ?string $name = null;
+    #[Enum(array('foo', 'bar'))]
+    protected ?string $type = null;
     public function setName(?string $name) : void
     {
         $this->name = $name;
     }
-    /**
-     * @return string|null
-     */
     public function getName() : ?string
     {
         return $this->name;
     }
-    /**
-     * @param string|null $type
-     */
     public function setType(?string $type) : void
     {
         $this->type = $type;
     }
-    /**
-     * @return string|null
-     */
     public function getType() : ?string
     {
         return $this->type;

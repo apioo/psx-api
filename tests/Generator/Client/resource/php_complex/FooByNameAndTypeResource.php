@@ -1,14 +1,14 @@
-<?php 
+<?php
 /**
  * FooByNameAndTypeResource generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 namespace Foo\Bar;
 
 use GuzzleHttp\Client;
-use PSX\Api\Generator\Client\Php\ResourceAbstract;
 use PSX\Schema\SchemaManager;
+use Sdkgen\Client\ResourceAbstract;
 
 class FooByNameAndTypeResource extends ResourceAbstract
 {
@@ -27,9 +27,9 @@ class FooByNameAndTypeResource extends ResourceAbstract
      */
     private $type;
 
-    public function __construct(string $name, string $type, string $baseUrl, string $token, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
+    public function __construct(string $name, string $type, string $baseUrl, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
-        parent::__construct($baseUrl, $token, $httpClient, $schemaManager);
+        parent::__construct($baseUrl, $httpClient, $schemaManager);
 
         $this->name = $name;
         $this->type = $type;
@@ -42,7 +42,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
      * @param Entry|EntryMessage $data
      * @return Entry|EntryMessage
      */
-    public function postEntryOrMessage($data = null)
+    public function postEntryOrMessage(?Entry|EntryMessage $data = null): Entry|EntryMessage
     {
         $options = [
             'headers' => [
@@ -54,7 +54,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
         $response = $this->httpClient->request('POST', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->parse($data, null);
+        return $this->parse($data, Entry|EntryMessage::class);
     }
 
 }

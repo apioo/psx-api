@@ -1,65 +1,42 @@
 /**
  * Client generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * {@link https://sdkgen.app}
  */
 
-import Axios, {AxiosInstance, AxiosPromise} from "axios";
-import FooResource from "./FooResource";
-import BarByFooResource from "./BarByFooResource";
-import BarByYearResource from "./BarByYearResource";
+import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
+import {HttpBearer} from "sdkgen-client"
 
-export default class Client {
-    private baseUrl: string;
-    private token: string;
-    private httpClient: AxiosInstance;
+import FooGroup from "./FooGroup";
+import BarGroup from "./BarGroup";
 
-    public constructor(baseUrl: string, token: string, httpClient?: AxiosInstance) {
-        this.baseUrl = baseUrl;
-        this.token = token;
-        this.httpClient = httpClient ? httpClient : Axios.create();
+export default class Client extends ClientAbstract {
+    public constructor(baseUrl: string, token: string, , tokenStore: TokenStoreInterface|null = null) {
+        super(baseUrl, new HttpBearer(token), tokenStore);
     }
 
     /**
-     * Endpoint: /foo
-     * 
-     * @returns FooResource
+     * Tag: foo
+     *
+     * @returns FooGroup
      */
-    public getFoo(): FooResource
+    public foo(): FooGroup
     {
-        return new FooResource(
+        return new FooGroup(
             this.baseUrl,
-            this.token,
-            this.httpClient
+            this.newHttpClient()
         );
     }
 
     /**
-     * Endpoint: /bar/:foo
-     * 
-     * @returns BarByFooResource
+     * Tag: bar
+     *
+     * @returns BarGroup
      */
-    public getBarByFoo(foo: string): BarByFooResource
+    public bar(): BarGroup
     {
-        return new BarByFooResource(
-            foo,
+        return new BarGroup(
             this.baseUrl,
-            this.token,
-            this.httpClient
-        );
-    }
-
-    /**
-     * Endpoint: /bar/$year<[0-9]+>
-     * 
-     * @returns BarByYearResource
-     */
-    public getBarByYear(year: string): BarByYearResource
-    {
-        return new BarByYearResource(
-            year,
-            this.baseUrl,
-            this.token,
-            this.httpClient
+            this.newHttpClient()
         );
     }
 

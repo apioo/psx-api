@@ -1,58 +1,46 @@
-<?php 
+<?php
 /**
  * Client generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 namespace Foo\Bar;
 
-use PSX\Api\Generator\Client\Php\ResourceAbstract;
+use Sdkgen\Client\ClientAbstract;
+use Sdkgen\Client\Credentials;
+use Sdkgen\Client\TokenStoreInterface;
 
-class Client extends ResourceAbstract
+class Client extends ClientAbstract
 {
-    /**
-     * Endpoint: /foo
-     *
-     * @return FooResource
-     */
-    public function getFoo(): FooResource
+    public function __construct(string $baseUrl, string $token, ?TokenStoreInterface $tokenStore = null)
     {
-        return new FooResource(
+        parent::__construct($baseUrl, new Credentials\HttpBearer($token), $tokenStore);
+    }
+
+    /**
+     * Tag: foo
+     *
+     * @return FooGroup
+     */
+    public function foo(): FooGroup
+    {
+        return new FooGroup(
             $this->baseUrl,
-            $this->token,
-            $this->httpClient,
+            $this->newHttpClient(),
             $this->schemaManager
         );
     }
 
     /**
-     * Endpoint: /bar/:foo
+     * Tag: bar
      *
-     * @return BarByFooResource
+     * @return BarGroup
      */
-    public function getBarByFoo(?string $foo): BarByFooResource
+    public function bar(): BarGroup
     {
-        return new BarByFooResource(
-            $foo,
+        return new BarGroup(
             $this->baseUrl,
-            $this->token,
-            $this->httpClient,
-            $this->schemaManager
-        );
-    }
-
-    /**
-     * Endpoint: /bar/$year<[0-9]+>
-     *
-     * @return BarByYearResource
-     */
-    public function getBarByYear(?string $year): BarByYearResource
-    {
-        return new BarByYearResource(
-            $year,
-            $this->baseUrl,
-            $this->token,
-            $this->httpClient,
+            $this->newHttpClient(),
             $this->schemaManager
         );
     }

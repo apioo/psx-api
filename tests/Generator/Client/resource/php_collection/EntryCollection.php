@@ -1,7 +1,7 @@
-<?php 
+<?php
 /**
  * EntryCollection generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 namespace Foo\Bar;
@@ -12,7 +12,7 @@ class EntryCollection implements \JsonSerializable
     /**
      * @var array<Entry>|null
      */
-    protected $entry;
+    protected ?array $entry = null;
     /**
      * @param array<Entry>|null $entry
      */
@@ -20,9 +20,6 @@ class EntryCollection implements \JsonSerializable
     {
         $this->entry = $entry;
     }
-    /**
-     * @return array<Entry>|null
-     */
     public function getEntry() : ?array
     {
         return $this->entry;

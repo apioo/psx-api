@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,32 +30,16 @@ use PSX\Schema\SchemaManager;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 abstract class ApiManagerTestCase extends TestCase
 {
-    /**
-     * @var \Doctrine\Common\Annotations\Reader
-     */
-    protected $annotationReader;
-
-    /**
-     * @var \PSX\Schema\SchemaManager
-     */
-    protected $schemaManager;
-
-    /**
-     * @var \PSX\Api\ApiManager
-     */
-    protected $apiManager;
+    protected SchemaManager $schemaManager;
+    protected ApiManager $apiManager;
 
     protected function setUp(): void
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Api\\Annotation');
-
-        $this->annotationReader = $reader;
-        $this->schemaManager    = new SchemaManager($reader);
-        $this->apiManager       = new ApiManager($reader, $this->schemaManager);
+        $this->schemaManager = new SchemaManager();
+        $this->apiManager    = new ApiManager($this->schemaManager);
     }
 }

@@ -1,9 +1,10 @@
 /**
  * BarByFooResource generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * @see https://sdkgen.app
  */
 
 
+import app.sdkgen.client.ResourceAbstract;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -18,17 +19,18 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class BarByFooResource
+public class BarByFooResource extends ResourceAbstract
 {
     private final String url;
-    private final String token;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
     private String foo;
 
-    public BarByFooResource(String foo, String baseUrl, String token, HttpClient httpClient)
+    public BarByFooResource(String foo, String baseUrl, HttpClient httpClient, ObjectMapper objectMapper)
     {
+        super(baseUrl, httpClient, objectMapper);
+
         this.foo = foo;
 
         this.url = baseUrl + "/bar/"+foo+"";

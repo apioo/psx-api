@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,23 @@
 
 namespace PSX\Api\Parser;
 
-use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
+use PSX\Api\Security\ApiKey;
+use PSX\Api\Security\AuthorizationCode;
+use PSX\Api\Security\ClientCredentials;
+use PSX\Api\Security\HttpBasic;
+use PSX\Api\Security\HttpBearer;
+use PSX\Api\SecurityInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
+use PSX\Model\OpenAPI\Components;
 use PSX\Model\OpenAPI\MediaType;
 use PSX\Model\OpenAPI\MediaTypes;
+use PSX\Model\OpenAPI\OAuthFlow;
 use PSX\Model\OpenAPI\OpenAPI as OpenAPIModel;
 use PSX\Model\OpenAPI\Operation;
 use PSX\Model\OpenAPI\Parameter;
@@ -39,6 +45,10 @@ use PSX\Model\OpenAPI\Reference;
 use PSX\Model\OpenAPI\RequestBody;
 use PSX\Model\OpenAPI\Response;
 use PSX\Model\OpenAPI\Responses;
+use PSX\Model\OpenAPI\SecurityScheme;
+use PSX\Model\OpenAPI\SecuritySchemes;
+use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\Exception\TypeNotFoundException;
 use PSX\Schema\Parser as SchemaParser;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Type\ReferenceType;
@@ -54,42 +64,17 @@ use Symfony\Component\Yaml\Yaml;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class OpenAPI implements ParserInterface
 {
-    /**
-     * @var Reader
-     */
-    private $annotationReader;
+    private ?string $basePath;
+    private SchemaParser\TypeSchema $schemaParser;
+    private ?DefinitionsInterface $definitions = null;
+    private ?\PSX\Model\OpenAPI\OpenAPI $document = null;
 
-    /**
-     * @var string|null
-     */
-    private $basePath;
-
-    /**
-     * @var \PSX\Schema\Parser\TypeSchema
-     */
-    private $schemaParser;
-
-    /**
-     * @var \PSX\Schema\DefinitionsInterface
-     */
-    private $definitions;
-
-    /**
-     * @var \PSX\Model\OpenAPI\OpenAPI
-     */
-    private $document;
-
-    /**
-     * @param Reader $annotationReader
-     * @param string|null $basePath
-     */
-    public function __construct(Reader $annotationReader, ?string $basePath = null)
+    public function __construct(?string $basePath = null)
     {
-        $this->annotationReader = $annotationReader;
         $this->basePath = $basePath;
         $this->schemaParser = new SchemaParser\TypeSchema(null, $basePath);
     }
@@ -119,7 +104,8 @@ class OpenAPI implements ParserInterface
 
         return new Specification(
             $collection,
-            $this->definitions
+            $this->definitions,
+            $this->parseSecurity()
         );
     }
 
@@ -129,7 +115,6 @@ class OpenAPI implements ParserInterface
         $resource = new Resource($status, $path);
         $typePrefix = Inflection::generateTitleFromRoute($path);
 
-        $resource->setTitle($data->getSummary());
         $resource->setDescription($data->getDescription());
 
         $this->parseUriParameters($resource, $data, $typePrefix);
@@ -164,10 +149,54 @@ class OpenAPI implements ParserInterface
     }
 
     /**
+     * Currently we only use one security object for the complete API since this simplifies the usage of the generated
+     * client since a user has not to configure multiple ways, in most cases an API has also only one way to authenticate.
+     *
+     * @return SecurityInterface|null
+     */
+    private function parseSecurity(): ?SecurityInterface
+    {
+        $components = $this->document->getComponents();
+        if (!$components instanceof Components) {
+            return null;
+        }
+
+        $securitySchemas = $components->getSecuritySchemes();
+        if (!$securitySchemas instanceof SecuritySchemes) {
+            return null;
+        }
+
+        foreach ($securitySchemas as $securityObject) {
+            if (!$securityObject instanceof SecurityScheme) {
+                continue;
+            }
+
+            if (strtolower($securityObject->getType()) === 'http' && strtolower($securityObject->getScheme()) === 'basic') {
+                return new HttpBasic();
+            } elseif (strtolower($securityObject->getType()) === 'http' && strtolower($securityObject->getScheme()) === 'bearer') {
+                return new HttpBearer();
+            } elseif (strtolower($securityObject->getType()) === 'apikey') {
+                return new ApiKey($securityObject->getName(), $securityObject->getIn());
+            } elseif (strtolower($securityObject->getType()) === 'oauth2') {
+                $flows = $securityObject->getFlows();
+                $clientCredentials = $flows->getClientCredentials();
+                $authorizationCode = $flows->getAuthorizationCode();
+                if ($clientCredentials instanceof OAuthFlow) {
+                    return new ClientCredentials($clientCredentials->getTokenUrl(), $clientCredentials->getAuthorizationUrl(), $clientCredentials->getRefreshUrl());
+                } elseif ($authorizationCode instanceof OAuthFlow) {
+                    return new AuthorizationCode($authorizationCode->getTokenUrl(), $authorizationCode->getAuthorizationUrl(), $authorizationCode->getRefreshUrl());
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param Resource $resource
      * @param PathItem $data
      * @param string $typePrefix
-     * @throws \PSX\Schema\TypeNotFoundException
+     * @throws TypeNotFoundException
      */
     private function parseUriParameters(Resource $resource, PathItem $data, string $typePrefix)
     {
@@ -186,7 +215,7 @@ class OpenAPI implements ParserInterface
      * @param Resource\MethodAbstract $method
      * @param Operation $data
      * @param string $typePrefix
-     * @throws \PSX\Schema\TypeNotFoundException
+     * @throws TypeNotFoundException
      */
     private function parseQueryParameters(Resource\MethodAbstract $method, Operation $data, string $typePrefix)
     {
@@ -205,7 +234,7 @@ class OpenAPI implements ParserInterface
      * @param string $type
      * @param array $data
      * @return StructType
-     * @throws \PSX\Schema\TypeNotFoundException
+     * @throws TypeNotFoundException
      */
     private function parseParameters(string $type, array $data): ?StructType
     {
@@ -238,8 +267,8 @@ class OpenAPI implements ParserInterface
     /**
      * @param string $in
      * @param Parameter|Reference $data
-     * @return array|\PSX\Schema\TypeInterface
-     * @throws \PSX\Schema\TypeNotFoundException
+     * @return array|TypeInterface
+     * @throws TypeNotFoundException
      */
     private function parseParameter(string $in, $data)
     {
@@ -278,7 +307,7 @@ class OpenAPI implements ParserInterface
     private function parseRequest(Resource\MethodAbstract $method, $requestBody, string $typePrefix)
     {
         if ($requestBody instanceof Reference) {
-            return $this->parseRequest($method, $this->resolveReference($requestBody->getRef()), $typePrefix);
+            $this->parseRequest($method, $this->resolveReference($requestBody->getRef()), $typePrefix);
         } elseif ($requestBody instanceof RequestBody) {
             $mediaTypes = $requestBody->getContent();
             if ($mediaTypes instanceof MediaTypes) {
@@ -365,21 +394,18 @@ class OpenAPI implements ParserInterface
         $data = Parser::decode($data);
 
         // create a schema based on the open API models
-        $parser = new SchemaParser\Popo($this->annotationReader);
+        $parser = new SchemaParser\Popo();
         $schema = $parser->parse(OpenAPIModel::class);
 
         $this->definitions = $this->schemaParser->parseSchema($data)->getDefinitions();
         $this->document    = (new SchemaTraverser())->traverse($data, $schema, new TypeVisitor());
     }
 
-    public static function fromFile(string $file, string $path): SpecificationInterface
+    public static function fromFile(string $file, ?string $path = null): SpecificationInterface
     {
         if (empty($file) || !is_file($file)) {
             throw new RuntimeException('Could not load OpenAPI schema ' . $file);
         }
-
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Schema\\Annotation');
 
         $extension = pathinfo($file, PATHINFO_EXTENSION);
         if (in_array($extension, ['yaml', 'yml'])) {
@@ -389,7 +415,7 @@ class OpenAPI implements ParserInterface
         }
 
         $basePath = pathinfo($file, PATHINFO_DIRNAME);
-        $parser   = new OpenAPI($reader, $basePath);
+        $parser   = new OpenAPI($basePath);
 
         return $parser->parse($data, $path);
     }

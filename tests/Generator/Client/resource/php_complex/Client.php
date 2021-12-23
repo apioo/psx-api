@@ -1,15 +1,22 @@
-<?php 
+<?php
 /**
  * Client generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 namespace Foo\Bar;
 
-use PSX\Api\Generator\Client\Php\ResourceAbstract;
+use Sdkgen\Client\ClientAbstract;
+use Sdkgen\Client\Credentials;
+use Sdkgen\Client\TokenStoreInterface;
 
-class Client extends ResourceAbstract
+class Client extends ClientAbstract
 {
+    public function __construct(string $baseUrl, ?TokenStoreInterface $tokenStore = null)
+    {
+        parent::__construct($baseUrl, null, $tokenStore);
+    }
+
     /**
      * Endpoint: /foo/:name/:type
      *
@@ -21,8 +28,7 @@ class Client extends ResourceAbstract
             $name,
             $type,
             $this->baseUrl,
-            $this->token,
-            $this->httpClient,
+            $this->newHttpClient(),
             $this->schemaManager
         );
     }

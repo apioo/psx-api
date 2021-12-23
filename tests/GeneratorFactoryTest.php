@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ use PSX\Api\GeneratorInterface;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class GeneratorFactoryTest extends TestCase
 {
@@ -39,10 +39,7 @@ class GeneratorFactoryTest extends TestCase
      */
     public function testGetGenerator($type)
     {
-        $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Annotation');
-
-        $factory   = new GeneratorFactory($schemaReader, 'urn:phpsx.org:2016#', 'http://foo.com', '');
+        $factory   = new GeneratorFactory('urn:phpsx.org:2016#', 'http://foo.com', '');
         $generator = $factory->getGenerator($type);
 
         $this->assertInstanceOf(GeneratorInterface::class, $generator);

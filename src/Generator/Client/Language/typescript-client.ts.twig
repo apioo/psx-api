@@ -1,23 +1,29 @@
-import Axios, {AxiosInstance, AxiosPromise} from "axios";
+import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
+{% if security.type == 'httpBasic' %}
+import {HttpBasic} from "sdkgen-client"
+{% elseif security.type == 'httpBearer' %}
+import {HttpBearer} from "sdkgen-client"
+{% elseif security.type == 'apiKey' %}
+import {ApiKey} from "sdkgen-client"
+{% elseif security.type == 'clientCredentials' %}
+import {ClientCredentials} from "sdkgen-client"
+{% elseif security.type == 'authorizationCode' %}
+import {AuthorizationCode} from "sdkgen-client"
+{% endif %}
+
 {% for className, resource in resources %}
 import {{ className }} from "./{{ className }}";
 {% endfor %}
 
-export default class Client {
-    private baseUrl: string;
-    private token: string;
-    private httpClient: AxiosInstance;
-
-    public constructor(baseUrl: string, token: string, httpClient?: AxiosInstance) {
-        this.baseUrl = baseUrl;
-        this.token = token;
-        this.httpClient = httpClient ? httpClient : Axios.create();
+export default class {{ className }} extends ClientAbstract {
+    public constructor(baseUrl: string, {% if security.type == 'httpBasic' %}userName: string, password: string, {% elseif security.type in ['httpBearer', 'apiKey'] %}token: string, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}clientId: string, clientSecret: string, {% endif %}, tokenStore: TokenStoreInterface|null = null) {
+        super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}null{% endif %}, tokenStore);
     }
 
 {% for className, resource in resources %}
     /**
      * {{ resource.description|raw }}
-     * 
+     *
      * @returns {{ className }}
      */
     public {{ resource.methodName }}({% for name, hint in resource.properties %}{{ name }}: {{ hint|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): {{ className }}
@@ -26,8 +32,7 @@ export default class Client {
             {% for name, hint in resource.properties %}{{ name }},
             {% endfor %}
 this.baseUrl,
-            this.token,
-            this.httpClient
+            this.newHttpClient()
         );
     }
 

@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ use PSX\Schema\GeneratorInterface;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class Html extends MarkupAbstract
 {
@@ -47,14 +47,18 @@ class Html extends MarkupAbstract
     protected function startResource(Resource $resource)
     {
         $html = '<div class="psx-resource" data-status="' . $resource->getStatus() . '" data-path="' . $resource->getPath() . '">';
-        $html.= '<h1>' . $resource->getPath() . '</h1>';
+        $html.= '<h1 class="psx-resource-path">' . $resource->getPath() . '</h1>';
 
         $description = $resource->getDescription();
         if (!empty($description)) {
-            $html.= '<div class="psx-resource-description">' . $description . '</div>';
+            $html.= '<div class="psx-resource-description">' . htmlspecialchars($description) . '</div>';
         }
 
         $html.= '<table>';
+        $html.= '<colgroup>';
+        $html.= '<col width="30%" />';
+        $html.= '<col width="70%" />';
+        $html.= '</colgroup>';
         return $html;
     }
 
@@ -74,17 +78,32 @@ class Html extends MarkupAbstract
     protected function startMethod(Resource\MethodAbstract $method)
     {
         $html = '<tr>';
-        $html.= '<th colspan="2" class="psx-resource-method">';
-        $html.= '<span>' . $method->getName() . '</span>';
+        $html.= '<td colspan="2" class="psx-resource-method">';
+        $html.= '<h2 class="psx-resource-method-name">' . $method->getName() . '</h2>';
+
+        $tags = $method->getTags();
+        if (!empty($tags)) {
+            $list = [];
+            foreach ($tags as $tag) {
+                $list[] = '<span class="psx-resource-method-tag">' . htmlspecialchars($tag) . '</span>';
+            }
+
+            $html.= '<span class="psx-resource-method-tags">' . implode('', $list) . '</span>';
+        }
+
+        $html.= '</td>';
+        $html.= '</tr>';
+        $html.= '<tr>';
+        $html.= '<td colspan="2">';
 
         $description = $method->getDescription();
         if (!empty($description)) {
-            $html.= ' - <span>' . $description . '</span>';
+            $html.= '<small class="psx-resource-method-description">' . htmlspecialchars($description) . '</small>';
         }
 
-        $html.= '</th>';
+        $html.= '</td>';
         $html.= '</tr>';
-        
+
         return $html;
     }
 
@@ -102,8 +121,20 @@ class Html extends MarkupAbstract
     protected function renderSchema(string $title, string $schema)
     {
         $html = '<tr>';
-        $html.= '<td>' . $title . '</td>';
-        $html.= '<td><a href="#' . $schema . '">' . $schema . '</a></td>';
+        $html.= '<td><span class="psx-property-name">' . $title . '</span></td>';
+        $html.= '<td><a data-name="' . $schema . '" class="psx-type-link">' . $schema . '</a></td>';
+        $html.= '</tr>';
+        return $html;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function renderMeta(string $title, string $value)
+    {
+        $html = '<tr>';
+        $html.= '<td><span class="psx-property-name">' . $title . '</span></td>';
+        $html.= '<td>' . htmlspecialchars($value) . '</td>';
         $html.= '</tr>';
         return $html;
     }

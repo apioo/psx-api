@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,12 @@
 
 namespace PSX\Api\Builder;
 
+use PSX\Api\Exception\InvalidMethodException;
 use PSX\Api\Resource\Factory;
 use PSX\Api\Resource\MethodAbstract;
 use PSX\Schema\Builder;
 use PSX\Schema\DefinitionsInterface;
-use PSX\Schema\InvalidSchemaException;
+use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\Type\ReferenceType;
 
@@ -33,25 +34,17 @@ use PSX\Schema\Type\ReferenceType;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class MethodBuilder implements MethodBuilderInterface
 {
-    /**
-     * @var SchemaManagerInterface
-     */
-    private $schemaManager;
+    private SchemaManagerInterface $schemaManager;
+    private DefinitionsInterface $definitions;
+    private MethodAbstract $method;
 
     /**
-     * @var DefinitionsInterface
+     * @throws InvalidMethodException
      */
-    private $definitions;
-
-    /**
-     * @var MethodAbstract
-     */
-    private $method;
-
     public function __construct(SchemaManagerInterface $schemaManager, DefinitionsInterface $definitions, string $methodName)
     {
         $this->schemaManager = $schemaManager;

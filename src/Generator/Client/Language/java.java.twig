@@ -2,6 +2,7 @@
 package {{ namespace }} {
 {% endif %}
 
+import app.sdkgen.client.ResourceAbstract;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -16,10 +17,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class {{ className }}
+public class {{ className }} extends ResourceAbstract
 {
     private final String url;
-    private final String token;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
@@ -27,8 +27,10 @@ public class {{ className }}
     private {{ hint }} {{ name }};
 {% endfor %}
 
-    public {{ className }}({% for name, hint in properties %}{{ hint|raw }} {{ name }}, {% endfor %}String baseUrl, String token, HttpClient httpClient)
+    public {{ className }}({% for name, hint in properties %}{{ hint|raw }} {{ name }}, {% endfor %}String baseUrl, HttpClient httpClient, ObjectMapper objectMapper)
     {
+        super(baseUrl, httpClient, objectMapper);
+
 {% for name, hint in properties %}
         this.{{ name }} = {{ name }};
 {% endfor %}

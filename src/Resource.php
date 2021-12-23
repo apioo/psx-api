@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ use PSX\Api\Resource\MethodAbstract;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class Resource implements IteratorAggregate, \JsonSerializable
 {
@@ -46,35 +46,15 @@ class Resource implements IteratorAggregate, \JsonSerializable
     const CODE_CLIENT_ERROR  = 499;
     const CODE_SERVER_ERROR  = 599;
 
-    /**
-     * @var integer
-     */
-    protected $status;
+    private int $status;
+    private string $path;
+    private ?string $description = null;
+    private ?string $pathParameters = null;
 
     /**
-     * @var string
+     * @var MethodAbstract[]
      */
-    protected $path;
-
-    /**
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @var string
-     */
-    protected $description;
-
-    /**
-     * @var string
-     */
-    protected $pathParameters;
-
-    /**
-     * @var \PSX\Api\Resource\MethodAbstract[]
-     */
-    protected $methods;
+    private array $methods;
 
     /**
      * @param integer $status
@@ -136,31 +116,15 @@ class Resource implements IteratorAggregate, \JsonSerializable
     }
 
     /**
-     * @param string $title
+     * @param string|null $description
      */
-    public function setTitle(?string $title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param string $description
-     */
-    public function setDescription(?string $description)
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDescription(): ?string
     {
@@ -168,15 +132,15 @@ class Resource implements IteratorAggregate, \JsonSerializable
     }
 
     /**
-     * @param string $typeName
+     * @param string|null $typeName
      */
-    public function setPathParameters(?string $typeName)
+    public function setPathParameters(?string $typeName): void
     {
         $this->pathParameters = $typeName;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getPathParameters(): ?string
     {
@@ -201,9 +165,9 @@ class Resource implements IteratorAggregate, \JsonSerializable
 
     /**
      * @param string $method
-     * @return \PSX\Api\Resource\MethodAbstract
+     * @return MethodAbstract
      */
-    public function getMethod($method): ?MethodAbstract
+    public function getMethod(string $method): ?MethodAbstract
     {
         if (isset($this->methods[$method])) {
             return $this->methods[$method];
@@ -213,7 +177,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
     }
 
     /**
-     * @return \PSX\Api\Resource\MethodAbstract[]
+     * @return MethodAbstract[]
      */
     public function getMethods(): array
     {
@@ -232,7 +196,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
      * @param string $method
      * @return boolean
      */
-    public function hasMethod($method): bool
+    public function hasMethod(string $method): bool
     {
         return isset($this->methods[$method]);
     }
@@ -255,7 +219,6 @@ class Resource implements IteratorAggregate, \JsonSerializable
         return array_filter([
             'status' => $this->status,
             'path' => $this->path,
-            'title' => $this->title,
             'description' => $this->description,
             'pathParameters' => $this->pathParameters,
             'methods' => $methods,

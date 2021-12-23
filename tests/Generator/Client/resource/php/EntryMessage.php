@@ -1,43 +1,25 @@
-<?php 
+<?php
 /**
  * EntryMessage generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 class EntryMessage implements \JsonSerializable
 {
-    /**
-     * @var bool|null
-     */
-    protected $success;
-    /**
-     * @var string|null
-     */
-    protected $message;
-    /**
-     * @param bool|null $success
-     */
+    protected ?bool $success = null;
+    protected ?string $message = null;
     public function setSuccess(?bool $success) : void
     {
         $this->success = $success;
     }
-    /**
-     * @return bool|null
-     */
     public function getSuccess() : ?bool
     {
         return $this->success;
     }
-    /**
-     * @param string|null $message
-     */
     public function setMessage(?string $message) : void
     {
         $this->message = $message;
     }
-    /**
-     * @return string|null
-     */
     public function getMessage() : ?string
     {
         return $this->message;

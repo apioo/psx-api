@@ -1,6 +1,6 @@
 
 // Client generated on 0000-00-00
-// {@link https://github.com/apioo}
+// @see https://sdkgen.app
 
 
 
@@ -16,27 +16,17 @@ type Client struct {
     Token   string
 }
 
-// Endpoint: /foo
-func (client Client) getFoo() FooResource {
-    r := FooResource {
+// Tag: foo
+func (client Client) foo() FooGroup {
+    r := FooGroup {
         BaseUrl: client.BaseUrl,
         Token: client.Token
     }
     return r
 }
-// Endpoint: /bar/:foo
-func (client Client) getBarByFoo(string foo) BarByFooResource {
-    r := BarByFooResource {
-        Foo: foo,
-        BaseUrl: client.BaseUrl,
-        Token: client.Token
-    }
-    return r
-}
-// Endpoint: /bar/$year<[0-9]+>
-func (client Client) getBarByYear(string year) BarByYearResource {
-    r := BarByYearResource {
-        Year: year,
+// Tag: bar
+func (client Client) bar() BarGroup {
+    r := BarGroup {
         BaseUrl: client.BaseUrl,
         Token: client.Token
     }

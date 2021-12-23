@@ -2,20 +2,20 @@
 package {{ namespace }} {
 {% endif %}
 
+import app.sdkgen.client.ClientAbstract;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-public class Client
+public class {{ className }} extends ClientAbstract
 {
-    private final String baseUrl;
-    private final String token;
-    private final HttpClient httpClient;
-
-    public Client(String baseUrl, String token, HttpClient httpClient)
+    public function {{ className }}(String baseUrl, {% if security.type == 'httpBasic' %}String userName, String password, {% elseif security.type in ['httpBearer', 'apiKey'] %}String token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}String clientId, String clientSecret, {% endif %}TokenStoreInterface tokenStore)
     {
-        this.baseUrl = baseUrl;
-        this.token = token;
-        this.httpClient = httpClient != null ? httpClient : HttpClientBuilder.create().build();
+        super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}null{% endif %}, tokenStore);
+    }
+
+    public function {{ className }}(String baseUrl, {% if security.type == 'httpBasic' %}String userName, String password, {% elseif security.type in ['httpBearer', 'apiKey'] %}String token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}String clientId, String clientSecret, {% endif %})
+    {
+        super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}null{% endif %}, null);
     }
 
 {% for className, resource in resources %}
@@ -28,7 +28,7 @@ public class Client
             {% for name, hint in resource.properties %}{{ name }},
             {% endfor %}
 this.baseUrl,
-            this.token,
+            this.newHttpClient(),
             this.httpClient
         );
     }

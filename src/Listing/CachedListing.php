@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,31 +29,20 @@ use PSX\Api\SpecificationInterface;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class CachedListing implements ListingInterface
 {
-    /**
-     * @var \PSX\Api\ListingInterface
-     */
-    protected $listing;
+    private ListingInterface $listing;
+    private CacheItemPoolInterface $cache;
+    private ?int $expire;
 
     /**
-     * @var \Psr\Cache\CacheItemPoolInterface
+     * @param ListingInterface $listing
+     * @param CacheItemPoolInterface $cache
+     * @param int|null $expire
      */
-    protected $cache;
-
-    /**
-     * @var integer|null
-     */
-    protected $expire;
-
-    /**
-     * @param \PSX\Api\ListingInterface $listing
-     * @param \Psr\Cache\CacheItemPoolInterface $cache
-     * @param integer|null $expire
-     */
-    public function __construct(ListingInterface $listing, CacheItemPoolInterface $cache, $expire = null)
+    public function __construct(ListingInterface $listing, CacheItemPoolInterface $cache, ?int $expire = null)
     {
         $this->listing = $listing;
         $this->cache   = $cache;
@@ -140,7 +129,7 @@ class CachedListing implements ListingInterface
      * @param string $sourcePath
      * @param integer|null $version
      */
-    public function invalidateResource($sourcePath, $version = null)
+    public function invalidateResource(string $sourcePath, ?int $version = null)
     {
         $this->cache->deleteItem($this->getResourceKey($sourcePath, $version));
     }
@@ -150,7 +139,7 @@ class CachedListing implements ListingInterface
      * 
      * @param integer|null $version
      */
-    public function invalidateResourceCollection($version = null, FilterInterface $filter = null)
+    public function invalidateResourceCollection(?int $version = null, ?FilterInterface $filter = null)
     {
         $this->cache->deleteItem($this->getResourceCollectionKey($version, $filter));
     }
@@ -158,7 +147,7 @@ class CachedListing implements ListingInterface
     /**
      * @return string
      */
-    protected function getResourceIndexKey(FilterInterface $filter = null)
+    protected function getResourceIndexKey(?FilterInterface $filter = null): string
     {
         return 'api-resource-index' . ($filter !== null ? '-' . $filter->getId() : '');
     }
@@ -168,7 +157,7 @@ class CachedListing implements ListingInterface
      * @param integer|null $version
      * @return string
      */
-    protected function getResourceKey($path, $version = null)
+    protected function getResourceKey(string $path, ?int $version = null): string
     {
         return 'api-resource-' . substr(md5($path), 0, 16) . '-' . intval($version);
     }
@@ -177,7 +166,7 @@ class CachedListing implements ListingInterface
      * @param integer|null $version
      * @return string
      */
-    protected function getResourceCollectionKey($version = null, FilterInterface $filter = null)
+    protected function getResourceCollectionKey(?int $version = null, ?FilterInterface $filter = null): string
     {
         return 'api-resource-collection-' . intval($version) . ($filter !== null ? '-' . $filter->getId() : '');
     }

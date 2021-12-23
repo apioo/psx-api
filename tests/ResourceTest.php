@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,14 +28,13 @@ use PSX\Api\Resource;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class ResourceTest extends TestCase
 {
     public function testResource()
     {
         $resource = new Resource(Resource::STATUS_ACTIVE, '/foo');
-        $resource->setTitle('foobar');
         $resource->setDescription('foobar');
         $resource->setPathParameters('Path');
         $resource->addMethod(Resource\Factory::getMethod('GET'));
@@ -45,7 +44,6 @@ class ResourceTest extends TestCase
         $this->assertFalse($resource->isDeprecated());
         $this->assertFalse($resource->isClosed());
         $this->assertEquals('/foo', $resource->getPath());
-        $this->assertEquals('foobar', $resource->getTitle());
         $this->assertEquals('foobar', $resource->getDescription());
         $this->assertEquals('Path', $resource->getPathParameters());
         $this->assertInstanceOf(Resource\MethodAbstract::class, $resource->getMethod('GET'));

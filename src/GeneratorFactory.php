@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,39 +27,16 @@ use Doctrine\Common\Annotations\Reader;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class GeneratorFactory implements GeneratorFactoryInterface
 {
-    /**
-     * @var \Doctrine\Common\Annotations\Reader
-     */
-    protected $reader;
+    private string $namespace;
+    private string $url;
+    private string $dispatch;
 
-    /**
-     * @var string
-     */
-    protected $namespace;
-
-    /**
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * @var string
-     */
-    protected $dispatch;
-
-    /**
-     * @param \Doctrine\Common\Annotations\Reader $reader
-     * @param string $namespace
-     * @param string $url
-     * @param string $dispatch
-     */
-    public function __construct(Reader $reader, $namespace, $url, $dispatch)
+    public function __construct(string $namespace, string $url, string $dispatch)
     {
-        $this->reader    = $reader;
         $this->namespace = $namespace;
         $this->url       = $url;
         $this->dispatch  = $dispatch;
@@ -68,7 +45,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
     /**
      * @inheritdoc
      */
-    public function getGenerator($format, $config = null)
+    public function getGenerator($format, $config = null): GeneratorInterface
     {
         $baseUri = $this->url . '/' . $this->dispatch;
 
@@ -107,7 +84,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
 
             default:
             case GeneratorFactoryInterface::SPEC_OPENAPI:
-                $generator = new Generator\Spec\OpenAPI($this->reader, 1, $baseUri);
+                $generator = new Generator\Spec\OpenAPI(1, $baseUri);
                 break;
         }
 
@@ -119,7 +96,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
     /**
      * @inheritdoc
      */
-    public function getFileExtension($format, $config = null)
+    public function getFileExtension($format, $config = null): string
     {
         switch ($format) {
             case GeneratorFactoryInterface::CLIENT_GO:
@@ -151,7 +128,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
     /**
      * @inheritdoc
      */
-    public function getMime($format, $config = null)
+    public function getMime($format, $config = null): string
     {
         switch ($format) {
             case GeneratorFactoryInterface::CLIENT_GO:
@@ -182,16 +159,16 @@ class GeneratorFactory implements GeneratorFactoryInterface
     /**
      * Callback method to optional configure the created generator
      * 
-     * @param \PSX\Api\GeneratorInterface $generator
+     * @param GeneratorInterface $generator
      */
-    protected function configure(GeneratorInterface $generator)
+    protected function configure(GeneratorInterface $generator): void
     {
     }
 
     /**
      * @return array
      */
-    public static function getPossibleTypes()
+    public static function getPossibleTypes(): array
     {
         return [
             GeneratorFactoryInterface::CLIENT_GO,

@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ use PSX\Api\GeneratorFactory;
 use PSX\Api\GeneratorFactoryInterface;
 use PSX\Api\Listing\MemoryListing;
 use PSX\Api\Listing\Route;
-use PSX\Api\Tests\Parser\Annotation\TestController;
+use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -36,7 +36,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class GenerateCommandTest extends TestCase
 {
@@ -69,19 +69,13 @@ class GenerateCommandTest extends TestCase
 
     protected function getGenerateCommand()
     {
-        $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Annotation');
-
-        $apiReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $apiReader->addNamespace('PSX\\Api\\Annotation');
-
-        $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
+        $apiManager = new ApiManager(new SchemaManager());
 
         $listing = new MemoryListing();
         $listing->addRoute(new Route('/foo', ['GET'], '*'));
         $listing->addSpecification($apiManager->getApi(TestController::class, '/foo'));
 
-        $factory = new GeneratorFactory($schemaReader, 'urn:phpsx.org:2016#', 'http://foo.com', '');
+        $factory = new GeneratorFactory('urn:phpsx.org:2016#', 'http://foo.com', '');
 
         return new GenerateCommand($listing, $factory);
     }

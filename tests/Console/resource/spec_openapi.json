@@ -13,7 +13,7 @@
     "\/foo": {
       "get": {
         "description": "A long **Test** description",
-        "operationId": "doGet",
+        "operationId": "PSX_Api_Tests_Parser_Attribute_TestController_doGet",
         "parameters": [
           {
             "name": "foo",
@@ -100,7 +100,7 @@
           "content": {
             "application\/json": {
               "schema": {
-                "$ref": "#\/components\/schemas\/PSXApiTestsParserAnnotationTestControllerGetRequest"
+                "$ref": "#\/components\/schemas\/PSX_Api_Tests_Parser_Attribute_TestController_doGet_GET_Request"
               }
             }
           }
@@ -111,7 +111,7 @@
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/PSXApiTestsParserAnnotationTestControllerGet200Response"
+                  "$ref": "#\/components\/schemas\/PSX_Api_Tests_Parser_Attribute_TestController_doGet_GET_200_Response"
                 }
               }
             }
@@ -147,11 +147,22 @@
           }
         }
       },
-      "PSXApiTestsParserAnnotationTestControllerGet200Response": {
+      "PSX_Api_Tests_Parser_Attribute_TestController_doGet_GET_200_Response": {
         "$ref": "#\/components\/schemas\/Song"
       },
-      "PSXApiTestsParserAnnotationTestControllerGetRequest": {
+      "PSX_Api_Tests_Parser_Attribute_TestController_doGet_GET_Request": {
         "$ref": "#\/components\/schemas\/Song"
+      },
+      "PSX_Api_Tests_Parser_Attribute_TestController_getDocumentation_Path": {
+        "type": "object",
+        "properties": {
+          "fooId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "fooId"
+        ]
       },
       "Song": {
         "description": "A canonical song",

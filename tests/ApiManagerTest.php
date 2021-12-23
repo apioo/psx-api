@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,18 +22,18 @@ namespace PSX\Api\Tests;
 
 use PSX\Api\Resource;
 use PSX\Api\SpecificationInterface;
-use PSX\Api\Tests\Parser\Annotation\TestController;
+use PSX\Api\Tests\Parser\Attribute\TestController;
 
 /**
  * ApiManagerTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class ApiManagerTest extends ApiManagerTestCase
 {
-    public function testGetApiAnnotation()
+    public function testGetApiAttribute()
     {
         $specification = $this->apiManager->getApi(TestController::class, '/foo');
 
@@ -63,13 +63,14 @@ class ApiManagerTest extends ApiManagerTestCase
     
     public function testGetBuilder()
     {
-        $builder = $this->apiManager->getBuilder(Resource::STATUS_ACTIVE, '/foo');
-        $builder->setTitle('My_Resource');
-        $builder->setDescription('My super resource');
-        $builder->setPathParameters('Path')->addInteger('todo_id');
-        $builder->setTags(['my_tag']);
+        $builder = $this->apiManager->getBuilder();
+
+        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo');
+        $resource->setDescription('My super resource');
+        $resource->setPathParameters('Path')->addInteger('todo_id');
+        $resource->setTags(['my_tag']);
         
-        $post = $builder->addMethod('POST');
+        $post = $resource->addMethod('POST');
         $post->setOperationId('my_action');
         $post->setQueryParameters('PostQuery')->addInteger('startIndex');
         $post->setDescription('My method description');

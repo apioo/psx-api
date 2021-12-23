@@ -1,0 +1,27 @@
+{% if namespace %}
+namespace {{ namespace }};
+{% endif %}
+
+use Sdkgen\Client\ResourceAbstract;
+
+class {{ className }} extends ResourceAbstract
+{
+{% for className, resource in resources %}
+    /**
+     * {{ resource.description|raw }}
+     *
+     * @return {{ className }}
+     */
+    public function {{ resource.methodName }}({% for name, hint in resource.properties %}{% if hint %}?{{ hint }} {% endif %}${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}): {{ className }}
+    {
+        return new {{ className }}(
+            {% for name, hint in resource.properties %}${{ name }},
+            {% endfor %}
+$this->baseUrl,
+            $this->httpClient,
+            $this->schemaManager
+        );
+    }
+
+{% endfor %}
+}

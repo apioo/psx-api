@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 namespace PSX\Api;
 
+use PSX\Schema\Definitions;
 use PSX\Schema\DefinitionsInterface;
 
 /**
@@ -27,24 +28,19 @@ use PSX\Schema\DefinitionsInterface;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
-class Specification implements SpecificationInterface
+class Specification implements SpecificationInterface, \JsonSerializable
 {
-    /**
-     * @var ResourceCollection
-     */
-    private $resourceCollection;
+    private ResourceCollection $resourceCollection;
+    private DefinitionsInterface $definitions;
+    private ?SecurityInterface $security;
 
-    /**
-     * @var DefinitionsInterface
-     */
-    private $definitions;
-
-    public function __construct(ResourceCollection $resourceCollection, DefinitionsInterface $definitions)
+    public function __construct(?ResourceCollection $resourceCollection = null, ?DefinitionsInterface $definitions = null, ?SecurityInterface $security = null)
     {
-        $this->resourceCollection = $resourceCollection;
-        $this->definitions = $definitions;
+        $this->resourceCollection = $resourceCollection ?? new ResourceCollection();
+        $this->definitions = $definitions ?? new Definitions();
+        $this->security = $security;
     }
 
     /**
@@ -80,22 +76,48 @@ class Specification implements SpecificationInterface
     }
 
     /**
-     * @param SpecificationInterface $specification
+     * @inheritDoc
+     */
+    public function getSecurity(): ?SecurityInterface
+    {
+        return $this->security;
+    }
+
+    /**
+     * @param SecurityInterface $security
+     */
+    public function setSecurity(SecurityInterface $security): void
+    {
+        $this->security = $security;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function merge(SpecificationInterface $specification): void
     {
-        foreach ($specification->getResourceCollection() as $resource) {
-            $this->resourceCollection->set($resource);
+        foreach ($specification->getResourceCollection() as $path => $resource) {
+            if ($this->resourceCollection->has($path)) {
+                foreach ($resource->getMethods() as $method) {
+                    $this->resourceCollection->get($path)->addMethod($method);
+                }
+            } else {
+                $this->resourceCollection->set($resource);
+            }
         }
 
         $this->definitions->merge($specification->getDefinitions());
     }
 
-    /**
-     * @param Resource $resource
-     * @param DefinitionsInterface $definitions
-     * @return Specification
-     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'security' => $this->security,
+            'resources' => $this->resourceCollection,
+            'definitions' => $this->definitions,
+        ];
+    }
+
     public static function fromResource(Resource $resource, DefinitionsInterface $definitions): Specification
     {
         $collection = new ResourceCollection();

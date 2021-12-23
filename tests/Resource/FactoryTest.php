@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@
 namespace PSX\Api\Tests\Resource;
 
 use PHPUnit\Framework\TestCase;
+use PSX\Api\Exception\InvalidMethodException;
+use PSX\Api\Resource;
 use PSX\Api\Resource\Factory;
 
 /**
@@ -28,26 +30,27 @@ use PSX\Api\Resource\Factory;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class FactoryTest extends TestCase
 {
     public function testGetMethod()
     {
-        $this->assertInstanceOf('PSX\Api\Resource\Delete', Factory::getMethod('DELETE'));
+        $this->assertInstanceOf(Resource\Delete::class, Factory::getMethod('DELETE'));
         $this->assertEquals('DELETE', Factory::getMethod('DELETE')->getName());
-        $this->assertInstanceOf('PSX\Api\Resource\Get', Factory::getMethod('GET'));
+        $this->assertInstanceOf(Resource\Get::class, Factory::getMethod('GET'));
         $this->assertEquals('GET', Factory::getMethod('GET')->getName());
-        $this->assertInstanceOf('PSX\Api\Resource\Patch', Factory::getMethod('PATCH'));
+        $this->assertInstanceOf(Resource\Patch::class, Factory::getMethod('PATCH'));
         $this->assertEquals('PATCH', Factory::getMethod('PATCH')->getName());
-        $this->assertInstanceOf('PSX\Api\Resource\Post', Factory::getMethod('POST'));
+        $this->assertInstanceOf(Resource\Post::class, Factory::getMethod('POST'));
         $this->assertEquals('POST', Factory::getMethod('POST')->getName());
-        $this->assertInstanceOf('PSX\Api\Resource\Put', Factory::getMethod('PUT'));
+        $this->assertInstanceOf(Resource\Put::class, Factory::getMethod('PUT'));
         $this->assertEquals('PUT', Factory::getMethod('PUT')->getName());
     }
 
     public function testGetMethodInvalid()
     {
+        $this->expectException(InvalidMethodException::class);
         $this->assertNull(Factory::getMethod('FOO'));
     }
 }

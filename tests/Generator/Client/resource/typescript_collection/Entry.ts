@@ -1,6 +1,6 @@
 /**
  * Entry generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * {@link https://sdkgen.app}
  */
 
 export interface Entry {

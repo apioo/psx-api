@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,35 +20,28 @@
 
 namespace PSX\Api\Tests\Listing;
 
-use Doctrine\Common\Cache\ArrayCache;
 use PSX\Api\ApiManager;
 use PSX\Api\Listing\CachedListing;
 use PSX\Api\Listing\MemoryListing;
 use PSX\Api\Listing\Route;
 use PSX\Api\ListingInterface;
-use PSX\Api\Tests\Parser\Annotation\FooController;
-use PSX\Api\Tests\Parser\Annotation\TestController;
-use PSX\Cache\Pool;
+use PSX\Api\Tests\Parser\Attribute\FooController;
+use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
  * CachedListingTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class CachedListingTest extends ListingTestCase
 {
     protected function newListing()
     {
-        $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Annotation');
-
-        $apiReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $apiReader->addNamespace('PSX\\Api\\Annotation');
-
-        $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
+        $apiManager = new ApiManager(new SchemaManager());
 
         $listing = new MemoryListing();
         $listing->addRoute(new Route('/foo', ['GET'], '*'));
@@ -56,7 +49,7 @@ class CachedListingTest extends ListingTestCase
         $listing->addSpecification($apiManager->getApi(TestController::class, '/foo'));
         $listing->addSpecification($apiManager->getApi(FooController::class, '/bar'));
 
-        $cache = new Pool(new ArrayCache());
+        $cache = new ArrayAdapter();
 
         return new CachedListing($listing, $cache);
     }

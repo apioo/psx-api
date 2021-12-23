@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ use PSX\Schema\TypeFactory;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 abstract class MarkupAbstract implements GeneratorInterface
 {
@@ -82,24 +82,24 @@ abstract class MarkupAbstract implements GeneratorInterface
         foreach ($methods as $method) {
             $text.= $this->startMethod($method);
 
-            // query parameters
+            $operationId = $method->getOperationId();
+            if (!empty($operationId)) {
+                $text.= $this->renderMeta('Operation-Id', $operationId);
+            }
+
             $queryParameters = $method->getQueryParameters();
             if (!empty($queryParameters)) {
                 $text.= $this->renderSchema('Query-Parameters', $queryParameters);
             }
 
-            // request
             $request = $method->getRequest();
             if (!empty($request)) {
                 $text.= $this->renderSchema('Request', $request);
             }
 
-            // responses
             $responses = $method->getResponses();
             foreach ($responses as $statusCode => $response) {
-                $message = isset(Http::$codes[$statusCode]) ? Http::$codes[$statusCode] : 'Unknown';
-
-                $text.= $this->renderSchema('Response - ' . $statusCode . ' ' . $message, $response);
+                $text.= $this->renderSchema('Response ' . $statusCode, $response);
             }
 
             $text.= $this->endMethod();
@@ -142,4 +142,11 @@ abstract class MarkupAbstract implements GeneratorInterface
      * @return string
      */
     abstract protected function renderSchema(string $title, string $schema);
+
+    /**
+     * @param string $title
+     * @param string $value
+     * @return string
+     */
+    abstract protected function renderMeta(string $title, string $value);
 }

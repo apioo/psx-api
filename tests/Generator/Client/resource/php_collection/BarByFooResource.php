@@ -1,14 +1,14 @@
-<?php 
+<?php
 /**
  * BarByFooResource generated on 0000-00-00
- * @see https://github.com/apioo
+ * @see https://sdkgen.app
  */
 
 namespace Foo\Bar;
 
 use GuzzleHttp\Client;
-use PSX\Api\Generator\Client\Php\ResourceAbstract;
 use PSX\Schema\SchemaManager;
+use Sdkgen\Client\ResourceAbstract;
 
 class BarByFooResource extends ResourceAbstract
 {
@@ -22,9 +22,9 @@ class BarByFooResource extends ResourceAbstract
      */
     private $foo;
 
-    public function __construct(string $foo, string $baseUrl, string $token, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
+    public function __construct(string $foo, string $baseUrl, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
-        parent::__construct($baseUrl, $token, $httpClient, $schemaManager);
+        parent::__construct($baseUrl, $httpClient, $schemaManager);
 
         $this->foo = $foo;
         $this->url = $this->baseUrl . '/bar/' . $foo . '';

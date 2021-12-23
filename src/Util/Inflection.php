@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ namespace PSX\Api\Util;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class Inflection
 {
@@ -36,7 +36,7 @@ class Inflection
      * @param string $path
      * @return string
      */
-    public static function convertPlaceholderToCurly(string $path)
+    public static function convertPlaceholderToCurly(string $path): string
     {
         $path = preg_replace('/(\:|\*)(\w+)/i', '{$2}', $path);
         $path = preg_replace('/(\$)(\w+)(\<(.*)\>)/iU', '{$2}', $path);
@@ -48,7 +48,7 @@ class Inflection
      * @param string $path
      * @return string
      */
-    public static function convertPlaceholderToColon(string $path)
+    public static function convertPlaceholderToColon(string $path): string
     {
         $path = preg_replace('/(\{(\w+)\})/i', ':$2', $path);
 
@@ -61,7 +61,7 @@ class Inflection
      * @param string $path
      * @return string
      */
-    public static function generateTitleFromRoute(string $path)
+    public static function generateTitleFromRoute(string $path): string
     {
         $path = str_replace([':', '*', '$'], '', $path);
         $path = preg_replace('/\<(.*)\>/iU', '', $path);

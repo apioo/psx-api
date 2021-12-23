@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,55 +21,29 @@
 namespace PSX\Api\Builder;
 
 use PSX\Api\Resource;
-use PSX\Api\Specification;
-use PSX\Api\SpecificationInterface;
 use PSX\Schema\Builder;
 use PSX\Schema\Definitions;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\SchemaManagerInterface;
 
 /**
- * Builder
+ * ResourceBuilder
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class ResourceBuilder implements ResourceBuilderInterface
 {
-    /**
-     * @var SchemaManagerInterface
-     */
-    private $schemaManager;
+    private SchemaManagerInterface $schemaManager;
+    private Resource $resource;
+    private DefinitionsInterface $definitions;
 
-    /**
-     * @var Resource
-     */
-    private $resource;
-
-    /**
-     * @var Definitions
-     */
-    private $definitions;
-
-    /**
-     * @var SpecificationInterface
-     */
-    private $specification;
-
-    public function __construct(SchemaManagerInterface $schemaManager, int $status, string $path)
+    public function __construct(SchemaManagerInterface $schemaManager, int $status, string $path, ?DefinitionsInterface $definitions = null)
     {
         $this->schemaManager = $schemaManager;
         $this->resource      = new Resource($status, $path);
-        $this->definitions   = new Definitions();
-        $this->specification = Specification::fromResource($this->resource, $this->definitions);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setTitle(string $title): void
-    {
-        $this->resource->setTitle($title);
+        $this->definitions   = $definitions ?? new Definitions();
     }
 
     /**
@@ -114,22 +88,16 @@ class ResourceBuilder implements ResourceBuilderInterface
     /**
      * @inheritDoc
      */
-    public function addResource(int $status, string $path): ResourceBuilderInterface
+    public function getResource(): Resource
     {
-        $builder = new static($this->schemaManager, $status, $path);
-        $builder->definitions = $this->definitions;
-        $builder->specification = $this->specification;
-
-        $this->specification->getResourceCollection()->set($builder->resource);
-
-        return $builder;
+        return $this->resource;
     }
 
     /**
      * @inheritDoc
      */
-    public function getSpecification(): SpecificationInterface
+    public function getDefinitions(): DefinitionsInterface
     {
-        return $this->specification;
+        return $this->definitions;
     }
 }

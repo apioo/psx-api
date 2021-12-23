@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,16 +29,13 @@ use PSX\Api\Tests\Generator\GeneratorTestCase;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class OpenAPITest extends GeneratorTestCase
 {
     public function testGenerate()
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Schema\\Annotation');
-
-        $generator = new OpenAPI($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
+        $generator = new OpenAPI(1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
 
         $actual = $generator->generate($this->getSpecification());
         $expect = file_get_contents(__DIR__ . '/resource/openapi.json');
@@ -48,10 +45,7 @@ class OpenAPITest extends GeneratorTestCase
 
     public function testGenerateAll()
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Schema\\Annotation');
-
-        $generator = new OpenAPI($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
+        $generator = new OpenAPI(1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
 
         $actual = $generator->generate($this->getSpecificationCollection());
         $expect = file_get_contents(__DIR__ . '/resource/openapi_collection.json');
@@ -61,10 +55,7 @@ class OpenAPITest extends GeneratorTestCase
 
     public function testGenerateComplex()
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Schema\\Annotation');
-
-        $generator = new OpenAPI($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
+        $generator = new OpenAPI(1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
         $generator->setTitle('Sample Pet Store App');
         $generator->setDescription('This is a sample server for a pet store.');
         $generator->setTermsOfService('http://example.com/terms/');

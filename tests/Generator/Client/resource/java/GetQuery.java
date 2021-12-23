@@ -1,6 +1,6 @@
 /**
  * GetQuery generated on 0000-00-00
- * {@link https://github.com/apioo}
+ * @see https://sdkgen.app
  */
 
 import java.time.LocalDate;

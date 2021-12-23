@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 namespace PSX\Api;
 
 use PSX\Api\Listing\FilterInterface;
+use PSX\Api\Listing\Route;
 
 /**
  * A listing knows all API endpoints in a system and can be used to get resource
@@ -29,24 +30,24 @@ use PSX\Api\Listing\FilterInterface;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 interface ListingInterface
 {
     /**
      * Returns all available routes
      *
-     * @param \PSX\Api\Listing\FilterInterface|null $filter
-     * @return \PSX\Api\Listing\Route[]
+     * @param FilterInterface|null $filter
+     * @return Route[]
      */
-    public function getAvailableRoutes(FilterInterface $filter = null): iterable;
+    public function getAvailableRoutes(?FilterInterface $filter = null): iterable;
 
     /**
      * Returns a specification for a specific resource path
      *
      * @param string $path
      * @param string|null $version
-     * @return \PSX\Api\SpecificationInterface|null
+     * @return SpecificationInterface|null
      */
     public function find(string $path, ?string $version = null): ?SpecificationInterface;
 
@@ -54,8 +55,8 @@ interface ListingInterface
      * Returns all available resources
      *
      * @param string|null $version
-     * @param \PSX\Api\Listing\FilterInterface|null $filter
-     * @return \PSX\Api\SpecificationInterface
+     * @param FilterInterface|null $filter
+     * @return SpecificationInterface
      */
     public function findAll(?string $version = null, FilterInterface $filter = null): SpecificationInterface;
 }

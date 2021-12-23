@@ -1,9 +1,9 @@
 <?php
 /*
- * PSX is a open source PHP framework to develop RESTful APIs.
- * For the current version and informations visit <http://phpsx.org>
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2020 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ use PSX\Api\ApiManager;
 use PSX\Api\Console\ParseCommand;
 use PSX\Api\GeneratorFactory;
 use PSX\Api\GeneratorFactoryInterface;
-use PSX\Api\Tests\Parser\Annotation\TestController;
+use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -34,7 +34,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
- * @link    http://phpsx.org
+ * @link    https://phpsx.org
  */
 class ParseCommandTest extends TestCase
 {
@@ -46,10 +46,11 @@ class ParseCommandTest extends TestCase
         $commandTester->execute(array(
             'source'   => TestController::class,
             'path'     => '/foo',
+            '--dir'    => __DIR__ . '/output',
             '--format' => GeneratorFactoryInterface::SPEC_OPENAPI,
         ));
 
-        $actual = $commandTester->getDisplay();
+        $actual = file_get_contents(__DIR__ . '/output/output-spec-openapi.json');
         $expect = file_get_contents(__DIR__ . '/resource/spec_openapi.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
@@ -57,14 +58,8 @@ class ParseCommandTest extends TestCase
 
     protected function getParseCommand()
     {
-        $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Annotation');
-
-        $apiReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $apiReader->addNamespace('PSX\\Api\\Annotation');
-
-        $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
-        $factory    = new GeneratorFactory($schemaReader, 'urn:phpsx.org:2016#', 'http://foo.com', '');
+        $apiManager = new ApiManager(new SchemaManager());
+        $factory    = new GeneratorFactory('urn:phpsx.org:2016#', 'http://foo.com', '');
 
         return new ParseCommand($apiManager, $factory);
     }
