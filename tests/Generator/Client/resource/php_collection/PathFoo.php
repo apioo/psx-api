@@ -9,20 +9,11 @@ namespace Foo\Bar;
 
 class PathFoo implements \JsonSerializable
 {
-    /**
-     * @var string|null
-     */
-    protected $foo;
-    /**
-     * @param string|null $foo
-     */
+    protected ?string $foo = null;
     public function setFoo(?string $foo) : void
     {
         $this->foo = $foo;
     }
-    /**
-     * @return string|null
-     */
     public function getFoo() : ?string
     {
         return $this->foo;

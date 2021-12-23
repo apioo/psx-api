@@ -22,7 +22,7 @@ namespace PSX\Api\Tests;
 
 use PSX\Api\Resource;
 use PSX\Api\SpecificationInterface;
-use PSX\Api\Tests\Parser\Annotation\TestController;
+use PSX\Api\Tests\Parser\Attribute\TestController;
 
 /**
  * ApiManagerTest
@@ -33,7 +33,7 @@ use PSX\Api\Tests\Parser\Annotation\TestController;
  */
 class ApiManagerTest extends ApiManagerTestCase
 {
-    public function testGetApiAnnotation()
+    public function testGetApiAttribute()
     {
         $specification = $this->apiManager->getApi(TestController::class, '/foo');
 
@@ -66,7 +66,6 @@ class ApiManagerTest extends ApiManagerTestCase
         $builder = $this->apiManager->getBuilder();
 
         $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo');
-        $resource->setTitle('My_Resource');
         $resource->setDescription('My super resource');
         $resource->setPathParameters('Path')->addInteger('todo_id');
         $resource->setTags(['my_tag']);

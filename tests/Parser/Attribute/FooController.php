@@ -18,8 +18,11 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests\Parser\Annotation;
+namespace PSX\Api\Tests\Parser\Attribute;
 
+use PSX\Api\Attribute\Description;
+use PSX\Api\Attribute\Incoming;
+use PSX\Api\Attribute\Outgoing;
 use PSX\Api\DocumentedInterface;
 use PSX\Api\SpecificationInterface;
 
@@ -29,9 +32,8 @@ use PSX\Api\SpecificationInterface;
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
- * @Title("Foo")
- * @Description("Foo endpoint")
  */
+#[Description('Foo endpoint')]
 class FooController implements DocumentedInterface
 {
     public function __construct()
@@ -43,10 +45,8 @@ class FooController implements DocumentedInterface
         return null;
     }
 
-    /**
-     * @Incoming(schema="../schema/schema.json")
-     * @Outgoing(code=200, schema="../schema/schema.json")
-     */
+    #[Incoming(schema: '../schema/schema.json')]
+    #[Outgoing(code: 200, schema: '../schema/schema.json')]
     protected function doGet()
     {
     }

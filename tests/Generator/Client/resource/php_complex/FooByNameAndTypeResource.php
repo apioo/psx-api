@@ -42,7 +42,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
      * @param Entry|EntryMessage $data
      * @return Entry|EntryMessage
      */
-    public function postEntryOrMessage($data = null)
+    public function postEntryOrMessage(?Entry|EntryMessage $data = null): Entry|EntryMessage
     {
         $options = [
             'headers' => [
@@ -54,7 +54,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
         $response = $this->httpClient->request('POST', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->parse($data, null);
+        return $this->parse($data, Entry|EntryMessage::class);
     }
 
 }

@@ -34,28 +34,12 @@ use PSX\Schema\SchemaManager;
  */
 abstract class ApiManagerTestCase extends TestCase
 {
-    /**
-     * @var \Doctrine\Common\Annotations\Reader
-     */
-    protected $annotationReader;
-
-    /**
-     * @var \PSX\Schema\SchemaManager
-     */
-    protected $schemaManager;
-
-    /**
-     * @var \PSX\Api\ApiManager
-     */
-    protected $apiManager;
+    protected SchemaManager $schemaManager;
+    protected ApiManager $apiManager;
 
     protected function setUp(): void
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Api\\Annotation');
-
-        $this->annotationReader = $reader;
-        $this->schemaManager    = new SchemaManager($reader);
-        $this->apiManager       = new ApiManager($reader, $this->schemaManager);
+        $this->schemaManager = new SchemaManager();
+        $this->apiManager    = new ApiManager($this->schemaManager);
     }
 }

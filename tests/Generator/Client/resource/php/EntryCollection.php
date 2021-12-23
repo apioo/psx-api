@@ -9,7 +9,7 @@ class EntryCollection implements \JsonSerializable
     /**
      * @var array<Entry>|null
      */
-    protected $entry;
+    protected ?array $entry = null;
     /**
      * @param array<Entry>|null $entry
      */
@@ -17,9 +17,6 @@ class EntryCollection implements \JsonSerializable
     {
         $this->entry = $entry;
     }
-    /**
-     * @return array<Entry>|null
-     */
     public function getEntry() : ?array
     {
         return $this->entry;

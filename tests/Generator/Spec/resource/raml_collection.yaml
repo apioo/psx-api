@@ -4,6 +4,7 @@ baseUri: 'http://api.phpsx.org'
 version: v1
 title: PSX
 /foo:
+  description: foo
   get:
     description: 'Returns a collection'
     responses:
@@ -21,6 +22,7 @@ title: PSX
           application/json:
             type: EntryMessage
 /bar/{foo}:
+  description: bar
   uriParameters:
     foo:
       type: string
@@ -42,6 +44,7 @@ title: PSX
           application/json:
             type: EntryMessage
 /bar/{year}:
+  description: bar
   uriParameters:
     year:
       type: string

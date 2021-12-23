@@ -6,82 +6,49 @@
 
 namespace Foo\Bar;
 
-/**
- * @Required({"title", "date"})
- */
+use PSX\Schema\Attribute\MaxLength;
+use PSX\Schema\Attribute\MinLength;
+use PSX\Schema\Attribute\Pattern;
+use PSX\Schema\Attribute\Required;
+
+#[Required(array('title', 'date'))]
 class EntryCreate implements \JsonSerializable
 {
-    /**
-     * @var int|null
-     */
-    protected $id;
-    /**
-     * @var int|null
-     */
-    protected $userId;
-    /**
-     * @var string|null
-     * @Pattern("[A-z]+")
-     * @MinLength(3)
-     * @MaxLength(16)
-     */
-    protected $title;
-    /**
-     * @var \DateTime|null
-     */
-    protected $date;
-    /**
-     * @param int|null $id
-     */
+    protected ?int $id = null;
+    protected ?int $userId = null;
+    #[Pattern('[A-z]+')]
+    #[MinLength(3)]
+    #[MaxLength(16)]
+    protected ?string $title = null;
+    protected ?\DateTime $date = null;
     public function setId(?int $id) : void
     {
         $this->id = $id;
     }
-    /**
-     * @return int|null
-     */
     public function getId() : ?int
     {
         return $this->id;
     }
-    /**
-     * @param int|null $userId
-     */
     public function setUserId(?int $userId) : void
     {
         $this->userId = $userId;
     }
-    /**
-     * @return int|null
-     */
     public function getUserId() : ?int
     {
         return $this->userId;
     }
-    /**
-     * @param string|null $title
-     */
     public function setTitle(?string $title) : void
     {
         $this->title = $title;
     }
-    /**
-     * @return string|null
-     */
     public function getTitle() : ?string
     {
         return $this->title;
     }
-    /**
-     * @param \DateTime|null $date
-     */
     public function setDate(?\DateTime $date) : void
     {
         $this->date = $date;
     }
-    /**
-     * @return \DateTime|null
-     */
     public function getDate() : ?\DateTime
     {
         return $this->date;

@@ -67,62 +67,36 @@ class PetsResource extends ResourceAbstract
  * @see https://sdkgen.app
  */
 
-/**
- * @Title("Pet")
- * @Required({"id", "name"})
- */
+use PSX\Schema\Attribute\Required;
+use PSX\Schema\Attribute\Title;
+
+#[Title('Pet')]
+#[Required(array('id', 'name'))]
 class Pet implements \JsonSerializable
 {
-    /**
-     * @var int|null
-     */
-    protected $id;
-    /**
-     * @var string|null
-     */
-    protected $name;
-    /**
-     * @var string|null
-     */
-    protected $tag;
-    /**
-     * @param int|null $id
-     */
+    protected ?int $id = null;
+    protected ?string $name = null;
+    protected ?string $tag = null;
     public function setId(?int $id) : void
     {
         $this->id = $id;
     }
-    /**
-     * @return int|null
-     */
     public function getId() : ?int
     {
         return $this->id;
     }
-    /**
-     * @param string|null $name
-     */
     public function setName(?string $name) : void
     {
         $this->name = $name;
     }
-    /**
-     * @return string|null
-     */
     public function getName() : ?string
     {
         return $this->name;
     }
-    /**
-     * @param string|null $tag
-     */
     public function setTag(?string $tag) : void
     {
         $this->tag = $tag;
     }
-    /**
-     * @return string|null
-     */
     public function getTag() : ?string
     {
         return $this->tag;
@@ -141,15 +115,15 @@ class Pet implements \JsonSerializable
  * @see https://sdkgen.app
  */
 
-/**
- * @Title("Pets")
- */
+use PSX\Schema\Attribute\Title;
+
+#[Title('Pets')]
 class Pets implements \JsonSerializable
 {
     /**
      * @var array<Pet>|null
      */
-    protected $pets;
+    protected ?array $pets = null;
     /**
      * @param array<Pet>|null $pets
      */
@@ -157,9 +131,6 @@ class Pets implements \JsonSerializable
     {
         $this->pets = $pets;
     }
-    /**
-     * @return array<Pet>|null
-     */
     public function getPets() : ?array
     {
         return $this->pets;
@@ -178,44 +149,27 @@ class Pets implements \JsonSerializable
  * @see https://sdkgen.app
  */
 
-/**
- * @Title("Error")
- * @Required({"code", "message"})
- */
+use PSX\Schema\Attribute\Required;
+use PSX\Schema\Attribute\Title;
+
+#[Title('Error')]
+#[Required(array('code', 'message'))]
 class Error implements \JsonSerializable
 {
-    /**
-     * @var int|null
-     */
-    protected $code;
-    /**
-     * @var string|null
-     */
-    protected $message;
-    /**
-     * @param int|null $code
-     */
+    protected ?int $code = null;
+    protected ?string $message = null;
     public function setCode(?int $code) : void
     {
         $this->code = $code;
     }
-    /**
-     * @return int|null
-     */
     public function getCode() : ?int
     {
         return $this->code;
     }
-    /**
-     * @param string|null $message
-     */
     public function setMessage(?string $message) : void
     {
         $this->message = $message;
     }
-    /**
-     * @return string|null
-     */
     public function getMessage() : ?string
     {
         return $this->message;
@@ -234,25 +188,16 @@ class Error implements \JsonSerializable
  * @see https://sdkgen.app
  */
 
-/**
- * @Required({})
- */
+use PSX\Schema\Attribute\Required;
+
+#[Required(array())]
 class PetsGetQuery implements \JsonSerializable
 {
-    /**
-     * @var int|null
-     */
-    protected $limit;
-    /**
-     * @param int|null $limit
-     */
+    protected ?int $limit = null;
     public function setLimit(?int $limit) : void
     {
         $this->limit = $limit;
     }
-    /**
-     * @return int|null
-     */
     public function getLimit() : ?int
     {
         return $this->limit;
@@ -271,25 +216,16 @@ class PetsGetQuery implements \JsonSerializable
  * @see https://sdkgen.app
  */
 
-/**
- * @Required({})
- */
+use PSX\Schema\Attribute\Required;
+
+#[Required(array())]
 class PetsPetIdGetQuery implements \JsonSerializable
 {
-    /**
-     * @var string|null
-     */
-    protected $petId;
-    /**
-     * @param string|null $petId
-     */
+    protected ?string $petId = null;
     public function setPetId(?string $petId) : void
     {
         $this->petId = $petId;
     }
-    /**
-     * @return string|null
-     */
     public function getPetId() : ?string
     {
         return $this->petId;

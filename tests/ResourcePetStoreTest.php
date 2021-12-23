@@ -87,12 +87,8 @@ class ResourceConversionTest extends ApiManagerTestCase
 
     public function testSpecOpenAPI()
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Api\\Annotation');
-        $reader->addNamespace('PSX\\Schema\\Annotation');
-
         $specification = $this->getSpecification();
-        $generator = new Generator\Spec\OpenAPI($reader, 1, '/', 'urn:schema.phpsx.org#');
+        $generator = new Generator\Spec\OpenAPI(1, '/', 'urn:schema.phpsx.org#');
 
         $actual = $generator->generate($specification);
         $expect = file_get_contents(__DIR__ . '/Resource/petstore/spec_openapi.json');
@@ -116,11 +112,7 @@ class ResourceConversionTest extends ApiManagerTestCase
 
     private function getSpecification(): SpecificationInterface
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Api\\Annotation');
-        $reader->addNamespace('PSX\\Schema\\Annotation');
-
-        $parser = new Parser\OpenAPI($reader, __DIR__ . '/Resource');
+        $parser = new Parser\OpenAPI(__DIR__ . '/Resource');
 
         return $parser->parse(json_encode(Yaml::parse($this->getOpenAPI())));
     }

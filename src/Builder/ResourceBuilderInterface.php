@@ -36,11 +36,6 @@ use PSX\Schema\DefinitionsInterface;
 interface ResourceBuilderInterface
 {
     /**
-     * @param string $title
-     */
-    public function setTitle(string $title): void;
-
-    /**
      * @param string $description
      */
     public function setDescription(string $description): void;

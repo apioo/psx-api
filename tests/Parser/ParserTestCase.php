@@ -43,7 +43,6 @@ abstract class ParserTestCase extends ApiManagerTestCase
         $resource = $specification->getResourceCollection()->get('/foo');
 
         $this->assertEquals('/foo', $resource->getPath());
-        $this->assertEquals('Test', $resource->getTitle());
         $this->assertEquals('Test description', $resource->getDescription());
 
         $path = $definitions->getType($resource->getPathParameters());

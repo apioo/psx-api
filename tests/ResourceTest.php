@@ -35,7 +35,6 @@ class ResourceTest extends TestCase
     public function testResource()
     {
         $resource = new Resource(Resource::STATUS_ACTIVE, '/foo');
-        $resource->setTitle('foobar');
         $resource->setDescription('foobar');
         $resource->setPathParameters('Path');
         $resource->addMethod(Resource\Factory::getMethod('GET'));
@@ -45,7 +44,6 @@ class ResourceTest extends TestCase
         $this->assertFalse($resource->isDeprecated());
         $this->assertFalse($resource->isClosed());
         $this->assertEquals('/foo', $resource->getPath());
-        $this->assertEquals('foobar', $resource->getTitle());
         $this->assertEquals('foobar', $resource->getDescription());
         $this->assertEquals('Path', $resource->getPathParameters());
         $this->assertInstanceOf(Resource\MethodAbstract::class, $resource->getMethod('GET'));

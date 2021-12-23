@@ -35,10 +35,7 @@ class OpenAPITest extends GeneratorTestCase
 {
     public function testGenerate()
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Schema\\Annotation');
-
-        $generator = new OpenAPI($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
+        $generator = new OpenAPI(1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
 
         $actual = $generator->generate($this->getSpecification());
         $expect = file_get_contents(__DIR__ . '/resource/openapi.json');
@@ -48,10 +45,7 @@ class OpenAPITest extends GeneratorTestCase
 
     public function testGenerateAll()
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Schema\\Annotation');
-
-        $generator = new OpenAPI($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
+        $generator = new OpenAPI(1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
 
         $actual = $generator->generate($this->getSpecificationCollection());
         $expect = file_get_contents(__DIR__ . '/resource/openapi_collection.json');
@@ -61,10 +55,7 @@ class OpenAPITest extends GeneratorTestCase
 
     public function testGenerateComplex()
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Schema\\Annotation');
-
-        $generator = new OpenAPI($reader, 1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
+        $generator = new OpenAPI(1, 'http://api.phpsx.org', 'http://foo.phpsx.org');
         $generator->setTitle('Sample Pet Store App');
         $generator->setDescription('This is a sample server for a pet store.');
         $generator->setTermsOfService('http://example.com/terms/');

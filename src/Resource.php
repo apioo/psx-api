@@ -48,7 +48,6 @@ class Resource implements IteratorAggregate, \JsonSerializable
 
     private int $status;
     private string $path;
-    private ?string $title = null;
     private ?string $description = null;
     private ?string $pathParameters = null;
 
@@ -114,22 +113,6 @@ class Resource implements IteratorAggregate, \JsonSerializable
     public function getPath(): string
     {
         return $this->path;
-    }
-
-    /**
-     * @param string|null $title
-     */
-    public function setTitle(?string $title): void
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getTitle(): ?string
-    {
-        return $this->title;
     }
 
     /**
@@ -236,7 +219,6 @@ class Resource implements IteratorAggregate, \JsonSerializable
         return array_filter([
             'status' => $this->status,
             'path' => $this->path,
-            'title' => $this->title,
             'description' => $this->description,
             'pathParameters' => $this->pathParameters,
             'methods' => $methods,

@@ -39,10 +39,7 @@ class GeneratorFactoryTest extends TestCase
      */
     public function testGetGenerator($type)
     {
-        $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Annotation');
-
-        $factory   = new GeneratorFactory($schemaReader, 'urn:phpsx.org:2016#', 'http://foo.com', '');
+        $factory   = new GeneratorFactory('urn:phpsx.org:2016#', 'http://foo.com', '');
         $generator = $factory->getGenerator($type);
 
         $this->assertInstanceOf(GeneratorInterface::class, $generator);

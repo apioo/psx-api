@@ -37,20 +37,17 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
  */
 class ApiManager implements ApiManagerInterface
 {
-    public const TYPE_ANNOTATION = 1;
-    public const TYPE_ATTRIBUTE = 2;
-    public const TYPE_OPENAPI = 3;
+    public const TYPE_ATTRIBUTE = 1;
+    public const TYPE_OPENAPI = 2;
 
     private SchemaManagerInterface $schemaManager;
-    private Parser\Annotation $annotationParser;
     private Parser\Attribute $attributeParser;
     private CacheItemPoolInterface $cache;
     private bool $debug;
 
-    public function __construct(Reader $reader, SchemaManagerInterface $schemaManager, CacheItemPoolInterface $cache = null, bool $debug = false)
+    public function __construct(SchemaManagerInterface $schemaManager, CacheItemPoolInterface $cache = null, bool $debug = false)
     {
         $this->schemaManager = $schemaManager;
-        $this->annotationParser = new Parser\Annotation($reader, $schemaManager);
         $this->attributeParser = new Parser\Attribute($schemaManager);
         $this->cache = $cache === null ? new ArrayAdapter() : $cache;
         $this->debug = $debug;
@@ -75,8 +72,6 @@ class ApiManager implements ApiManagerInterface
 
         if ($type === self::TYPE_OPENAPI) {
             $api = OpenAPI::fromFile($source, $path);
-        } elseif ($type === self::TYPE_ANNOTATION) {
-            $api = $this->annotationParser->parse($source, $path);
         } elseif ($type === self::TYPE_ATTRIBUTE) {
             $api = $this->attributeParser->parse($source, $path);
         } else {
@@ -102,11 +97,7 @@ class ApiManager implements ApiManagerInterface
     private function guessTypeFromSource($source): ?int
     {
         if (class_exists($source)) {
-            if (PHP_VERSION_ID > 80000) {
-                return self::TYPE_ATTRIBUTE;
-            } else {
-                return self::TYPE_ANNOTATION;
-            }
+            return self::TYPE_ATTRIBUTE;
         } else {
             return self::TYPE_OPENAPI;
         }

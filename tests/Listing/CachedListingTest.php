@@ -20,16 +20,15 @@
 
 namespace PSX\Api\Tests\Listing;
 
-use Doctrine\Common\Cache\ArrayCache;
 use PSX\Api\ApiManager;
 use PSX\Api\Listing\CachedListing;
 use PSX\Api\Listing\MemoryListing;
 use PSX\Api\Listing\Route;
 use PSX\Api\ListingInterface;
-use PSX\Api\Tests\Parser\Annotation\FooController;
-use PSX\Api\Tests\Parser\Annotation\TestController;
-use PSX\Cache\Pool;
+use PSX\Api\Tests\Parser\Attribute\FooController;
+use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
  * CachedListingTest
@@ -42,13 +41,7 @@ class CachedListingTest extends ListingTestCase
 {
     protected function newListing()
     {
-        $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Annotation');
-
-        $apiReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $apiReader->addNamespace('PSX\\Api\\Annotation');
-
-        $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
+        $apiManager = new ApiManager(new SchemaManager());
 
         $listing = new MemoryListing();
         $listing->addRoute(new Route('/foo', ['GET'], '*'));
@@ -56,7 +49,7 @@ class CachedListingTest extends ListingTestCase
         $listing->addSpecification($apiManager->getApi(TestController::class, '/foo'));
         $listing->addSpecification($apiManager->getApi(FooController::class, '/bar'));
 
-        $cache = new Pool(new ArrayCache());
+        $cache = new ArrayAdapter();
 
         return new CachedListing($listing, $cache);
     }

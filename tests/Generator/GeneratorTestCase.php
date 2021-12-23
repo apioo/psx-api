@@ -41,7 +41,6 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $builder->setSecurity(new HttpBearer());
         $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
 
-        $resource->setTitle('foo');
         $resource->setDescription('lorem ipsum');
         $path = $resource->setPathParameters('Path');
         $path->addString('name')
@@ -93,7 +92,7 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $builder = $this->apiManager->getBuilder();
         $builder->setSecurity(new HttpBearer());
         $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo');
-        $resource->setTitle('foo');
+        $resource->setDescription('foo');
         $resource->setTags(['foo']);
 
         $get = $resource->addMethod('GET');
@@ -105,7 +104,7 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $post->addResponse(201, Schema\Message::class);
 
         $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/bar/:foo');
-        $resource->setTitle('bar');
+        $resource->setDescription('bar');
         $resource->setPathParameters('PathFoo')->addString('foo');
         $resource->setTags(['bar']);
 
@@ -118,7 +117,7 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $post->addResponse(201, Schema\Message::class);
 
         $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/bar/$year<[0-9]+>');
-        $resource->setTitle('bar');
+        $resource->setDescription('bar');
         $resource->setPathParameters('PathYear')->addString('year');
         $resource->setTags(['bar']);
 
@@ -137,7 +136,7 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
     {
         $builder = $this->apiManager->getBuilder();
         $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
-        $resource->setTitle('foo');
+
         $resource->setDescription('lorem ipsum');
         $path = $resource->setPathParameters('Path');
         $path->addString('name');

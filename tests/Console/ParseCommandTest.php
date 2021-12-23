@@ -25,7 +25,7 @@ use PSX\Api\ApiManager;
 use PSX\Api\Console\ParseCommand;
 use PSX\Api\GeneratorFactory;
 use PSX\Api\GeneratorFactoryInterface;
-use PSX\Api\Tests\Parser\Annotation\TestController;
+use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -58,14 +58,8 @@ class ParseCommandTest extends TestCase
 
     protected function getParseCommand()
     {
-        $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Annotation');
-
-        $apiReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $apiReader->addNamespace('PSX\\Api\\Annotation');
-
-        $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
-        $factory    = new GeneratorFactory($schemaReader, 'urn:phpsx.org:2016#', 'http://foo.com', '');
+        $apiManager = new ApiManager(new SchemaManager());
+        $factory    = new GeneratorFactory('urn:phpsx.org:2016#', 'http://foo.com', '');
 
         return new ParseCommand($apiManager, $factory);
     }

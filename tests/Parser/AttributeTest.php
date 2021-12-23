@@ -21,25 +21,25 @@
 namespace PSX\Api\Tests\Parser;
 
 use PSX\Api\ApiManager;
-use PSX\Api\Parser\Annotation as AnnotationParser;
+use PSX\Api\Parser\Attribute as AttributeParser;
 use PSX\Api\SpecificationInterface;
-use PSX\Api\Tests\Parser\Annotation\TestController;
+use PSX\Api\Tests\Parser\Attribute\TestController;
 
 /**
- * AnnotationTest
+ * AttributeTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class AnnotationTest extends ParserTestCase
+class AttributeTest extends ParserTestCase
 {
     /**
      * @inheritDoc
      */
     protected function getSpecification(): SpecificationInterface
     {
-        return $this->apiManager->getApi(TestController::class, '/foo', ApiManager::TYPE_ANNOTATION);
+        return $this->apiManager->getApi(TestController::class, '/foo', ApiManager::TYPE_ATTRIBUTE);
     }
 
     public function testOperationId()
@@ -47,18 +47,14 @@ class AnnotationTest extends ParserTestCase
         $specification = $this->apiManager->getApi(TestController::class, '/foo');
         $resource = $specification->getResourceCollection()->get('/foo');
 
-        $this->assertEquals('doGet', $resource->getMethod('GET')->getOperationId());
+        $this->assertEquals('PSX_Api_Tests_Parser_Attribute_TestController_doGet', $resource->getMethod('GET')->getOperationId());
     }
 
     public function testParseInvalid()
     {
         $this->expectException(\ReflectionException::class);
 
-        $annotation = new AnnotationParser(
-            $this->annotationReader,
-            $this->schemaManager
-        );
-
+        $annotation = new AttributeParser($this->schemaManager);
         $annotation->parse('foo', '/foo');
     }
 }

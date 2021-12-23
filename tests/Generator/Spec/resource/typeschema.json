@@ -1,7 +1,6 @@
 {
   "status": 1,
   "path": "\/foo\/:name\/:type",
-  "title": "foo",
   "description": "lorem ipsum",
   "pathParameters": "Path",
   "methods": {

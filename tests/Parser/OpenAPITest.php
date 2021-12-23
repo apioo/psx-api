@@ -54,7 +54,6 @@ class OpenAPITest extends ParserTestCase
         $definitions = $specification->getDefinitions();
 
         $this->assertEquals('/foo', $resource->getPath());
-        $this->assertEquals('Test', $resource->getTitle());
         $this->assertEquals('Test description', $resource->getDescription());
 
         $path = $definitions->getType($resource->getPathParameters());
@@ -105,10 +104,7 @@ class OpenAPITest extends ParserTestCase
 
     public function testParseAll()
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Schema\\Annotation');
-
-        $parser = new OpenAPI($reader, __DIR__ . '/openapi');
+        $parser = new OpenAPI(__DIR__ . '/openapi');
         $specification = $parser->parse(file_get_contents(__DIR__ . '/openapi/simple.json'));
 
         $this->assertInstanceOf(ResourceCollection::class, $specification->getResourceCollection());

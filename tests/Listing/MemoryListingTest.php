@@ -23,8 +23,8 @@ namespace PSX\Api\Tests\Listing;
 use PSX\Api\ApiManager;
 use PSX\Api\Listing\MemoryListing;
 use PSX\Api\Listing\Route;
-use PSX\Api\Tests\Parser\Annotation\FooController;
-use PSX\Api\Tests\Parser\Annotation\TestController;
+use PSX\Api\Tests\Parser\Attribute\FooController;
+use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
 
 /**
@@ -38,13 +38,7 @@ class MemoryListingTest extends ListingTestCase
 {
     protected function newListing()
     {
-        $schemaReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $schemaReader->addNamespace('PSX\\Schema\\Annotation');
-
-        $apiReader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-        $apiReader->addNamespace('PSX\\Api\\Annotation');
-
-        $apiManager = new ApiManager($apiReader, new SchemaManager($schemaReader));
+        $apiManager = new ApiManager(new SchemaManager());
 
         $listing = new MemoryListing();
         $listing->addRoute(new Route('/foo', ['GET'], '*'));

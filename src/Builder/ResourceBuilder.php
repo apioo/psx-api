@@ -49,14 +49,6 @@ class ResourceBuilder implements ResourceBuilderInterface
     /**
      * @inheritDoc
      */
-    public function setTitle(string $title): void
-    {
-        $this->resource->setTitle($title);
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function setDescription(string $description): void
     {
         $this->resource->setDescription($description);

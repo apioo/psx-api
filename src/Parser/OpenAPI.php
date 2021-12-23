@@ -20,8 +20,6 @@
 
 namespace PSX\Api\Parser;
 
-use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
@@ -70,15 +68,13 @@ use Symfony\Component\Yaml\Yaml;
  */
 class OpenAPI implements ParserInterface
 {
-    private Reader $annotationReader;
     private ?string $basePath;
     private SchemaParser\TypeSchema $schemaParser;
     private ?DefinitionsInterface $definitions = null;
     private ?\PSX\Model\OpenAPI\OpenAPI $document = null;
 
-    public function __construct(Reader $annotationReader, ?string $basePath = null)
+    public function __construct(?string $basePath = null)
     {
-        $this->annotationReader = $annotationReader;
         $this->basePath = $basePath;
         $this->schemaParser = new SchemaParser\TypeSchema(null, $basePath);
     }
@@ -119,7 +115,6 @@ class OpenAPI implements ParserInterface
         $resource = new Resource($status, $path);
         $typePrefix = Inflection::generateTitleFromRoute($path);
 
-        $resource->setTitle($data->getSummary());
         $resource->setDescription($data->getDescription());
 
         $this->parseUriParameters($resource, $data, $typePrefix);
@@ -399,7 +394,7 @@ class OpenAPI implements ParserInterface
         $data = Parser::decode($data);
 
         // create a schema based on the open API models
-        $parser = new SchemaParser\Popo($this->annotationReader);
+        $parser = new SchemaParser\Popo();
         $schema = $parser->parse(OpenAPIModel::class);
 
         $this->definitions = $this->schemaParser->parseSchema($data)->getDefinitions();
@@ -412,9 +407,6 @@ class OpenAPI implements ParserInterface
             throw new RuntimeException('Could not load OpenAPI schema ' . $file);
         }
 
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\\Schema\\Annotation');
-
         $extension = pathinfo($file, PATHINFO_EXTENSION);
         if (in_array($extension, ['yaml', 'yml'])) {
             $data = json_encode(Yaml::parse(file_get_contents($file)));
@@ -423,7 +415,7 @@ class OpenAPI implements ParserInterface
         }
 
         $basePath = pathinfo($file, PATHINFO_DIRNAME);
-        $parser   = new OpenAPI($reader, $basePath);
+        $parser   = new OpenAPI($basePath);
 
         return $parser->parse($data, $path);
     }

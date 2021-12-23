@@ -31,14 +31,12 @@ use Doctrine\Common\Annotations\Reader;
  */
 class GeneratorFactory implements GeneratorFactoryInterface
 {
-    private Reader $reader;
     private string $namespace;
     private string $url;
     private string $dispatch;
 
-    public function __construct(Reader $reader, string $namespace, string $url, string $dispatch)
+    public function __construct(string $namespace, string $url, string $dispatch)
     {
-        $this->reader    = $reader;
         $this->namespace = $namespace;
         $this->url       = $url;
         $this->dispatch  = $dispatch;
@@ -86,7 +84,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
 
             default:
             case GeneratorFactoryInterface::SPEC_OPENAPI:
-                $generator = new Generator\Spec\OpenAPI($this->reader, 1, $baseUri);
+                $generator = new Generator\Spec\OpenAPI(1, $baseUri);
                 break;
         }
 

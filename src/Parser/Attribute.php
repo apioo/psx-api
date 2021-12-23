@@ -26,6 +26,7 @@ use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
+use PSX\Http\Client\Client;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaManagerInterface;
@@ -108,19 +109,24 @@ class Attribute implements ParserInterface
                 continue;
             }
 
-            $typePrefix = $path;
+            $typePrefix = str_replace('\\', '_', $controller->getName()) . '_' . $method->getName();
 
             if ($specification->getResourceCollection()->has($path)) {
                 $resource = $specification->getResourceCollection()->get($path);
 
                 $pathType = $this->getParamType($meta->getPathParams());
                 if ($pathType instanceof StructType) {
-                    $typeName = $typePrefix . 'Path';
+                    $typeName = $typePrefix . '_Path';
                     $specification->getDefinitions()->addType($typeName, $pathType);
                     $resource->setPathParameters($typeName);
                 }
             } else {
                 $specification->getResourceCollection()->set($resource = new Resource(Resource::STATUS_ACTIVE, $path));
+
+                $description = $meta->getDescription();
+                if ($description instanceof Attr\Description) {
+                    $resource->setDescription($this->resolveDescription($description));
+                }
             }
 
             if (!$meta->hasMethod()) {
@@ -150,33 +156,36 @@ class Attribute implements ParserInterface
      */
     private function parseMethod(string $httpMethod, Meta $meta, DefinitionsInterface $definitions, string $typePrefix, string $basePath): Resource\MethodAbstract
     {
-        $typePrefix = $typePrefix . $httpMethod;
         $method = Resource\Factory::getMethod($httpMethod);
 
         if ($meta->getOperationId() instanceof Attr\OperationId) {
             $method->setOperationId($meta->getOperationId()->operationId);
+        } else {
+            $method->setOperationId($typePrefix);
         }
 
         if ($meta->getDescription() instanceof Attr\Description) {
-            $method->setDescription($meta->getDescription()->description);
+            $method->setDescription($this->resolveDescription($meta->getDescription()));
         }
+
+        $typePrefix = $typePrefix . '_' . $httpMethod;
 
         $queryType = $this->getParamType($meta->getQueryParams());
         if ($queryType instanceof StructType) {
-            $typeName = $typePrefix . 'Query';
+            $typeName = $typePrefix . '_Query';
             $definitions->addType($typeName, $queryType);
             $method->setQueryParameters($typeName);
         }
 
         if ($meta->getIncoming() instanceof Attr\Incoming) {
-            $schema = $this->getBodySchema($meta->getIncoming(), $definitions, $basePath, $typePrefix . 'Request');
+            $schema = $this->getBodySchema($meta->getIncoming(), $definitions, $basePath, $typePrefix . '_Request');
             if (!empty($schema)) {
                 $method->setRequest($schema);
             }
         }
 
         foreach ($meta->getOutgoing() as $outgoing) {
-            $schema = $this->getBodySchema($outgoing, $definitions, $basePath, $typePrefix . $outgoing->code . 'Response');
+            $schema = $this->getBodySchema($outgoing, $definitions, $basePath, $typePrefix . '_' . $outgoing->code . '_Response');
             if (!empty($schema)) {
                 $method->addResponse($outgoing->code, $schema);
             }
@@ -203,8 +212,10 @@ class Attribute implements ParserInterface
 
         // if we have a file append base path
         if (strpos($schema, '.') !== false) {
-            $type   = SchemaManager::TYPE_TYPESCHEMA;
-            $schema = $basePath . '/' . $schema;
+            $type = SchemaManager::TYPE_TYPESCHEMA;
+            if (!is_file($schema)) {
+                $schema = $basePath . '/' . $schema;
+            }
         }
 
         $schema = $this->schemaManager->getSchema($schema, $type);
@@ -315,5 +326,21 @@ class Attribute implements ParserInterface
         }
 
         return $type;
+    }
+
+    private function resolveDescription(Attr\Description $attribute): string
+    {
+        $description = $attribute->description;
+
+        if (str_starts_with($description, 'file://')) {
+            $file = substr($description, 7);
+            if (!is_file($file)) {
+                throw new \RuntimeException('Provided description file "' . $file . '" does not exist');
+            }
+
+            return file_get_contents($file);
+        } else {
+            return $description;
+        }
     }
 }
