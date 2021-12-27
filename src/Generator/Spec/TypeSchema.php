@@ -37,10 +37,7 @@ use PSX\Schema\TypeFactory;
  */
 class TypeSchema extends GeneratorAbstract
 {
-    /**
-     * @inheritDoc
-     */
-    public function generate(SpecificationInterface $specification)
+    public function generate(SpecificationInterface $specification): Generator\Code\Chunks|string
     {
         $collection = $specification->getResourceCollection();
         $definitions = $specification->getDefinitions();

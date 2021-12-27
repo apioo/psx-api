@@ -26,6 +26,7 @@ use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
+use PSX\Schema\Generator\Code\Chunks;
 use PSX\Schema\Type\BooleanType;
 use PSX\Schema\Type\IntegerType;
 use PSX\Schema\Type\NumberType;
@@ -47,56 +48,28 @@ use Symfony\Component\Yaml\Yaml;
  */
 class Raml extends GeneratorAbstract
 {
-    /**
-     * @var integer
-     */
-    protected $apiVersion;
+    private int $apiVersion;
+    private string $baseUri;
+    private ?string $title = null;
+    private ?string $description = null;
 
-    /**
-     * @var string
-     */
-    protected $baseUri;
-
-    /**
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @var string
-     */
-    protected $description;
-
-    /**
-     * @param integer $apiVersion
-     * @param string $baseUri
-     */
-    public function __construct($apiVersion, $baseUri)
+    public function __construct(int $apiVersion, string $baseUri)
     {
         $this->apiVersion = $apiVersion;
         $this->baseUri    = $baseUri;
     }
 
-    /**
-     * @param string $title
-     */
-    public function setTitle($title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
-    /**
-     * @param string $description
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function generate(SpecificationInterface $specification)
+    public function generate(SpecificationInterface $specification): Chunks|string
     {
         $collection = $specification->getResourceCollection();
         $definitions = $specification->getDefinitions();
@@ -111,10 +84,7 @@ class Raml extends GeneratorAbstract
         return $raml;
     }
 
-    /**
-     * @return string
-     */
-    protected function getDeclaration()
+    protected function getDeclaration(): string
     {
         $raml = '#%RAML 1.0' . "\n";
         $raml.= '---' . "\n";
@@ -129,12 +99,7 @@ class Raml extends GeneratorAbstract
         return $raml;
     }
 
-    /**
-     * @param \PSX\Api\Resource $resource
-     * @param \PSX\Schema\DefinitionsInterface $definitions
-     * @return string
-     */
-    protected function getResource(Resource $resource, DefinitionsInterface $definitions)
+    protected function getResource(Resource $resource, DefinitionsInterface $definitions): string
     {
         $path = Inflection::convertPlaceholderToCurly($resource->getPath() ?: '/');
         $raml = $path . ':' . "\n";
@@ -223,12 +188,7 @@ class Raml extends GeneratorAbstract
         return $raml;
     }
 
-    /**
-     * @param \PSX\Schema\TypeInterface $type
-     * @param string $indent
-     * @param boolean $required
-     */
-    protected function getParameter(TypeInterface $type, $indent, $required)
+    protected function getParameter(TypeInterface $type, int $indent, bool $required): string
     {
         $raml   = '';
         $indent = str_repeat(' ', $indent);
