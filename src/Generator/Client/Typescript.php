@@ -32,49 +32,31 @@ use PSX\Schema\GeneratorInterface;
  */
 class Typescript extends LanguageAbstract
 {
-    /**
-     * @inheritdoc
-     */
     protected function getTemplate(): string
     {
         return 'typescript.ts.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function getGroupTemplate(): string
     {
         return 'typescript-group.ts.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function getClientTemplate(): string
     {
         return 'typescript-client.ts.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function getGenerator(): GeneratorInterface
     {
         return new Schema\Generator\TypeScript($this->namespace);
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getFileName(string $identifier): string
     {
         return $identifier . '.ts';
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getFileContent(string $code, string $identifier): string
     {
         $comment = '/**' . "\n";

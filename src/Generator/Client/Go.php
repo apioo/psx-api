@@ -32,49 +32,31 @@ use PSX\Schema\GeneratorInterface;
  */
 class Go extends LanguageAbstract
 {
-    /**
-     * @inheritdoc
-     */
     protected function getTemplate(): string
     {
         return 'go.go.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function getGroupTemplate(): string
     {
         return 'go-group.go.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function getClientTemplate(): string
     {
         return 'go-client.go.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function getGenerator(): GeneratorInterface
     {
         return new Schema\Generator\Go($this->namespace);
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getFileName(string $identifier): string
     {
         return $this->underscore($identifier) . '.go';
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getFileContent(string $code, string $identifier): string
     {
         $comment = "\n";

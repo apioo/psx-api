@@ -32,49 +32,31 @@ use PSX\Schema\GeneratorInterface;
  */
 class Php extends LanguageAbstract
 {
-    /**
-     * @inheritdoc
-     */
     protected function getTemplate(): string
     {
         return 'php.php.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function getGroupTemplate(): string
     {
         return 'php-group.php.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function getClientTemplate(): string
     {
         return 'php-client.php.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function getGenerator(): GeneratorInterface
     {
         return new Schema\Generator\Php($this->namespace);
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getFileName(string $identifier): string
     {
         return $identifier . '.php';
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getFileContent(string $code, string $identifier): string
     {
         $comment = '/**' . "\n";

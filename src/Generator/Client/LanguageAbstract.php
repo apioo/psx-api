@@ -48,25 +48,10 @@ use Twig\Loader\FilesystemLoader;
  */
 abstract class LanguageAbstract implements GeneratorInterface
 {
-    /**
-     * @var string
-     */
-    protected $baseUrl;
+    protected string $baseUrl;
+    protected ?string $namespace;
+    protected Environment $engine;
 
-    /**
-     * @var string
-     */
-    protected $namespace;
-
-    /**
-     * @var Environment
-     */
-    protected $engine;
-
-    /**
-     * @param string $baseUrl
-     * @param string|null $namespace
-     */
     public function __construct(string $baseUrl, ?string $namespace = null)
     {
         $this->baseUrl   = $baseUrl;
@@ -75,9 +60,11 @@ abstract class LanguageAbstract implements GeneratorInterface
     }
 
     /**
-     * @inheritDoc
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     * @throws \Twig\Error\LoaderError
      */
-    public function generate(SpecificationInterface $specification)
+    public function generate(SpecificationInterface $specification): Generator\Code\Chunks
     {
         $collection = $specification->getResourceCollection();
         $definitions = $specification->getDefinitions();
@@ -96,11 +83,10 @@ abstract class LanguageAbstract implements GeneratorInterface
     }
 
     /**
-     * @param Resource $resource
-     * @param DefinitionsInterface $definitions
-     * @param Generator\Code\Chunks $chunks
-     * @param array $resources
-     * @return void
+     * @throws \Twig\Error\SyntaxError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\LoaderError
+     * @throws \PSX\Schema\Exception\TypeNotFoundException
      */
     public function generateResource(Resource $resource, DefinitionsInterface $definitions, Generator\Code\Chunks $chunks, array &$resources): void
     {
@@ -188,11 +174,6 @@ abstract class LanguageAbstract implements GeneratorInterface
         $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
     }
 
-    /**
-     * @param \PSX\Api\Resource $resource
-     * @param array $args
-     * @return array
-     */
     protected function getUrlParts(Resource $resource, array $args): array
     {
         $result = [];
@@ -246,11 +227,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         return $args;
     }
 
-    /**
-     * @param \PSX\Api\Resource\MethodAbstract $method
-     * @return \PSX\Schema\SchemaInterface|null
-     */
-    protected function getSuccessfulResponse(Resource\MethodAbstract $method)
+    protected function getSuccessfulResponse(Resource\MethodAbstract $method): ?string
     {
         $responses = $method->getResponses();
         $codes = [200, 201];
@@ -264,11 +241,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         return null;
     }
 
-    /**
-     * @param DefinitionsInterface $definitions
-     * @param Generator\Code\Chunks $chunks
-     */
-    protected function generateSchema(DefinitionsInterface $definitions, Generator\Code\Chunks $chunks)
+    protected function generateSchema(DefinitionsInterface $definitions, Generator\Code\Chunks $chunks): void
     {
         $schema = new Schema(TypeFactory::getAny(), $definitions);
         $result = $this->getGenerator()->generate($schema);
@@ -283,9 +256,6 @@ abstract class LanguageAbstract implements GeneratorInterface
     }
 
     /**
-     * @param Resource[] $resources
-     * @param SpecificationInterface $specification
-     * @param Generator\Code\Chunks $chunks
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
@@ -346,11 +316,8 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     /**
      * Group resources by tag
-     *
-     * @param array $resources
-     * @return array
      */
-    private function groupByTag(array $resources)
+    private function groupByTag(array $resources): array
     {
         $groups = [];
         foreach ($resources as $className => $resource) {
@@ -373,9 +340,6 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     /**
      * Returns the type of the provided property for the specific language
-     *
-     * @param \PSX\Schema\TypeInterface $property
-     * @return string
      */
     protected function getType(TypeInterface $property): string
     {
@@ -389,9 +353,6 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     /**
      * Returns a type which is used in the documentation
-     * 
-     * @param \PSX\Schema\TypeInterface $property
-     * @return string
      */
     protected function getDocType(TypeInterface $property): string
     {
@@ -403,10 +364,6 @@ abstract class LanguageAbstract implements GeneratorInterface
         }
     }
 
-    /**
-     * @param string $path
-     * @return string
-     */
     protected function getClassName(string $path): string
     {
         $parts = explode('/', $path);
@@ -414,10 +371,10 @@ abstract class LanguageAbstract implements GeneratorInterface
         $result = [];
         $i = 0;
         foreach ($parts as $part) {
-            if (substr($part, 0, 1) === ':') {
+            if (str_starts_with($part, ':')) {
                 $part = ($i === 0 ? 'By' : 'And') . ucfirst(substr($part, 1));
                 $i++;
-            } elseif (substr($part, 0, 1) === '$') {
+            } elseif (str_starts_with($part, '$')) {
                 $part = ($i === 0 ? 'By' : 'And') . ucfirst(substr($part, 1, strpos($part, '<')));
                 $i++;
             }
@@ -431,46 +388,21 @@ abstract class LanguageAbstract implements GeneratorInterface
         return $className . 'Resource';
     }
 
-    /**
-     * @param string $code
-     * @param string $identifier
-     * @return string
-     */
     protected function getFileContent(string $code, string $identifier): string
     {
         return $code;
     }
 
-    /**
-     * @return string
-     */
     abstract protected function getTemplate(): string;
 
-    /**
-     * @return string
-     */
     abstract protected function getGroupTemplate(): string;
 
-    /**
-     * @return string
-     */
     abstract protected function getClientTemplate(): string;
 
-    /**
-     * @return \PSX\Schema\GeneratorInterface
-     */
     abstract protected function getGenerator(): SchemaGeneratorInterface;
 
-    /**
-     * @param string $identifier
-     * @return string
-     */
     abstract protected function getFileName(string $identifier): string;
 
-    /**
-     * @param string $methodName
-     * @return string
-     */
     private function getMethodName(string $methodName): string
     {
         $parts = explode('_', str_replace(['.', ' '], '_', $methodName));
@@ -484,9 +416,7 @@ abstract class LanguageAbstract implements GeneratorInterface
     /**
      * Resolves a reference type in case it points to a non struct or map type
      *
-     * @param string $name
-     * @param DefinitionsInterface $definitions
-     * @return ReferenceType|TypeInterface
+     * @throws \PSX\Schema\Exception\TypeNotFoundException
      */
     private function resolveType(string $name, DefinitionsInterface $definitions): TypeInterface
     {
@@ -522,9 +452,6 @@ abstract class LanguageAbstract implements GeneratorInterface
         }
     }
 
-    /**
-     * @return Environment
-     */
     private function newTemplateEngine(): Environment
     {
         $loader = new FilesystemLoader([__DIR__ . '/Language']);

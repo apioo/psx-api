@@ -32,49 +32,31 @@ use PSX\Schema\GeneratorInterface;
  */
 class Java extends LanguageAbstract
 {
-    /**
-     * @inheritdoc
-     */
     protected function getTemplate(): string
     {
         return 'java.java.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function getGroupTemplate(): string
     {
         return 'java-group.java.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function getClientTemplate(): string
     {
         return 'java-client.java.twig';
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function getGenerator(): GeneratorInterface
     {
         return new Schema\Generator\Java($this->namespace);
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getFileName(string $identifier): string
     {
         return $identifier . '.java';
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getFileContent(string $code, string $identifier): string
     {
         $comment = '/**' . "\n";
