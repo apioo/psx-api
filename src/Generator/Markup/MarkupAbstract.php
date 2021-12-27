@@ -38,15 +38,9 @@ use PSX\Schema\TypeFactory;
  */
 abstract class MarkupAbstract implements GeneratorInterface
 {
-    /**
-     * @var \PSX\Schema\GeneratorInterface
-     */
-    protected $generator;
+    protected \PSX\Schema\GeneratorInterface $generator;
 
-    /**
-     * @inheritDoc
-     */
-    public function generate(SpecificationInterface $specification)
+    public function generate(SpecificationInterface $specification): string
     {
         $collection = $specification->getResourceCollection();
         $definitions = $specification->getDefinitions();
@@ -63,11 +57,6 @@ abstract class MarkupAbstract implements GeneratorInterface
         return $text;
     }
 
-    /**
-     * @param Resource $resource
-     * @param DefinitionsInterface $definitions
-     * @return string
-     */
     public function generateResource(Resource $resource, DefinitionsInterface $definitions): string
     {
         $text = $this->startResource($resource);
@@ -114,39 +103,15 @@ abstract class MarkupAbstract implements GeneratorInterface
         return $text;
     }
 
-    /**
-     * @param \PSX\Api\Resource $resource
-     * @return string
-     */
-    abstract protected function startResource(Resource $resource);
+    abstract protected function startResource(Resource $resource): string;
 
-    /**
-     * @return string
-     */
-    abstract protected function endResource();
+    abstract protected function endResource(): string;
 
-    /**
-     * @param Resource\MethodAbstract $method
-     * @return string
-     */
-    abstract protected function startMethod(Resource\MethodAbstract $method);
+    abstract protected function startMethod(Resource\MethodAbstract $method): string;
 
-    /**
-     * @return string
-     */
-    abstract protected function endMethod();
+    abstract protected function endMethod(): string;
 
-    /**
-     * @param string $title
-     * @param string $schema
-     * @return string
-     */
-    abstract protected function renderSchema(string $title, string $schema);
+    abstract protected function renderSchema(string $title, string $schema): string;
 
-    /**
-     * @param string $title
-     * @param string $value
-     * @return string
-     */
-    abstract protected function renderMeta(string $title, string $value);
+    abstract protected function renderMeta(string $title, string $value): string;
 }

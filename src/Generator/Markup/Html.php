@@ -33,18 +33,12 @@ use PSX\Schema\GeneratorInterface;
  */
 class Html extends MarkupAbstract
 {
-    /**
-     * @param \PSX\Schema\GeneratorInterface|null $generator
-     */
-    public function __construct(GeneratorInterface $generator = null)
+    public function __construct(?GeneratorInterface $generator = null)
     {
         $this->generator = $generator === null ? new Generator\Html(4) : $generator;
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function startResource(Resource $resource)
+    protected function startResource(Resource $resource): string
     {
         $html = '<div class="psx-resource" data-status="' . $resource->getStatus() . '" data-path="' . $resource->getPath() . '">';
         $html.= '<h1 class="psx-resource-path">' . $resource->getPath() . '</h1>';
@@ -62,20 +56,14 @@ class Html extends MarkupAbstract
         return $html;
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function endResource()
+    protected function endResource(): string
     {
         $html = '</table>';
         $html.= '</div>';
         return $html;
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function startMethod(Resource\MethodAbstract $method)
+    protected function startMethod(Resource\MethodAbstract $method): string
     {
         $html = '<tr>';
         $html.= '<td colspan="2" class="psx-resource-method">';
@@ -107,18 +95,12 @@ class Html extends MarkupAbstract
         return $html;
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function endMethod()
+    protected function endMethod(): string
     {
         return '';
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function renderSchema(string $title, string $schema)
+    protected function renderSchema(string $title, string $schema): string
     {
         $html = '<tr>';
         $html.= '<td><span class="psx-property-name">' . $title . '</span></td>';
@@ -127,10 +109,7 @@ class Html extends MarkupAbstract
         return $html;
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function renderMeta(string $title, string $value)
+    protected function renderMeta(string $title, string $value): string
     {
         $html = '<tr>';
         $html.= '<td><span class="psx-property-name">' . $title . '</span></td>';
