@@ -20,8 +20,8 @@
 
 namespace PSX\Api\Generator\Spec;
 
-use Doctrine\Common\Annotations\Reader;
 use PSX\Api\GeneratorAbstract;
+use PSX\Model\OpenAPI\Tag;
 use PSX\Schema\Parser\Popo\Dumper;
 
 /**
@@ -33,10 +33,10 @@ use PSX\Schema\Parser\Popo\Dumper;
  */
 abstract class OpenAPIAbstract extends GeneratorAbstract
 {
-    const FLOW_AUTHORIZATION_CODE = 0;
-    const FLOW_IMPLICIT = 1;
-    const FLOW_PASSWORD = 2;
-    const FLOW_CLIENT_CREDENTIALS = 3;
+    public const FLOW_AUTHORIZATION_CODE = 0;
+    public const FLOW_IMPLICIT = 1;
+    public const FLOW_PASSWORD = 2;
+    public const FLOW_CLIENT_CREDENTIALS = 3;
 
     protected Dumper $dumper;
     protected int $apiVersion;
@@ -63,7 +63,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * The title of the application
      */
-    public function setTitle(string $title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
@@ -72,7 +72,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
      * A short description of the application. CommonMark syntax MAY be used for
      * rich text representation
      */
-    public function setDescription(?string $description)
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
@@ -80,7 +80,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * A URL to the Terms of Service for the API. MUST be in the format of a URL
      */
-    public function setTermsOfService(?string $tos)
+    public function setTermsOfService(?string $tos): void
     {
         $this->tos = $tos;
     }
@@ -88,7 +88,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * The identifying name of the contact person/organization
      */
-    public function setContactName(?string $contactName)
+    public function setContactName(?string $contactName): void
     {
         $this->contactName = $contactName;
     }
@@ -96,7 +96,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * The URL pointing to the contact information. MUST be in the format of a URL
      */
-    public function setContactUrl(?string $contactUrl)
+    public function setContactUrl(?string $contactUrl): void
     {
         $this->contactUrl = $contactUrl;
     }
@@ -104,7 +104,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * The email address of the contact person/organization. MUST be in the format of an email address
      */
-    public function setContactEmail(?string $contactEmail)
+    public function setContactEmail(?string $contactEmail): void
     {
         $this->contactEmail = $contactEmail;
     }
@@ -112,7 +112,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * The license name used for the API
      */
-    public function setLicenseName(?string $licenseName)
+    public function setLicenseName(?string $licenseName): void
     {
         $this->licenseName = $licenseName;
     }
@@ -120,7 +120,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * A URL to the license used for the API. MUST be in the format of a URL
      */
-    public function setLicenseUrl(?string $licenseUrl)
+    public function setLicenseUrl(?string $licenseUrl): void
     {
         $this->licenseUrl = $licenseUrl;
     }
@@ -128,7 +128,7 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
     /**
      * Configuration details for a supported OAuth Flow
      */
-    public function setAuthorizationFlow(string $name, int $flow, ?string $authorizationUrl, string $tokenUrl, ?string $refreshUrl = null, ?array $scopes = null)
+    public function setAuthorizationFlow(string $name, int $flow, ?string $authorizationUrl, string $tokenUrl, ?string $refreshUrl = null, ?array $scopes = null): void
     {
         if (!isset($this->authFlows[$name])) {
             $this->authFlows[$name] = [];
@@ -142,10 +142,10 @@ abstract class OpenAPIAbstract extends GeneratorAbstract
      * not mandatory to have a Tag Object per tag defined in the Operation 
      * Object instances
      */
-    public function addTag(string $name, string $description)
+    public function addTag(string $name, string $description): void
     {
         $this->tags[] = $this->newTag($name, $description);
     }
 
-    abstract protected function newTag(string $name, string $description);
+    abstract protected function newTag(string $name, string $description): Tag;
 }

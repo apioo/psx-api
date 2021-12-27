@@ -62,10 +62,7 @@ use PSX\Schema\TypeInterface;
  */
 class OpenAPI extends OpenAPIAbstract
 {
-    /**
-     * @inheritDoc
-     */
-    public function generate(SpecificationInterface $specification)
+    public function generate(SpecificationInterface $specification): Generator\Code\Chunks|string
     {
         $collection = $specification->getResourceCollection();
         $definitions = $specification->getDefinitions();
@@ -84,12 +81,7 @@ class OpenAPI extends OpenAPIAbstract
         return $this->buildDeclaration($paths, $definitions);
     }
 
-    /**
-     * @param \PSX\Model\OpenAPI\Paths $paths
-     * @param \PSX\Schema\DefinitionsInterface $definitions
-     * @return string
-     */
-    protected function buildDeclaration(Paths $paths, DefinitionsInterface $definitions)
+    protected function buildDeclaration(Paths $paths, DefinitionsInterface $definitions): string
     {
         $info = new Info();
         $info->setTitle($this->title ?: 'PSX');
@@ -147,10 +139,7 @@ class OpenAPI extends OpenAPIAbstract
         return $data;
     }
 
-    /**
-     * @param \PSX\Model\OpenAPI\Components $components
-     */
-    protected function buildSecuritySchemes(Components $components)
+    protected function buildSecuritySchemes(Components $components): void
     {
         $schemes = new SecuritySchemes();
         foreach ($this->authFlows as $authName => $authFlows) {
@@ -197,12 +186,7 @@ class OpenAPI extends OpenAPIAbstract
         }
     }
 
-    /**
-     * @param \PSX\Api\Resource $resource
-     * @param \PSX\Model\OpenAPI\Paths $paths
-     * @param \PSX\Schema\DefinitionsInterface $definitions
-     */
-    protected function buildPaths(Resource $resource, Paths $paths, DefinitionsInterface $definitions, array &$removeTypes)
+    protected function buildPaths(Resource $resource, Paths $paths, DefinitionsInterface $definitions, array &$removeTypes): void
     {
         $path = new PathItem();
 
@@ -304,11 +288,6 @@ class OpenAPI extends OpenAPIAbstract
         $paths[Inflection::convertPlaceholderToCurly($resource->getPath())] = $path;
     }
 
-    /**
-     * @param TypeInterface $type
-     * @param string $in
-     * @return array
-     */
     private function newParameters(TypeInterface $type, string $in, DefinitionsInterface $definitions): array
     {
         if (!$type instanceof StructType) {
@@ -334,11 +313,7 @@ class OpenAPI extends OpenAPIAbstract
         return $parameters;
     }
 
-    /**
-     * @param \PSX\Schema\TypeInterface $type
-     * @return \PSX\Model\OpenAPI\Parameter $param
-     */
-    protected function newParameter(TypeInterface $type, $required)
+    protected function newParameter(TypeInterface $type, bool $required): Parameter
     {
         $param = new Parameter();
         $param->setDescription($type->getDescription());
@@ -348,10 +323,7 @@ class OpenAPI extends OpenAPIAbstract
         return $param;
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function newTag(string $name, string $description)
+    protected function newTag(string $name, string $description): Tag
     {
         $tag = new Tag();
         $tag->setName($name);
@@ -360,7 +332,7 @@ class OpenAPI extends OpenAPIAbstract
         return $tag;
     }
 
-    private function getMediaTypes(string $type)
+    private function getMediaTypes(string $type): MediaTypes
     {
         $mediaType = new MediaType();
         $mediaType->setSchema((object) ['$ref' => '#/components/schemas/' . $type]);
