@@ -106,19 +106,19 @@ class Attribute implements ParserInterface
 
             if ($specification->getResourceCollection()->has($path)) {
                 $resource = $specification->getResourceCollection()->get($path);
+            } else {
+                $specification->getResourceCollection()->set($resource = new Resource(Resource::STATUS_ACTIVE, $path));
+
+                $description = $rootMeta->getDescription();
+                if ($description instanceof Attr\Description) {
+                    $resource->setDescription($this->resolveDescription($description));
+                }
 
                 $pathType = $this->getParamType($meta->getPathParams());
                 if ($pathType instanceof StructType) {
                     $typeName = $typePrefix . '_Path';
                     $specification->getDefinitions()->addType($typeName, $pathType);
                     $resource->setPathParameters($typeName);
-                }
-            } else {
-                $specification->getResourceCollection()->set($resource = new Resource(Resource::STATUS_ACTIVE, $path));
-
-                $description = $meta->getDescription();
-                if ($description instanceof Attr\Description) {
-                    $resource->setDescription($this->resolveDescription($description));
                 }
             }
 
