@@ -153,17 +153,6 @@
       "PSX_Api_Tests_Parser_Attribute_TestController_doGet_GET_Request": {
         "$ref": "#\/components\/schemas\/Song"
       },
-      "PSX_Api_Tests_Parser_Attribute_TestController_getDocumentation_Path": {
-        "type": "object",
-        "properties": {
-          "fooId": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "fooId"
-        ]
-      },
       "Song": {
         "description": "A canonical song",
         "type": "object",
