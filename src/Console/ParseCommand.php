@@ -39,22 +39,15 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ParseCommand extends Command
 {
-    /**
-     * @var \PSX\Api\ApiManager
-     */
-    protected $apiManager;
-
-    /**
-     * @var \PSX\Api\GeneratorFactoryInterface
-     */
-    protected $factory;
+    private ApiManager $apiManager;
+    private GeneratorFactoryInterface $factory;
 
     public function __construct(ApiManager $apiManager, GeneratorFactoryInterface $factory)
     {
         parent::__construct();
 
         $this->apiManager = $apiManager;
-        $this->factory    = $factory;
+        $this->factory = $factory;
     }
 
     protected function configure()

@@ -26,7 +26,6 @@ use PSX\Api\Listing\FilterFactoryInterface;
 use PSX\Api\ListingInterface;
 use PSX\Schema\Generator\Code\Chunks;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -41,27 +40,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateCommand extends Command
 {
-    /**
-     * @var \PSX\Api\ListingInterface
-     */
-    protected $listing;
+    private ListingInterface $listing;
+    private GeneratorFactoryInterface $factory;
+    private ?FilterFactoryInterface $filterFactory;
 
-    /**
-     * @var \PSX\Api\GeneratorFactoryInterface
-     */
-    protected $factory;
-
-    /**
-     * @var \PSX\Api\Listing\FilterFactoryInterface
-     */
-    protected $filterFactory;
-
-    /**
-     * @param \PSX\Api\ListingInterface $listing
-     * @param \PSX\Api\GeneratorFactoryInterface $factory
-     * @param \PSX\Api\Listing\FilterFactoryInterface $filterFactory
-     */
-    public function __construct(ListingInterface $listing, GeneratorFactoryInterface $factory, FilterFactoryInterface $filterFactory = null)
+    public function __construct(ListingInterface $listing, GeneratorFactoryInterface $factory, ?FilterFactoryInterface $filterFactory = null)
     {
         parent::__construct();
 
