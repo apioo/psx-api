@@ -33,9 +33,6 @@ interface GeneratorInterface
 {
     /**
      * Generates a representation of the specification in a specific format
-     *
-     * @param SpecificationInterface $specification
-     * @return string|Chunks
      */
-    public function generate(SpecificationInterface $specification);
+    public function generate(SpecificationInterface $specification): Chunks|string;
 }

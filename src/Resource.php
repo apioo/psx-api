@@ -35,16 +35,16 @@ class Resource implements IteratorAggregate, \JsonSerializable
 {
     use TagableTrait;
 
-    const STATUS_ACTIVE      = 0x1;
-    const STATUS_DEPRECATED  = 0x2;
-    const STATUS_CLOSED      = 0x3;
-    const STATUS_DEVELOPMENT = 0x4;
+    public const STATUS_ACTIVE      = 0x1;
+    public const STATUS_DEPRECATED  = 0x2;
+    public const STATUS_CLOSED      = 0x3;
+    public const STATUS_DEVELOPMENT = 0x4;
 
-    const CODE_INFORMATIONAL = 199;
-    const CODE_SUCCESS       = 299;
-    const CODE_REDIRECTION   = 399;
-    const CODE_CLIENT_ERROR  = 499;
-    const CODE_SERVER_ERROR  = 599;
+    public const CODE_INFORMATIONAL = 199;
+    public const CODE_SUCCESS       = 299;
+    public const CODE_REDIRECTION   = 399;
+    public const CODE_CLIENT_ERROR  = 499;
+    public const CODE_SERVER_ERROR  = 599;
 
     private int $status;
     private string $path;
@@ -56,10 +56,6 @@ class Resource implements IteratorAggregate, \JsonSerializable
      */
     private array $methods;
 
-    /**
-     * @param integer $status
-     * @param string $path
-     */
     public function __construct(int $status, string $path)
     {
         $this->status  = $status;
@@ -67,106 +63,66 @@ class Resource implements IteratorAggregate, \JsonSerializable
         $this->methods = [];
     }
 
-    /**
-     * @return boolean
-     */
     public function isActive(): bool
     {
         return $this->status == self::STATUS_ACTIVE;
     }
 
-    /**
-     * @return boolean
-     */
     public function isDeprecated(): bool
     {
         return $this->status == self::STATUS_DEPRECATED;
     }
 
-    /**
-     * @return boolean
-     */
     public function isClosed(): bool
     {
         return $this->status == self::STATUS_CLOSED;
     }
 
-    /**
-     * @return boolean
-     */
     public function isDevelopment(): bool
     {
         return $this->status == self::STATUS_DEVELOPMENT;
     }
 
-    /**
-     * @return integer
-     */
     public function getStatus(): int
     {
         return $this->status;
     }
 
-    /**
-     * @return string
-     */
     public function getPath(): string
     {
         return $this->path;
     }
 
-    /**
-     * @param string|null $description
-     */
     public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string|null $typeName
-     */
     public function setPathParameters(?string $typeName): void
     {
         $this->pathParameters = $typeName;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPathParameters(): ?string
     {
         return $this->pathParameters;
     }
 
-    /**
-     * @return bool
-     */
     public function hasPathParameters(): bool
     {
         return !empty($this->pathParameters);
     }
 
-    /**
-     * @param MethodAbstract $method
-     */
     public function addMethod(MethodAbstract $method)
     {
         $this->methods[$method->getName()] = $method;
     }
 
-    /**
-     * @param string $method
-     * @return MethodAbstract
-     */
     public function getMethod(string $method): ?MethodAbstract
     {
         if (isset($this->methods[$method])) {
@@ -176,34 +132,21 @@ class Resource implements IteratorAggregate, \JsonSerializable
         }
     }
 
-    /**
-     * @return MethodAbstract[]
-     */
     public function getMethods(): array
     {
         return $this->methods;
     }
 
-    /**
-     * @return array
-     */
     public function getAllowedMethods(): array
     {
         return array_keys($this->methods);
     }
 
-    /**
-     * @param string $method
-     * @return boolean
-     */
     public function hasMethod(string $method): bool
     {
         return isset($this->methods[$method]);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getIterator()
     {
         return new ArrayIterator($this->methods);

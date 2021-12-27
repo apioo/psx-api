@@ -29,42 +29,30 @@ namespace PSX\Api;
  */
 interface GeneratorFactoryInterface
 {
-    const CLIENT_GO = 'client-go';
-    const CLIENT_JAVA = 'client-java';
-    const CLIENT_PHP = 'client-php';
-    const CLIENT_TYPESCRIPT = 'client-typescript';
+    public const CLIENT_GO = 'client-go';
+    public const CLIENT_JAVA = 'client-java';
+    public const CLIENT_PHP = 'client-php';
+    public const CLIENT_TYPESCRIPT = 'client-typescript';
 
-    const MARKUP_HTML = 'markup-html';
-    const MARKUP_MARKDOWN = 'markup-markdown';
+    public const MARKUP_HTML = 'markup-html';
+    public const MARKUP_MARKDOWN = 'markup-markdown';
 
-    const SPEC_TYPESCHEMA = 'spec-typeschema';
-    const SPEC_OPENAPI = 'spec-openapi';
-    const SPEC_RAML = 'spec-raml';
+    public const SPEC_TYPESCHEMA = 'spec-typeschema';
+    public const SPEC_OPENAPI = 'spec-openapi';
+    public const SPEC_RAML = 'spec-raml';
 
     /**
      * Returns the fitting generator object for the provided type
-     * 
-     * @param string $format
-     * @param string|null $config
-     * @return GeneratorInterface
      */
     public function getGenerator(string $format, ?string $config = null): GeneratorInterface;
 
     /**
      * Returns the preferred file extension for the provided format
-     * 
-     * @param string $format
-     * @param string|null $config
-     * @return string
      */
     public function getFileExtension(string $format, ?string $config = null): string;
 
     /**
      * Returns the preferred mime for the provided format
-     * 
-     * @param string $format
-     * @param string|null $config
-     * @return string
      */
     public function getMime(string $format, ?string $config = null): string;
 }

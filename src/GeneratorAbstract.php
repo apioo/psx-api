@@ -34,9 +34,6 @@ abstract class GeneratorAbstract implements GeneratorInterface
 {
     /**
      * Returns the successful response of a method or null if no is available
-     *
-     * @param MethodAbstract $method
-     * @return SchemaInterface
      */
     protected function getSuccessfulResponse(MethodAbstract $method): ?SchemaInterface
     {
@@ -52,10 +49,6 @@ abstract class GeneratorAbstract implements GeneratorInterface
         return null;
     }
 
-    /**
-     * @param string $path
-     * @return string
-     */
     protected function getIdFromPath(string $path): string
     {
         $parts  = explode('/', trim($path, '/'));

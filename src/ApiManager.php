@@ -53,9 +53,6 @@ class ApiManager implements ApiManagerInterface
         $this->debug = $debug;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getApi(string $source, ?string $path, ?int $type = null): SpecificationInterface
     {
         $item = null;
@@ -86,9 +83,6 @@ class ApiManager implements ApiManagerInterface
         return $api;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getBuilder(): SpecificationBuilderInterface
     {
         return new SpecificationBuilder($this->schemaManager);

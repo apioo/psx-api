@@ -33,18 +33,11 @@ interface ApiManagerInterface
 {
     /**
      * Returns the specification for the provided source
-     * 
-     * @param string $source
-     * @param string|null $path
-     * @param int|null $type
-     * @return SpecificationInterface
      */
     public function getApi(string $source, ?string $path, ?int $type = null): SpecificationInterface;
 
     /**
      * Returns a builder which helps to create a specification
-     * 
-     * @return SpecificationBuilderInterface
      */
     public function getBuilder(): SpecificationBuilderInterface;
 }
