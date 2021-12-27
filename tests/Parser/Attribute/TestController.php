@@ -37,17 +37,8 @@ use PSX\Api\SpecificationInterface;
  */
 #[Description('Test description')]
 #[PathParam(name: 'fooId', type: 'string', required: true)]
-class TestController implements DocumentedInterface
+class TestController
 {
-    public function __construct()
-    {
-    }
-
-    public function getDocumentation(?string $version = null): ?SpecificationInterface
-    {
-        return null;
-    }
-
     #[Description('file://' . __DIR__ . '/description.md')]
     #[QueryParam(name: "foo", type: "string", description: "Test")]
     #[QueryParam(name: "bar", type: "string", required: true)]

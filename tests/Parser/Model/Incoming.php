@@ -18,27 +18,18 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests\Parser\Attribute;
-
-use PSX\Api\Attribute\Description;
-use PSX\Api\Attribute\Incoming;
-use PSX\Api\Attribute\Outgoing;
-use PSX\Api\DocumentedInterface;
-use PSX\Api\SpecificationInterface;
+namespace PSX\Api\Tests\Parser\Model;
 
 /**
- * FooController
+ * Incoming
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-#[Description('Foo endpoint')]
-class FooController
+class Incoming
 {
-    #[Incoming(schema: '../schema/schema.json')]
-    #[Outgoing(code: 200, schema: '../schema/schema.json')]
-    protected function doGet()
+    public function __construct(public string $foo)
     {
     }
 }

@@ -23,6 +23,7 @@ namespace PSX\Api\Tests\Parser;
 use PSX\Api\ApiManager;
 use PSX\Api\Parser\Attribute as AttributeParser;
 use PSX\Api\SpecificationInterface;
+use PSX\Api\Tests\Parser\Attribute\BarController;
 use PSX\Api\Tests\Parser\Attribute\TestController;
 
 /**
@@ -48,6 +49,16 @@ class AttributeTest extends ParserTestCase
         $resource = $specification->getResourceCollection()->get('/foo');
 
         $this->assertEquals('PSX_Api_Tests_Parser_Attribute_TestController_doGet', $resource->getMethod('GET')->getOperationId());
+    }
+
+    public function testParseTypeHint()
+    {
+        $annotation = new AttributeParser($this->schemaManager);
+        $specification = $annotation->parse(BarController::class, '/foo');
+        $resource = $specification->getResourceCollection()->get('/foo');
+
+        $this->assertEquals('PSX_Api_Tests_Parser_Attribute_BarController_myMethod_POST_Request', $resource->getMethod('POST')->getRequest());
+        $this->assertEquals('PSX_Api_Tests_Parser_Attribute_BarController_myMethod_POST_200_Response', $resource->getMethod('POST')->getResponse(200));
     }
 
     public function testParseInvalid()

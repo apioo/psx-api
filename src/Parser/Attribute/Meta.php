@@ -177,9 +177,29 @@ class Meta
         return $this->incoming;
     }
 
+    public function setIncoming(Incoming $incoming): void
+    {
+        $this->incoming = $incoming;
+    }
+
+    public function hasIncoming(): bool
+    {
+        return $this->incoming instanceof Incoming;
+    }
+
     public function getOutgoing(): array
     {
         return $this->outgoing;
+    }
+
+    public function addOutgoing(Outgoing $outgoing): void
+    {
+        $this->outgoing[] = $outgoing;
+    }
+
+    public function hasOutgoing(): bool
+    {
+        return count($this->outgoing) > 0;
     }
 
     public function getOperationId(): ?OperationId

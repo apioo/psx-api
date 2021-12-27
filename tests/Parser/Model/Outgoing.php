@@ -18,25 +18,18 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
+namespace PSX\Api\Tests\Parser\Model;
 
 /**
- * A class which represents an API endpoint can implement this interface to
- * describe how the endpoint is designed
+ * Outgoing
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-interface DocumentedInterface
+class Outgoing
 {
-    /**
-     * Returns a specification object which describe the format of this
-     * resource. If no version was provided the most recent version should be
-     * returned
-     *
-     * @param string|null $version
-     * @return SpecificationInterface|null
-     */
-    public function getDocumentation(?string $version = null): ?SpecificationInterface;
+    public function __construct(public string $bar)
+    {
+    }
 }

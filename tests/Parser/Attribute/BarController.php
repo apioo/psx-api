@@ -21,24 +21,25 @@
 namespace PSX\Api\Tests\Parser\Attribute;
 
 use PSX\Api\Attribute\Description;
-use PSX\Api\Attribute\Incoming;
-use PSX\Api\Attribute\Outgoing;
-use PSX\Api\DocumentedInterface;
-use PSX\Api\SpecificationInterface;
+use PSX\Api\Attribute\Post;
+use PSX\Api\Tests\Parser\Model\Incoming;
+use PSX\Api\Tests\Parser\Model\Outgoing;
 
 /**
- * FooController
+ * BarController
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-#[Description('Foo endpoint')]
-class FooController
+#[Description('Bar endpoint')]
+class BarController
 {
-    #[Incoming(schema: '../schema/schema.json')]
-    #[Outgoing(code: 200, schema: '../schema/schema.json')]
-    protected function doGet()
+    #[Post]
+    protected function myMethod(Incoming $incoming): Outgoing
     {
+        $foo = $incoming->foo;
+
+        return new Outgoing('foo');
     }
 }

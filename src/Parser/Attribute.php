@@ -133,6 +133,25 @@ class Attribute implements ParserInterface
                 continue;
             }
 
+            // if we have no incoming attribute we parse it from the type hint of the first parameter
+            if (!$meta->hasIncoming()) {
+                $firstParameter = $method->getParameters()[0] ?? null;
+                if ($firstParameter instanceof \ReflectionParameter) {
+                    $schema = $this->getSchemaFromTypeHint($firstParameter->getType());
+                    if (!empty($schema) && class_exists($schema)) {
+                        $meta->setIncoming(new Attr\Incoming($schema));
+                    }
+                }
+            }
+
+            // if we have no outgoing attribute we parse it from the return type hint
+            if (!$meta->hasOutgoing()) {
+                $schema = $this->getSchemaFromTypeHint($method->getReturnType());
+                if (!empty($schema) && class_exists($schema)) {
+                    $meta->addOutgoing(new Attr\Outgoing(200, $schema));
+                }
+            }
+
             $resource->addMethod($this->parseMethod(
                 $httpMethod,
                 $meta,
@@ -335,5 +354,17 @@ class Attribute implements ParserInterface
         } else {
             return $description;
         }
+    }
+
+    private function getSchemaFromTypeHint(?\ReflectionType $type): ?string
+    {
+        if ($type instanceof \ReflectionNamedType && class_exists($type->getName())) {
+            return $type->getName();
+        } elseif ($type instanceof \ReflectionUnionType) {
+            // @TODO
+            return null;
+        }
+
+        return null;
     }
 }
