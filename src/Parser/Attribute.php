@@ -26,7 +26,6 @@ use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
-use PSX\Http\Client\Client;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaManagerInterface;
@@ -38,7 +37,6 @@ use PSX\Schema\Type\TypeAbstract;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 use ReflectionClass;
-use RuntimeException;
 
 /**
  * Attribute
@@ -65,17 +63,12 @@ class Attribute implements ParserInterface
     }
 
     /**
-     * @inheritdoc
      * @throws \PSX\Schema\Exception\InvalidSchemaException
      * @throws \PSX\Api\Exception\InvalidMethodException
      * @throws \ReflectionException
      */
     public function parse(string $schema, ?string $path = null): SpecificationInterface
     {
-        if (!is_string($schema)) {
-            throw new RuntimeException('Schema must be a class name');
-        }
-
         $controller = new ReflectionClass($schema);
         $basePath   = dirname($controller->getFileName());
 
