@@ -31,14 +31,14 @@ trait TagableTrait
 {
     private array $tags = [];
 
-    public function setTags(array $tags)
+    public function setTags(array $tags): static
     {
         $this->tags = $tags;
 
         return $this;
     }
 
-    public function addTag(string $tag)
+    public function addTag(string $tag): static
     {
         $this->tags[] = $tag;
 

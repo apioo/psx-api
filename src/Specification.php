@@ -43,25 +43,16 @@ class Specification implements SpecificationInterface, \JsonSerializable
         $this->security = $security;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getResourceCollection(): ResourceCollection
     {
         return $this->resourceCollection;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getDefinitions(): DefinitionsInterface
     {
         return $this->definitions;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function get(string $path): ?SpecificationInterface
     {
         $resource = $this->getResourceCollection()->get($path);
@@ -75,25 +66,16 @@ class Specification implements SpecificationInterface, \JsonSerializable
         );
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getSecurity(): ?SecurityInterface
     {
         return $this->security;
     }
 
-    /**
-     * @param SecurityInterface $security
-     */
     public function setSecurity(SecurityInterface $security): void
     {
         $this->security = $security;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function merge(SpecificationInterface $specification): void
     {
         foreach ($specification->getResourceCollection() as $path => $resource) {
@@ -118,7 +100,7 @@ class Specification implements SpecificationInterface, \JsonSerializable
         ];
     }
 
-    public static function fromResource(Resource $resource, DefinitionsInterface $definitions): Specification
+    public static function fromResource(Resource $resource, DefinitionsInterface $definitions): self
     {
         $collection = new ResourceCollection();
         $collection->set($resource);
