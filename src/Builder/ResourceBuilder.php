@@ -46,17 +46,11 @@ class ResourceBuilder implements ResourceBuilderInterface
         $this->definitions   = $definitions ?? new Definitions();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setDescription(string $description): void
     {
         $this->resource->setDescription($description);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setPathParameters(string $typeName): Builder
     {
         $builder = new Builder();
@@ -66,9 +60,6 @@ class ResourceBuilder implements ResourceBuilderInterface
         return $builder;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function addMethod(string $methodName): MethodBuilderInterface
     {
         $builder = new MethodBuilder($this->schemaManager, $this->definitions, $methodName);
@@ -77,25 +68,16 @@ class ResourceBuilder implements ResourceBuilderInterface
         return $builder;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setTags(array $tags): void
     {
         $this->resource->setTags($tags);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getResource(): Resource
     {
         return $this->resource;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getDefinitions(): DefinitionsInterface
     {
         return $this->definitions;

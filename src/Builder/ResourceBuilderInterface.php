@@ -35,36 +35,18 @@ use PSX\Schema\DefinitionsInterface;
  */
 interface ResourceBuilderInterface
 {
-    /**
-     * @param string $description
-     */
     public function setDescription(string $description): void;
 
-    /**
-     * @param string $typeName
-     * @return Builder
-     */
     public function setPathParameters(string $typeName): Builder;
 
     /**
-     * @param string $methodName
-     * @return MethodBuilderInterface
      * @throws InvalidMethodException
      */
     public function addMethod(string $methodName): MethodBuilderInterface;
 
-    /**
-     * @param array $tags
-     */
     public function setTags(array $tags): void;
 
-    /**
-     * @return Resource
-     */
     public function getResource(): Resource;
 
-    /**
-     * @return DefinitionsInterface
-     */
     public function getDefinitions(): DefinitionsInterface;
 }

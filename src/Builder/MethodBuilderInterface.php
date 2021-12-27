@@ -22,6 +22,7 @@ namespace PSX\Api\Builder;
 
 use PSX\Api\Resource\MethodAbstract;
 use PSX\Schema\Builder;
+use PSX\Schema\Exception\InvalidSchemaException;
 
 /**
  * MethodBuilderInterface
@@ -32,46 +33,25 @@ use PSX\Schema\Builder;
  */
 interface MethodBuilderInterface
 {
-    /**
-     * @param string|null $operationId
-     */
     public function setOperationId(?string $operationId): void;
 
-    /**
-     * @param string|null $description
-     */
     public function setDescription(?string $description): void;
 
-    /**
-     * @param string|null $typeName
-     * @return Builder
-     */
     public function setQueryParameters(?string $typeName): Builder;
 
     /**
-     * @param string $schemaName
+     * @throws InvalidSchemaException
      */
     public function setRequest(string $schemaName): void;
 
     /**
-     * @param int $statusCode
-     * @param string $schemaName
+     * @throws InvalidSchemaException
      */
     public function addResponse(int $statusCode, string $schemaName): void;
 
-    /**
-     * @param string $name
-     * @param array $scopes
-     */
     public function setSecurity(string $name, array $scopes): void;
 
-    /**
-     * @param array $tags
-     */
     public function setTags(array $tags): void;
 
-    /**
-     * @return MethodAbstract
-     */
     public function getMethod(): MethodAbstract;
 }

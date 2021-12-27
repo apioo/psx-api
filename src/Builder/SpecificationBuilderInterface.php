@@ -35,20 +35,9 @@ use PSX\Schema\DefinitionsInterface;
  */
 interface SpecificationBuilderInterface
 {
-    /**
-     * @param SecurityInterface $security
-     */
     public function setSecurity(SecurityInterface $security): void;
 
-    /**
-     * @param int $status
-     * @param string $path
-     * @return ResourceBuilderInterface
-     */
     public function addResource(int $status, string $path): ResourceBuilderInterface;
 
-    /**
-     * @return SpecificationInterface
-     */
     public function getSpecification(): SpecificationInterface;
 }

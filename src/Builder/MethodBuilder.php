@@ -52,25 +52,16 @@ class MethodBuilder implements MethodBuilderInterface
         $this->method = Factory::getMethod($methodName);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setOperationId(?string $operationId): void
     {
         $this->method->setOperationId($operationId);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setDescription(?string $description): void
     {
         $this->method->setDescription($description);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setQueryParameters(?string $typeName): Builder
     {
         $builder = new Builder();
@@ -80,46 +71,34 @@ class MethodBuilder implements MethodBuilderInterface
         return $builder;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setRequest(string $schemaName): void
     {
         $this->method->setRequest($this->getSchema($schemaName));
     }
 
-    /**
-     * @inheritDoc
-     */
     public function addResponse(int $statusCode, string $schemaName): void
     {
         $this->method->addResponse($statusCode, $this->getSchema($schemaName));
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setSecurity(string $name, array $scopes): void
     {
         $this->method->setSecurity($name, $scopes);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setTags(array $tags): void
     {
         $this->method->setTags($tags);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getMethod(): MethodAbstract
     {
         return $this->method;
     }
 
+    /**
+     * @throws InvalidSchemaException
+     */
     private function getSchema(string $schemaName): string
     {
         $schema = $this->schemaManager->getSchema($schemaName);
