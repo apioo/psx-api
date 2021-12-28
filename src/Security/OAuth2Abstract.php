@@ -64,7 +64,7 @@ abstract class OAuth2Abstract implements SecurityInterface
         return $this->scopes;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

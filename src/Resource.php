@@ -170,7 +170,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
         });
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
