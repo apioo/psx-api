@@ -8948,6 +8948,1413 @@
       },
       "Link": {
         "$ref": "Inline91e35da1"
+      },
+      "Inline7013859f": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Asset"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline2d859569": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline2ea55b59": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Asset"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline0470074c": {
+        "type": "object",
+        "properties": {
+          "template_mint": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline20d1dd35": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inline0470074c"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline3fd53df7": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Log"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlinecae37d48": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Collection"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlineb3b9967c": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Collection"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlined904549d": {
+        "type": "object",
+        "properties": {
+          "assets": {
+            "type": "string"
+          },
+          "burned": {
+            "type": "string"
+          },
+          "templates": {
+            "type": "string"
+          },
+          "schemas": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline28cb2593": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inlined904549d"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline2734e4b8": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Schema"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlinea2fe30b0": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Schema"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline7cd1878a": {
+        "type": "object",
+        "properties": {
+          "assets": {
+            "type": "string"
+          },
+          "burned": {
+            "type": "string"
+          },
+          "templates": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline1b899a72": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inline7cd1878a"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline1a1c0c3e": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Template"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlined7b3950c": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Template"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlinea46e885b": {
+        "type": "object",
+        "properties": {
+          "assets": {
+            "type": "string"
+          },
+          "burned": {
+            "type": "string"
+          }
+        }
+      },
+      "Inlineacc80e6b": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inlinea46e885b"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline636db0a6": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Offer"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlinec16cb6b4": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Offer"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline311842ae": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Transfer"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline572de374": {
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "assets": {
+            "type": "string"
+          }
+        }
+      },
+      "Inlineffeae89e": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline572de374"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline7d95412b": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "$ref": "Collection"
+          },
+          "assets": {
+            "type": "string"
+          }
+        }
+      },
+      "Inlinef28c82d8": {
+        "type": "object",
+        "properties": {
+          "template_id": {
+            "type": "string"
+          },
+          "assets": {
+            "type": "string"
+          }
+        }
+      },
+      "Inlined4f425ef": {
+        "type": "object",
+        "properties": {
+          "collections": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline7d95412b"
+            }
+          },
+          "templates": {
+            "type": "array",
+            "items": {
+              "$ref": "Inlinef28c82d8"
+            }
+          },
+          "assets": {
+            "type": "string"
+          }
+        }
+      },
+      "Inlineb948cb9b": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Inlined4f425ef"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline53cc4aa2": {
+        "type": "object",
+        "properties": {
+          "schema_name": {
+            "type": "string"
+          },
+          "assets": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline3e1ff881": {
+        "type": "object",
+        "properties": {
+          "templates": {
+            "type": "array",
+            "items": {
+              "$ref": "Inlinef28c82d8"
+            }
+          },
+          "schemas": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline53cc4aa2"
+            }
+          }
+        }
+      },
+      "Inline87e7e216": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline3e1ff881"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlinec1376055": {
+        "type": "object",
+        "properties": {
+          "collection_name": {
+            "type": "string"
+          },
+          "assets": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline0d5dcbd2": {
+        "type": "object",
+        "properties": {
+          "collection_name": {
+            "type": "string"
+          },
+          "template_id": {
+            "type": "string"
+          },
+          "assets": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline0e0b9d0f": {
+        "type": "object",
+        "properties": {
+          "collections": {
+            "type": "array",
+            "items": {
+              "$ref": "Inlinec1376055"
+            }
+          },
+          "templates": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline0d5dcbd2"
+            }
+          },
+          "assets": {
+            "type": "string"
+          }
+        }
+      },
+      "Inlined52801ac": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline0e0b9d0f"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlinee2ad32b6": {
+        "type": "object",
+        "properties": {
+          "token_contract": {
+            "type": "string"
+          },
+          "token_symbol": {
+            "type": "string"
+          },
+          "token_precision": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlinecdcf7265": {
+        "type": "object",
+        "properties": {
+          "contract": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "collection_format": {
+            "type": "array",
+            "items": {
+              "$ref": "Inlineffffa488"
+            }
+          },
+          "supported_tokens": {
+            "type": "array",
+            "items": {
+              "$ref": "Inlinee2ad32b6"
+            }
+          }
+        }
+      },
+      "Inline1124b387": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inlinecdcf7265"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline563c4072": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Sale"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline4a0559e2": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Sale"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline5d957a23": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Auction"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline07db2bcf": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Auction"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline004e82a0": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Buyoffer"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline0841b879": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Buyoffer"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline14ab017b": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Marketplace"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline0dbc05c9": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Marketplace"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlinee1ca78cf": {
+        "type": "object",
+        "properties": {
+          "sale_id": {
+            "type": "string"
+          },
+          "auction_id": {
+            "type": "string"
+          },
+          "buyoffer_id": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
+          },
+          "token_symbol": {
+            "type": "string"
+          },
+          "token_precision": {
+            "type": "integer"
+          },
+          "token_contract": {
+            "type": "string"
+          },
+          "seller": {
+            "type": "string"
+          },
+          "buyer": {
+            "type": "string"
+          },
+          "block_time": {
+            "type": "string"
+          }
+        }
+      },
+      "Inlineb2e6fd35": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Inlinee1ca78cf"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline5cef590b": {
+        "type": "object",
+        "properties": {
+          "sale_id": {
+            "type": "string"
+          },
+          "auction_id": {
+            "type": "string"
+          },
+          "buyoffer_id": {
+            "type": "string"
+          },
+          "template_mint": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
+          },
+          "token_symbol": {
+            "type": "string"
+          },
+          "token_precision": {
+            "type": "integer"
+          },
+          "token_contract": {
+            "type": "string"
+          },
+          "block_time": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline85a8820c": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline5cef590b"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline4f49e15b": {
+        "type": "object",
+        "properties": {
+          "average": {
+            "type": "string"
+          },
+          "median": {
+            "type": "string"
+          },
+          "token_symbol": {
+            "type": "string"
+          },
+          "token_precision": {
+            "type": "integer"
+          },
+          "token_contract": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline6d90dcea": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline4f49e15b"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline3eff563c": {
+        "type": "object",
+        "properties": {
+          "token_symbol": {
+            "type": "string"
+          },
+          "token_precision": {
+            "type": "integer"
+          },
+          "token_contract": {
+            "type": "string"
+          },
+          "collection_name": {
+            "type": "string"
+          },
+          "template_id": {
+            "type": "string"
+          },
+          "average": {
+            "type": "string"
+          },
+          "median": {
+            "type": "string"
+          },
+          "suggested_average": {
+            "type": "string"
+          },
+          "suggested_median": {
+            "type": "string"
+          },
+          "min": {
+            "type": "string"
+          },
+          "max": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline74cdda32": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline3eff563c"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline63cc0ead": {
+        "type": "object",
+        "properties": {
+          "token_symbol": {
+            "type": "string"
+          },
+          "token_precision": {
+            "type": "integer"
+          },
+          "token_contract": {
+            "type": "string"
+          },
+          "median": {
+            "type": "string"
+          },
+          "average": {
+            "type": "string"
+          },
+          "suggested_average": {
+            "type": "string"
+          },
+          "suggested_median": {
+            "type": "string"
+          },
+          "min": {
+            "type": "string"
+          },
+          "max": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline4eea33ed": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline63cc0ead"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlineb4c46f55": {
+        "type": "object",
+        "properties": {
+          "contract": {
+            "type": "string"
+          },
+          "collection_name": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "allow_notify": {
+            "type": "boolean"
+          },
+          "authorized_accounts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notify_accounts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "market_fee": {
+            "type": "number"
+          },
+          "data": {
+            "$ref": "Inlinecdb728a8"
+          },
+          "created_at_block": {
+            "type": "string"
+          },
+          "created_at_time": {
+            "type": "string"
+          },
+          "listings": {
+            "type": "string"
+          },
+          "volume": {
+            "type": "string"
+          },
+          "sales": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline75f876f2": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "$ref": "Inlinee2ad32b6"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "Inlineb4c46f55"
+            }
+          }
+        }
+      },
+      "Inlinecbc952ff": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inline75f876f2"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline021b56c6": {
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string"
+          },
+          "buy_volume": {
+            "type": "string"
+          },
+          "sell_volume": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline3a0d77f8": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "$ref": "Inlinee2ad32b6"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline021b56c6"
+            }
+          }
+        }
+      },
+      "Inline37285df6": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inline3a0d77f8"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlineb32e2720": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "$ref": "Inlinee2ad32b6"
+          },
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline021b56c6"
+            }
+          }
+        }
+      },
+      "Inline3e1988f8": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inlineb32e2720"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline46a855d8": {
+        "type": "object",
+        "properties": {
+          "schema_name": {
+            "type": "string"
+          },
+          "listings": {
+            "type": "string"
+          },
+          "volume": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline2d1fd46a": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "$ref": "Inlinee2ad32b6"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline46a855d8"
+            }
+          }
+        }
+      },
+      "Inline01d71b58": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inline2d1fd46a"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline472eb4f5": {
+        "type": "object",
+        "properties": {
+          "time": {
+            "type": "string"
+          },
+          "volume": {
+            "type": "string"
+          },
+          "sales": {
+            "type": "string"
+          }
+        }
+      },
+      "Inlinecdfded9b": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "$ref": "Inlinee2ad32b6"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "Inline472eb4f5"
+            }
+          }
+        }
+      },
+      "Inline03ec62d9": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inlinecdfded9b"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline37541c3f": {
+        "type": "object",
+        "properties": {
+          "volume": {
+            "type": "string"
+          },
+          "sales": {
+            "type": "string"
+          }
+        }
+      },
+      "Inlined7926285": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "$ref": "Inlinee2ad32b6"
+          },
+          "results": {
+            "$ref": "Inline37541c3f"
+          }
+        }
+      },
+      "Inlinee9e8d085": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inlined7926285"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlineedc1f8ec": {
+        "type": "object",
+        "properties": {
+          "listing_symbol": {
+            "type": "string"
+          },
+          "settlement_symbol": {
+            "type": "string"
+          },
+          "delphi_pair_name": {
+            "type": "string"
+          },
+          "invert_delphi_pair": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Inlineeecf236e": {
+        "type": "object",
+        "properties": {
+          "atomicassets_contract": {
+            "type": "string"
+          },
+          "atomicmarket_contract": {
+            "type": "string"
+          },
+          "delphioracle_contract": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "maker_market_fee": {
+            "type": "number"
+          },
+          "taker_market_fee": {
+            "type": "number"
+          },
+          "minimum_auction_duration": {
+            "type": "integer"
+          },
+          "maximum_auction_duration": {
+            "type": "integer"
+          },
+          "minimum_bid_increase": {
+            "type": "number"
+          },
+          "auction_reset_duration": {
+            "type": "integer"
+          },
+          "supported_tokens": {
+            "type": "array",
+            "items": {
+              "$ref": "Inlinee2ad32b6"
+            }
+          },
+          "supported_pairs": {
+            "type": "array",
+            "items": {
+              "$ref": "Inlineedc1f8ec"
+            }
+          }
+        }
+      },
+      "Inline4f499623": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inlineeecf236e"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline96783c6c": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "undefined"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline359f6138": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "ListingAsset"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline382d5749": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "ListingTransfer"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline789aa161": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "ListingOffer"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline2c904cf9": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "ListingOffer"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inlinedb18d4ba": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "Link"
+            }
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline3a3cb959": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Link"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
+      },
+      "Inline59b668ab": {
+        "type": "object",
+        "properties": {
+          "atomictools_contract": {
+            "type": "string"
+          },
+          "atomicassets_contract": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "Inline7a0424ea": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "Inline59b668ab"
+          },
+          "query_time": {
+            "type": "integer"
+          }
+        }
       }
     }
   }

@@ -44,8 +44,8 @@ class OpenAPI
      */
     public function transform(\stdClass $schema): \stdClass
     {
-        $this->transformOperations($schema);
         $this->transformSchemas($schema);
+        $this->transformOperations($schema);
 
         return $schema;
     }
