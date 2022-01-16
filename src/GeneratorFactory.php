@@ -20,8 +20,6 @@
 
 namespace PSX\Api;
 
-use Doctrine\Common\Annotations\Reader;
-
 /**
  * GeneratorFactory
  *
@@ -31,9 +29,9 @@ use Doctrine\Common\Annotations\Reader;
  */
 class GeneratorFactory implements GeneratorFactoryInterface
 {
-    private string $namespace;
-    private string $url;
-    private string $dispatch;
+    protected string $namespace;
+    protected string $url;
+    protected string $dispatch;
 
     public function __construct(string $namespace, string $url, string $dispatch)
     {
@@ -42,10 +40,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
         $this->dispatch  = $dispatch;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getGenerator($format, $config = null): GeneratorInterface
+    public function getGenerator(string $format, ?string $config = null): GeneratorInterface
     {
         $baseUri = $this->url . '/' . $this->dispatch;
 
@@ -93,10 +88,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
         return $generator;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getFileExtension($format, $config = null): string
+    public function getFileExtension(string $format, ?string $config = null): string
     {
         switch ($format) {
             case GeneratorFactoryInterface::CLIENT_GO:
@@ -125,10 +117,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
         }
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getMime($format, $config = null): string
+    public function getMime(string $format, ?string $config = null): string
     {
         switch ($format) {
             case GeneratorFactoryInterface::CLIENT_GO:
@@ -158,16 +147,11 @@ class GeneratorFactory implements GeneratorFactoryInterface
 
     /**
      * Callback method to optional configure the created generator
-     * 
-     * @param GeneratorInterface $generator
      */
     protected function configure(GeneratorInterface $generator): void
     {
     }
 
-    /**
-     * @return array
-     */
     public static function getPossibleTypes(): array
     {
         return [
