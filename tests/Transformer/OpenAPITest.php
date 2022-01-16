@@ -23,6 +23,7 @@ namespace PSX\Api\Tests\Transformer;
 use PHPUnit\Framework\TestCase;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Transformer\OpenAPI;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * OpenAPITest
@@ -39,7 +40,14 @@ class OpenAPITest extends TestCase
     public function testConvert(string $file)
     {
         $schema = file_get_contents(__DIR__ . '/openapi/actual/' . $file);
-        $actual = (new OpenAPI())->transform(\json_decode($schema));
+        if (in_array(pathinfo($file, PATHINFO_EXTENSION), ['yml', 'yaml'])) {
+            $file = pathinfo($file, PATHINFO_FILENAME) . '.json';
+            $data = \json_decode(\json_encode(Yaml::parse($schema)));
+        } else {
+            $data = \json_decode($schema);
+        }
+
+        $actual = (new OpenAPI())->transform($data);
 
         $expectFile = __DIR__ . '/openapi/expect/' . $file;
         $this->assertJsonStringEqualsJsonFile($expectFile, \json_encode($actual));
