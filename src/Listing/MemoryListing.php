@@ -48,10 +48,7 @@ class MemoryListing implements ListingInterface
         );
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getAvailableRoutes(FilterInterface $filter = null): iterable
+    public function getAvailableRoutes(?FilterInterface $filter = null): iterable
     {
         if ($filter !== null) {
             return array_values(array_filter($this->routes, static function(Route $route) use ($filter){
@@ -62,9 +59,6 @@ class MemoryListing implements ListingInterface
         }
     }
 
-    /**
-     * @inheritdoc
-     */
     public function find(string $path, ?string $version = null): ?SpecificationInterface
     {
         $resource = $this->specification->getResourceCollection()->get($path);
@@ -81,10 +75,7 @@ class MemoryListing implements ListingInterface
         );
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function findAll(?string $version = null, FilterInterface $filter = null): SpecificationInterface
+    public function findAll(?string $version = null, ?FilterInterface $filter = null): SpecificationInterface
     {
         if ($filter !== null) {
             return new Specification(
@@ -96,18 +87,12 @@ class MemoryListing implements ListingInterface
         }
     }
 
-    /**
-     * @param \PSX\Api\Listing\Route $route
-     */
-    public function addRoute(Route $route)
+    public function addRoute(Route $route): void
     {
         $this->routes[] = $route;
     }
 
-    /**
-     * @param SpecificationInterface $specification
-     */
-    public function addSpecification(SpecificationInterface $specification)
+    public function addSpecification(SpecificationInterface $specification): void
     {
         $this->specification->merge($specification);
     }

@@ -21,12 +21,10 @@
 namespace PSX\Api;
 
 use PSX\Api\Listing\FilterInterface;
-use PSX\Api\Listing\Route;
 
 /**
- * A listing knows all API endpoints in a system and can be used to get resource
- * definitions for specific endpoints or to get an index of all available
- * endpoints
+ * A listing knows all API endpoints in a system and can be used to get resource definitions for specific endpoints or
+ * to get an index of all available endpoints
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -36,27 +34,16 @@ interface ListingInterface
 {
     /**
      * Returns all available routes
-     *
-     * @param FilterInterface|null $filter
-     * @return Route[]
      */
     public function getAvailableRoutes(?FilterInterface $filter = null): iterable;
 
     /**
      * Returns a specification for a specific resource path
-     *
-     * @param string $path
-     * @param string|null $version
-     * @return SpecificationInterface|null
      */
     public function find(string $path, ?string $version = null): ?SpecificationInterface;
 
     /**
      * Returns all available resources
-     *
-     * @param string|null $version
-     * @param FilterInterface|null $filter
-     * @return SpecificationInterface
      */
-    public function findAll(?string $version = null, FilterInterface $filter = null): SpecificationInterface;
+    public function findAll(?string $version = null, ?FilterInterface $filter = null): SpecificationInterface;
 }
