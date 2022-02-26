@@ -20,6 +20,8 @@
 
 namespace PSX\Api;
 
+use PSX\Api\Listing\FilterInterface;
+
 /**
  * GeneratorFactory
  *
@@ -40,7 +42,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
         $this->dispatch  = $dispatch;
     }
 
-    public function getGenerator(string $format, ?string $config = null): GeneratorInterface
+    public function getGenerator(string $format, ?string $config = null, ?FilterInterface $filter = null): GeneratorInterface
     {
         $baseUri = $this->url . '/' . $this->dispatch;
 
@@ -83,7 +85,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 break;
         }
 
-        $this->configure($generator);
+        $this->configure($generator, $filter);
 
         return $generator;
     }
@@ -148,7 +150,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
     /**
      * Callback method to optional configure the created generator
      */
-    protected function configure(GeneratorInterface $generator): void
+    protected function configure(GeneratorInterface $generator, ?FilterInterface $filter = null): void
     {
     }
 
