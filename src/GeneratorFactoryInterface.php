@@ -20,6 +20,8 @@
 
 namespace PSX\Api;
 
+use PSX\Api\Listing\FilterInterface;
+
 /**
  * GeneratorFactoryInterface
  *
@@ -44,7 +46,7 @@ interface GeneratorFactoryInterface
     /**
      * Returns the fitting generator object for the provided type
      */
-    public function getGenerator(string $format, ?string $config = null): GeneratorInterface;
+    public function getGenerator(string $format, ?string $config = null, ?FilterInterface $filter = null): GeneratorInterface;
 
     /**
      * Returns the preferred file extension for the provided format
