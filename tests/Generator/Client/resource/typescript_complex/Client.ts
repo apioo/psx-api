@@ -3,27 +3,25 @@
  * {@link https://sdkgen.app}
  */
 
-import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
+import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
 
 import FooByNameAndTypeResource from "./FooByNameAndTypeResource";
 
 export default class Client extends ClientAbstract {
-    public constructor(baseUrl: string, tokenStore: TokenStoreInterface|null = null) {
-        super(baseUrl, null, tokenStore);
+    public constructor(baseUrl: string, credentials: CredentialsInterface, tokenStore: TokenStoreInterface|null = null, scopes: Array<string>|null = []) {
+        super(baseUrl, credentials, tokenStore, scopes);
     }
 
     /**
      * Endpoint: /foo/:name/:type
-     *
-     * @returns FooByNameAndTypeResource
      */
-    public getFooByNameAndType(name: string, type: string): FooByNameAndTypeResource
+    public async getFooByNameAndType(name: string, type: string): Promise<FooByNameAndTypeResource>
     {
         return new FooByNameAndTypeResource(
             name,
             type,
             this.baseUrl,
-            this.newHttpClient()
+            await this.newHttpClient()
         );
     }
 
