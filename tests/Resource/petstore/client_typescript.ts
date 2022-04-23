@@ -110,7 +110,7 @@ import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
 import PetsResource from "./PetsResource";
 
 export default class Client extends ClientAbstract {
-    public constructor(baseUrl: string, , tokenStore: TokenStoreInterface|null = null) {
+    public constructor(baseUrl: string, tokenStore: TokenStoreInterface|null = null) {
         super(baseUrl, null, tokenStore);
     }
 
