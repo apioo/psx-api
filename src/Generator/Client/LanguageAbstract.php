@@ -90,7 +90,7 @@ abstract class LanguageAbstract implements GeneratorInterface
      */
     public function generateResource(Resource $resource, DefinitionsInterface $definitions, Generator\Code\Chunks $chunks, array &$resources): void
     {
-        $className = $this->getClassName($resource->getPath());
+        $className = $this->buildClassNameByPath($resource->getPath());
         if (empty($className)) {
             return;
         }
@@ -109,7 +109,7 @@ abstract class LanguageAbstract implements GeneratorInterface
 
         $methods = [];
         foreach ($resource->getMethods() as $method) {
-            $methodName = $this->getMethodName($method->getOperationId() ?: strtolower($method->getName()));
+            $methodName = $this->buildMethodName($method->getOperationId() ?: strtolower($method->getName()));
 
             $args = [];
             $docs = [];
@@ -245,7 +245,7 @@ abstract class LanguageAbstract implements GeneratorInterface
     {
         $schema = new Schema(TypeFactory::getAny(), $definitions);
         $result = $this->getGenerator()->generate($schema);
-        
+
         if ($result instanceof Generator\Code\Chunks) {
             foreach ($result->getChunks() as $identifier => $code) {
                 $chunks->append($this->getFileName($identifier), $this->getFileContent($code, $identifier));
@@ -272,7 +272,7 @@ abstract class LanguageAbstract implements GeneratorInterface
             // in case we have tags we create group layer
             $groupResources = [];
             foreach ($groups as $tag => $resources) {
-                $className = ucfirst($tag) . 'Group';
+                $className = $this->buildClassNameByTag($tag);
 
                 $code = $this->engine->render($this->getGroupTemplate(), [
                     'baseUrl' => $this->baseUrl,
@@ -285,7 +285,7 @@ abstract class LanguageAbstract implements GeneratorInterface
 
                 $groupResources[$className] = [
                     'description' => 'Tag: ' . $tag,
-                    'methodName' => $tag,
+                    'methodName' => $this->buildMethodName($tag),
                     'properties' => [],
                 ];
             }
@@ -364,7 +364,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         }
     }
 
-    protected function getClassName(string $path): string
+    private function buildClassNameByPath(string $path): string
     {
         $parts = explode('/', $path);
 
@@ -388,6 +388,28 @@ abstract class LanguageAbstract implements GeneratorInterface
         return $className . 'Resource';
     }
 
+    private function buildClassNameByTag(string $tag): string
+    {
+        $parts = explode('_', str_replace(['.', ' '], '_', $tag));
+        $parts = array_map(function($part){
+            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
+        }, $parts);
+
+        $className = implode('', $parts);
+
+        return $className . 'Group';
+    }
+
+    private function buildMethodName(string $methodName): string
+    {
+        $parts = explode('_', str_replace(['.', ' '], '_', $methodName));
+        $parts = array_map(function($part){
+            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
+        }, $parts);
+
+        return lcfirst(implode('', $parts));
+    }
+
     protected function getFileContent(string $code, string $identifier): string
     {
         return $code;
@@ -402,16 +424,6 @@ abstract class LanguageAbstract implements GeneratorInterface
     abstract protected function getGenerator(): SchemaGeneratorInterface;
 
     abstract protected function getFileName(string $identifier): string;
-
-    private function getMethodName(string $methodName): string
-    {
-        $parts = explode('_', str_replace(['.', ' '], '_', $methodName));
-        $parts = array_map(function($part){
-            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
-        }, $parts);
-
-        return lcfirst(implode('', $parts));
-    }
 
     /**
      * Resolves a reference type in case it points to a non struct or map type
