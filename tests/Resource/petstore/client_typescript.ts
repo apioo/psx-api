@@ -105,25 +105,23 @@ export interface PetsPetIdGetQuery {
  * {@link https://sdkgen.app}
  */
 
-import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
+import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
 
 import PetsResource from "./PetsResource";
 
 export default class Client extends ClientAbstract {
-    public constructor(baseUrl: string, tokenStore: TokenStoreInterface|null = null) {
-        super(baseUrl, null, tokenStore);
+    public constructor(baseUrl: string, credentials: CredentialsInterface|null = null, tokenStore: TokenStoreInterface|null = null, scopes: Array<string>|null = []) {
+        super(baseUrl, credentials, tokenStore, scopes);
     }
 
     /**
      * Endpoint: /pets
-     *
-     * @returns PetsResource
      */
-    public getPets(): PetsResource
+    public async getPets(): Promise<PetsResource>
     {
         return new PetsResource(
             this.baseUrl,
-            this.newHttpClient()
+            await this.newHttpClient()
         );
     }
 
