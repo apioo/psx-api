@@ -29,7 +29,7 @@ class Path implements \JsonSerializable
     {
         return $this->type;
     }
-    public function jsonSerialize()
+    public function jsonSerialize() : \stdClass
     {
         return (object) array_filter(array('name' => $this->name, 'type' => $this->type), static function ($value) : bool {
             return $value !== null;

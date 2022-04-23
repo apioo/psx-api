@@ -24,7 +24,7 @@ class EntryCollection implements \JsonSerializable
     {
         return $this->entry;
     }
-    public function jsonSerialize()
+    public function jsonSerialize() : \stdClass
     {
         return (object) array_filter(array('entry' => $this->entry), static function ($value) : bool {
             return $value !== null;

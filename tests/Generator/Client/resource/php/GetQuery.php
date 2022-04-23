@@ -60,7 +60,7 @@ class GetQuery implements \JsonSerializable
     {
         return $this->datetime;
     }
-    public function jsonSerialize()
+    public function jsonSerialize() : \stdClass
     {
         return (object) array_filter(array('startIndex' => $this->startIndex, 'float' => $this->float, 'boolean' => $this->boolean, 'date' => $this->date, 'datetime' => $this->datetime), static function ($value) : bool {
             return $value !== null;

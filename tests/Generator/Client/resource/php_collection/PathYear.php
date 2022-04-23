@@ -18,7 +18,7 @@ class PathYear implements \JsonSerializable
     {
         return $this->year;
     }
-    public function jsonSerialize()
+    public function jsonSerialize() : \stdClass
     {
         return (object) array_filter(array('year' => $this->year), static function ($value) : bool {
             return $value !== null;

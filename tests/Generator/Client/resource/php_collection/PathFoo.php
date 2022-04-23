@@ -18,7 +18,7 @@ class PathFoo implements \JsonSerializable
     {
         return $this->foo;
     }
-    public function jsonSerialize()
+    public function jsonSerialize() : \stdClass
     {
         return (object) array_filter(array('foo' => $this->foo), static function ($value) : bool {
             return $value !== null;

@@ -51,7 +51,7 @@ class EntryUpdate implements \JsonSerializable
     {
         return $this->date;
     }
-    public function jsonSerialize()
+    public function jsonSerialize() : \stdClass
     {
         return (object) array_filter(array('id' => $this->id, 'userId' => $this->userId, 'title' => $this->title, 'date' => $this->date), static function ($value) : bool {
             return $value !== null;
