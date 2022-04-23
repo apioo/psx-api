@@ -9,7 +9,7 @@ import {HttpBearer} from "sdkgen-client"
 import FooByNameAndTypeResource from "./FooByNameAndTypeResource";
 
 export default class Client extends ClientAbstract {
-    public constructor(baseUrl: string, token: string, , tokenStore: TokenStoreInterface|null = null) {
+    public constructor(baseUrl: string, token: string, tokenStore: TokenStoreInterface|null = null) {
         super(baseUrl, new HttpBearer(token), tokenStore);
     }
 

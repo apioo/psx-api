@@ -16,7 +16,7 @@ import {{ className }} from "./{{ className }}";
 {% endfor %}
 
 export default class {{ className }} extends ClientAbstract {
-    public constructor(baseUrl: string, {% if security.type == 'httpBasic' %}userName: string, password: string, {% elseif security.type in ['httpBearer', 'apiKey'] %}token: string, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}clientId: string, clientSecret: string, {% endif %}, tokenStore: TokenStoreInterface|null = null) {
+    public constructor(baseUrl: string, {% if security.type == 'httpBasic' %}userName: string, password: string, {% elseif security.type in ['httpBearer', 'apiKey'] %}token: string, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}clientId: string, clientSecret: string, {% endif %}tokenStore: TokenStoreInterface|null = null) {
         super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}null{% endif %}, tokenStore);
     }
 

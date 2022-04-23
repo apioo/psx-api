@@ -10,7 +10,7 @@ import FooGroup from "./FooGroup";
 import BarGroup from "./BarGroup";
 
 export default class Client extends ClientAbstract {
-    public constructor(baseUrl: string, token: string, , tokenStore: TokenStoreInterface|null = null) {
+    public constructor(baseUrl: string, token: string, tokenStore: TokenStoreInterface|null = null) {
         super(baseUrl, new HttpBearer(token), tokenStore);
     }
 
