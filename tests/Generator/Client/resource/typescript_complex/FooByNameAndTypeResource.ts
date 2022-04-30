@@ -27,9 +27,9 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
      * Returns a collection
      *
      * @param {Entry | EntryMessage} data
-     * @returns {AxiosResponse<Entry | EntryMessage>}
+     * @returns {Promise<AxiosResponse<Entry | EntryMessage>>}
      */
-    public async postEntryOrMessage(data?: Entry | EntryMessage): AxiosResponse<Entry | EntryMessage> {
+    public async postEntryOrMessage(data?: Entry | EntryMessage): Promise<AxiosResponse<Entry | EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'POST',
             responseType: 'json',

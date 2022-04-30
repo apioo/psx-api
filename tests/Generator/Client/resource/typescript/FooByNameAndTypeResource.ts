@@ -31,9 +31,9 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
      * Returns a collection
      *
      * @param {GetQuery} query
-     * @returns {AxiosResponse<EntryCollection>}
+     * @returns {Promise<AxiosResponse<EntryCollection>>}
      */
-    public async listFoo(query?: GetQuery): AxiosResponse<EntryCollection> {
+    public async listFoo(query?: GetQuery): Promise<AxiosResponse<EntryCollection>> {
         let params: AxiosRequestConfig = {
             method: 'GET',
             params: query,
@@ -48,9 +48,9 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
 
     /**
      * @param {EntryCreate} data
-     * @returns {AxiosResponse<EntryMessage>}
+     * @returns {Promise<AxiosResponse<EntryMessage>>}
      */
-    public async createFoo(data?: EntryCreate): AxiosResponse<EntryMessage> {
+    public async createFoo(data?: EntryCreate): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'POST',
             responseType: 'json',
@@ -64,9 +64,9 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
 
     /**
      * @param {EntryUpdate} data
-     * @returns {AxiosResponse<EntryMessage>}
+     * @returns {Promise<AxiosResponse<EntryMessage>>}
      */
-    public async put(data?: EntryUpdate): AxiosResponse<EntryMessage> {
+    public async put(data?: EntryUpdate): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'PUT',
             responseType: 'json',
@@ -79,9 +79,9 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
     }
 
     /**
-     * @returns {AxiosResponse<EntryMessage>}
+     * @returns {Promise<AxiosResponse<EntryMessage>>}
      */
-    public async delete(): AxiosResponse<EntryMessage> {
+    public async delete(): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'DELETE',
             responseType: 'json',
@@ -95,9 +95,9 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
 
     /**
      * @param {EntryPatch} data
-     * @returns {AxiosResponse<EntryMessage>}
+     * @returns {Promise<AxiosResponse<EntryMessage>>}
      */
-    public async patch(data?: EntryPatch): AxiosResponse<EntryMessage> {
+    public async patch(data?: EntryPatch): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'PATCH',
             responseType: 'json',

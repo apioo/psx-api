@@ -25,9 +25,9 @@ export default class BarByFooResource extends ResourceAbstract {
     /**
      * Returns a collection
      *
-     * @returns {AxiosResponse<EntryCollection>}
+     * @returns {Promise<AxiosResponse<EntryCollection>>}
      */
-    public async get(): AxiosResponse<EntryCollection> {
+    public async get(): Promise<AxiosResponse<EntryCollection>> {
         let params: AxiosRequestConfig = {
             method: 'GET',
             responseType: 'json',
@@ -41,9 +41,9 @@ export default class BarByFooResource extends ResourceAbstract {
 
     /**
      * @param {EntryCreate} data
-     * @returns {AxiosResponse<EntryMessage>}
+     * @returns {Promise<AxiosResponse<EntryMessage>>}
      */
-    public async post(data?: EntryCreate): AxiosResponse<EntryMessage> {
+    public async post(data?: EntryCreate): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'POST',
             responseType: 'json',

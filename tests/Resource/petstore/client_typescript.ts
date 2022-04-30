@@ -24,9 +24,9 @@ export default class PetsResource extends ResourceAbstract {
      * List all pets
      *
      * @param {PetsGetQuery} query
-     * @returns {AxiosResponse<Pets>}
+     * @returns {Promise<AxiosResponse<Pets>>}
      */
-    public async listPets(query?: PetsGetQuery): AxiosResponse<Pets> {
+    public async listPets(query?: PetsGetQuery): Promise<AxiosResponse<Pets>> {
         let params: AxiosRequestConfig = {
             method: 'GET',
             params: query,
@@ -43,7 +43,7 @@ export default class PetsResource extends ResourceAbstract {
      * Create a pet
      *
      * @param {Pet} data
-     * @returns {AxiosResponse<void>}
+     * @returns {Promise<AxiosResponse<void>>}
      */
     public async createPets(data?: Pet) {
         let params: AxiosRequestConfig = {
