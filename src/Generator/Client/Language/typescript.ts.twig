@@ -36,10 +36,6 @@ export default class {{ className }} extends ResourceAbstract {
 {% if method.args.query is defined %}
             params: query,
 {% endif %}
-            responseType: 'json',
-            headers: {
-                Accept: 'application/json',
-            },
         };
 
 {% if method.httpMethod in ['DELETE'] %}

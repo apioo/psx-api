@@ -47,11 +47,6 @@ class {{ className }} extends ResourceAbstract
 {% if method.args.query is defined %}
             'query' => $query !== null ? (array) $query->jsonSerialize() : [],
 {% endif %}
-{% if method.secure %}
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->token
-            ],
-{% endif %}
 {% if method.args.data is defined %}
             'json' => $data
 {% endif %}
