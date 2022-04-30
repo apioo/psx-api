@@ -13,9 +13,9 @@ use Sdkgen\Client\TokenStoreInterface;
 
 class Client extends ClientAbstract
 {
-    public function __construct(string $baseUrl, string $token, ?TokenStoreInterface $tokenStore = null)
+    public function __construct(string $baseUrl, string $token, ?TokenStoreInterface $tokenStore = null, ?array $scopes = null)
     {
-        parent::__construct($baseUrl, new Credentials\HttpBearer($token), $tokenStore);
+        parent::__construct($baseUrl, new Credentials\HttpBearer($token), $tokenStore, $scopes);
     }
 
     /**
