@@ -28,10 +28,6 @@ export default class FooResource extends ResourceAbstract {
     public async get(): Promise<AxiosResponse<EntryCollection>> {
         let params: AxiosRequestConfig = {
             method: 'GET',
-            responseType: 'json',
-            headers: {
-                Accept: 'application/json',
-            },
         };
 
         return this.httpClient.get<EntryCollection>(this.url, params);
@@ -44,10 +40,6 @@ export default class FooResource extends ResourceAbstract {
     public async post(data?: EntryCreate): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'POST',
-            responseType: 'json',
-            headers: {
-                Accept: 'application/json',
-            },
         };
 
         return this.httpClient.post<EntryMessage>(this.url, data, params);

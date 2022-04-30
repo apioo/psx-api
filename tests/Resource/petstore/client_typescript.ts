@@ -30,10 +30,6 @@ export default class PetsResource extends ResourceAbstract {
         let params: AxiosRequestConfig = {
             method: 'GET',
             params: query,
-            responseType: 'json',
-            headers: {
-                Accept: 'application/json',
-            },
         };
 
         return this.httpClient.get<Pets>(this.url, params);
@@ -48,10 +44,6 @@ export default class PetsResource extends ResourceAbstract {
     public async createPets(data?: Pet) {
         let params: AxiosRequestConfig = {
             method: 'POST',
-            responseType: 'json',
-            headers: {
-                Accept: 'application/json',
-            },
         };
 
         return this.httpClient.post(this.url, data, params);

@@ -45,9 +45,6 @@ class FooByNameAndTypeResource extends ResourceAbstract
     public function postEntryOrMessage(?Entry|EntryMessage $data = null): Entry|EntryMessage
     {
         $options = [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->token
-            ],
             'json' => $data
         ];
 

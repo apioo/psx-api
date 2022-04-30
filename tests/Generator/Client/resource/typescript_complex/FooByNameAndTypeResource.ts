@@ -32,10 +32,6 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
     public async postEntryOrMessage(data?: Entry | EntryMessage): Promise<AxiosResponse<Entry | EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'POST',
-            responseType: 'json',
-            headers: {
-                Accept: 'application/json',
-            },
         };
 
         return this.httpClient.post<Entry | EntryMessage>(this.url, data, params);

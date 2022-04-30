@@ -37,10 +37,6 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
         let params: AxiosRequestConfig = {
             method: 'GET',
             params: query,
-            responseType: 'json',
-            headers: {
-                Accept: 'application/json',
-            },
         };
 
         return this.httpClient.get<EntryCollection>(this.url, params);
@@ -53,10 +49,6 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
     public async createFoo(data?: EntryCreate): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'POST',
-            responseType: 'json',
-            headers: {
-                Accept: 'application/json',
-            },
         };
 
         return this.httpClient.post<EntryMessage>(this.url, data, params);
@@ -69,10 +61,6 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
     public async put(data?: EntryUpdate): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'PUT',
-            responseType: 'json',
-            headers: {
-                Accept: 'application/json',
-            },
         };
 
         return this.httpClient.put<EntryMessage>(this.url, data, params);
@@ -84,10 +72,6 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
     public async delete(): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'DELETE',
-            responseType: 'json',
-            headers: {
-                Accept: 'application/json',
-            },
         };
 
         return this.httpClient.delete(this.url, params);
@@ -100,10 +84,6 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
     public async patch(data?: EntryPatch): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'PATCH',
-            responseType: 'json',
-            headers: {
-                Accept: 'application/json',
-            },
         };
 
         return this.httpClient.patch<EntryMessage>(this.url, data, params);
