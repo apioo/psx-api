@@ -3,7 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-import {AxiosInstance, AxiosPromise, Method} from "axios";
+import {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
 import {ResourceAbstract} from "sdkgen-client"
 import {PetsGetQuery} from "./PetsGetQuery";
 import {Pets} from "./Pets";
@@ -13,7 +13,7 @@ export default class PetsResource extends ResourceAbstract {
     private url: string;
 
 
-    public constructor(baseUrl: string, httpClient?: AxiosInstance) {
+    public constructor(baseUrl: string, httpClient: AxiosInstance) {
         super(baseUrl, httpClient);
 
 
@@ -24,12 +24,16 @@ export default class PetsResource extends ResourceAbstract {
      * List all pets
      *
      * @param {PetsGetQuery} query
-     * @returns {AxiosPromise<Pets>}
+     * @returns {AxiosResponse<Pets>}
      */
-    public listPets(query?: PetsGetQuery): AxiosPromise<Pets> {
-        let params = {
-            method: <Method> "GET",
+    public async listPets(query?: PetsGetQuery): AxiosResponse<Pets> {
+        let params: AxiosRequestConfig = {
+            method: 'GET',
             params: query,
+            responseType: 'json',
+            headers: {
+                Accept: 'application/json',
+            },
         };
 
         return this.httpClient.get<Pets>(this.url, params);
@@ -39,11 +43,15 @@ export default class PetsResource extends ResourceAbstract {
      * Create a pet
      *
      * @param {Pet} data
-     * @returns {AxiosPromise<void>}
+     * @returns {AxiosResponse<void>}
      */
-    public createPets(data?: Pet) {
-        let params = {
-            method: <Method> "POST",
+    public async createPets(data?: Pet) {
+        let params: AxiosRequestConfig = {
+            method: 'POST',
+            responseType: 'json',
+            headers: {
+                Accept: 'application/json',
+            },
         };
 
         return this.httpClient.post(this.url, data, params);

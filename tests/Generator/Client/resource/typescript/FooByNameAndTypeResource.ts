@@ -3,7 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-import {AxiosInstance, AxiosPromise, Method} from "axios";
+import {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
 import {ResourceAbstract} from "sdkgen-client"
 import {GetQuery} from "./GetQuery";
 import {EntryCollection} from "./EntryCollection";
@@ -18,7 +18,7 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
     private name: string;
     private type: string;
 
-    public constructor(name: string, type: string, baseUrl: string, httpClient?: AxiosInstance) {
+    public constructor(name: string, type: string, baseUrl: string, httpClient: AxiosInstance) {
         super(baseUrl, httpClient);
 
         this.name = name;
@@ -31,12 +31,16 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
      * Returns a collection
      *
      * @param {GetQuery} query
-     * @returns {AxiosPromise<EntryCollection>}
+     * @returns {AxiosResponse<EntryCollection>}
      */
-    public listFoo(query?: GetQuery): AxiosPromise<EntryCollection> {
-        let params = {
-            method: <Method> "GET",
+    public async listFoo(query?: GetQuery): AxiosResponse<EntryCollection> {
+        let params: AxiosRequestConfig = {
+            method: 'GET',
             params: query,
+            responseType: 'json',
+            headers: {
+                Accept: 'application/json',
+            },
         };
 
         return this.httpClient.get<EntryCollection>(this.url, params);
@@ -44,11 +48,15 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
 
     /**
      * @param {EntryCreate} data
-     * @returns {AxiosPromise<EntryMessage>}
+     * @returns {AxiosResponse<EntryMessage>}
      */
-    public createFoo(data?: EntryCreate): AxiosPromise<EntryMessage> {
-        let params = {
-            method: <Method> "POST",
+    public async createFoo(data?: EntryCreate): AxiosResponse<EntryMessage> {
+        let params: AxiosRequestConfig = {
+            method: 'POST',
+            responseType: 'json',
+            headers: {
+                Accept: 'application/json',
+            },
         };
 
         return this.httpClient.post<EntryMessage>(this.url, data, params);
@@ -56,22 +64,30 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
 
     /**
      * @param {EntryUpdate} data
-     * @returns {AxiosPromise<EntryMessage>}
+     * @returns {AxiosResponse<EntryMessage>}
      */
-    public put(data?: EntryUpdate): AxiosPromise<EntryMessage> {
-        let params = {
-            method: <Method> "PUT",
+    public async put(data?: EntryUpdate): AxiosResponse<EntryMessage> {
+        let params: AxiosRequestConfig = {
+            method: 'PUT',
+            responseType: 'json',
+            headers: {
+                Accept: 'application/json',
+            },
         };
 
         return this.httpClient.put<EntryMessage>(this.url, data, params);
     }
 
     /**
-     * @returns {AxiosPromise<EntryMessage>}
+     * @returns {AxiosResponse<EntryMessage>}
      */
-    public delete(): AxiosPromise<EntryMessage> {
-        let params = {
-            method: <Method> "DELETE",
+    public async delete(): AxiosResponse<EntryMessage> {
+        let params: AxiosRequestConfig = {
+            method: 'DELETE',
+            responseType: 'json',
+            headers: {
+                Accept: 'application/json',
+            },
         };
 
         return this.httpClient.delete(this.url, params);
@@ -79,11 +95,15 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
 
     /**
      * @param {EntryPatch} data
-     * @returns {AxiosPromise<EntryMessage>}
+     * @returns {AxiosResponse<EntryMessage>}
      */
-    public patch(data?: EntryPatch): AxiosPromise<EntryMessage> {
-        let params = {
-            method: <Method> "PATCH",
+    public async patch(data?: EntryPatch): AxiosResponse<EntryMessage> {
+        let params: AxiosRequestConfig = {
+            method: 'PATCH',
+            responseType: 'json',
+            headers: {
+                Accept: 'application/json',
+            },
         };
 
         return this.httpClient.patch<EntryMessage>(this.url, data, params);

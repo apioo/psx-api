@@ -1,4 +1,4 @@
-import {AxiosInstance, AxiosPromise, Method} from "axios";
+import {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
 import {ResourceAbstract} from "sdkgen-client"
 {% for className in imports %}
 import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
@@ -11,7 +11,7 @@ export default class {{ className }} extends ResourceAbstract {
     private {{ name }}: {{ hint }};
 {% endfor %}
 
-    public constructor({% for name, hint in properties %}{{ name }}: {{ hint|raw }}, {% endfor %}baseUrl: string, httpClient?: AxiosInstance) {
+    public constructor({% for name, hint in properties %}{{ name }}: {{ hint|raw }}, {% endfor %}baseUrl: string, httpClient: AxiosInstance) {
         super(baseUrl, httpClient);
 
 {% for name, hint in properties %}
@@ -28,14 +28,18 @@ export default class {{ className }} extends ResourceAbstract {
 {% endif %}
 {% for name, hint in method.docs %}     * @param {{ '{' }}{{ hint }}{{ '}' }} {{ name }}
 {% endfor %}
-     * @returns {{ '{' }}AxiosPromise<{% if method.returnDoc %}{{ method.returnDoc|raw }}{% else %}void{% endif %}>{{ '}' }}
+     * @returns {{ '{' }}AxiosResponse<{% if method.returnDoc %}{{ method.returnDoc|raw }}{% else %}void{% endif %}>{{ '}' }}
      */
-    public {{ methodName }}({% for name, hint in method.args %}{{ name }}?: {{ hint|raw }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: AxiosPromise<{% if method.return %}{{ method.return|raw }}{% else %}any{% endif %}>{% endif %} {
-        let params = {
-            method: <Method> "{{ method.httpMethod }}",
+    public async {{ methodName }}({% for name, hint in method.args %}{{ name }}?: {{ hint|raw }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: AxiosResponse<{% if method.return %}{{ method.return|raw }}{% else %}any{% endif %}>{% endif %} {
+        let params: AxiosRequestConfig = {
+            method: '{{ method.httpMethod }}',
 {% if method.args.query is defined %}
             params: query,
 {% endif %}
+            responseType: 'json',
+            headers: {
+                Accept: 'application/json',
+            },
         };
 
 {% if method.httpMethod in ["DELETE"] %}

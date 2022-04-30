@@ -8,7 +8,7 @@ import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-
 import FooByNameAndTypeResource from "./FooByNameAndTypeResource";
 
 export default class Client extends ClientAbstract {
-    public constructor(baseUrl: string, credentials: CredentialsInterface, tokenStore: TokenStoreInterface|null = null, scopes: Array<string>|null = []) {
+    public constructor(baseUrl: string, credentials: CredentialsInterface|null = null, tokenStore: TokenStoreInterface|null = null, scopes: Array<string>|null = []) {
         super(baseUrl, credentials, tokenStore, scopes);
     }
 

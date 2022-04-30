@@ -3,7 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-import {AxiosInstance, AxiosPromise, Method} from "axios";
+import {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
 import {ResourceAbstract} from "sdkgen-client"
 import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
@@ -13,7 +13,7 @@ export default class FooResource extends ResourceAbstract {
     private url: string;
 
 
-    public constructor(baseUrl: string, httpClient?: AxiosInstance) {
+    public constructor(baseUrl: string, httpClient: AxiosInstance) {
         super(baseUrl, httpClient);
 
 
@@ -23,11 +23,15 @@ export default class FooResource extends ResourceAbstract {
     /**
      * Returns a collection
      *
-     * @returns {AxiosPromise<EntryCollection>}
+     * @returns {AxiosResponse<EntryCollection>}
      */
-    public get(): AxiosPromise<EntryCollection> {
-        let params = {
-            method: <Method> "GET",
+    public async get(): AxiosResponse<EntryCollection> {
+        let params: AxiosRequestConfig = {
+            method: 'GET',
+            responseType: 'json',
+            headers: {
+                Accept: 'application/json',
+            },
         };
 
         return this.httpClient.get<EntryCollection>(this.url, params);
@@ -35,11 +39,15 @@ export default class FooResource extends ResourceAbstract {
 
     /**
      * @param {EntryCreate} data
-     * @returns {AxiosPromise<EntryMessage>}
+     * @returns {AxiosResponse<EntryMessage>}
      */
-    public post(data?: EntryCreate): AxiosPromise<EntryMessage> {
-        let params = {
-            method: <Method> "POST",
+    public async post(data?: EntryCreate): AxiosResponse<EntryMessage> {
+        let params: AxiosRequestConfig = {
+            method: 'POST',
+            responseType: 'json',
+            headers: {
+                Accept: 'application/json',
+            },
         };
 
         return this.httpClient.post<EntryMessage>(this.url, data, params);
