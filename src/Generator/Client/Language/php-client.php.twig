@@ -4,13 +4,14 @@ namespace {{ namespace }};
 
 use Sdkgen\Client\ClientAbstract;
 use Sdkgen\Client\Credentials;
+use Sdkgen\Client\CredentialsInterface;
 use Sdkgen\Client\TokenStoreInterface;
 
 class Client extends ClientAbstract
 {
-    public function __construct(string $baseUrl, {% if security.type == 'httpBasic' %}string $userName, string $password, {% elseif security.type in ['httpBearer', 'apiKey'] %}string $token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}string $clientId, string $clientSecret, {% endif %}?TokenStoreInterface $tokenStore = null)
+    public function __construct(string $baseUrl, {% if security.type == 'httpBasic' %}string $userName, string $password, {% elseif security.type in ['httpBearer', 'apiKey'] %}string $token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}string $clientId, string $clientSecret, {% else %}?CredentialsInterface $credentials = null, {% endif %}?TokenStoreInterface $tokenStore = null)
     {
-        parent::__construct($baseUrl, {% if security.type == 'httpBasic' %}new Credentials\HttpBasic($userName, $password){% elseif security.type == 'httpBearer' %}new Credentials\HttpBearer($token){% elseif security.type == 'apiKey' %}new Credentials\ApiKey($token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new Credentials\ClientCredentials($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new Credentials\AuthorizationCode($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}null{% endif %}, $tokenStore);
+        parent::__construct($baseUrl, {% if security.type == 'httpBasic' %}new Credentials\HttpBasic($userName, $password){% elseif security.type == 'httpBearer' %}new Credentials\HttpBearer($token){% elseif security.type == 'apiKey' %}new Credentials\ApiKey($token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new Credentials\ClientCredentials($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new Credentials\AuthorizationCode($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}$credentials{% endif %}, $tokenStore);
     }
 
 {% for className, resource in resources %}
