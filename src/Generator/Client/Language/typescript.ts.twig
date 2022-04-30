@@ -42,9 +42,9 @@ export default class {{ className }} extends ResourceAbstract {
             },
         };
 
-{% if method.httpMethod in ["DELETE"] %}
+{% if method.httpMethod in ['DELETE'] %}
         return this.httpClient.{{ method.httpMethod|lower }}(this.url, params);
-{% elseif method.httpMethod in ["POST", "PUT", "PATCH"] %}
+{% elseif method.httpMethod in ['POST', 'PUT', 'PATCH'] %}
         return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return }}>{% endif %}(this.url, {% if method.args.data is defined %}data{% else %}null{% endif %}, params);
 {% else %}
         return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return }}>{% endif %}(this.url, params);
