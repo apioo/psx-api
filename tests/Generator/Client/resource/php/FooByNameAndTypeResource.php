@@ -33,7 +33,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
      * @return EntryCollection
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function listFoo(GetQuery $query = null): EntryCollection
+    public function listFoo(?GetQuery $query = null): EntryCollection
     {
         $options = [
             'query' => $query !== null ? (array) $query->jsonSerialize() : [],

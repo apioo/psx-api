@@ -36,7 +36,7 @@ class {{ className }} extends ResourceAbstract
 
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function {{ methodName }}({% for name, arg in method.args %}{{ arg.type }} ${{ name }}{% if arg.optional %} = null{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): {% if method.return %}{{ method.return.type }}{% else %}void{% endif %}
+    public function {{ methodName }}({% for name, arg in method.args %}{% if arg.optional %}?{% endif %}{{ arg.type }} ${{ name }}{% if arg.optional %} = null{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): {% if method.return %}{{ method.return.type }}{% else %}void{% endif %}
 
     {
         $options = [

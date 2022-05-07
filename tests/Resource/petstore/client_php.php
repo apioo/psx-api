@@ -29,7 +29,7 @@ class PetsResource extends ResourceAbstract
      * @return Pets
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function listPets(PetsGetQuery $query = null): Pets
+    public function listPets(?PetsGetQuery $query = null): Pets
     {
         $options = [
             'query' => $query !== null ? (array) $query->jsonSerialize() : [],
