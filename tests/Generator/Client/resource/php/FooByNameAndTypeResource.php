@@ -39,7 +39,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
     /**
      * Returns a collection
      *
-     * @param GetQuery $query
+     * @param GetQuery|null $query
      * @return EntryCollection
      * @throws \PSX\Http\Exception\StatusCodeException
      */
@@ -64,7 +64,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
     }
 
     /**
-     * @param EntryCreate $data
+     * @param EntryCreate|null $data
      * @return EntryMessage
      * @throws \PSX\Http\Exception\StatusCodeException
      */
@@ -89,7 +89,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
     }
 
     /**
-     * @param EntryUpdate $data
+     * @param EntryUpdate|null $data
      * @return EntryMessage
      * @throws \PSX\Http\Exception\StatusCodeException
      */
@@ -137,7 +137,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
     }
 
     /**
-     * @param EntryPatch $data
+     * @param EntryPatch|null $data
      * @return EntryMessage
      * @throws \PSX\Http\Exception\StatusCodeException
      */

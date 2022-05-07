@@ -57,7 +57,7 @@ class BarByYearResource extends ResourceAbstract
     }
 
     /**
-     * @param EntryCreate $data
+     * @param EntryCreate|null $data
      * @return EntryMessage
      * @throws \PSX\Http\Exception\StatusCodeException
      */

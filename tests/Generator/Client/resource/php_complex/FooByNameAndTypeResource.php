@@ -40,11 +40,11 @@ class FooByNameAndTypeResource extends ResourceAbstract
     /**
      * Returns a collection
      *
-     * @param Entry|EntryMessage $data
+     * @param Entry|EntryMessage|null $data
      * @return Entry|EntryMessage
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function postEntryOrMessage(?Entry|EntryMessage $data = null): Entry|EntryMessage
+    public function postEntryOrMessage(Entry|EntryMessage|null $data = null): Entry|EntryMessage
     {
         $options = [
             'json' => $data

@@ -36,13 +36,13 @@ class {{ className }} extends ResourceAbstract
 {% if method.description %}     * {{ method.description }}
      *
 {% endif %}
-{% for name, hint in method.docs %}     * @param {{ hint }} ${{ name }}
+{% for name, hint in method.docs %}     * @param {{ hint }}|null ${{ name }}
 {% endfor %}
      * @return {% if method.returnDoc %}{{ method.returnDoc }}{% else %}void{% endif %}
 
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function {{ methodName }}({% for name, hint in method.args %}{% if hint %}?{{ hint }} {% endif %}${{ name }} = null{% if not loop.last %}, {% endif %}{% endfor %}): {% if method.return %}{{ method.return }}{% else %}void{% endif %}
+    public function {{ methodName }}({% for name, hint in method.args %}{% if hint %}{% if '|' in hint %}{{ hint }}|null{% else %}?{{ hint }}{% endif %} {% endif %}${{ name }} = null{% if not loop.last %}, {% endif %}{% endfor %}): {% if method.return %}{{ method.return }}{% else %}void{% endif %}
 
     {
         $options = [

@@ -27,7 +27,7 @@ class PetsResource extends ResourceAbstract
     /**
      * List all pets
      *
-     * @param PetsGetQuery $query
+     * @param PetsGetQuery|null $query
      * @return Pets
      * @throws \PSX\Http\Exception\StatusCodeException
      */
@@ -54,7 +54,7 @@ class PetsResource extends ResourceAbstract
     /**
      * Create a pet
      *
-     * @param Pet $data
+     * @param Pet|null $data
      * @return void
      * @throws \PSX\Http\Exception\StatusCodeException
      */
