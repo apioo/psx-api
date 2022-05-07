@@ -20,8 +20,6 @@ class Client extends ClientAbstract
 
     /**
      * Tag: foo
-     *
-     * @return FooGroup
      */
     public function foo(): FooGroup
     {
@@ -34,8 +32,6 @@ class Client extends ClientAbstract
 
     /**
      * Tag: bar
-     *
-     * @return BarGroup
      */
     public function bar(): BarGroup
     {

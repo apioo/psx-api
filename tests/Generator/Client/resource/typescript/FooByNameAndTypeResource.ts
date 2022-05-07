@@ -46,7 +46,7 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
      * @param {EntryCreate} data
      * @returns {Promise<AxiosResponse<EntryMessage>>}
      */
-    public async createFoo(data?: EntryCreate): Promise<AxiosResponse<EntryMessage>> {
+    public async createFoo(data: EntryCreate): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'POST',
         };
@@ -58,7 +58,7 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
      * @param {EntryUpdate} data
      * @returns {Promise<AxiosResponse<EntryMessage>>}
      */
-    public async put(data?: EntryUpdate): Promise<AxiosResponse<EntryMessage>> {
+    public async put(data: EntryUpdate): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'PUT',
         };
@@ -81,7 +81,7 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
      * @param {EntryPatch} data
      * @returns {Promise<AxiosResponse<EntryMessage>>}
      */
-    public async patch(data?: EntryPatch): Promise<AxiosResponse<EntryMessage>> {
+    public async patch(data: EntryPatch): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'PATCH',
         };

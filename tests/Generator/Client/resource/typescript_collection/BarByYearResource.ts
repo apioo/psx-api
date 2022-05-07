@@ -39,7 +39,7 @@ export default class BarByYearResource extends ResourceAbstract {
      * @param {EntryCreate} data
      * @returns {Promise<AxiosResponse<EntryMessage>>}
      */
-    public async post(data?: EntryCreate): Promise<AxiosResponse<EntryMessage>> {
+    public async post(data: EntryCreate): Promise<AxiosResponse<EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'POST',
         };

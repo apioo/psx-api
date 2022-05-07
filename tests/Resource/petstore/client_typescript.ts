@@ -41,7 +41,7 @@ export default class PetsResource extends ResourceAbstract {
      * @param {Pet} data
      * @returns {Promise<AxiosResponse<void>>}
      */
-    public async createPets(data?: Pet) {
+    public async createPets(data: Pet): Promise<AxiosResponse<void>> {
         let params: AxiosRequestConfig = {
             method: 'POST',
         };

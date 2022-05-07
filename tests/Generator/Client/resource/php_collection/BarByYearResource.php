@@ -13,15 +13,9 @@ use Sdkgen\Client\ResourceAbstract;
 
 class BarByYearResource extends ResourceAbstract
 {
-    /**
-     * @var string
-     */
-    private $url;
+    private string $url;
 
-    /**
-     * @var string
-     */
-    private $year;
+    private string $year;
 
     public function __construct(string $year, string $baseUrl, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
@@ -57,11 +51,11 @@ class BarByYearResource extends ResourceAbstract
     }
 
     /**
-     * @param EntryCreate|null $data
+     * @param EntryCreate $data
      * @return EntryMessage
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function post(?EntryCreate $data = null): EntryMessage
+    public function post(EntryCreate $data): EntryMessage
     {
         $options = [
             'json' => $data

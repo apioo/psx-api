@@ -12,20 +12,10 @@ use Sdkgen\Client\ResourceAbstract;
 
 class FooByNameAndTypeResource extends ResourceAbstract
 {
-    /**
-     * @var string
-     */
-    private $url;
+    private string $url;
 
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $type;
+    private string $name;
+    private string $type;
 
     public function __construct(string $name, string $type, string $baseUrl, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
@@ -43,7 +33,7 @@ class FooByNameAndTypeResource extends ResourceAbstract
      * @return EntryCollection
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function listFoo(?GetQuery $query = null): EntryCollection
+    public function listFoo(GetQuery $query = null): EntryCollection
     {
         $options = [
             'query' => $query !== null ? (array) $query->jsonSerialize() : [],
@@ -64,11 +54,11 @@ class FooByNameAndTypeResource extends ResourceAbstract
     }
 
     /**
-     * @param EntryCreate|null $data
+     * @param EntryCreate $data
      * @return EntryMessage
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function createFoo(?EntryCreate $data = null): EntryMessage
+    public function createFoo(EntryCreate $data): EntryMessage
     {
         $options = [
             'json' => $data
@@ -89,11 +79,11 @@ class FooByNameAndTypeResource extends ResourceAbstract
     }
 
     /**
-     * @param EntryUpdate|null $data
+     * @param EntryUpdate $data
      * @return EntryMessage
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function put(?EntryUpdate $data = null): EntryMessage
+    public function put(EntryUpdate $data): EntryMessage
     {
         $options = [
             'json' => $data
@@ -137,11 +127,11 @@ class FooByNameAndTypeResource extends ResourceAbstract
     }
 
     /**
-     * @param EntryPatch|null $data
+     * @param EntryPatch $data
      * @return EntryMessage
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function patch(?EntryPatch $data = null): EntryMessage
+    public function patch(EntryPatch $data): EntryMessage
     {
         $options = [
             'json' => $data

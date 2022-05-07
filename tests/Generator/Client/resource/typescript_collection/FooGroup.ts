@@ -9,8 +9,6 @@ import FooResource from "./FooResource";
 export default class FooGroup extends ResourceAbstract {
     /**
      * Endpoint: /foo
-     *
-     * @returns FooResource
      */
     public getFoo(): FooResource
     {

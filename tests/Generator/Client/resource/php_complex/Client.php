@@ -20,10 +20,8 @@ class Client extends ClientAbstract
 
     /**
      * Endpoint: /foo/:name/:type
-     *
-     * @return FooByNameAndTypeResource
      */
-    public function getFooByNameAndType(?string $name, ?string $type): FooByNameAndTypeResource
+    public function getFooByNameAndType(string $name, string $type): FooByNameAndTypeResource
     {
         return new FooByNameAndTypeResource(
             $name,

@@ -29,7 +29,7 @@ export default class FooByNameAndTypeResource extends ResourceAbstract {
      * @param {Entry | EntryMessage} data
      * @returns {Promise<AxiosResponse<Entry | EntryMessage>>}
      */
-    public async postEntryOrMessage(data?: Entry | EntryMessage): Promise<AxiosResponse<Entry | EntryMessage>> {
+    public async postEntryOrMessage(data: Entry | EntryMessage): Promise<AxiosResponse<Entry | EntryMessage>> {
         let params: AxiosRequestConfig = {
             method: 'POST',
         };

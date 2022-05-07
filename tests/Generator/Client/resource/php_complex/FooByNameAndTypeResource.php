@@ -13,20 +13,10 @@ use Sdkgen\Client\ResourceAbstract;
 
 class FooByNameAndTypeResource extends ResourceAbstract
 {
-    /**
-     * @var string
-     */
-    private $url;
+    private string $url;
 
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $type;
+    private string $name;
+    private string $type;
 
     public function __construct(string $name, string $type, string $baseUrl, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
@@ -40,11 +30,11 @@ class FooByNameAndTypeResource extends ResourceAbstract
     /**
      * Returns a collection
      *
-     * @param Entry|EntryMessage|null $data
+     * @param Entry|EntryMessage $data
      * @return Entry|EntryMessage
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function postEntryOrMessage(Entry|EntryMessage|null $data = null): Entry|EntryMessage
+    public function postEntryOrMessage(Entry|EntryMessage $data): Entry|EntryMessage
     {
         $options = [
             'json' => $data

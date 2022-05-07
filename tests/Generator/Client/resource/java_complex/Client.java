@@ -10,14 +10,14 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 public class Client extends ClientAbstract
 {
-    public function Client(String baseUrl, TokenStoreInterface tokenStore)
+    public function Client(String baseUrl, CredentialsInterface credentials, TokenStoreInterface tokenStore)
     {
-        super(baseUrl, null, tokenStore);
+        super(baseUrl, credentials, tokenStore);
     }
 
-    public function Client(String baseUrl, )
+    public function Client(String baseUrl, CredentialsInterface credentials)
     {
-        super(baseUrl, null, null);
+        super(baseUrl, credentials, null);
     }
 
     /**

@@ -12,8 +12,6 @@ class FooGroup extends ResourceAbstract
 {
     /**
      * Endpoint: /foo
-     *
-     * @return FooResource
      */
     public function getFoo(): FooResource
     {

@@ -12,10 +12,8 @@ class BarGroup extends ResourceAbstract
 {
     /**
      * Endpoint: /bar/:foo
-     *
-     * @return BarByFooResource
      */
-    public function getBarByFoo(?string $foo): BarByFooResource
+    public function getBarByFoo(string $foo): BarByFooResource
     {
         return new BarByFooResource(
             $foo,
@@ -27,10 +25,8 @@ class BarGroup extends ResourceAbstract
 
     /**
      * Endpoint: /bar/$year<[0-9]+>
-     *
-     * @return BarByYearResource
      */
-    public function getBarByYear(?string $year): BarByYearResource
+    public function getBarByYear(string $year): BarByYearResource
     {
         return new BarByYearResource(
             $year,

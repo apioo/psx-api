@@ -10,8 +10,6 @@ import BarByYearResource from "./BarByYearResource";
 export default class BarGroup extends ResourceAbstract {
     /**
      * Endpoint: /bar/:foo
-     *
-     * @returns BarByFooResource
      */
     public getBarByFoo(foo: string): BarByFooResource
     {
@@ -24,8 +22,6 @@ export default class BarGroup extends ResourceAbstract {
 
     /**
      * Endpoint: /bar/$year<[0-9]+>
-     *
-     * @returns BarByYearResource
      */
     public getBarByYear(year: string): BarByYearResource
     {

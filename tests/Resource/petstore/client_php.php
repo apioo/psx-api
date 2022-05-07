@@ -12,10 +12,8 @@ use Sdkgen\Client\ResourceAbstract;
 
 class PetsResource extends ResourceAbstract
 {
-    /**
-     * @var string
-     */
-    private $url;
+    private string $url;
+
 
     public function __construct(string $baseUrl, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
@@ -31,7 +29,7 @@ class PetsResource extends ResourceAbstract
      * @return Pets
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function listPets(?PetsGetQuery $query = null): Pets
+    public function listPets(PetsGetQuery $query = null): Pets
     {
         $options = [
             'query' => $query !== null ? (array) $query->jsonSerialize() : [],
@@ -54,11 +52,11 @@ class PetsResource extends ResourceAbstract
     /**
      * Create a pet
      *
-     * @param Pet|null $data
+     * @param Pet $data
      * @return void
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function createPets(?Pet $data = null): void
+    public function createPets(Pet $data): void
     {
         $options = [
             'json' => $data
@@ -277,8 +275,6 @@ class Client extends ClientAbstract
 
     /**
      * Endpoint: /pets
-     *
-     * @return PetsResource
      */
     public function getPets(): PetsResource
     {
