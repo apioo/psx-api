@@ -6,6 +6,7 @@
 
 
 use GuzzleHttp\Client;
+use PSX\Http\Exception\StatusCodeException;
 use PSX\Schema\SchemaManager;
 use Sdkgen\Client\ResourceAbstract;
 
@@ -28,6 +29,7 @@ class PetsResource extends ResourceAbstract
      *
      * @param PetsGetQuery $query
      * @return Pets
+     * @throws \PSX\Http\Exception\StatusCodeException
      */
     public function listPets(?PetsGetQuery $query = null): Pets
     {
@@ -38,6 +40,14 @@ class PetsResource extends ResourceAbstract
         $response = $this->httpClient->request('GET', $this->url, $options);
         $data     = (string) $response->getBody();
 
+        if ($response->getStatusCode() >= 300 && $response->getStatusCode() < 400) {
+            StatusCodeException::throwOnRedirection($response);
+        } elseif ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
+            StatusCodeException::throwOnClientError($response);
+        } elseif ($response->getStatusCode() >= 500 && $response->getStatusCode() < 600) {
+            StatusCodeException::throwOnServerError($response);
+        }
+
         return $this->parse($data, Pets::class);
     }
 
@@ -46,8 +56,9 @@ class PetsResource extends ResourceAbstract
      *
      * @param Pet $data
      * @return void
+     * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function createPets(?Pet $data = null)
+    public function createPets(?Pet $data = null): void
     {
         $options = [
             'json' => $data
@@ -56,7 +67,14 @@ class PetsResource extends ResourceAbstract
         $response = $this->httpClient->request('POST', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->parse($data, null);
+        if ($response->getStatusCode() >= 300 && $response->getStatusCode() < 400) {
+            StatusCodeException::throwOnRedirection($response);
+        } elseif ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
+            StatusCodeException::throwOnClientError($response);
+        } elseif ($response->getStatusCode() >= 500 && $response->getStatusCode() < 600) {
+            StatusCodeException::throwOnServerError($response);
+        }
+
     }
 
 }
