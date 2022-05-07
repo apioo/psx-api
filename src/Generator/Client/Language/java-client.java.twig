@@ -8,24 +8,24 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 public class {{ className }} extends ClientAbstract
 {
-    public function {{ className }}(String baseUrl, {% if security.type == 'httpBasic' %}String userName, String password, {% elseif security.type in ['httpBearer', 'apiKey'] %}String token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}String clientId, String clientSecret, {% endif %}TokenStoreInterface tokenStore)
+    public function {{ className }}(String baseUrl, {% if security.type == 'httpBasic' %}String userName, String password, {% elseif security.type in ['httpBearer', 'apiKey'] %}String token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}String clientId, String clientSecret, {% else %}CredentialsInterface credentials, {% endif %}TokenStoreInterface tokenStore)
     {
-        super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}null{% endif %}, tokenStore);
+        super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}credentials{% endif %}, tokenStore);
     }
 
-    public function {{ className }}(String baseUrl, {% if security.type == 'httpBasic' %}String userName, String password, {% elseif security.type in ['httpBearer', 'apiKey'] %}String token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}String clientId, String clientSecret, {% endif %})
+    public function {{ className }}(String baseUrl, {% if security.type == 'httpBasic' %}String userName, String password, {% elseif security.type in ['httpBearer', 'apiKey'] %}String token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}String clientId, String clientSecret, {% else %}CredentialsInterface credentials{% endif %})
     {
-        super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}null{% endif %}, null);
+        super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}credentials{% endif %}, null);
     }
 
 {% for className, resource in resources %}
     /**
      * {{ resource.description|raw }}
      */
-    public {{ className }} {{ resource.methodName }}({% for name, hint in resource.properties %}{{ hint|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %})
+    public {{ className }} {{ resource.methodName }}({% for name, arg in resource.properties %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %})
     {
         return new {{ className }}(
-            {% for name, hint in resource.properties %}{{ name }},
+            {% for name, arg in resource.properties %}{{ name }},
             {% endfor %}
 this.baseUrl,
             this.newHttpClient(),

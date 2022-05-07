@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Generator\Client;
 
+use PSX\Api\Generator\Client\Dto\Type;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\Resource;
 use PSX\Api\SecurityInterface;
@@ -110,16 +111,17 @@ abstract class LanguageAbstract implements GeneratorInterface
         $methods = [];
         foreach ($resource->getMethods() as $method) {
             $methodName = $this->buildMethodName($method->getOperationId() ?: strtolower($method->getName()));
-
             $args = [];
-            $docs = [];
 
             // query parameters
             if ($method->hasQueryParameters()) {
                 $query = TypeFactory::getReference($method->getQueryParameters());
 
-                $args['query'] = $this->getType($query);
-                $docs['query'] = $this->getDocType($query);
+                $args['query'] = new Type(
+                    $this->getType($query),
+                    $this->getDocType($query),
+                    true
+                );
 
                 $this->resolveImport($query, $imports);
             }
@@ -129,8 +131,11 @@ abstract class LanguageAbstract implements GeneratorInterface
             if (!empty($request) && !in_array($method->getName(), ['GET', 'DELETE'])) {
                 $type = $this->resolveType($request, $definitions);
 
-                $args['data'] = $this->getType($type);
-                $docs['data'] = $this->getDocType($type);
+                $args['data'] = new Type(
+                    $this->getType($type),
+                    $this->getDocType($type),
+                    false
+                );
 
                 $this->resolveImport($type, $imports);
             }
@@ -140,13 +145,14 @@ abstract class LanguageAbstract implements GeneratorInterface
             if (!empty($response)) {
                 $type = $this->resolveType($response, $definitions);
 
-                $return = $this->getType($type);
-                $returnDoc = $this->getDocType($type);
+                $return = new Type(
+                    $this->getType($type),
+                    $this->getDocType($type),
+                );
 
                 $this->resolveImport($type, $imports);
             } else {
                 $return = null;
-                $returnDoc = null;
             }
 
             $methods[$methodName] = [
@@ -154,9 +160,7 @@ abstract class LanguageAbstract implements GeneratorInterface
                 'description' => $method->getDescription(),
                 'secure' => $method->hasSecurity(),
                 'args' => $args,
-                'docs' => $docs,
                 'return' => $return,
-                'returnDoc' => $returnDoc,
             ];
         }
 
@@ -221,7 +225,11 @@ abstract class LanguageAbstract implements GeneratorInterface
         $args = [];
         $properties = $type->getProperties();
         foreach ($properties as $name => $property) {
-            $args[$name] = $this->getType($property);
+            $args[$name] = new Type(
+                $this->getType($property),
+                $this->getDocType($property),
+                false
+            );
         }
 
         return $args;

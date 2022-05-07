@@ -24,10 +24,10 @@ public class {{ className }} extends ResourceAbstract
     /**
      * {{ resource.description|raw }}
      */
-    public {{ className }} {{ resource.methodName }}({% for name, hint in resource.properties %}{{ hint|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %})
+    public {{ className }} {{ resource.methodName }}({% for name, arg in resource.properties %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %})
     {
         return new {{ className }}(
-            {% for name, hint in resource.properties %}{{ name }},
+            {% for name, arg in resource.properties %}{{ name }},
             {% endfor %}
 this.baseUrl,
             this.token,

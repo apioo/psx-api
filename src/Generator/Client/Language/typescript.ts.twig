@@ -7,14 +7,14 @@ import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
 export default class {{ className }} extends ResourceAbstract {
     private url: string;
 
-{% for name, hint in properties %}
-    private {{ name }}: {{ hint }};
+{% for name, arg in properties %}
+    private {{ name }}: {{ arg.type|raw }};
 {% endfor %}
 
-    public constructor({% for name, hint in properties %}{{ name }}: {{ hint|raw }}, {% endfor %}baseUrl: string, httpClient: AxiosInstance) {
+    public constructor({% for name, arg in properties %}{{ name }}: {{ arg.type|raw }}, {% endfor %}baseUrl: string, httpClient: AxiosInstance) {
         super(baseUrl, httpClient);
 
-{% for name, hint in properties %}
+{% for name, arg in properties %}
         this.{{ name }} = {{ name }};
 {% endfor %}
 
@@ -26,11 +26,11 @@ export default class {{ className }} extends ResourceAbstract {
 {% if method.description %}     * {{ method.description }}
      *
 {% endif %}
-{% for name, hint in method.docs %}     * @param {{ '{' }}{{ hint }}{{ '}' }} {{ name }}
+{% for name, arg in method.args %}     * @param {{ '{' }}{{ arg.docType }}{{ '}' }} {{ name }}
 {% endfor %}
-     * @returns {{ '{' }}Promise<AxiosResponse<{% if method.returnDoc %}{{ method.returnDoc|raw }}{% else %}void{% endif %}>>{{ '}' }}
+     * @returns {{ '{' }}Promise<AxiosResponse<{% if method.return %}{{ method.return.docType|raw }}{% else %}void{% endif %}>>{{ '}' }}
      */
-    public async {{ methodName }}({% for name, hint in method.args %}{{ name }}?: {{ hint|raw }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: Promise<AxiosResponse<{% if method.return %}{{ method.return|raw }}{% else %}any{% endif %}>>{% endif %} {
+    public async {{ methodName }}({% for name, arg in method.args %}{{ name }}{% if arg.optional %}?{% endif %}: {{ arg.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<AxiosResponse<{% if method.return %}{{ method.return.type|raw }}{% else %}void{% endif %}>> {
         let params: AxiosRequestConfig = {
             method: '{{ method.httpMethod }}',
 {% if method.args.query is defined %}
@@ -41,9 +41,9 @@ export default class {{ className }} extends ResourceAbstract {
 {% if method.httpMethod in ['DELETE'] %}
         return this.httpClient.{{ method.httpMethod|lower }}(this.url, params);
 {% elseif method.httpMethod in ['POST', 'PUT', 'PATCH'] %}
-        return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return }}>{% endif %}(this.url, {% if method.args.data is defined %}data{% else %}null{% endif %}, params);
+        return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return.type }}>{% endif %}(this.url, {% if method.args.data is defined %}data{% else %}null{% endif %}, params);
 {% else %}
-        return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return }}>{% endif %}(this.url, params);
+        return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return.type }}>{% endif %}(this.url, params);
 {% endif %}
     }
 

@@ -16,9 +16,9 @@ type {{ className }} struct {
 
 {% for className, resource in resources %}
 // {{ resource.description|raw }}
-func (client Client) {{ resource.methodName }}({% for name, hint in resource.properties %}{% if hint %}{{ hint }} {% endif %}{{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ className }} {
+func (client Client) {{ resource.methodName }}({% for name, arg in resource.properties %}{% if arg.type %}{{ arg.type }} {% endif %}{{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ className }} {
     r := {{ className }} {
-        {% for name, hint in resource.properties %}{{ name|capitalize }}: {{ name }},
+        {% for name, arg in resource.properties %}{{ name|capitalize }}: {{ name }},
         {% endfor %}
 BaseUrl: client.BaseUrl,
         Token: client.Token

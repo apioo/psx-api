@@ -12,14 +12,14 @@ import (
 type {{ className }} struct {
     BaseUrl string
     Token string
-{% for name, hint in properties %}
-    {{ name|capitalize }} {{ hint }}
+{% for name, arg in properties %}
+    {{ name|capitalize }} {{ arg.type }}
 {% endfor %}
 }
 
 {% for methodName, method in methods %}
 // {{ methodName|capitalize }} {{ method.description }}
-func (r {{ className }}) {{ methodName|capitalize }}({% for name, hint in method.args %}{{ name }} {{ hint }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ method.return }} {
+func (r {{ className }}) {{ methodName|capitalize }}({% for name, arg in method.args %}{{ name }} {{ arg.type }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ method.return.type }} {
 
 {% if method.httpMethod != "GET" and method.httpMethod != "DELETE" %}
     raw, err := json.Marshal(data)
@@ -47,7 +47,7 @@ func (r {{ className }}) {{ methodName|capitalize }}({% for name, hint in method
     defer resp.Body.Close()
     respBody, _ := ioutil.ReadAll(resp.Body)
 
-    var response {{ method.return }}
+    var response {{ method.return.type }}
     json.Unmarshal(respBody, &response)
 
     return response
@@ -55,7 +55,7 @@ func (r {{ className }}) {{ methodName|capitalize }}({% for name, hint in method
 
 {% endfor %}
 
-func New{{ className }}({% for name, hint in properties %}{{ name }} {{ hint }}, {% endfor %}baseUrl string, token string) {{ className }} {
+func New{{ className }}({% for name, arg in properties %}{{ name }} {{ arg.type }}, {% endfor %}baseUrl string, token string) {{ className }} {
     r := {{ className }} {
         BaseUrl: baseUrl + "{% for part in urlParts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}",
         Token: token

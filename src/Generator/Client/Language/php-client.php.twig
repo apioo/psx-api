@@ -17,13 +17,11 @@ class Client extends ClientAbstract
 {% for className, resource in resources %}
     /**
      * {{ resource.description|raw }}
-     *
-     * @return {{ className }}
      */
-    public function {{ resource.methodName }}({% for name, hint in resource.properties %}{% if hint %}?{{ hint }} {% endif %}${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}): {{ className }}
+    public function {{ resource.methodName }}({% for name, arg in resource.properties %}{{ arg.type }} ${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}): {{ className }}
     {
         return new {{ className }}(
-            {% for name, hint in resource.properties %}${{ name }},
+            {% for name, arg in resource.properties %}${{ name }},
             {% endfor %}
 $this->baseUrl,
             $this->newHttpClient(),

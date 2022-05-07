@@ -9,23 +9,17 @@ use Sdkgen\Client\ResourceAbstract;
 
 class {{ className }} extends ResourceAbstract
 {
-    /**
-     * @var string
-     */
-    private $url;
+    private string $url;
 
-{% for name, hint in properties %}
-    /**
-     * @var {{ hint }}
-     */
-    private ${{ name }};
-
+{% for name, arg in properties %}
+    private {{ arg.type }} ${{ name }};
 {% endfor %}
-    public function __construct({% for name, hint in properties %}{{ hint }} ${{ name }}, {% endfor %}string $baseUrl, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
+
+    public function __construct({% for name, arg in properties %}{{ arg.type }} ${{ name }}, {% endfor %}string $baseUrl, ?Client $httpClient = null, ?SchemaManager $schemaManager = null)
     {
         parent::__construct($baseUrl, $httpClient, $schemaManager);
 
-{% for name, hint in properties %}
+{% for name, arg in properties %}
         $this->{{ name }} = ${{ name }};
 {% endfor %}
         $this->url = $this->baseUrl . '{% for part in urlParts %}/{% if part.type == 'variable' %}' . ${{ part.value }} . '{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}';
@@ -36,13 +30,13 @@ class {{ className }} extends ResourceAbstract
 {% if method.description %}     * {{ method.description }}
      *
 {% endif %}
-{% for name, hint in method.docs %}     * @param {{ hint }}|null ${{ name }}
+{% for name, arg in method.args %}     * @param {{ arg.docType }}{% if arg.optional %}|null{% endif %} ${{ name }}
 {% endfor %}
-     * @return {% if method.returnDoc %}{{ method.returnDoc }}{% else %}void{% endif %}
+     * @return {% if method.return %}{{ method.return.docType }}{% else %}void{% endif %}
 
      * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function {{ methodName }}({% for name, hint in method.args %}{% if hint %}{% if '|' in hint %}{{ hint }}|null{% else %}?{{ hint }}{% endif %} {% endif %}${{ name }} = null{% if not loop.last %}, {% endif %}{% endfor %}): {% if method.return %}{{ method.return }}{% else %}void{% endif %}
+    public function {{ methodName }}({% for name, arg in method.args %}{{ arg.type }} ${{ name }}{% if arg.optional %} = null{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): {% if method.return %}{{ method.return.type }}{% else %}void{% endif %}
 
     {
         $options = [
@@ -66,7 +60,7 @@ class {{ className }} extends ResourceAbstract
         }
 
 {% if method.return %}
-        return $this->parse($data, {{ method.return }}::class);
+        return $this->parse($data, {{ method.return.type }}::class);
 {% endif %}
     }
 

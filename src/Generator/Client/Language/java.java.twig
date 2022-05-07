@@ -23,15 +23,15 @@ public class {{ className }} extends ResourceAbstract
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-{% for name, hint in properties %}
-    private {{ hint }} {{ name }};
+{% for name, arg in properties %}
+    private {{ arg.type|raw }} {{ name }};
 {% endfor %}
 
-    public {{ className }}({% for name, hint in properties %}{{ hint|raw }} {{ name }}, {% endfor %}String baseUrl, HttpClient httpClient, ObjectMapper objectMapper)
+    public {{ className }}({% for name, arg in properties %}{{ arg.type|raw }} {{ name }}, {% endfor %}String baseUrl, HttpClient httpClient, ObjectMapper objectMapper)
     {
         super(baseUrl, httpClient, objectMapper);
 
-{% for name, hint in properties %}
+{% for name, arg in properties %}
         this.{{ name }} = {{ name }};
 {% endfor %}
 
@@ -47,7 +47,7 @@ public class {{ className }} extends ResourceAbstract
      * {{ method.description }}
      */
 {% endif %}
-    public {% if method.return %}{{ method.return|raw }}{% else %}void{% endif %} {{ methodName }}({% for name, hint in method.args %}{{ hint|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws URISyntaxException, IOException
+    public {% if method.return %}{{ method.return.type|raw }}{% else %}void{% endif %} {{ methodName }}({% for name, arg in method.args %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws URISyntaxException, IOException
     {
         URIBuilder builder = new URIBuilder(this.url);
     
@@ -64,15 +64,13 @@ public class {{ className }} extends ResourceAbstract
 {% endif %}
 {% if method.args.data is defined %}
         request.addHeader("Content-Type", "application/json");
-{% endif %}
-{% if method.args.data is defined %}
         request.setEntity(new StringEntity(this.objectMapper.writeValueAsString(data), ContentType.APPLICATION_JSON));
 {% endif %}
 
         HttpResponse response = this.httpClient.execute(request);
 
 {% if method.return %}
-        return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), {{ method.return }}.class);
+        return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), {{ method.return.type }}.class);
 {% endif %}
     }
 
