@@ -3,6 +3,7 @@ namespace {{ namespace }};
 {% endif %}
 
 use GuzzleHttp\Client;
+use PSX\Http\Exception\StatusCodeException;
 use PSX\Schema\SchemaManager;
 use Sdkgen\Client\ResourceAbstract;
 
@@ -39,8 +40,9 @@ class {{ className }} extends ResourceAbstract
 {% endfor %}
      * @return {% if method.returnDoc %}{{ method.returnDoc }}{% else %}void{% endif %}
 
+     * @throws \PSX\Http\Exception\StatusCodeException
      */
-    public function {{ methodName }}({% for name, hint in method.args %}{% if hint %}?{{ hint }} {% endif %}${{ name }} = null{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return %}: {{ method.return }}{% endif %}
+    public function {{ methodName }}({% for name, hint in method.args %}{% if hint %}?{{ hint }} {% endif %}${{ name }} = null{% if not loop.last %}, {% endif %}{% endfor %}): {% if method.return %}{{ method.return }}{% else %}void{% endif %}
 
     {
         $options = [
@@ -55,7 +57,17 @@ class {{ className }} extends ResourceAbstract
         $response = $this->httpClient->request('{{ method.httpMethod }}', $this->url, $options);
         $data     = (string) $response->getBody();
 
-        return $this->parse($data, {% if method.return %}{{ method.return }}::class{% else %}null{% endif %});
+        if ($response->getStatusCode() >= 300 && $response->getStatusCode() < 400) {
+            StatusCodeException::throwOnRedirection($response);
+        } elseif ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
+            StatusCodeException::throwOnClientError($response);
+        } elseif ($response->getStatusCode() >= 500 && $response->getStatusCode() < 600) {
+            StatusCodeException::throwOnServerError($response);
+        }
+
+{% if method.return %}
+        return $this->parse($data, {{ method.return }}::class);
+{% endif %}
     }
 
 {% endfor %}
