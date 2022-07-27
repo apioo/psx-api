@@ -118,7 +118,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
         return !empty($this->pathParameters);
     }
 
-    public function addMethod(MethodAbstract $method)
+    public function addMethod(MethodAbstract $method): void
     {
         $this->methods[$method->getName()] = $method;
     }
@@ -147,7 +147,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
         return isset($this->methods[$method]);
     }
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new ArrayIterator($this->methods);
     }
