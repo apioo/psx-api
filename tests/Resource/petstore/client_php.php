@@ -100,7 +100,7 @@ class Pet implements \JsonSerializable
     {
         return $this->tag;
     }
-    public function jsonSerialize() : \stdClass
+    public function jsonSerialize() : object
     {
         return (object) array_filter(array('id' => $this->id, 'name' => $this->name, 'tag' => $this->tag), static function ($value) : bool {
             return $value !== null;
@@ -134,7 +134,7 @@ class Pets implements \JsonSerializable
     {
         return $this->pets;
     }
-    public function jsonSerialize() : \stdClass
+    public function jsonSerialize() : object
     {
         return (object) array_filter(array('pets' => $this->pets), static function ($value) : bool {
             return $value !== null;
@@ -173,7 +173,7 @@ class Error implements \JsonSerializable
     {
         return $this->message;
     }
-    public function jsonSerialize() : \stdClass
+    public function jsonSerialize() : object
     {
         return (object) array_filter(array('code' => $this->code, 'message' => $this->message), static function ($value) : bool {
             return $value !== null;
@@ -201,7 +201,7 @@ class PetsGetQuery implements \JsonSerializable
     {
         return $this->limit;
     }
-    public function jsonSerialize() : \stdClass
+    public function jsonSerialize() : object
     {
         return (object) array_filter(array('limit' => $this->limit), static function ($value) : bool {
             return $value !== null;
@@ -229,7 +229,7 @@ class PetsPetIdGetQuery implements \JsonSerializable
     {
         return $this->petId;
     }
-    public function jsonSerialize() : \stdClass
+    public function jsonSerialize() : object
     {
         return (object) array_filter(array('petId' => $this->petId), static function ($value) : bool {
             return $value !== null;
