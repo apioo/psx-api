@@ -24,7 +24,7 @@ class EntryMessage implements \JsonSerializable
     {
         return $this->message;
     }
-    public function jsonSerialize() : \stdClass
+    public function jsonSerialize() : object
     {
         return (object) array_filter(array('success' => $this->success, 'message' => $this->message), static function ($value) : bool {
             return $value !== null;
