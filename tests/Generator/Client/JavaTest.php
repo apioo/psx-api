@@ -87,7 +87,6 @@ class JavaTest extends GeneratorTestCase
         $this->assertFileExists($target . '/Client.java');
         $this->assertFileExists($target . '/Entry.java');
         $this->assertFileExists($target . '/EntryMessage.java');
-        $this->assertFileExists($target . '/EntryOrMessage.java');
         $this->assertFileExists($target . '/FooByNameAndTypeResource.java');
         $this->assertFileExists($target . '/Path.java');
     }

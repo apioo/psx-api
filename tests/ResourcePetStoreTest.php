@@ -53,7 +53,6 @@ class ResourceConversionTest extends ApiManagerTestCase
         $generator = new Generator\Client\Typescript('http://api.phpsx.org');
 
         $actual = (string) $generator->generate($specification->get('/pets'));
-        $actual = str_replace(date('Y-m-d'), '0000-00-00', $actual);
         $expect = file_get_contents(__DIR__ . '/Resource/petstore/client_typescript.ts');
         $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
 

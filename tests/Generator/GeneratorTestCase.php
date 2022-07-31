@@ -162,8 +162,6 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
     protected function writeChunksToFolder(Chunks $result, string $target)
     {
         foreach ($result->getChunks() as $file => $code) {
-            $code = str_replace(date('Y-m-d'), '0000-00-00', $code);
-
             file_put_contents($target . '/' . $file, $code);
         }
     }
