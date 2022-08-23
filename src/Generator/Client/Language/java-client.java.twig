@@ -4,8 +4,8 @@ package {{ namespace }};
 
 import app.sdkgen.client.ClientAbstract;
 import app.sdkgen.client.Credentials.*;
+import app.sdkgen.client.CredentialsInterface;
 import app.sdkgen.client.TokenStoreInterface;
-import org.apache.http.client.HttpClient;
 import java.util.List;
 
 public class {{ className }} extends ClientAbstract {
@@ -22,7 +22,8 @@ public class {{ className }} extends ClientAbstract {
             {% for name, arg in resource.properties %}{{ name }},
             {% endfor %}
 this.baseUrl,
-            this.newHttpClient()
+            this.newHttpClient(),
+            this.objectMapper
         );
     }
 

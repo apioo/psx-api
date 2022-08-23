@@ -22,7 +22,7 @@ public class {{ className }} extends ResourceAbstract {
     private final ObjectMapper objectMapper;
 
 {% for name, arg in properties %}
-    private {{ arg.type|raw }} {{ name }};
+    private final {{ arg.type|raw }} {{ name }};
 {% endfor %}
 
     public {{ className }}({% for name, arg in properties %}{{ arg.type|raw }} {{ name }}, {% endfor %}String baseUrl, HttpClient httpClient, ObjectMapper objectMapper) {
@@ -33,7 +33,6 @@ public class {{ className }} extends ResourceAbstract {
 {% endfor %}
 
         this.url = baseUrl + "{% for part in urlParts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}";
-        this.token = token;
         this.httpClient = httpClient;
         this.objectMapper = objectMapper;
     }
@@ -50,18 +49,15 @@ public class {{ className }} extends ResourceAbstract {
 {% endif %}
     public {% if method.return %}{{ method.return.type|raw }}{% else %}void{% endif %} {{ methodName }}({% for name, arg in method.args %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
+
 {% if method.args.query is defined %}
-        Map<String, Object> params = this.objectMapper.convertValue(query, Map.class);
-        for(Map.Entry<String, Object> entry : params.entrySet()) {
+        Map<String, String> params = this.objectMapper.convertValue(query, Map.class);
+        for(Map.Entry<String, String> entry : params.entrySet()) {
             builder.setParameter(entry.getKey(), entry.getValue().toString());
         }
 {% endif %}
 
         Http{{ method.httpMethod|lower|capitalize }} request = new Http{{ method.httpMethod|lower|capitalize }}(builder.build());
-{% if method.secure %}
-        request.addHeader("Authorization", "Bearer " + this.token);
-{% endif %}
 {% if method.args.data is defined %}
         request.addHeader("Content-Type", "application/json");
         request.setEntity(new StringEntity(this.objectMapper.writeValueAsString(data), ContentType.APPLICATION_JSON));

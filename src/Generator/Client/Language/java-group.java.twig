@@ -3,9 +3,14 @@ package {{ namespace }};
 {% endif %}
 
 import app.sdkgen.client.ResourceAbstract;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.HttpClient;
 
 public class {{ className }} extends ResourceAbstract {
+    public {{ className }}(String baseUrl, HttpClient httpClient, ObjectMapper objectMapper) {
+        super(baseUrl, httpClient, objectMapper);
+    }
+
 {% for className, resource in resources %}
     /**
      * {{ resource.description|raw }}
@@ -15,7 +20,6 @@ public class {{ className }} extends ResourceAbstract {
             {% for name, arg in resource.properties %}{{ name }},
             {% endfor %}
 this.baseUrl,
-            this.token,
             this.httpClient
         );
     }
