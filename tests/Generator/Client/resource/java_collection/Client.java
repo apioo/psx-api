@@ -5,42 +5,33 @@
 
 
 import app.sdkgen.client.ClientAbstract;
+import app.sdkgen.client.Credentials.*;
+import app.sdkgen.client.TokenStoreInterface;
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import java.util.List;
 
-public class Client extends ClientAbstract
-{
-    public function Client(String baseUrl, String token, TokenStoreInterface tokenStore)
-    {
-        super(baseUrl, new HttpBearer(token), tokenStore);
-    }
-
-    public function Client(String baseUrl, String token, )
-    {
-        super(baseUrl, new HttpBearer(token), null);
+public class Client extends ClientAbstract {
+    public Client(String baseUrl, String token, TokenStoreInterface tokenStore, List<String> scopes) {
+        super(baseUrl, new HttpBearer(token), tokenStore, scopes);
     }
 
     /**
      * Tag: foo
      */
-    public FooGroup foo()
-    {
+    public FooGroup foo() {
         return new FooGroup(
             this.baseUrl,
-            this.newHttpClient(),
-            this.httpClient
+            this.newHttpClient()
         );
     }
 
     /**
      * Tag: bar
      */
-    public BarGroup bar()
-    {
+    public BarGroup bar() {
         return new BarGroup(
             this.baseUrl,
-            this.newHttpClient(),
-            this.httpClient
+            this.newHttpClient()
         );
     }
 

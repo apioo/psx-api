@@ -5,32 +5,25 @@
 
 
 import app.sdkgen.client.ClientAbstract;
+import app.sdkgen.client.Credentials.*;
+import app.sdkgen.client.TokenStoreInterface;
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import java.util.List;
 
-public class Client extends ClientAbstract
-{
-    public function Client(String baseUrl, CredentialsInterface credentials, TokenStoreInterface tokenStore)
-    {
-        super(baseUrl, credentials, tokenStore);
-    }
-
-    public function Client(String baseUrl, CredentialsInterface credentials)
-    {
-        super(baseUrl, credentials, null);
+public class Client extends ClientAbstract {
+    public Client(String baseUrl, CredentialsInterface credentials, TokenStoreInterface tokenStore, List<String> scopes) {
+        super(baseUrl, credentials, tokenStore, scopes);
     }
 
     /**
      * Endpoint: /foo/:name/:type
      */
-    public FooByNameAndTypeResource getFooByNameAndType(String name, String type)
-    {
+    public FooByNameAndTypeResource getFooByNameAndType(String name, String type) {
         return new FooByNameAndTypeResource(
             name,
             type,
             this.baseUrl,
-            this.newHttpClient(),
-            this.httpClient
+            this.newHttpClient()
         );
     }
 

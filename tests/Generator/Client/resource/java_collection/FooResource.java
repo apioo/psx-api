@@ -12,36 +12,36 @@ import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class FooResource extends ResourceAbstract
-{
+public class FooResource extends ResourceAbstract {
     private final String url;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
 
-    public FooResource(String baseUrl, HttpClient httpClient, ObjectMapper objectMapper)
-    {
+    public FooResource(String baseUrl, HttpClient httpClient, ObjectMapper objectMapper) {
         super(baseUrl, httpClient, objectMapper);
 
 
         this.url = baseUrl + "/foo";
         this.token = token;
-        this.httpClient = httpClient != null ? httpClient : HttpClientBuilder.create().build();
-        this.objectMapper = new ObjectMapper();
+        this.httpClient = httpClient;
+        this.objectMapper = objectMapper;
+    }
+
+    public FooResource(String baseUrl, HttpClient httpClient) {
+        this(baseUrl, httpClient, new ObjectMapper());
     }
 
     /**
      * Returns a collection
      */
-    public EntryCollection get() throws URISyntaxException, IOException
-    {
+    public EntryCollection get() throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
     
 
@@ -52,8 +52,7 @@ public class FooResource extends ResourceAbstract
         return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryCollection.class);
     }
 
-    public EntryMessage post(EntryCreate data) throws URISyntaxException, IOException
-    {
+    public EntryMessage post(EntryCreate data) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
     
 
