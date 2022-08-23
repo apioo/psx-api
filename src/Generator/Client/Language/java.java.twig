@@ -51,8 +51,8 @@ public class {{ className }} extends ResourceAbstract {
         URIBuilder builder = new URIBuilder(this.url);
 
 {% if method.args.query is defined %}
-        Map<String, String> params = this.objectMapper.convertValue(query, Map.class);
-        for(Map.Entry<String, String> entry : params.entrySet()) {
+        Map<String, Object> params = query.toMap();
+        for(Map.Entry<String, Object> entry : params.entrySet()) {
             builder.setParameter(entry.getKey(), entry.getValue().toString());
         }
 {% endif %}
