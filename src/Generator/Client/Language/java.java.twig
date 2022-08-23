@@ -1,5 +1,5 @@
 {% if namespace %}
-package {{ namespace }} {
+package {{ namespace }};
 {% endif %}
 
 import app.sdkgen.client.ResourceAbstract;
@@ -10,15 +10,13 @@ import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class {{ className }} extends ResourceAbstract
-{
+public class {{ className }} extends ResourceAbstract {
     private final String url;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
@@ -27,8 +25,7 @@ public class {{ className }} extends ResourceAbstract
     private {{ arg.type|raw }} {{ name }};
 {% endfor %}
 
-    public {{ className }}({% for name, arg in properties %}{{ arg.type|raw }} {{ name }}, {% endfor %}String baseUrl, HttpClient httpClient, ObjectMapper objectMapper)
-    {
+    public {{ className }}({% for name, arg in properties %}{{ arg.type|raw }} {{ name }}, {% endfor %}String baseUrl, HttpClient httpClient, ObjectMapper objectMapper) {
         super(baseUrl, httpClient, objectMapper);
 
 {% for name, arg in properties %}
@@ -37,8 +34,12 @@ public class {{ className }} extends ResourceAbstract
 
         this.url = baseUrl + "{% for part in urlParts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}";
         this.token = token;
-        this.httpClient = httpClient != null ? httpClient : HttpClientBuilder.create().build();
-        this.objectMapper = new ObjectMapper();
+        this.httpClient = httpClient;
+        this.objectMapper = objectMapper;
+    }
+
+    public {{ className }}({% for name, arg in properties %}{{ arg.type|raw }} {{ name }}, {% endfor %}String baseUrl, HttpClient httpClient) {
+        this({% for name, arg in properties %}{{ name }}, {% endfor %}baseUrl, httpClient, new ObjectMapper());
     }
 
 {% for methodName, method in methods %}
@@ -47,8 +48,7 @@ public class {{ className }} extends ResourceAbstract
      * {{ method.description }}
      */
 {% endif %}
-    public {% if method.return %}{{ method.return.type|raw }}{% else %}void{% endif %} {{ methodName }}({% for name, arg in method.args %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws URISyntaxException, IOException
-    {
+    public {% if method.return %}{{ method.return.type|raw }}{% else %}void{% endif %} {{ methodName }}({% for name, arg in method.args %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
     
 {% if method.args.query is defined %}

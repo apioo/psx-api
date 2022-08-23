@@ -12,15 +12,13 @@ import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class FooByNameAndTypeResource extends ResourceAbstract
-{
+public class FooByNameAndTypeResource extends ResourceAbstract {
     private final String url;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
@@ -28,8 +26,7 @@ public class FooByNameAndTypeResource extends ResourceAbstract
     private String name;
     private String type;
 
-    public FooByNameAndTypeResource(String name, String type, String baseUrl, HttpClient httpClient, ObjectMapper objectMapper)
-    {
+    public FooByNameAndTypeResource(String name, String type, String baseUrl, HttpClient httpClient, ObjectMapper objectMapper) {
         super(baseUrl, httpClient, objectMapper);
 
         this.name = name;
@@ -37,15 +34,18 @@ public class FooByNameAndTypeResource extends ResourceAbstract
 
         this.url = baseUrl + "/foo/"+name+"/"+type+"";
         this.token = token;
-        this.httpClient = httpClient != null ? httpClient : HttpClientBuilder.create().build();
-        this.objectMapper = new ObjectMapper();
+        this.httpClient = httpClient;
+        this.objectMapper = objectMapper;
+    }
+
+    public FooByNameAndTypeResource(String name, String type, String baseUrl, HttpClient httpClient) {
+        this(name, type, baseUrl, httpClient, new ObjectMapper());
     }
 
     /**
      * Returns a collection
      */
-    public EntryCollection listFoo(GetQuery query) throws URISyntaxException, IOException
-    {
+    public EntryCollection listFoo(GetQuery query) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
     
         Map<String, Object> params = this.objectMapper.convertValue(query, Map.class);
@@ -60,8 +60,7 @@ public class FooByNameAndTypeResource extends ResourceAbstract
         return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryCollection.class);
     }
 
-    public EntryMessage createFoo(EntryCreate data) throws URISyntaxException, IOException
-    {
+    public EntryMessage createFoo(EntryCreate data) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
     
 
@@ -74,8 +73,7 @@ public class FooByNameAndTypeResource extends ResourceAbstract
         return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
     }
 
-    public EntryMessage put(EntryUpdate data) throws URISyntaxException, IOException
-    {
+    public EntryMessage put(EntryUpdate data) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
     
 
@@ -88,8 +86,7 @@ public class FooByNameAndTypeResource extends ResourceAbstract
         return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
     }
 
-    public EntryMessage delete() throws URISyntaxException, IOException
-    {
+    public EntryMessage delete() throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
     
 
@@ -100,8 +97,7 @@ public class FooByNameAndTypeResource extends ResourceAbstract
         return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
     }
 
-    public EntryMessage patch(EntryPatch data) throws URISyntaxException, IOException
-    {
+    public EntryMessage patch(EntryPatch data) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
     
 

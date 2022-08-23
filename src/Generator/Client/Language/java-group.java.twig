@@ -1,31 +1,16 @@
 {% if namespace %}
-package {{ namespace }} {
+package {{ namespace }};
 {% endif %}
 
 import app.sdkgen.client.ResourceAbstract;
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 
-public class {{ className }} extends ResourceAbstract
-{
-    private final String baseUrl;
-    private final String token;
-    private final HttpClient httpClient;
-
-    public {{ className }}(String baseUrl, String token, HttpClient httpClient)
-    {
-        super(baseUrl, httpClient);
-        this.baseUrl = baseUrl;
-        this.token = token;
-        this.httpClient = httpClient != null ? httpClient : HttpClientBuilder.create().build();
-    }
-
+public class {{ className }} extends ResourceAbstract {
 {% for className, resource in resources %}
     /**
      * {{ resource.description|raw }}
      */
-    public {{ className }} {{ resource.methodName }}({% for name, arg in resource.properties %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %})
-    {
+    public {{ className }} {{ resource.methodName }}({% for name, arg in resource.properties %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) {
         return new {{ className }}(
             {% for name, arg in resource.properties %}{{ name }},
             {% endfor %}
