@@ -23,7 +23,7 @@ public class BarByFooResource extends ResourceAbstract {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-    private String foo;
+    private final String foo;
 
     public BarByFooResource(String foo, String baseUrl, HttpClient httpClient, ObjectMapper objectMapper) {
         super(baseUrl, httpClient, objectMapper);
@@ -31,7 +31,6 @@ public class BarByFooResource extends ResourceAbstract {
         this.foo = foo;
 
         this.url = baseUrl + "/bar/"+foo+"";
-        this.token = token;
         this.httpClient = httpClient;
         this.objectMapper = objectMapper;
     }
@@ -45,7 +44,7 @@ public class BarByFooResource extends ResourceAbstract {
      */
     public EntryCollection get() throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
+
 
         HttpGet request = new HttpGet(builder.build());
 
@@ -56,7 +55,7 @@ public class BarByFooResource extends ResourceAbstract {
 
     public EntryMessage post(EntryCreate data) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
+
 
         HttpPost request = new HttpPost(builder.build());
         request.addHeader("Content-Type", "application/json");

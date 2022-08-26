@@ -23,7 +23,7 @@ public class BarByYearResource extends ResourceAbstract {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-    private String year;
+    private final String year;
 
     public BarByYearResource(String year, String baseUrl, HttpClient httpClient, ObjectMapper objectMapper) {
         super(baseUrl, httpClient, objectMapper);
@@ -31,7 +31,6 @@ public class BarByYearResource extends ResourceAbstract {
         this.year = year;
 
         this.url = baseUrl + "/bar/"+year+"";
-        this.token = token;
         this.httpClient = httpClient;
         this.objectMapper = objectMapper;
     }
@@ -45,7 +44,7 @@ public class BarByYearResource extends ResourceAbstract {
      */
     public EntryCollection get() throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
+
 
         HttpGet request = new HttpGet(builder.build());
 
@@ -56,7 +55,7 @@ public class BarByYearResource extends ResourceAbstract {
 
     public EntryMessage post(EntryCreate data) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
+
 
         HttpPost request = new HttpPost(builder.build());
         request.addHeader("Content-Type", "application/json");

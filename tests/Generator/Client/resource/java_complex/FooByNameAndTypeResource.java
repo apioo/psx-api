@@ -23,8 +23,8 @@ public class FooByNameAndTypeResource extends ResourceAbstract {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-    private String name;
-    private String type;
+    private final String name;
+    private final String type;
 
     public FooByNameAndTypeResource(String name, String type, String baseUrl, HttpClient httpClient, ObjectMapper objectMapper) {
         super(baseUrl, httpClient, objectMapper);
@@ -33,7 +33,6 @@ public class FooByNameAndTypeResource extends ResourceAbstract {
         this.type = type;
 
         this.url = baseUrl + "/foo/"+name+"/"+type+"";
-        this.token = token;
         this.httpClient = httpClient;
         this.objectMapper = objectMapper;
     }
@@ -47,10 +46,9 @@ public class FooByNameAndTypeResource extends ResourceAbstract {
      */
     public Object postEntryOrMessage(Object data) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
+
 
         HttpPost request = new HttpPost(builder.build());
-        request.addHeader("Authorization", "Bearer " + this.token);
         request.addHeader("Content-Type", "application/json");
         request.setEntity(new StringEntity(this.objectMapper.writeValueAsString(data), ContentType.APPLICATION_JSON));
 

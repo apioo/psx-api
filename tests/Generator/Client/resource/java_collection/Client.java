@@ -6,8 +6,8 @@
 
 import app.sdkgen.client.ClientAbstract;
 import app.sdkgen.client.Credentials.*;
+import app.sdkgen.client.CredentialsInterface;
 import app.sdkgen.client.TokenStoreInterface;
-import org.apache.http.client.HttpClient;
 import java.util.List;
 
 public class Client extends ClientAbstract {
@@ -21,7 +21,8 @@ public class Client extends ClientAbstract {
     public FooGroup foo() {
         return new FooGroup(
             this.baseUrl,
-            this.newHttpClient()
+            this.newHttpClient(),
+            this.objectMapper
         );
     }
 
@@ -31,7 +32,8 @@ public class Client extends ClientAbstract {
     public BarGroup bar() {
         return new BarGroup(
             this.baseUrl,
-            this.newHttpClient()
+            this.newHttpClient(),
+            this.objectMapper
         );
     }
 

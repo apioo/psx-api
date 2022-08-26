@@ -5,16 +5,20 @@
 
 
 import app.sdkgen.client.ResourceAbstract;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.HttpClient;
 
 public class FooGroup extends ResourceAbstract {
+    public FooGroup(String baseUrl, HttpClient httpClient, ObjectMapper objectMapper) {
+        super(baseUrl, httpClient, objectMapper);
+    }
+
     /**
      * Endpoint: /foo
      */
     public FooResource getFoo() {
         return new FooResource(
             this.baseUrl,
-            this.token,
             this.httpClient
         );
     }

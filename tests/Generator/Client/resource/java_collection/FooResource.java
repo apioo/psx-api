@@ -29,7 +29,6 @@ public class FooResource extends ResourceAbstract {
 
 
         this.url = baseUrl + "/foo";
-        this.token = token;
         this.httpClient = httpClient;
         this.objectMapper = objectMapper;
     }
@@ -43,7 +42,7 @@ public class FooResource extends ResourceAbstract {
      */
     public EntryCollection get() throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
+
 
         HttpGet request = new HttpGet(builder.build());
 
@@ -54,7 +53,7 @@ public class FooResource extends ResourceAbstract {
 
     public EntryMessage post(EntryCreate data) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
+
 
         HttpPost request = new HttpPost(builder.build());
         request.addHeader("Content-Type", "application/json");

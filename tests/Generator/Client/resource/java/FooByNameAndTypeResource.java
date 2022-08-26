@@ -23,8 +23,8 @@ public class FooByNameAndTypeResource extends ResourceAbstract {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-    private String name;
-    private String type;
+    private final String name;
+    private final String type;
 
     public FooByNameAndTypeResource(String name, String type, String baseUrl, HttpClient httpClient, ObjectMapper objectMapper) {
         super(baseUrl, httpClient, objectMapper);
@@ -33,7 +33,6 @@ public class FooByNameAndTypeResource extends ResourceAbstract {
         this.type = type;
 
         this.url = baseUrl + "/foo/"+name+"/"+type+"";
-        this.token = token;
         this.httpClient = httpClient;
         this.objectMapper = objectMapper;
     }
@@ -47,8 +46,8 @@ public class FooByNameAndTypeResource extends ResourceAbstract {
      */
     public EntryCollection listFoo(GetQuery query) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
-        Map<String, Object> params = this.objectMapper.convertValue(query, Map.class);
+
+        Map<String, Object> params = this.objectMapper.convertValue(obj, Map.class);
         for(Map.Entry<String, Object> entry : params.entrySet()) {
             builder.setParameter(entry.getKey(), entry.getValue().toString());
         }
@@ -62,7 +61,7 @@ public class FooByNameAndTypeResource extends ResourceAbstract {
 
     public EntryMessage createFoo(EntryCreate data) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
+
 
         HttpPost request = new HttpPost(builder.build());
         request.addHeader("Content-Type", "application/json");
@@ -75,7 +74,7 @@ public class FooByNameAndTypeResource extends ResourceAbstract {
 
     public EntryMessage put(EntryUpdate data) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
+
 
         HttpPut request = new HttpPut(builder.build());
         request.addHeader("Content-Type", "application/json");
@@ -88,7 +87,7 @@ public class FooByNameAndTypeResource extends ResourceAbstract {
 
     public EntryMessage delete() throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
+
 
         HttpDelete request = new HttpDelete(builder.build());
 
@@ -99,7 +98,7 @@ public class FooByNameAndTypeResource extends ResourceAbstract {
 
     public EntryMessage patch(EntryPatch data) throws URISyntaxException, IOException {
         URIBuilder builder = new URIBuilder(this.url);
-    
+
 
         HttpPatch request = new HttpPatch(builder.build());
         request.addHeader("Content-Type", "application/json");

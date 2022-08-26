@@ -3,41 +3,53 @@
  * @see https://sdkgen.app
  */
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 public class GetQuery {
     private int startIndex;
-    private float float;
-    private boolean boolean;
+    private float _float;
+    private boolean _boolean;
     private LocalDate date;
     private LocalDateTime datetime;
+    @JsonSetter("startIndex")
     public void setStartIndex(int startIndex) {
         this.startIndex = startIndex;
     }
+    @JsonGetter("startIndex")
     public int getStartIndex() {
         return this.startIndex;
     }
-    public void setFloat(float float) {
-        this.float = float;
+    @JsonSetter("float")
+    public void setFloat(float _float) {
+        this._float = _float;
     }
+    @JsonGetter("float")
     public float getFloat() {
-        return this.float;
+        return this._float;
     }
-    public void setBoolean(boolean boolean) {
-        this.boolean = boolean;
+    @JsonSetter("boolean")
+    public void setBoolean(boolean _boolean) {
+        this._boolean = _boolean;
     }
+    @JsonGetter("boolean")
     public boolean getBoolean() {
-        return this.boolean;
+        return this._boolean;
     }
+    @JsonSetter("date")
     public void setDate(LocalDate date) {
         this.date = date;
     }
+    @JsonGetter("date")
     public LocalDate getDate() {
         return this.date;
     }
+    @JsonSetter("datetime")
     public void setDatetime(LocalDateTime datetime) {
         this.datetime = datetime;
     }
+    @JsonGetter("datetime")
     public LocalDateTime getDatetime() {
         return this.datetime;
     }

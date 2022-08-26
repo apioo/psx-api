@@ -5,9 +5,14 @@
 
 
 import app.sdkgen.client.ResourceAbstract;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.HttpClient;
 
 public class BarGroup extends ResourceAbstract {
+    public BarGroup(String baseUrl, HttpClient httpClient, ObjectMapper objectMapper) {
+        super(baseUrl, httpClient, objectMapper);
+    }
+
     /**
      * Endpoint: /bar/:foo
      */
@@ -15,7 +20,6 @@ public class BarGroup extends ResourceAbstract {
         return new BarByFooResource(
             foo,
             this.baseUrl,
-            this.token,
             this.httpClient
         );
     }
@@ -27,7 +31,6 @@ public class BarGroup extends ResourceAbstract {
         return new BarByYearResource(
             year,
             this.baseUrl,
-            this.token,
             this.httpClient
         );
     }

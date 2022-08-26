@@ -3,11 +3,15 @@
  * @see https://sdkgen.app
  */
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 public class PathYear {
     private String year;
+    @JsonSetter("year")
     public void setYear(String year) {
         this.year = year;
     }
+    @JsonGetter("year")
     public String getYear() {
         return this.year;
     }

@@ -3,18 +3,24 @@
  * @see https://sdkgen.app
  */
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 public class Path {
     private String name;
     private String type;
+    @JsonSetter("name")
     public void setName(String name) {
         this.name = name;
     }
+    @JsonGetter("name")
     public String getName() {
         return this.name;
     }
+    @JsonSetter("type")
     public void setType(String type) {
         this.type = type;
     }
+    @JsonGetter("type")
     public String getType() {
         return this.type;
     }
