@@ -408,7 +408,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         return $className . 'Group';
     }
 
-    private function buildMethodName(string $methodName): string
+    protected function buildMethodName(string $methodName): string
     {
         $parts = explode('_', str_replace(['.', ' '], '_', $methodName));
         $parts = array_map(function($part){

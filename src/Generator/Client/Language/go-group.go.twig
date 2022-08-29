@@ -7,30 +7,23 @@ import (
     "io/ioutil"
     "net/http"
     "time"
+    "github.com/apioo/sdkgen-go"
 )
 
 type {{ className }} struct {
-    BaseUrl string
-    Token   string
+    resource *sdkgen.Resource
 }
 
-{% for className, resource in resources %}
-// {{ resource.description|raw }}
-func (client Client) {{ resource.methodName }}({% for name, arg in resource.properties %}{% if arg.type %}{{ arg.type }} {% endif %}{{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ className }} {
-    r := {{ className }} {
-        {% for name, arg in resource.properties %}{{ name|capitalize }}: {{ name }},
-        {% endfor %}
-BaseUrl: client.BaseUrl,
-        Token: client.Token
-    }
-    return r
+{% for class, resource in resources %}
+// {{ resource.methodName }} {{ resource.description|raw }}
+func (group {{ className }}) {{ resource.methodName }}({% for name, arg in resource.properties %}{{ name }} {{ arg.type }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ class }} {
+    return New{{ class }}({% for name, arg in resource.properties %}{{ name }}, {% endfor %}group.resource)
 }
+
 {% endfor %}
 
-func NewClient(baseUrl string, token string) Client {
-    c := Client {
-        BaseUrl: baseUrl,
-        Token: token
+func New{{ className }}(resource *sdkgen.Resource) {{ className }} {
+    return {{ className }} {
+        resource: resource,
     }
-    return c
 }

@@ -7,30 +7,46 @@ import (
     "io/ioutil"
     "net/http"
     "time"
+    "github.com/apioo/sdkgen-go"
 )
 
 type {{ className }} struct {
-    BaseUrl string
-    Token   string
+    internal *sdkgen.Client
 }
 
-{% for className, resource in resources %}
-// {{ resource.description|raw }}
-func (client Client) {{ resource.methodName }}({% for name, arg in resource.properties %}{% if arg.type %}{{ arg.type }} {% endif %}{{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ className }} {
-    r := {{ className }} {
-        {% for name, arg in resource.properties %}{{ name|capitalize }}: {{ name }},
-        {% endfor %}
-BaseUrl: client.BaseUrl,
-        Token: client.Token
-    }
-    return r
+{% for class, resource in resources %}
+// {{ resource.methodName }} {{ resource.description|raw }}
+func (client {{ className }}) {{ resource.methodName }}({% for name, arg in resource.properties %}{{ name }} {{ arg.type }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ class }} {
+    return New{{ class }}({% for name, arg in resource.properties %}{{ name }}, {% endfor %}client.internal.GetResource())
 }
+
 {% endfor %}
 
-func NewClient(baseUrl string, token string) Client {
-    c := Client {
-        BaseUrl: baseUrl,
-        Token: token
+func New{{ className }}(baseUrl string, {% if security.type == 'httpBasic' %}userName string, password string{% elseif security.type in ['httpBearer', 'apiKey'] %}token string{% elseif security.type in ['clientCredentials', 'authorizationCode'] %}clientId string, clientSecret string{% else %}credentials sdkgen.CredentialsInterface{% endif %}, tokenStore sdkgen.TokenStoreInterface, scopes []string) *{{ className }} {
+{% if security.type == 'httpBasic' %}
+    var credentials := sdkgen.HttpBasic{UserName: userName, Password: password}
+{% elseif security.type == 'httpBearer' %}
+    var credentials := sdkgen.HttpBearer{Token: token}
+{% elseif security.type == 'apiKey' %}
+    var credentials := sdkgen.ApiKey{Token: token, Name: "{{ security.name }}", In: "{{ security.in }}"}
+{% elseif security.type == 'clientCredentials' %}
+    var credentials := sdkgen.ClientCredentials{
+        ClientId: clientId,
+        ClientSecret, clientSecret,
+        TokenUrl: "{{ security.tokenUrl }}",
+        RefreshUrl: "{{ security.refreshUrl }}"
     }
-    return c
+{% elseif security.type == 'authorizationCode' %}
+    var credentials := sdkgen.AuthorizationCode{
+        ClientId: clientId,
+        ClientSecret, clientSecret,
+        TokenUrl: "{{ security.tokenUrl }}",
+        AuthorizationUrl: "{{ security.authorizationUrl }}",
+        RefreshUrl: "{{ security.refreshUrl }}"
+    }
+{% endif %}
+
+    return &{{ className }} {
+        internal: sdkgen.NewClient(baseUrl, credentials, tokenStore, scopes),
+    }
 }

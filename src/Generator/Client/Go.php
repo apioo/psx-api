@@ -57,6 +57,11 @@ class Go extends LanguageAbstract
         return $this->underscore($identifier) . '.go';
     }
 
+    protected function buildMethodName(string $methodName): string
+    {
+        return ucfirst(parent::buildMethodName($methodName));
+    }
+
     protected function getFileContent(string $code, string $identifier): string
     {
         $comment = "\n";
