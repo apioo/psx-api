@@ -47,7 +47,7 @@ class Go extends LanguageAbstract
         return 'go-client.go.twig';
     }
 
-    protected function getGenerator(): GeneratorInterface
+    protected function newGenerator(): GeneratorInterface
     {
         return new Schema\Generator\Go($this->namespace);
     }

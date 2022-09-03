@@ -47,7 +47,7 @@ class Java extends LanguageAbstract
         return 'java-client.java.twig';
     }
 
-    protected function getGenerator(): GeneratorInterface
+    protected function newGenerator(): GeneratorInterface
     {
         return new Schema\Generator\Java($this->namespace);
     }

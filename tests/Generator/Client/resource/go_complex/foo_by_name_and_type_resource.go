@@ -5,53 +5,67 @@
 
 
 import (
+    "bytes"
     "encoding/json"
+    "errors"
     "io/ioutil"
     "net/http"
-    "time"
+    "github.com/apioo/sdkgen-go"
 )
 
 type FooByNameAndTypeResource struct {
-    BaseUrl string
-    Token string
-    Name string
-    Type string
+    url string
+    client *http.Client
 }
 
-// Postentryormessage Returns a collection
-func (r FooByNameAndTypeResource) Postentryormessage(data interface{}) interface{} {
+// PostEntryOrMessage Returns a collection
+func (resource FooByNameAndTypeResource) PostEntryOrMessage(data interface{}) (interface{}, error) {
+    url, err := url.Parse(resource.url)
+    if err != nil {
+        return interface{}{}, errors.New("could not parse url")
+    }
+
 
     raw, err := json.Marshal(data)
     if err != nil {
-        panic(err)
+        return interface{}{}, errors.New("could not marshal provided JSON data")
     }
+
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("POST", r.BaseURL + url, reqBody)
-    req.Header.Set("Content-Type", "application/json")
-    req.Header.Set("Authorization", "Bearer " + r.Token)
-
-    client := &http.Client{}
-    resp, err := client.Do(req)
-
+    req, err := http.NewRequest("POST", url.String(), reqBody)
     if err != nil {
-        panic(err)
+        return interface{}{}, errors.New("could not create request")
+    }
+
+    req.Header.Set("Content-Type", "application/json")
+
+    resp, err := resource.client.Do(req)
+    if err != nil {
+        return interface{}{}, errors.New("could not send request")
     }
 
     defer resp.Body.Close()
-    respBody, _ := ioutil.ReadAll(resp.Body)
+
+    respBody, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return interface{}{}, errors.New("could not read response body")
+    }
 
     var response interface{}
-    json.Unmarshal(respBody, &response)
 
-    return response
+    err = json.Unmarshal(respBody, &response)
+    if err != nil {
+        return interface{}{}, errors.New("could not unmarshal JSON response")
+    }
+
+    return response, nil
 }
 
 
-func NewFooByNameAndTypeResource(name string, type string, baseUrl string, token string) FooByNameAndTypeResource {
-    r := FooByNameAndTypeResource {
-        BaseUrl: baseUrl + "/foo/"+name+"/"+type+"",
-        Token: token
+func NewFooByNameAndTypeResource(name string, _type string, resource *sdkgen.Resource) *FooByNameAndTypeResource {
+    return &FooByNameAndTypeResource {
+        url: resource.BaseUrl + "/foo/"+name+"/"+_type+"",
+        client: resource.HttpClient,
     }
-    return r
 }

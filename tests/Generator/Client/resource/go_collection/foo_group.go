@@ -9,26 +9,21 @@ import (
     "io/ioutil"
     "net/http"
     "time"
+    "github.com/apioo/sdkgen-go"
 )
 
 type FooGroup struct {
-    BaseUrl string
-    Token   string
+    resource *sdkgen.Resource
 }
 
-// Endpoint: /foo
-func (client Client) getFoo() FooResource {
-    r := FooResource {
-        BaseUrl: client.BaseUrl,
-        Token: client.Token
-    }
-    return r
+// getFoo Endpoint: /foo
+func (group FooGroup) getFoo() *FooResource {
+    return NewFooResource(group.resource)
 }
 
-func NewClient(baseUrl string, token string) Client {
-    c := Client {
-        BaseUrl: baseUrl,
-        Token: token
+
+func NewFooGroup(resource *sdkgen.Resource) *FooGroup {
+    return &FooGroup {
+        resource: resource,
     }
-    return c
 }

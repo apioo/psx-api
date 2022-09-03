@@ -47,7 +47,7 @@ class Php extends LanguageAbstract
         return 'php-client.php.twig';
     }
 
-    protected function getGenerator(): GeneratorInterface
+    protected function newGenerator(): GeneratorInterface
     {
         return new Schema\Generator\Php($this->namespace);
     }

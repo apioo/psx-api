@@ -3,10 +3,6 @@ package {{ namespace|lower }}
 {% endif %}
 
 import (
-    "encoding/json"
-    "io/ioutil"
-    "net/http"
-    "time"
     "github.com/apioo/sdkgen-go"
 )
 
@@ -16,7 +12,7 @@ type {{ className }} struct {
 
 {% for class, resource in resources %}
 // {{ resource.methodName }} {{ resource.description|raw }}
-func (client {{ className }}) {{ resource.methodName }}({% for name, arg in resource.properties %}{{ name }} {{ arg.type }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ class }} {
+func (client {{ className }}) {{ resource.methodName }}({% for name, arg in resource.properties %}{{ name }} {{ arg.type }}{% if not loop.last %}, {% endif %}{% endfor %}) *{{ class }} {
     return New{{ class }}({% for name, arg in resource.properties %}{{ name }}, {% endfor %}client.internal.GetResource())
 }
 

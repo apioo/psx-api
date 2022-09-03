@@ -52,22 +52,25 @@ abstract class LanguageAbstract implements GeneratorInterface
     protected string $baseUrl;
     protected ?string $namespace;
     protected Environment $engine;
+    protected SchemaGeneratorInterface $generator;
 
     public function __construct(string $baseUrl, ?string $namespace = null)
     {
         $this->baseUrl   = $baseUrl;
         $this->namespace = $namespace;
         $this->engine    = $this->newTemplateEngine();
+        $this->generator = $this->newGenerator();
     }
 
     /**
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      * @throws \Twig\Error\LoaderError
+     * @throws \PSX\Schema\Exception\TypeNotFoundException
      */
     public function generate(SpecificationInterface $specification): Generator\Code\Chunks
     {
-        $collection = $specification->getResourceCollection();
+        $collection  = $specification->getResourceCollection();
         $definitions = $specification->getDefinitions();
 
         $resources = [];
@@ -225,6 +228,10 @@ abstract class LanguageAbstract implements GeneratorInterface
         $args = [];
         $properties = $type->getProperties();
         foreach ($properties as $name => $property) {
+            if ($this->generator instanceof Generator\NormalizerAwareInterface) {
+                $name = $this->generator->getNormalizer()->argument($name);
+            }
+
             $args[$name] = new Type(
                 $this->getType($property),
                 $this->getDocType($property),
@@ -252,7 +259,7 @@ abstract class LanguageAbstract implements GeneratorInterface
     protected function generateSchema(DefinitionsInterface $definitions, Generator\Code\Chunks $chunks): void
     {
         $schema = new Schema(TypeFactory::getAny(), $definitions);
-        $result = $this->getGenerator()->generate($schema);
+        $result = $this->generator->generate($schema);
 
         if ($result instanceof Generator\Code\Chunks) {
             foreach ($result->getChunks() as $identifier => $code) {
@@ -351,9 +358,8 @@ abstract class LanguageAbstract implements GeneratorInterface
      */
     protected function getType(TypeInterface $property): string
     {
-        $generator = $this->getGenerator();
-        if ($generator instanceof Generator\TypeAwareInterface) {
-            return $generator->getType($property);
+        if ($this->generator instanceof Generator\TypeAwareInterface) {
+            return $this->generator->getType($property);
         } else {
             return '';
         }
@@ -364,9 +370,8 @@ abstract class LanguageAbstract implements GeneratorInterface
      */
     protected function getDocType(TypeInterface $property): string
     {
-        $generator = $this->getGenerator();
-        if ($generator instanceof Generator\TypeAwareInterface) {
-            return $generator->getDocType($property);
+        if ($this->generator instanceof Generator\TypeAwareInterface) {
+            return $this->generator->getDocType($property);
         } else {
             return '';
         }
@@ -374,6 +379,10 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     private function buildClassNameByPath(string $path): string
     {
+        if (!$this->generator instanceof Generator\NormalizerAwareInterface) {
+            throw new \RuntimeException('Can not build class name since your schema generator does not provide a normalizer');
+        }
+
         $parts = explode('/', $path);
 
         $result = [];
@@ -387,35 +396,34 @@ abstract class LanguageAbstract implements GeneratorInterface
                 $i++;
             }
 
-            $result[] = ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
+            $result[] = $part;
         }
 
-        $className = implode('', $result);
-        $className = str_replace(' ', '', ucwords(str_replace('_', ' ', $className)));
+        $result[] = 'Resource';
 
-        return $className . 'Resource';
+        return $this->generator->getNormalizer()->class(...$result);
     }
 
     private function buildClassNameByTag(string $tag): string
     {
-        $parts = explode('_', str_replace(['.', ' '], '_', $tag));
-        $parts = array_map(function($part){
-            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
-        }, $parts);
+        if (!$this->generator instanceof Generator\NormalizerAwareInterface) {
+            throw new \RuntimeException('Can not build class name since your schema generator does not provide a normalizer');
+        }
 
-        $className = implode('', $parts);
+        $className = str_replace(['.', ' '], '_', $tag);
 
-        return $className . 'Group';
+        return $this->generator->getNormalizer()->class($className, 'Group');
     }
 
     protected function buildMethodName(string $methodName): string
     {
-        $parts = explode('_', str_replace(['.', ' '], '_', $methodName));
-        $parts = array_map(function($part){
-            return ucfirst(preg_replace('/[^A-Za-z0-9_]+/', '', $part));
-        }, $parts);
+        if (!$this->generator instanceof Generator\NormalizerAwareInterface) {
+            throw new \RuntimeException('Can not build method name since your schema generator does not provide a normalizer');
+        }
 
-        return lcfirst(implode('', $parts));
+        $methodName = str_replace(['.', ' '], '_', $methodName);
+
+        return $this->generator->getNormalizer()->method($methodName);
     }
 
     protected function getFileContent(string $code, string $identifier): string
@@ -429,7 +437,7 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     abstract protected function getClientTemplate(): string;
 
-    abstract protected function getGenerator(): SchemaGeneratorInterface;
+    abstract protected function newGenerator(): SchemaGeneratorInterface;
 
     abstract protected function getFileName(string $identifier): string;
 

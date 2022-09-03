@@ -5,152 +5,237 @@
 
 
 import (
+    "bytes"
     "encoding/json"
+    "errors"
     "io/ioutil"
     "net/http"
-    "time"
+    "github.com/apioo/sdkgen-go"
 )
 
 type FooByNameAndTypeResource struct {
-    BaseUrl string
-    Token string
-    Name string
-    Type string
+    url string
+    client *http.Client
 }
 
-// Listfoo Returns a collection
-func (r FooByNameAndTypeResource) Listfoo(query GetQuery) EntryCollection {
-
-
-    req, err := http.NewRequest("GET", r.BaseURL + url, nil)
-
-    client := &http.Client{}
-    resp, err := client.Do(req)
-
+// ListFoo Returns a collection
+func (resource FooByNameAndTypeResource) ListFoo(query GetQuery) (EntryCollection, error) {
+    url, err := url.Parse(resource.url)
     if err != nil {
-        panic(err)
+        return EntryCollection{}, errors.New("could not parse url")
+    }
+
+    rawJson, err := json.Marshal(query)
+    if err != nil {
+        return EntryCollection{}, errors.New("could not marshall query")
+    }
+
+    parameters := url.Query()
+    err = json.Unmarshal(rawJson, &parameters)
+    url.RawQuery = parameters.Encode()
+
+
+    req, err := http.NewRequest("GET", url.String(), nil)
+    if err != nil {
+        return EntryCollection{}, errors.New("could not create request")
+    }
+
+
+    resp, err := resource.client.Do(req)
+    if err != nil {
+        return EntryCollection{}, errors.New("could not send request")
     }
 
     defer resp.Body.Close()
-    respBody, _ := ioutil.ReadAll(resp.Body)
+
+    respBody, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return EntryCollection{}, errors.New("could not read response body")
+    }
 
     var response EntryCollection
-    json.Unmarshal(respBody, &response)
 
-    return response
+    err = json.Unmarshal(respBody, &response)
+    if err != nil {
+        return EntryCollection{}, errors.New("could not unmarshal JSON response")
+    }
+
+    return response, nil
 }
 
-// Createfoo 
-func (r FooByNameAndTypeResource) Createfoo(data EntryCreate) EntryMessage {
+// CreateFoo 
+func (resource FooByNameAndTypeResource) CreateFoo(data EntryCreate) (EntryMessage, error) {
+    url, err := url.Parse(resource.url)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not parse url")
+    }
+
 
     raw, err := json.Marshal(data)
     if err != nil {
-        panic(err)
+        return EntryMessage{}, errors.New("could not marshal provided JSON data")
     }
+
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("POST", r.BaseURL + url, reqBody)
+    req, err := http.NewRequest("POST", url.String(), reqBody)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not create request")
+    }
+
     req.Header.Set("Content-Type", "application/json")
 
-    client := &http.Client{}
-    resp, err := client.Do(req)
-
+    resp, err := resource.client.Do(req)
     if err != nil {
-        panic(err)
+        return EntryMessage{}, errors.New("could not send request")
     }
 
     defer resp.Body.Close()
-    respBody, _ := ioutil.ReadAll(resp.Body)
+
+    respBody, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not read response body")
+    }
 
     var response EntryMessage
-    json.Unmarshal(respBody, &response)
 
-    return response
+    err = json.Unmarshal(respBody, &response)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not unmarshal JSON response")
+    }
+
+    return response, nil
 }
 
 // Put 
-func (r FooByNameAndTypeResource) Put(data EntryUpdate) EntryMessage {
+func (resource FooByNameAndTypeResource) Put(data EntryUpdate) (EntryMessage, error) {
+    url, err := url.Parse(resource.url)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not parse url")
+    }
+
 
     raw, err := json.Marshal(data)
     if err != nil {
-        panic(err)
+        return EntryMessage{}, errors.New("could not marshal provided JSON data")
     }
+
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("PUT", r.BaseURL + url, reqBody)
+    req, err := http.NewRequest("PUT", url.String(), reqBody)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not create request")
+    }
+
     req.Header.Set("Content-Type", "application/json")
 
-    client := &http.Client{}
-    resp, err := client.Do(req)
-
+    resp, err := resource.client.Do(req)
     if err != nil {
-        panic(err)
+        return EntryMessage{}, errors.New("could not send request")
     }
 
     defer resp.Body.Close()
-    respBody, _ := ioutil.ReadAll(resp.Body)
+
+    respBody, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not read response body")
+    }
 
     var response EntryMessage
-    json.Unmarshal(respBody, &response)
 
-    return response
+    err = json.Unmarshal(respBody, &response)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not unmarshal JSON response")
+    }
+
+    return response, nil
 }
 
 // Delete 
-func (r FooByNameAndTypeResource) Delete() EntryMessage {
-
-
-    req, err := http.NewRequest("DELETE", r.BaseURL + url, nil)
-
-    client := &http.Client{}
-    resp, err := client.Do(req)
-
+func (resource FooByNameAndTypeResource) Delete() (EntryMessage, error) {
+    url, err := url.Parse(resource.url)
     if err != nil {
-        panic(err)
+        return EntryMessage{}, errors.New("could not parse url")
+    }
+
+
+
+    req, err := http.NewRequest("DELETE", url.String(), nil)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not create request")
+    }
+
+
+    resp, err := resource.client.Do(req)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not send request")
     }
 
     defer resp.Body.Close()
-    respBody, _ := ioutil.ReadAll(resp.Body)
+
+    respBody, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not read response body")
+    }
 
     var response EntryMessage
-    json.Unmarshal(respBody, &response)
 
-    return response
+    err = json.Unmarshal(respBody, &response)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not unmarshal JSON response")
+    }
+
+    return response, nil
 }
 
 // Patch 
-func (r FooByNameAndTypeResource) Patch(data EntryPatch) EntryMessage {
+func (resource FooByNameAndTypeResource) Patch(data EntryPatch) (EntryMessage, error) {
+    url, err := url.Parse(resource.url)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not parse url")
+    }
+
 
     raw, err := json.Marshal(data)
     if err != nil {
-        panic(err)
+        return EntryMessage{}, errors.New("could not marshal provided JSON data")
     }
+
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("PATCH", r.BaseURL + url, reqBody)
+    req, err := http.NewRequest("PATCH", url.String(), reqBody)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not create request")
+    }
+
     req.Header.Set("Content-Type", "application/json")
 
-    client := &http.Client{}
-    resp, err := client.Do(req)
-
+    resp, err := resource.client.Do(req)
     if err != nil {
-        panic(err)
+        return EntryMessage{}, errors.New("could not send request")
     }
 
     defer resp.Body.Close()
-    respBody, _ := ioutil.ReadAll(resp.Body)
+
+    respBody, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not read response body")
+    }
 
     var response EntryMessage
-    json.Unmarshal(respBody, &response)
 
-    return response
+    err = json.Unmarshal(respBody, &response)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not unmarshal JSON response")
+    }
+
+    return response, nil
 }
 
 
-func NewFooByNameAndTypeResource(name string, type string, baseUrl string, token string) FooByNameAndTypeResource {
-    r := FooByNameAndTypeResource {
-        BaseUrl: baseUrl + "/foo/"+name+"/"+type+"",
-        Token: token
+func NewFooByNameAndTypeResource(name string, _type string, resource *sdkgen.Resource) *FooByNameAndTypeResource {
+    return &FooByNameAndTypeResource {
+        url: resource.BaseUrl + "/foo/"+name+"/"+_type+"",
+        client: resource.HttpClient,
     }
-    return r
 }

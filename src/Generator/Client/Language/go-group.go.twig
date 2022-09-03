@@ -16,14 +16,14 @@ type {{ className }} struct {
 
 {% for class, resource in resources %}
 // {{ resource.methodName }} {{ resource.description|raw }}
-func (group {{ className }}) {{ resource.methodName }}({% for name, arg in resource.properties %}{{ name }} {{ arg.type }}{% if not loop.last %}, {% endif %}{% endfor %}) {{ class }} {
+func (group {{ className }}) {{ resource.methodName }}({% for name, arg in resource.properties %}{{ name }} {{ arg.type }}{% if not loop.last %}, {% endif %}{% endfor %}) *{{ class }} {
     return New{{ class }}({% for name, arg in resource.properties %}{{ name }}, {% endfor %}group.resource)
 }
 
 {% endfor %}
 
-func New{{ className }}(resource *sdkgen.Resource) {{ className }} {
-    return {{ className }} {
+func New{{ className }}(resource *sdkgen.Resource) *{{ className }} {
+    return &{{ className }} {
         resource: resource,
     }
 }

@@ -5,32 +5,23 @@
 
 
 import (
-    "encoding/json"
-    "io/ioutil"
-    "net/http"
-    "time"
+    "github.com/apioo/sdkgen-go"
 )
 
 type Client struct {
-    BaseUrl string
-    Token   string
+    internal *sdkgen.Client
 }
 
-// Endpoint: /foo/:name/:type
-func (client Client) getFooByNameAndType(string name, string type) FooByNameAndTypeResource {
-    r := FooByNameAndTypeResource {
-        Name: name,
-        Type: type,
-        BaseUrl: client.BaseUrl,
-        Token: client.Token
-    }
-    return r
+// getFooByNameAndType Endpoint: /foo/:name/:type
+func (client Client) getFooByNameAndType(name string, _type string) *FooByNameAndTypeResource {
+    return NewFooByNameAndTypeResource(name, _type, client.internal.GetResource())
 }
 
-func NewClient(baseUrl string, token string) Client {
-    c := Client {
-        BaseUrl: baseUrl,
-        Token: token
+
+func NewClient(baseUrl string, token string, tokenStore sdkgen.TokenStoreInterface, scopes []string) *Client {
+    var credentials := sdkgen.HttpBearer{Token: token}
+
+    return &Client {
+        internal: sdkgen.NewClient(baseUrl, credentials, tokenStore, scopes),
     }
-    return c
 }

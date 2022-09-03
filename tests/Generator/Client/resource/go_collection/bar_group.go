@@ -9,36 +9,26 @@ import (
     "io/ioutil"
     "net/http"
     "time"
+    "github.com/apioo/sdkgen-go"
 )
 
 type BarGroup struct {
-    BaseUrl string
-    Token   string
+    resource *sdkgen.Resource
 }
 
-// Endpoint: /bar/:foo
-func (client Client) getBarByFoo(string foo) BarByFooResource {
-    r := BarByFooResource {
-        Foo: foo,
-        BaseUrl: client.BaseUrl,
-        Token: client.Token
-    }
-    return r
-}
-// Endpoint: /bar/$year<[0-9]+>
-func (client Client) getBarByYear(string year) BarByYearResource {
-    r := BarByYearResource {
-        Year: year,
-        BaseUrl: client.BaseUrl,
-        Token: client.Token
-    }
-    return r
+// getBarByFoo Endpoint: /bar/:foo
+func (group BarGroup) getBarByFoo(foo string) *BarByFooResource {
+    return NewBarByFooResource(foo, group.resource)
 }
 
-func NewClient(baseUrl string, token string) Client {
-    c := Client {
-        BaseUrl: baseUrl,
-        Token: token
+// getBarByYear Endpoint: /bar/$year<[0-9]+>
+func (group BarGroup) getBarByYear(year string) *BarByYearResource {
+    return NewBarByYearResource(year, group.resource)
+}
+
+
+func NewBarGroup(resource *sdkgen.Resource) *BarGroup {
+    return &BarGroup {
+        resource: resource,
     }
-    return c
 }
