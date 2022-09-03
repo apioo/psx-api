@@ -18,8 +18,8 @@ type FooByNameAndTypeResource struct {
     client *http.Client
 }
 
-// PostEntryOrMessage Returns a collection
-func (resource FooByNameAndTypeResource) PostEntryOrMessage(data interface{}) (interface{}, error) {
+// postEntryOrMessage Returns a collection
+func (resource FooByNameAndTypeResource) postEntryOrMessage(data interface{}) (interface{}, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return interface{}{}, errors.New("could not parse url")

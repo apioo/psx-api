@@ -18,8 +18,8 @@ type FooResource struct {
     client *http.Client
 }
 
-// Get Returns a collection
-func (resource FooResource) Get() (EntryCollection, error) {
+// get Returns a collection
+func (resource FooResource) get() (EntryCollection, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryCollection{}, errors.New("could not parse url")
@@ -55,8 +55,8 @@ func (resource FooResource) Get() (EntryCollection, error) {
     return response, nil
 }
 
-// Post 
-func (resource FooResource) Post(data EntryCreate) (EntryMessage, error) {
+// post 
+func (resource FooResource) post(data EntryCreate) (EntryMessage, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")

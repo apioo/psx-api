@@ -18,8 +18,8 @@ type FooByNameAndTypeResource struct {
     client *http.Client
 }
 
-// ListFoo Returns a collection
-func (resource FooByNameAndTypeResource) ListFoo(query GetQuery) (EntryCollection, error) {
+// listFoo Returns a collection
+func (resource FooByNameAndTypeResource) listFoo(query GetQuery) (EntryCollection, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryCollection{}, errors.New("could not parse url")
@@ -63,8 +63,8 @@ func (resource FooByNameAndTypeResource) ListFoo(query GetQuery) (EntryCollectio
     return response, nil
 }
 
-// CreateFoo 
-func (resource FooByNameAndTypeResource) CreateFoo(data EntryCreate) (EntryMessage, error) {
+// createFoo 
+func (resource FooByNameAndTypeResource) createFoo(data EntryCreate) (EntryMessage, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
@@ -107,8 +107,8 @@ func (resource FooByNameAndTypeResource) CreateFoo(data EntryCreate) (EntryMessa
     return response, nil
 }
 
-// Put 
-func (resource FooByNameAndTypeResource) Put(data EntryUpdate) (EntryMessage, error) {
+// put 
+func (resource FooByNameAndTypeResource) put(data EntryUpdate) (EntryMessage, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
@@ -151,8 +151,8 @@ func (resource FooByNameAndTypeResource) Put(data EntryUpdate) (EntryMessage, er
     return response, nil
 }
 
-// Delete 
-func (resource FooByNameAndTypeResource) Delete() (EntryMessage, error) {
+// delete 
+func (resource FooByNameAndTypeResource) delete() (EntryMessage, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
@@ -188,8 +188,8 @@ func (resource FooByNameAndTypeResource) Delete() (EntryMessage, error) {
     return response, nil
 }
 
-// Patch 
-func (resource FooByNameAndTypeResource) Patch(data EntryPatch) (EntryMessage, error) {
+// patch 
+func (resource FooByNameAndTypeResource) patch(data EntryPatch) (EntryMessage, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")

@@ -18,8 +18,8 @@ type BarByYearResource struct {
     client *http.Client
 }
 
-// Get Returns a collection
-func (resource BarByYearResource) Get() (EntryCollection, error) {
+// get Returns a collection
+func (resource BarByYearResource) get() (EntryCollection, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryCollection{}, errors.New("could not parse url")
@@ -55,8 +55,8 @@ func (resource BarByYearResource) Get() (EntryCollection, error) {
     return response, nil
 }
 
-// Post 
-func (resource BarByYearResource) Post(data EntryCreate) (EntryMessage, error) {
+// post 
+func (resource BarByYearResource) post(data EntryCreate) (EntryMessage, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
