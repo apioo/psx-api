@@ -439,7 +439,16 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     abstract protected function newGenerator(): SchemaGeneratorInterface;
 
-    abstract protected function getFileName(string $identifier): string;
+    abstract protected function getFileExtension(): string;
+
+    protected function getFileName(string $identifier): string
+    {
+        if ($this->generator instanceof Generator\NormalizerAwareInterface) {
+            return $this->generator->getNormalizer()->file($identifier) . '.' . $this->getFileExtension();
+        } else  {
+            return $identifier . '.' . $this->getFileExtension();
+        }
+    }
 
     /**
      * Resolves a reference type in case it points to a non struct or map type

@@ -52,14 +52,9 @@ class Go extends LanguageAbstract
         return new Schema\Generator\Go($this->namespace);
     }
 
-    protected function getFileName(string $identifier): string
+    protected function getFileExtension(): string
     {
-        return $this->underscore($identifier) . '.go';
-    }
-
-    protected function buildMethodName(string $methodName): string
-    {
-        return ucfirst(parent::buildMethodName($methodName));
+        return 'go';
     }
 
     protected function getFileContent(string $code, string $identifier): string
@@ -70,10 +65,5 @@ class Go extends LanguageAbstract
         $comment.= "\n";
 
         return $comment . "\n" . $code;
-    }
-
-    private function underscore(string $file): string
-    {
-        return strtolower(preg_replace(array('/([A-Z]+)([A-Z][a-z])/', '/([a-z\d])([A-Z])/'), array('\\1_\\2', '\\1_\\2'), strtr($file, '_', '.')));
     }
 }

@@ -52,9 +52,9 @@ class Php extends LanguageAbstract
         return new Schema\Generator\Php($this->namespace);
     }
 
-    protected function getFileName(string $identifier): string
+    protected function getFileExtension(): string
     {
-        return $identifier . '.php';
+        return 'php';
     }
 
     protected function getFileContent(string $code, string $identifier): string

@@ -52,9 +52,9 @@ class Java extends LanguageAbstract
         return new Schema\Generator\Java($this->namespace);
     }
 
-    protected function getFileName(string $identifier): string
+    protected function getFileExtension(): string
     {
-        return $identifier . '.java';
+        return 'java';
     }
 
     protected function getFileContent(string $code, string $identifier): string

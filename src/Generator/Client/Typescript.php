@@ -52,9 +52,9 @@ class Typescript extends LanguageAbstract
         return new Schema\Generator\TypeScript($this->namespace);
     }
 
-    protected function getFileName(string $identifier): string
+    protected function getFileExtension(): string
     {
-        return $identifier . '.ts';
+        return 'ts';
     }
 
     protected function getFileContent(string $code, string $identifier): string
