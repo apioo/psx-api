@@ -64,6 +64,18 @@ class Go extends LanguageAbstract
         $comment.= '// @see https://sdkgen.app' . "\n";
         $comment.= "\n";
 
+        // remove not needed imports
+        $imports = [
+            '"encoding/json"' => 'json.Unmarshal',
+            '"io"' => 'io.ReadAll',
+        ];
+
+        foreach ($imports as $replace => $marker) {
+            if (str_contains($code, $marker)) {
+                $code = str_replace($replace, '', $code);
+            }
+        }
+
         return $comment . "\n" . $code;
     }
 }
