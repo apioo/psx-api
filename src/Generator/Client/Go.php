@@ -66,6 +66,7 @@ class Go extends LanguageAbstract
 
         // remove not needed imports
         $imports = [
+            '"bytes"' => 'bytes.NewReader',
             '"encoding/json"' => 'json.Unmarshal',
             '"io"' => 'io.ReadAll',
         ];
