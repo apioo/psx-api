@@ -6,9 +6,10 @@ import (
     "bytes"
     "encoding/json"
     "errors"
-    "io/ioutil"
-    "net/http"
     "github.com/apioo/sdkgen-go"
+    "io"
+    "net/http"
+    "net/url"
 )
 
 type {{ className }} struct {
@@ -61,7 +62,7 @@ func (resource {{ className }}) {{ methodName }}({% for name, arg in method.args
     defer resp.Body.Close()
 
 {% if method.return.type %}
-    respBody, err := ioutil.ReadAll(resp.Body)
+    respBody, err := io.ReadAll(resp.Body)
     if err != nil {
         return {% if method.return.type %}{{ method.return.type }}{}, {% endif %}errors.New("could not read response body")
     }
