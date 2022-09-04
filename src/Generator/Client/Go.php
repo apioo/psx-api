@@ -71,7 +71,7 @@ class Go extends LanguageAbstract
         ];
 
         foreach ($imports as $replace => $marker) {
-            if (str_contains($code, $marker)) {
+            if (!str_contains($code, $marker)) {
                 $code = str_replace($replace, '', $code);
             }
         }
