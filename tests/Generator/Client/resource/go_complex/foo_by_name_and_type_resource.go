@@ -8,9 +8,10 @@ import (
     "bytes"
     "encoding/json"
     "errors"
-    "io/ioutil"
-    "net/http"
     "github.com/apioo/sdkgen-go"
+    "io"
+    "net/http"
+    "net/url"
 )
 
 type FooByNameAndTypeResource struct {
@@ -18,8 +19,8 @@ type FooByNameAndTypeResource struct {
     client *http.Client
 }
 
-// postEntryOrMessage Returns a collection
-func (resource FooByNameAndTypeResource) postEntryOrMessage(data interface{}) (interface{}, error) {
+// PostEntryOrMessage Returns a collection
+func (resource FooByNameAndTypeResource) PostEntryOrMessage(data interface{}) (interface{}, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return interface{}{}, errors.New("could not parse url")
@@ -47,7 +48,7 @@ func (resource FooByNameAndTypeResource) postEntryOrMessage(data interface{}) (i
 
     defer resp.Body.Close()
 
-    respBody, err := ioutil.ReadAll(resp.Body)
+    respBody, err := io.ReadAll(resp.Body)
     if err != nil {
         return interface{}{}, errors.New("could not read response body")
     }

@@ -12,13 +12,13 @@ type Client struct {
     internal *sdkgen.Client
 }
 
-// foo Tag: foo
-func (client Client) foo() *FooGroup {
+// Foo Tag: foo
+func (client Client) Foo() *FooGroup {
     return NewFooGroup(client.internal.GetResource())
 }
 
-// bar Tag: bar
-func (client Client) bar() *BarGroup {
+// Bar Tag: bar
+func (client Client) Bar() *BarGroup {
     return NewBarGroup(client.internal.GetResource())
 }
 

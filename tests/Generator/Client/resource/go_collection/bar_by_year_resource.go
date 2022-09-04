@@ -8,9 +8,10 @@ import (
     "bytes"
     "encoding/json"
     "errors"
-    "io/ioutil"
-    "net/http"
     "github.com/apioo/sdkgen-go"
+    "io"
+    "net/http"
+    "net/url"
 )
 
 type BarByYearResource struct {
@@ -18,8 +19,8 @@ type BarByYearResource struct {
     client *http.Client
 }
 
-// get Returns a collection
-func (resource BarByYearResource) get() (EntryCollection, error) {
+// Get Returns a collection
+func (resource BarByYearResource) Get() (EntryCollection, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryCollection{}, errors.New("could not parse url")
@@ -40,7 +41,7 @@ func (resource BarByYearResource) get() (EntryCollection, error) {
 
     defer resp.Body.Close()
 
-    respBody, err := ioutil.ReadAll(resp.Body)
+    respBody, err := io.ReadAll(resp.Body)
     if err != nil {
         return EntryCollection{}, errors.New("could not read response body")
     }
@@ -55,8 +56,8 @@ func (resource BarByYearResource) get() (EntryCollection, error) {
     return response, nil
 }
 
-// post 
-func (resource BarByYearResource) post(data EntryCreate) (EntryMessage, error) {
+// Post 
+func (resource BarByYearResource) Post(data EntryCreate) (EntryMessage, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
@@ -84,7 +85,7 @@ func (resource BarByYearResource) post(data EntryCreate) (EntryMessage, error) {
 
     defer resp.Body.Close()
 
-    respBody, err := ioutil.ReadAll(resp.Body)
+    respBody, err := io.ReadAll(resp.Body)
     if err != nil {
         return EntryMessage{}, errors.New("could not read response body")
     }

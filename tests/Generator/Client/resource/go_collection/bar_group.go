@@ -5,10 +5,6 @@
 
 
 import (
-    "encoding/json"
-    "io/ioutil"
-    "net/http"
-    "time"
     "github.com/apioo/sdkgen-go"
 )
 
@@ -16,13 +12,13 @@ type BarGroup struct {
     resource *sdkgen.Resource
 }
 
-// getBarByFoo Endpoint: /bar/:foo
-func (group BarGroup) getBarByFoo(foo string) *BarByFooResource {
+// GetBarByFoo Endpoint: /bar/:foo
+func (group BarGroup) GetBarByFoo(foo string) *BarByFooResource {
     return NewBarByFooResource(foo, group.resource)
 }
 
-// getBarByYear Endpoint: /bar/$year<[0-9]+>
-func (group BarGroup) getBarByYear(year string) *BarByYearResource {
+// GetBarByYear Endpoint: /bar/$year<[0-9]+>
+func (group BarGroup) GetBarByYear(year string) *BarByYearResource {
     return NewBarByYearResource(year, group.resource)
 }
 

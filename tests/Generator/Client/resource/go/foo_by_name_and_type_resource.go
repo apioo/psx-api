@@ -8,9 +8,10 @@ import (
     "bytes"
     "encoding/json"
     "errors"
-    "io/ioutil"
-    "net/http"
     "github.com/apioo/sdkgen-go"
+    "io"
+    "net/http"
+    "net/url"
 )
 
 type FooByNameAndTypeResource struct {
@@ -18,8 +19,8 @@ type FooByNameAndTypeResource struct {
     client *http.Client
 }
 
-// listFoo Returns a collection
-func (resource FooByNameAndTypeResource) listFoo(query GetQuery) (EntryCollection, error) {
+// ListFoo Returns a collection
+func (resource FooByNameAndTypeResource) ListFoo(query GetQuery) (EntryCollection, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryCollection{}, errors.New("could not parse url")
@@ -48,7 +49,7 @@ func (resource FooByNameAndTypeResource) listFoo(query GetQuery) (EntryCollectio
 
     defer resp.Body.Close()
 
-    respBody, err := ioutil.ReadAll(resp.Body)
+    respBody, err := io.ReadAll(resp.Body)
     if err != nil {
         return EntryCollection{}, errors.New("could not read response body")
     }
@@ -63,8 +64,8 @@ func (resource FooByNameAndTypeResource) listFoo(query GetQuery) (EntryCollectio
     return response, nil
 }
 
-// createFoo 
-func (resource FooByNameAndTypeResource) createFoo(data EntryCreate) (EntryMessage, error) {
+// CreateFoo 
+func (resource FooByNameAndTypeResource) CreateFoo(data EntryCreate) (EntryMessage, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
@@ -92,7 +93,7 @@ func (resource FooByNameAndTypeResource) createFoo(data EntryCreate) (EntryMessa
 
     defer resp.Body.Close()
 
-    respBody, err := ioutil.ReadAll(resp.Body)
+    respBody, err := io.ReadAll(resp.Body)
     if err != nil {
         return EntryMessage{}, errors.New("could not read response body")
     }
@@ -107,8 +108,8 @@ func (resource FooByNameAndTypeResource) createFoo(data EntryCreate) (EntryMessa
     return response, nil
 }
 
-// put 
-func (resource FooByNameAndTypeResource) put(data EntryUpdate) (EntryMessage, error) {
+// Put 
+func (resource FooByNameAndTypeResource) Put(data EntryUpdate) (EntryMessage, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
@@ -136,7 +137,7 @@ func (resource FooByNameAndTypeResource) put(data EntryUpdate) (EntryMessage, er
 
     defer resp.Body.Close()
 
-    respBody, err := ioutil.ReadAll(resp.Body)
+    respBody, err := io.ReadAll(resp.Body)
     if err != nil {
         return EntryMessage{}, errors.New("could not read response body")
     }
@@ -151,8 +152,8 @@ func (resource FooByNameAndTypeResource) put(data EntryUpdate) (EntryMessage, er
     return response, nil
 }
 
-// delete 
-func (resource FooByNameAndTypeResource) delete() (EntryMessage, error) {
+// Delete 
+func (resource FooByNameAndTypeResource) Delete() (EntryMessage, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
@@ -173,7 +174,7 @@ func (resource FooByNameAndTypeResource) delete() (EntryMessage, error) {
 
     defer resp.Body.Close()
 
-    respBody, err := ioutil.ReadAll(resp.Body)
+    respBody, err := io.ReadAll(resp.Body)
     if err != nil {
         return EntryMessage{}, errors.New("could not read response body")
     }
@@ -188,8 +189,8 @@ func (resource FooByNameAndTypeResource) delete() (EntryMessage, error) {
     return response, nil
 }
 
-// patch 
-func (resource FooByNameAndTypeResource) patch(data EntryPatch) (EntryMessage, error) {
+// Patch 
+func (resource FooByNameAndTypeResource) Patch(data EntryPatch) (EntryMessage, error) {
     url, err := url.Parse(resource.url)
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
@@ -217,7 +218,7 @@ func (resource FooByNameAndTypeResource) patch(data EntryPatch) (EntryMessage, e
 
     defer resp.Body.Close()
 
-    respBody, err := ioutil.ReadAll(resp.Body)
+    respBody, err := io.ReadAll(resp.Body)
     if err != nil {
         return EntryMessage{}, errors.New("could not read response body")
     }

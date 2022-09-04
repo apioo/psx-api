@@ -12,8 +12,8 @@ type Client struct {
     internal *sdkgen.Client
 }
 
-// getFooByNameAndType Endpoint: /foo/:name/:type
-func (client Client) getFooByNameAndType(name string, _type string) *FooByNameAndTypeResource {
+// GetFooByNameAndType Endpoint: /foo/:name/:type
+func (client Client) GetFooByNameAndType(name string, _type string) *FooByNameAndTypeResource {
     return NewFooByNameAndTypeResource(name, _type, client.internal.GetResource())
 }
 

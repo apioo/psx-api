@@ -5,10 +5,6 @@
 
 
 import (
-    "encoding/json"
-    "io/ioutil"
-    "net/http"
-    "time"
     "github.com/apioo/sdkgen-go"
 )
 
@@ -16,8 +12,8 @@ type FooGroup struct {
     resource *sdkgen.Resource
 }
 
-// getFoo Endpoint: /foo
-func (group FooGroup) getFoo() *FooResource {
+// GetFoo Endpoint: /foo
+func (group FooGroup) GetFoo() *FooResource {
     return NewFooResource(group.resource)
 }
 
