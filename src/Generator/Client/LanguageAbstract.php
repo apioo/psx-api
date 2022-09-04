@@ -54,7 +54,7 @@ abstract class LanguageAbstract implements GeneratorInterface
     protected Environment $engine;
 
     /**
-     * @var SchemaGeneratorInterface|Generator\NormalizerAwareInterface&Generator\TypeAwareInterface&SchemaGeneratorInterface
+     * @var SchemaGeneratorInterface&Generator\NormalizerAwareInterface&Generator\TypeAwareInterface&SchemaGeneratorInterface
      */
     protected SchemaGeneratorInterface $generator;
 
