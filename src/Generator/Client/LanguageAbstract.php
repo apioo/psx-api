@@ -52,6 +52,10 @@ abstract class LanguageAbstract implements GeneratorInterface
     protected string $baseUrl;
     protected ?string $namespace;
     protected Environment $engine;
+
+    /**
+     * @var SchemaGeneratorInterface|Generator\NormalizerAwareInterface&Generator\TypeAwareInterface&SchemaGeneratorInterface
+     */
     protected SchemaGeneratorInterface $generator;
 
     public function __construct(string $baseUrl, ?string $namespace = null)
@@ -60,6 +64,14 @@ abstract class LanguageAbstract implements GeneratorInterface
         $this->namespace = $namespace;
         $this->engine    = $this->newTemplateEngine();
         $this->generator = $this->newGenerator();
+
+        if (!$this->generator instanceof Generator\TypeAwareInterface) {
+            throw new \RuntimeException('A schema generator must implement the TypeAwareInterface interface');
+        }
+
+        if (!$this->generator instanceof Generator\NormalizerAwareInterface) {
+            throw new \RuntimeException('A schema generator must implement the NormalizerAwareInterface interface');
+        }
     }
 
     /**
@@ -99,13 +111,14 @@ abstract class LanguageAbstract implements GeneratorInterface
             return;
         }
 
-        $imports = [];
+        $imports    = [];
         $properties = $this->getPathParameterTypes($resource, $definitions);
-        $urlParts = $this->getUrlParts($resource, $properties ?? []);
+        $urlParts   = $this->getUrlParts($resource, $properties ?? []);
+        $methodName = $this->generator->getNormalizer()->method('get', substr($className, 0, -8));
 
         $resources[$className] = [
             'description' => 'Endpoint: ' . $resource->getPath(),
-            'methodName' => 'get' . substr($className, 0, -8),
+            'methodName' => $methodName,
             'path' => $resource->getPath(),
             'tags' => $resource->getTags(),
             'properties' => $properties,
@@ -121,8 +134,8 @@ abstract class LanguageAbstract implements GeneratorInterface
                 $query = TypeFactory::getReference($method->getQueryParameters());
 
                 $args['query'] = new Type(
-                    $this->getType($query),
-                    $this->getDocType($query),
+                    $this->generator->getTypeGenerator()->getType($query),
+                    $this->generator->getTypeGenerator()->getDocType($query),
                     true
                 );
 
@@ -135,8 +148,8 @@ abstract class LanguageAbstract implements GeneratorInterface
                 $type = $this->resolveType($request, $definitions);
 
                 $args['data'] = new Type(
-                    $this->getType($type),
-                    $this->getDocType($type),
+                    $this->generator->getTypeGenerator()->getType($type),
+                    $this->generator->getTypeGenerator()->getDocType($type),
                     false
                 );
 
@@ -149,8 +162,8 @@ abstract class LanguageAbstract implements GeneratorInterface
                 $type = $this->resolveType($response, $definitions);
 
                 $return = new Type(
-                    $this->getType($type),
-                    $this->getDocType($type),
+                    $this->generator->getTypeGenerator()->getType($type),
+                    $this->generator->getTypeGenerator()->getDocType($type),
                 );
 
                 $this->resolveImport($type, $imports);
@@ -233,8 +246,8 @@ abstract class LanguageAbstract implements GeneratorInterface
             }
 
             $args[$name] = new Type(
-                $this->getType($property),
-                $this->getDocType($property),
+                $this->generator->getTypeGenerator()->getType($property),
+                $this->generator->getTypeGenerator()->getDocType($property),
                 false
             );
         }
@@ -353,36 +366,8 @@ abstract class LanguageAbstract implements GeneratorInterface
         return $groups;
     }
 
-    /**
-     * Returns the type of the provided property for the specific language
-     */
-    protected function getType(TypeInterface $property): string
-    {
-        if ($this->generator instanceof Generator\TypeAwareInterface) {
-            return $this->generator->getType($property);
-        } else {
-            return '';
-        }
-    }
-
-    /**
-     * Returns a type which is used in the documentation
-     */
-    protected function getDocType(TypeInterface $property): string
-    {
-        if ($this->generator instanceof Generator\TypeAwareInterface) {
-            return $this->generator->getDocType($property);
-        } else {
-            return '';
-        }
-    }
-
     private function buildClassNameByPath(string $path): string
     {
-        if (!$this->generator instanceof Generator\NormalizerAwareInterface) {
-            throw new \RuntimeException('Can not build class name since your schema generator does not provide a normalizer');
-        }
-
         $parts = explode('/', $path);
 
         $result = [];
@@ -406,10 +391,6 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     private function buildClassNameByTag(string $tag): string
     {
-        if (!$this->generator instanceof Generator\NormalizerAwareInterface) {
-            throw new \RuntimeException('Can not build class name since your schema generator does not provide a normalizer');
-        }
-
         $className = str_replace(['.', ' '], '_', $tag);
 
         return $this->generator->getNormalizer()->class($className, 'Group');
@@ -417,10 +398,6 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     protected function buildMethodName(string $methodName): string
     {
-        if (!$this->generator instanceof Generator\NormalizerAwareInterface) {
-            throw new \RuntimeException('Can not build method name since your schema generator does not provide a normalizer');
-        }
-
         $methodName = str_replace(['.', ' '], '_', $methodName);
 
         return $this->generator->getNormalizer()->method($methodName);
@@ -437,17 +414,18 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     abstract protected function getClientTemplate(): string;
 
+    /**
+     * @return SchemaGeneratorInterface&Generator\TypeAwareInterface&Generator\NormalizerAwareInterface
+     */
     abstract protected function newGenerator(): SchemaGeneratorInterface;
 
     abstract protected function getFileExtension(): string;
 
     protected function getFileName(string $identifier): string
     {
-        if ($this->generator instanceof Generator\NormalizerAwareInterface) {
-            return $this->generator->getNormalizer()->file($identifier) . '.' . $this->getFileExtension();
-        } else  {
-            return $identifier . '.' . $this->getFileExtension();
-        }
+        $identifier = $this->generator->getNormalizer()->file($identifier);
+
+        return $identifier . '.' . $this->getFileExtension();
     }
 
     /**
