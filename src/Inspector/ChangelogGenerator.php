@@ -35,13 +35,8 @@ use PSX\Schema\Inspector\SemVer;
  */
 class ChangelogGenerator
 {
-    public function generate(SpecificationInterface $left, ?SpecificationInterface $right = null)
+    public function generate(SpecificationInterface $left, SpecificationInterface $right): \Generator
     {
-        if (empty($right)) {
-            yield SemVer::PATCH => 'Initial release';
-            return;
-        }
-
         yield from $this->generateCollection($left->getResourceCollection(), $right->getResourceCollection());
         yield from (new SchemaChangelogGenerator())->generate($left->getDefinitions(), $right->getDefinitions());
     }
