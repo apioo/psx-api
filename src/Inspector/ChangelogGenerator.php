@@ -66,15 +66,15 @@ class ChangelogGenerator
     private function generateResource(Resource $left, Resource $right, string $path): \Generator
     {
         foreach ($left->getMethods() as $methodName => $method) {
-            if (isset($right[$methodName])) {
-                yield from $this->generateMethod($method, $right[$methodName], $path, $methodName);
+            if ($right->hasMethod($methodName)) {
+                yield from $this->generateMethod($method, $right->getMethod($methodName), $path, $methodName);
             } else {
                 yield SemVer::MAJOR => $this->getMessageRemoved([$path, $methodName]);
             }
         }
 
         foreach ($right->getMethods() as $methodName => $method) {
-            if (!isset($left[$methodName])) {
+            if (!$left->hasMethod($methodName)) {
                 yield SemVer::PATCH => $this->getMessageAdded([$path, $methodName]);
             }
         }
