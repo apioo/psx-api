@@ -20,24 +20,18 @@
 
 namespace PSX\Api\Generator\Client;
 
-use PSX\Api\Generator\Client\Dto\Type;
+use PSX\Api\Generator\Client\Util\Naming;
 use PSX\Api\GeneratorInterface;
-use PSX\Api\Resource;
-use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\Schema;
-use PSX\Schema\Type\ArrayType;
-use PSX\Schema\Type\IntersectionType;
-use PSX\Schema\Type\MapType;
-use PSX\Schema\Type\ReferenceType;
-use PSX\Schema\Type\StructType;
-use PSX\Schema\Type\UnionType;
 use PSX\Schema\TypeFactory;
-use PSX\Schema\TypeInterface;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use Twig\Loader\FilesystemLoader;
 
 /**
@@ -54,9 +48,12 @@ abstract class LanguageAbstract implements GeneratorInterface
     protected Environment $engine;
 
     /**
-     * @var SchemaGeneratorInterface&Generator\NormalizerAwareInterface&Generator\TypeAwareInterface&SchemaGeneratorInterface
+     * @var SchemaGeneratorInterface&Generator\NormalizerAwareInterface&Generator\TypeAwareInterface
      */
     protected SchemaGeneratorInterface $generator;
+
+    private Naming $naming;
+    private LanguageBuilder $converter;
 
     public function __construct(string $baseUrl, ?string $namespace = null)
     {
@@ -72,201 +69,64 @@ abstract class LanguageAbstract implements GeneratorInterface
         if (!$this->generator instanceof Generator\NormalizerAwareInterface) {
             throw new \RuntimeException('A schema generator must implement the NormalizerAwareInterface interface');
         }
+
+        $this->naming = new Naming($this->generator->getNormalizer());
+        $this->converter = new LanguageBuilder($this->generator, $this->naming);
     }
 
     /**
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     * @throws \Twig\Error\LoaderError
-     * @throws \PSX\Schema\Exception\TypeNotFoundException
+     * @throws RuntimeError
+     * @throws LoaderError
+     * @throws SyntaxError
      */
     public function generate(SpecificationInterface $specification): Generator\Code\Chunks
     {
-        $collection  = $specification->getResourceCollection();
-        $definitions = $specification->getDefinitions();
-
-        $resources = [];
-
         $chunks = new Generator\Code\Chunks();
-        foreach ($collection as $path => $resource) {
-            $this->generateResource($resource, $definitions, $chunks, $resources);
-        }
 
-        $this->generateSchema($definitions, $chunks);
-        $this->generateClient($resources, $specification, $chunks);
+        $client = $this->converter->getClient($specification);
 
-        return $chunks;
-    }
-
-    /**
-     * @throws \Twig\Error\SyntaxError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\LoaderError
-     * @throws \PSX\Schema\Exception\TypeNotFoundException
-     */
-    public function generateResource(Resource $resource, DefinitionsInterface $definitions, Generator\Code\Chunks $chunks, array &$resources): void
-    {
-        $className = $this->buildClassNameByPath($resource->getPath());
-        if (empty($className)) {
-            return;
-        }
-
-        $imports    = [];
-        $properties = $this->getPathParameterTypes($resource, $definitions);
-        $urlParts   = $this->getUrlParts($resource, $properties ?? []);
-        $methodName = $this->generator->getNormalizer()->method('get', substr($className, 0, -8));
-
-        $resources[$className] = [
-            'description' => 'Endpoint: ' . $resource->getPath(),
-            'methodName' => $methodName,
-            'path' => $resource->getPath(),
-            'tags' => $resource->getTags(),
-            'properties' => $properties,
-        ];
-
-        $methods = [];
-        foreach ($resource->getMethods() as $method) {
-            $methodName = $this->buildMethodName($method->getOperationId() ?: strtolower($method->getName()));
-            $args = [];
-
-            // query parameters
-            if ($method->hasQueryParameters()) {
-                $query = TypeFactory::getReference($method->getQueryParameters());
-
-                $args['query'] = new Type(
-                    $this->generator->getTypeGenerator()->getType($query),
-                    $this->generator->getTypeGenerator()->getDocType($query),
-                    true
-                );
-
-                $this->resolveImport($query, $imports);
-            }
-
-            // request
-            $request = $method->getRequest();
-            if (!empty($request) && !in_array($method->getName(), ['GET', 'DELETE'])) {
-                $type = $this->resolveType($request, $definitions);
-
-                $args['data'] = new Type(
-                    $this->generator->getTypeGenerator()->getType($type),
-                    $this->generator->getTypeGenerator()->getDocType($type),
-                    false
-                );
-
-                $this->resolveImport($type, $imports);
-            }
-
-            // response
-            $response = $this->getSuccessfulResponse($method);
-            if (!empty($response)) {
-                $type = $this->resolveType($response, $definitions);
-
-                $return = new Type(
-                    $this->generator->getTypeGenerator()->getType($type),
-                    $this->generator->getTypeGenerator()->getDocType($type),
-                );
-
-                $this->resolveImport($type, $imports);
-            } else {
-                $return = null;
-            }
-
-            $methods[$methodName] = [
-                'httpMethod' => $method->getName(),
-                'description' => $method->getDescription(),
-                'secure' => $method->hasSecurity(),
-                'args' => $args,
-                'return' => $return,
-            ];
-        }
-
-        $code = $this->engine->render($this->getTemplate(), [
+        $code = $this->engine->render($this->getClientTemplate(), [
             'baseUrl' => $this->baseUrl,
             'namespace' => $this->namespace,
-            'className' => $className,
-            'urlParts' => $urlParts,
-            'resource' => $resource,
-            'properties' => $properties,
-            'methods' => $methods,
-            'imports' => $imports,
+            'className' => $client->className,
+            'security' => $client->security,
+            'resources' => $client->getResources(),
         ]);
 
-        $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
-    }
+        $chunks->append($this->getFileName($client->className), $this->getFileContent($code, $client->className));
 
-    protected function getUrlParts(Resource $resource, array $args): array
-    {
-        $result = [];
-        reset($args);
-        $parts = explode('/', $resource->getPath());
-        foreach ($parts as $part) {
-            if (isset($part[0]) && ($part[0] == ':' || $part[0] == '$')) {
-                $pathName = key($args);
-                if ($pathName === null) {
-                    throw new \RuntimeException('Missing ' . $part . ' as path parameter');
-                }
+        foreach ($client->groups as $group) {
+            /** @var Dto\Group $group */
 
-                $result[] = [
-                    'type'  => 'variable',
-                    'value' => $pathName,
-                ];
+            $code = $this->engine->render($this->getGroupTemplate(), [
+                'baseUrl' => $this->baseUrl,
+                'namespace' => $this->namespace,
+                'className' => $group->className,
+                'resources' => $group->getResources(),
+            ]);
 
-                next($args);
-            } elseif (!empty($part)) {
-                $result[] = [
-                    'type'  => 'string',
-                    'value' => $part,
-                ];
+            $chunks->append($this->getFileName($group->className), $this->getFileContent($code, $group->className));
+
+            foreach ($group->resources as $resource) {
+                /** @var Dto\Resource $resource */
+
+                $code = $this->engine->render($this->getTemplate(), [
+                    'baseUrl' => $this->baseUrl,
+                    'namespace' => $this->namespace,
+                    'className' => $resource->className,
+                    'urlParts' => $resource->urlParts,
+                    'properties' => $resource->properties,
+                    'methods' => $resource->methods,
+                    'imports' => $resource->imports,
+                ]);
+
+                $chunks->append($this->getFileName($resource->className), $this->getFileContent($code, $resource->className));
             }
         }
 
-        return $result;
-    }
+        $this->generateSchema($specification->getDefinitions(), $chunks);
 
-    private function getPathParameterTypes(Resource $resource, DefinitionsInterface $definitions): ?array
-    {
-        if (!$resource->hasPathParameters()) {
-            return null;
-        }
-
-        if (!$definitions->hasType($resource->getPathParameters())) {
-            return null;
-        }
-
-        $type = $definitions->getType($resource->getPathParameters());
-        if (!$type instanceof StructType) {
-            return null;
-        }
-
-        $args = [];
-        $properties = $type->getProperties();
-        foreach ($properties as $name => $property) {
-            if ($this->generator instanceof Generator\NormalizerAwareInterface) {
-                $name = $this->generator->getNormalizer()->argument($name);
-            }
-
-            $args[$name] = new Type(
-                $this->generator->getTypeGenerator()->getType($property),
-                $this->generator->getTypeGenerator()->getDocType($property),
-                false
-            );
-        }
-
-        return $args;
-    }
-
-    protected function getSuccessfulResponse(Resource\MethodAbstract $method): ?string
-    {
-        $responses = $method->getResponses();
-        $codes = [200, 201];
-
-        foreach ($codes as $code) {
-            if (isset($responses[$code])) {
-                return $responses[$code];
-            }
-        }
-
-        return null;
+        return $chunks;
     }
 
     protected function generateSchema(DefinitionsInterface $definitions, Generator\Code\Chunks $chunks): void
@@ -281,126 +141,6 @@ abstract class LanguageAbstract implements GeneratorInterface
         } else {
             $chunks->append($this->getFileName('RootSchema'), $result);
         }
-    }
-
-    /**
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
-    protected function generateClient(array $resources, SpecificationInterface $specification, Generator\Code\Chunks $chunks)
-    {
-        $security = null;
-        if ($specification->getSecurity() instanceof SecurityInterface) {
-            $security = $specification->getSecurity()->toArray();
-        }
-
-        $groups = $this->groupByTag($resources);
-        if (count($groups) > 1) {
-            // in case we have tags we create group layer
-            $groupResources = [];
-            foreach ($groups as $tag => $resources) {
-                $className = $this->buildClassNameByTag($tag);
-
-                $code = $this->engine->render($this->getGroupTemplate(), [
-                    'baseUrl' => $this->baseUrl,
-                    'namespace' => $this->namespace,
-                    'className' => $className,
-                    'resources' => $resources,
-                ]);
-
-                $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
-
-                $groupResources[$className] = [
-                    'description' => 'Tag: ' . $tag,
-                    'methodName' => $this->buildMethodName($tag),
-                    'properties' => [],
-                ];
-            }
-
-            $className = 'Client';
-            $code = $this->engine->render($this->getClientTemplate(), [
-                'baseUrl' => $this->baseUrl,
-                'namespace' => $this->namespace,
-                'className' => $className,
-                'resources' => $groupResources,
-                'security' => $security,
-            ]);
-
-            $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
-        } else {
-            $className = 'Client';
-            $code = $this->engine->render($this->getClientTemplate(), [
-                'baseUrl' => $this->baseUrl,
-                'namespace' => $this->namespace,
-                'className' => $className,
-                'resources' => $resources,
-                'security' => $security,
-            ]);
-
-            $chunks->append($this->getFileName($className), $this->getFileContent($code, $className));
-        }
-    }
-
-    /**
-     * Group resources by tag
-     */
-    private function groupByTag(array $resources): array
-    {
-        $groups = [];
-        foreach ($resources as $className => $resource) {
-            $firstTag = $resource['tags'][0] ?? null;
-            if (!empty($firstTag)) {
-                $key = $firstTag;
-            } else {
-                $key = 'default';
-            }
-
-            if (!isset($groups[$key])) {
-                $groups[$key] = [];
-            }
-
-            $groups[$key][$className] = $resource;
-        }
-
-        return $groups;
-    }
-
-    private function buildClassNameByPath(string $path): string
-    {
-        $parts = explode('/', $path);
-
-        $result = [];
-        $i = 0;
-        foreach ($parts as $part) {
-            if (str_starts_with($part, ':')) {
-                $part = ($i === 0 ? 'By' : 'And') . ucfirst(substr($part, 1));
-                $i++;
-            } elseif (str_starts_with($part, '$')) {
-                $part = ($i === 0 ? 'By' : 'And') . ucfirst(substr($part, 1, strpos($part, '<')));
-                $i++;
-            }
-
-            $result[] = $part;
-        }
-
-        $result[] = 'Resource';
-
-        return $this->generator->getNormalizer()->class(...$result);
-    }
-
-    private function buildClassNameByTag(string $tag): string
-    {
-        $className = str_replace(['.', ' '], '_', $tag);
-
-        return $this->generator->getNormalizer()->class($className, 'Group');
-    }
-
-    protected function buildMethodName(string $methodName): string
-    {
-        $methodName = str_replace(['.', ' '], '_', $methodName);
-
-        return $this->generator->getNormalizer()->method($methodName);
     }
 
     protected function getFileContent(string $code, string $identifier): string
@@ -426,45 +166,6 @@ abstract class LanguageAbstract implements GeneratorInterface
         $identifier = $this->generator->getNormalizer()->file($identifier);
 
         return $identifier . '.' . $this->getFileExtension();
-    }
-
-    /**
-     * Resolves a reference type in case it points to a non struct or map type
-     *
-     * @throws \PSX\Schema\Exception\TypeNotFoundException
-     */
-    private function resolveType(string $name, DefinitionsInterface $definitions): TypeInterface
-    {
-        $resolved = $definitions->getType($name);
-        if (!$resolved instanceof StructType && !$resolved instanceof MapType) {
-            return $resolved;
-        }
-
-        return TypeFactory::getReference($name);
-    }
-
-    private function resolveImport(TypeInterface $type, array &$imports)
-    {
-        if ($type instanceof ReferenceType) {
-            $imports[$type->getRef()] = $type->getRef();
-            if ($type->getTemplate()) {
-                foreach ($type->getTemplate() as $t) {
-                    $imports[$t] = $t;
-                }
-            }
-        } elseif ($type instanceof MapType && $type->getAdditionalProperties() instanceof TypeInterface) {
-            $this->resolveImport($type->getAdditionalProperties(), $imports);
-        } elseif ($type instanceof ArrayType && $type->getItems() instanceof TypeInterface) {
-            $this->resolveImport($type->getItems(), $imports);
-        } elseif ($type instanceof UnionType && $type->getOneOf()) {
-            foreach ($type->getOneOf() as $item) {
-                $this->resolveImport($item, $imports);
-            }
-        } elseif ($type instanceof IntersectionType) {
-            foreach ($type->getAllOf() as $item) {
-                $this->resolveImport($item, $imports);
-            }
-        }
     }
 
     private function newTemplateEngine(): Environment
