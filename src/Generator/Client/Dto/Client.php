@@ -31,7 +31,7 @@ class Client
 {
     public function __construct(
         public string $className,
-        public array $groups,
+        public array $resources,
         public ?array $security,
     )
     {
@@ -40,13 +40,14 @@ class Client
     public function getResources(): array
     {
         $resources = [];
-        foreach ($this->groups as $group) {
-            /** @var Group $group */
+        foreach ($this->resources as $resource) {
+            /** @var Resource $resource */
 
-            $resources[$group->className] = [
-                'description' => $group->description,
-                'methodName' => $group->methodName,
-                'properties' => [],
+            $resources[$resource->className] = [
+                'description' => $resource->description,
+                'methodName' => $resource->methodName,
+                'path' => $resource->path,
+                'properties' => $resource->properties,
             ];
         }
 

@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Generator\Client\Util;
 
+use PSX\Api\Resource;
 use PSX\Schema\Generator\Normalizer\NormalizerInterface;
 
 /**
@@ -38,11 +39,42 @@ class Naming
         $this->normalizer = $normalizer;
     }
 
-    public function buildClassNameByPath(string $path): string
+    public function buildClassNameByResource(Resource $resource): string
     {
+        $name = $resource->getName();
+        if (!empty($name)) {
+            $result = [$name];
+        } else {
+            $result = $this->buildNameByPath($resource->getPath());
+        }
+
+        $result[] = 'Resource';
+
+        return $this->normalizer->class(...$result);
+    }
+
+    public function buildMethodNameByMethod(Resource\MethodAbstract $method): string
+    {
+        $operationId = $method->getOperationId();
+        if (empty($operationId)) {
+            $operationId = strtolower($method->getName());
+        }
+
+        return $this->normalizer->method($operationId);
+    }
+
+    public function buildResourceGetter(string $className): string
+    {
+        $methodName = substr($className, 0, -8);
+
+        return $this->normalizer->method('get', $methodName);
+    }
+
+    private function buildNameByPath(string $path): array
+    {
+        $result = [];
         $parts = explode('/', $path);
 
-        $result = [];
         $i = 0;
         foreach ($parts as $part) {
             if (str_starts_with($part, ':')) {
@@ -56,29 +88,6 @@ class Naming
             $result[] = $part;
         }
 
-        $result[] = 'Resource';
-
-        return $this->normalizer->class(...$result);
-    }
-
-    public function buildClassNameByTag(string $tag): string
-    {
-        $className = str_replace(['.', ' '], '_', $tag);
-
-        return $this->normalizer->class($className, 'Group');
-    }
-
-    public function buildResourceGetter(string $className): string
-    {
-        $methodName = substr($className, 0, -8);
-
-        return $this->normalizer->method('get', $methodName);
-    }
-
-    public function buildTagGetter(string $methodName): string
-    {
-        $methodName = str_replace(['.', ' '], '_', $methodName);
-
-        return $this->normalizer->method($methodName);
+        return $result;
     }
 }

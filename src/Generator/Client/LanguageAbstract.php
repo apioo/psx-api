@@ -95,33 +95,20 @@ abstract class LanguageAbstract implements GeneratorInterface
 
         $chunks->append($this->getFileName($client->className), $this->getFileContent($code, $client->className));
 
-        foreach ($client->groups as $group) {
-            /** @var Dto\Group $group */
+        foreach ($client->resources as $resource) {
+            /** @var Dto\Resource $resource */
 
-            $code = $this->engine->render($this->getGroupTemplate(), [
+            $code = $this->engine->render($this->getTemplate(), [
                 'baseUrl' => $this->baseUrl,
                 'namespace' => $this->namespace,
-                'className' => $group->className,
-                'resources' => $group->getResources(),
+                'className' => $resource->className,
+                'urlParts' => $resource->urlParts,
+                'properties' => $resource->properties,
+                'methods' => $resource->methods,
+                'imports' => $resource->imports,
             ]);
 
-            $chunks->append($this->getFileName($group->className), $this->getFileContent($code, $group->className));
-
-            foreach ($group->resources as $resource) {
-                /** @var Dto\Resource $resource */
-
-                $code = $this->engine->render($this->getTemplate(), [
-                    'baseUrl' => $this->baseUrl,
-                    'namespace' => $this->namespace,
-                    'className' => $resource->className,
-                    'urlParts' => $resource->urlParts,
-                    'properties' => $resource->properties,
-                    'methods' => $resource->methods,
-                    'imports' => $resource->imports,
-                ]);
-
-                $chunks->append($this->getFileName($resource->className), $this->getFileContent($code, $resource->className));
-            }
+            $chunks->append($this->getFileName($resource->className), $this->getFileContent($code, $resource->className));
         }
 
         $this->generateSchema($specification->getDefinitions(), $chunks);

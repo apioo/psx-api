@@ -16,6 +16,8 @@ class Client extends ClientAbstract
 
 {% for className, resource in resources %}
     /**
+     * Endpoint: {{ resource.path|raw }}
+     *
      * {{ resource.description|raw }}
      */
     public function {{ resource.methodName }}({% for name, arg in resource.properties %}{{ arg.type }} ${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}): {{ className }}

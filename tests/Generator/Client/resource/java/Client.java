@@ -17,6 +17,8 @@ public class Client extends ClientAbstract {
 
     /**
      * Endpoint: /foo/:name/:type
+     *
+     * lorem ipsum
      */
     public FooByNameAndTypeResource getFooByNameAndType(String name, String type) {
         return new FooByNameAndTypeResource(

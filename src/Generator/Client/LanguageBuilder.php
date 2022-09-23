@@ -74,57 +74,40 @@ class LanguageBuilder
         $collection  = $specification->getResourceCollection();
         $definitions = $specification->getDefinitions();
 
-        $groups = [];
+        $resources = [];
         foreach ($collection as $resource) {
             $class = $this->getResource($resource, $definitions);
             if ($class === null) {
                 continue;
             }
 
-            $firstTag = $resource->getTags()[0] ?? null;
-            if (!empty($firstTag)) {
-                $key = $firstTag;
-            } else {
-                $key = 'default';
-            }
-
-            if (!isset($groups[$key])) {
-                $groups[$key] = new Dto\Group(
-                    $this->naming->buildClassNameByTag($key),
-                    $this->naming->buildTagGetter($key),
-                    $key,
-                    []
-                );
-            }
-
-            $groups[$key]->resources[$class->className] = $class;
+            $resources[$class->className] = $class;
         }
 
         return new Dto\Client(
             'Client',
-            $groups,
+            $resources,
             $security,
         );
     }
 
     private function getResource(Resource $resource, DefinitionsInterface $definitions): ?Dto\Resource
     {
-        $className = $this->naming->buildClassNameByPath($resource->getPath());
+        $className = $this->naming->buildClassNameByResource($resource);
         if (empty($className)) {
             return null;
         }
 
-        $imports    = [];
+
+        $methodName = $this->naming->buildResourceGetter($className);
         $properties = $this->getPathParameters($resource, $definitions);
         $urlParts   = $this->getUrlParts($resource, $properties ?? []);
+        $imports    = [];
 
         $methods = [];
         foreach ($resource->getMethods() as $method) {
-            $methodName = $this->naming->buildTagGetter($method->getOperationId() ?: strtolower($method->getName()));
-            $methods[$methodName] = $this->getMethod($method, $definitions, $imports);
+            $methods[$this->naming->buildMethodNameByMethod($method)] = $this->getMethod($method, $definitions, $imports);
         }
-
-        $methodName = $this->naming->buildResourceGetter($className);
 
         return new Dto\Resource(
             $className,

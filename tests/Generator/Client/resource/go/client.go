@@ -12,7 +12,7 @@ type Client struct {
     internal *sdkgen.Client
 }
 
-// GetFooByNameAndType Endpoint: /foo/:name/:type
+// Endpoint: /foo/:name/:type - lorem ipsum
 func (client Client) GetFooByNameAndType(name string, _type string) *FooByNameAndTypeResource {
     return NewFooByNameAndTypeResource(name, _type, client.internal.GetResource())
 }

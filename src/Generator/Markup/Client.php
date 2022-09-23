@@ -22,6 +22,7 @@ namespace PSX\Api\Generator\Markup;
 
 use PSX\Api\Generator\Client\LanguageBuilder;
 use PSX\Api\Generator\Client\Util\Naming;
+use PSX\Api\Generator\Client\Dto;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\Generator\TypeScript;
@@ -54,42 +55,18 @@ class Client implements GeneratorInterface
         $lines = [];
         $lines[] = 'var client = new ' . $client->className . '(...)';
 
-        /*
-        $code = $this->engine->render($this->getClientTemplate(), [
-            'baseUrl' => $this->baseUrl,
-            'namespace' => $this->namespace,
-            'className' => $client->className,
-            'security' => $client->security,
-            'resources' => $client->getResources(),
-        ]);
-        */
+        foreach ($client->resources as $resource) {
+            /** @var Dto\Resource $resource */
+            foreach ($resource->methods as $methodName => $method) {
+                /** @var Dto\Resource $method */
 
-        foreach ($client->groups as $group) {
-            /*
-            $code = $this->engine->render($this->getGroupTemplate(), [
-                'baseUrl' => $this->baseUrl,
-                'namespace' => $this->namespace,
-                'className' => $group->className,
-                'resources' => $group->getResources(),
-            ]);
-            */
+                $resourceArguments = implode(', ', array_keys($resource->properties));
+                $methodArguments = implode(', ', array_keys(iterator_to_array($method->args ?? [])));
 
-            foreach ($group->resources as $resource) {
-                /*
-                $code = $this->engine->render($this->getTemplate(), [
-                    'baseUrl' => $this->baseUrl,
-                    'namespace' => $this->namespace,
-                    'className' => $resource->className,
-                    'urlParts' => $resource->urlParts,
-                    'properties' => $resource->properties,
-                    'methods' => $resource->methods,
-                    'imports' => $resource->imports,
-                ]);
-                */
-
-                $lines[] .= 'client.' . $group->methodName . '.' . $resource->methodName . '()';
+                $lines[] = 'client.' . $resource->methodName . '(' . $resourceArguments . ').' . $methodName . '(' . $methodArguments . ')';
             }
 
+            $lines[] = "\n";
         }
 
         return implode("\n", $lines);

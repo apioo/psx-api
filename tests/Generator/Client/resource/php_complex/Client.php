@@ -20,6 +20,8 @@ class Client extends ClientAbstract
 
     /**
      * Endpoint: /foo/:name/:type
+     *
+     * lorem ipsum
      */
     public function getFooByNameAndType(string $name, string $type): FooByNameAndTypeResource
     {

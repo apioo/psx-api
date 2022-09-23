@@ -22,6 +22,8 @@ export default class {{ className }} extends ClientAbstract {
 
 {% for className, resource in resources %}
     /**
+     * Endpoint: {{ resource.path|raw }}
+     *
      * {{ resource.description|raw }}
      */
     public async {{ resource.methodName }}({% for name, arg in resource.properties %}{{ name }}: {{ arg.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ className }}>

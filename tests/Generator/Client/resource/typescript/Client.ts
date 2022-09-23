@@ -15,6 +15,8 @@ export default class Client extends ClientAbstract {
 
     /**
      * Endpoint: /foo/:name/:type
+     *
+     * lorem ipsum
      */
     public async getFooByNameAndType(name: string, type: string): Promise<FooByNameAndTypeResource>
     {

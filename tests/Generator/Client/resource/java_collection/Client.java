@@ -16,10 +16,12 @@ public class Client extends ClientAbstract {
     }
 
     /**
-     * Tag: foo
+     * Endpoint: /foo
+     *
+     * foo
      */
-    public FooGroup foo() {
-        return new FooGroup(
+    public FooResource getFoo() {
+        return new FooResource(
             this.baseUrl,
             this.newHttpClient(),
             this.objectMapper
@@ -27,10 +29,27 @@ public class Client extends ClientAbstract {
     }
 
     /**
-     * Tag: bar
+     * Endpoint: /bar/:foo
+     *
+     * bar
      */
-    public BarGroup bar() {
-        return new BarGroup(
+    public BarByFooResource getBarByFoo(String foo) {
+        return new BarByFooResource(
+            foo,
+            this.baseUrl,
+            this.newHttpClient(),
+            this.objectMapper
+        );
+    }
+
+    /**
+     * Endpoint: /bar/$year<[0-9]+>
+     *
+     * bar
+     */
+    public BarByYearResource getBarByYear(String year) {
+        return new BarByYearResource(
+            year,
             this.baseUrl,
             this.newHttpClient(),
             this.objectMapper

@@ -12,14 +12,19 @@ type Client struct {
     internal *sdkgen.Client
 }
 
-// Foo Tag: foo
-func (client Client) Foo() *FooGroup {
-    return NewFooGroup(client.internal.GetResource())
+// Endpoint: /foo - foo
+func (client Client) GetFoo() *FooResource {
+    return NewFooResource(client.internal.GetResource())
 }
 
-// Bar Tag: bar
-func (client Client) Bar() *BarGroup {
-    return NewBarGroup(client.internal.GetResource())
+// Endpoint: /bar/:foo - bar
+func (client Client) GetBarByFoo(foo string) *BarByFooResource {
+    return NewBarByFooResource(foo, client.internal.GetResource())
+}
+
+// Endpoint: /bar/$year<[0-9]+> - bar
+func (client Client) GetBarByYear(year string) *BarByYearResource {
+    return NewBarByYearResource(year, client.internal.GetResource())
 }
 
 

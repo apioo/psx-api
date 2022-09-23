@@ -33,7 +33,7 @@ export default class {{ className }} extends ResourceAbstract {
     public async {{ methodName }}({% for name, arg in method.args %}{{ name }}{% if arg.optional %}?{% endif %}: {{ arg.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<AxiosResponse<{% if method.return %}{{ method.return.type|raw }}{% else %}void{% endif %}>> {
         let params: AxiosRequestConfig = {
             method: '{{ method.httpMethod }}',
-{% if method.args.query is defined %}
+{% if method.args.query is not null %}
             params: query,
 {% endif %}
         };
@@ -41,7 +41,7 @@ export default class {{ className }} extends ResourceAbstract {
 {% if method.httpMethod in ['DELETE'] %}
         return this.httpClient.{{ method.httpMethod|lower }}(this.url, params);
 {% elseif method.httpMethod in ['POST', 'PUT', 'PATCH'] %}
-        return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return.type }}>{% endif %}(this.url, {% if method.args.data is defined %}data{% else %}null{% endif %}, params);
+        return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return.type }}>{% endif %}(this.url, {% if method.args.data is not null %}data{% else %}null{% endif %}, params);
 {% else %}
         return this.httpClient.{{ method.httpMethod|lower }}{% if method.return %}<{{ method.return.type }}>{% endif %}(this.url, params);
 {% endif %}

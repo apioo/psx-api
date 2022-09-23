@@ -39,10 +39,10 @@ class {{ className }} extends ResourceAbstract
 
     {
         $options = [
-{% if method.args.query is defined %}
+{% if method.args.query is not null %}
             'query' => $query !== null ? (array) $query->jsonSerialize() : [],
 {% endif %}
-{% if method.args.data is defined %}
+{% if method.args.data is not null %}
             'json' => $data
 {% endif %}
         ];

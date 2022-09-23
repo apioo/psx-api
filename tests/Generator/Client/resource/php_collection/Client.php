@@ -19,11 +19,13 @@ class Client extends ClientAbstract
     }
 
     /**
-     * Tag: foo
+     * Endpoint: /foo
+     *
+     * foo
      */
-    public function foo(): FooGroup
+    public function getFoo(): FooResource
     {
-        return new FooGroup(
+        return new FooResource(
             $this->baseUrl,
             $this->newHttpClient(),
             $this->schemaManager
@@ -31,11 +33,29 @@ class Client extends ClientAbstract
     }
 
     /**
-     * Tag: bar
+     * Endpoint: /bar/:foo
+     *
+     * bar
      */
-    public function bar(): BarGroup
+    public function getBarByFoo(string $foo): BarByFooResource
     {
-        return new BarGroup(
+        return new BarByFooResource(
+            $foo,
+            $this->baseUrl,
+            $this->newHttpClient(),
+            $this->schemaManager
+        );
+    }
+
+    /**
+     * Endpoint: /bar/$year<[0-9]+>
+     *
+     * bar
+     */
+    public function getBarByYear(string $year): BarByYearResource
+    {
+        return new BarByYearResource(
+            $year,
             $this->baseUrl,
             $this->newHttpClient(),
             $this->schemaManager

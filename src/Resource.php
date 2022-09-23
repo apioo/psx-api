@@ -48,6 +48,7 @@ class Resource implements IteratorAggregate, \JsonSerializable
 
     private int $status;
     private string $path;
+    private ?string $name = null;
     private ?string $description = null;
     private ?string $pathParameters = null;
 
@@ -91,6 +92,16 @@ class Resource implements IteratorAggregate, \JsonSerializable
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
     }
 
     public function setDescription(?string $description): void
