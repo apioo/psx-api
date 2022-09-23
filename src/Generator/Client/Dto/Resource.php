@@ -33,7 +33,7 @@ class Resource
         public string $className,
         public string $methodName,
         public string $path,
-        public string $description,
+        public ?string $description,
         public array $urlParts,
         public ?array $properties,
         public array $methods,
