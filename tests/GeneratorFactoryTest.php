@@ -53,6 +53,7 @@ class GeneratorFactoryTest extends TestCase
             [GeneratorFactoryInterface::CLIENT_PHP],
             [GeneratorFactoryInterface::CLIENT_TYPESCRIPT],
 
+            [GeneratorFactoryInterface::MARKUP_CLIENT],
             [GeneratorFactoryInterface::MARKUP_HTML],
             [GeneratorFactoryInterface::MARKUP_MARKDOWN],
 

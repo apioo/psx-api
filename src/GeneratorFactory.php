@@ -63,6 +63,10 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 $generator = new Generator\Client\Typescript($baseUri, $config);
                 break;
 
+            case GeneratorFactoryInterface::MARKUP_CLIENT:
+                $generator = new Generator\Markup\Client();
+                break;
+
             case GeneratorFactoryInterface::MARKUP_HTML:
                 $generator = new Generator\Markup\Html();
                 break;
@@ -102,6 +106,8 @@ class GeneratorFactory implements GeneratorFactoryInterface
             case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
                 return 'ts';
 
+            case GeneratorFactoryInterface::MARKUP_CLIENT:
+                return 'md';
             case GeneratorFactoryInterface::MARKUP_HTML:
                 return 'html';
             case GeneratorFactoryInterface::MARKUP_MARKDOWN:
@@ -131,6 +137,8 @@ class GeneratorFactory implements GeneratorFactoryInterface
             case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
                 return 'application/typescript';
 
+            case GeneratorFactoryInterface::MARKUP_CLIENT:
+                return 'text/markdown';
             case GeneratorFactoryInterface::MARKUP_HTML:
                 return 'text/html';
             case GeneratorFactoryInterface::MARKUP_MARKDOWN:
@@ -162,6 +170,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
             GeneratorFactoryInterface::CLIENT_PHP,
             GeneratorFactoryInterface::CLIENT_TYPESCRIPT,
 
+            GeneratorFactoryInterface::MARKUP_CLIENT,
             GeneratorFactoryInterface::MARKUP_HTML,
             GeneratorFactoryInterface::MARKUP_MARKDOWN,
 

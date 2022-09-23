@@ -36,6 +36,7 @@ interface GeneratorFactoryInterface
     public const CLIENT_PHP = 'client-php';
     public const CLIENT_TYPESCRIPT = 'client-typescript';
 
+    public const MARKUP_CLIENT = 'markup-client';
     public const MARKUP_HTML = 'markup-html';
     public const MARKUP_MARKDOWN = 'markup-markdown';
 
