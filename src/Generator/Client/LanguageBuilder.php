@@ -25,6 +25,7 @@ use PSX\Api\Resource;
 use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\Generator\Normalizer\NormalizerInterface;
 use PSX\Schema\Generator\NormalizerAwareInterface;
 use PSX\Schema\Generator\Type\GeneratorInterface as TypeGeneratorInterface;
 use PSX\Schema\Generator\TypeAwareInterface;
@@ -50,6 +51,7 @@ class LanguageBuilder
 {
     private GeneratorInterface $generator;
     private TypeGeneratorInterface $typeGenerator;
+    private NormalizerInterface $normalizer;
     private Naming $naming;
 
     public function __construct(GeneratorInterface $generator, Naming $naming)
@@ -60,7 +62,13 @@ class LanguageBuilder
         if ($generator instanceof TypeAwareInterface) {
             $this->typeGenerator = $generator->getTypeGenerator();
         } else {
-            throw new \RuntimeException('Provided generate is not type aware');
+            throw new \RuntimeException('Provided generator is not type aware');
+        }
+
+        if ($generator instanceof NormalizerAwareInterface) {
+            $this->normalizer = $generator->getNormalizer();
+        } else {
+            throw new \RuntimeException('Provided generator is not normalizer aware');
         }
     }
 
@@ -168,9 +176,7 @@ class LanguageBuilder
         $args = [];
         $properties = $type->getProperties();
         foreach ($properties as $name => $property) {
-            if ($this->generator instanceof NormalizerAwareInterface) {
-                $name = $this->generator->getNormalizer()->argument($name);
-            }
+            $name = $this->normalizer->argument($name);
 
             $args[$name] = new Dto\Type(
                 $this->typeGenerator->getType($property),
@@ -267,10 +273,10 @@ class LanguageBuilder
     private function resolveImport(TypeInterface $type, array &$imports): void
     {
         if ($type instanceof ReferenceType) {
-            $imports[$type->getRef()] = $type->getRef();
+            $imports[$type->getRef()] = $this->normalizer->class($type->getRef());
             if ($type->getTemplate()) {
                 foreach ($type->getTemplate() as $t) {
-                    $imports[$t] = $t;
+                    $imports[$t] = $this->normalizer->class($type->getRef());
                 }
             }
         } elseif ($type instanceof MapType && $type->getAdditionalProperties() instanceof TypeInterface) {
