@@ -25,8 +25,11 @@ use PSX\Api\Generator\Client\Util\Naming;
 use PSX\Api\Generator\Client\Dto;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\SpecificationInterface;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator\TypeScript;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
+use PSX\Schema\Schema;
+use PSX\Schema\TypeFactory;
 
 /**
  * Client
@@ -53,22 +56,45 @@ class Client implements GeneratorInterface
         $client = $this->converter->getClient($specification);
 
         $lines = [];
-        $lines[] = 'var client = new ' . $client->className . '(...)';
+        $lines[] = 'const client = new ' . $client->className . '(...)';
 
         foreach ($client->resources as $resource) {
             /** @var Dto\Resource $resource */
             foreach ($resource->methods as $methodName => $method) {
-                /** @var Dto\Resource $method */
+                /** @var Dto\Method $method */
 
-                $resourceArguments = implode(', ', array_keys($resource->properties));
-                $methodArguments = implode(', ', array_keys(iterator_to_array($method->args ?? [])));
+                $resourceArguments = implode(', ', array_keys($resource->properties ?? []));
+                $arguments = implode(', ', $this->getArguments($method));
+                $returnType = isset($method->return) ? $method->return->type : 'void';
 
-                $lines[] = 'client.' . $resource->methodName . '(' . $resourceArguments . ').' . $methodName . '(' . $methodArguments . ')';
+                $lines[] = 'client.' . $resource->methodName . '(' . $resourceArguments . ').' . $methodName . '(' . $arguments . '): ' . $returnType;
             }
-
-            $lines[] = "\n";
         }
 
+        $lines[] = "";
+        $lines[] = $this->generateSchema($specification->getDefinitions());
+
         return implode("\n", $lines);
+    }
+
+    private function getArguments(Dto\Method $method): array
+    {
+        $arguments = [];
+        foreach ($method->args as $type) {
+            $arguments[] = $type->type;
+        }
+
+        return $arguments;
+    }
+
+    private function generateSchema(DefinitionsInterface $definitions): string
+    {
+        $schema = new Schema(TypeFactory::getAny(), $definitions);
+        $return = $this->generator->generate($schema);
+        $return = str_replace('export interface', 'interface', $return);
+        $return = preg_replace('/^import(.*);$/ims', '', $return);
+        $return = str_replace("\n\n\n", "\n\n", $return);
+
+        return $return;
     }
 }
