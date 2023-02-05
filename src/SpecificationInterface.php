@@ -32,19 +32,14 @@ use PSX\Schema\DefinitionsInterface;
 interface SpecificationInterface
 {
     /**
-     * Returns all resources assigned to this specification
+     * Returns all operations assigned to this specification
      */
-    public function getResourceCollection(): ResourceCollection;
+    public function getOperations(): OperationsInterface;
 
     /**
-     * Returns all type definitions assigned to this specification
+     * Returns all definitions assigned to this specification
      */
     public function getDefinitions(): DefinitionsInterface;
-
-    /**
-     * Returns a specification for the specific path
-     */
-    public function get(string $path): ?SpecificationInterface;
 
     /**
      * Returns the configured security definition
@@ -52,7 +47,7 @@ interface SpecificationInterface
     public function getSecurity(): ?SecurityInterface;
 
     /**
-     * Merges all resource and type definitions into the specification
+     * Merges all operations and definitions into the specification
      */
     public function merge(SpecificationInterface $specification): void;
 }

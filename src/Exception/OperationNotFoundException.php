@@ -18,21 +18,15 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Attribute;
-
-use Attribute;
+namespace PSX\Api\Exception;
 
 /**
- * Security
+ * InvalidMethodException
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
-class Security
+class OperationNotFoundException extends \Exception
 {
-    public function __construct(public array $scopes)
-    {
-    }
 }

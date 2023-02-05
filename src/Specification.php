@@ -32,20 +32,20 @@ use PSX\Schema\DefinitionsInterface;
  */
 class Specification implements SpecificationInterface, \JsonSerializable
 {
-    private ResourceCollection $resourceCollection;
+    private OperationsInterface $operations;
     private DefinitionsInterface $definitions;
     private ?SecurityInterface $security;
 
-    public function __construct(?ResourceCollection $resourceCollection = null, ?DefinitionsInterface $definitions = null, ?SecurityInterface $security = null)
+    public function __construct(?OperationsInterface $operations = null, ?DefinitionsInterface $definitions = null, ?SecurityInterface $security = null)
     {
-        $this->resourceCollection = $resourceCollection ?? new ResourceCollection();
+        $this->operations = $operations ?? new Operations();
         $this->definitions = $definitions ?? new Definitions();
         $this->security = $security;
     }
 
-    public function getResourceCollection(): ResourceCollection
+    public function getOperations(): OperationsInterface
     {
-        return $this->resourceCollection;
+        return $this->operations;
     }
 
     public function getDefinitions(): DefinitionsInterface
@@ -55,7 +55,7 @@ class Specification implements SpecificationInterface, \JsonSerializable
 
     public function get(string $path): ?SpecificationInterface
     {
-        $resource = $this->getResourceCollection()->get($path);
+        $resource = $this->getOperations()->get($path);
         if (!$resource instanceof Resource) {
             return null;
         }
@@ -78,13 +78,13 @@ class Specification implements SpecificationInterface, \JsonSerializable
 
     public function merge(SpecificationInterface $specification): void
     {
-        foreach ($specification->getResourceCollection() as $path => $resource) {
-            if ($this->resourceCollection->has($path)) {
+        foreach ($specification->getOperations() as $path => $resource) {
+            if ($this->operations->has($path)) {
                 foreach ($resource->getMethods() as $method) {
-                    $this->resourceCollection->get($path)->addMethod($method);
+                    $this->operations->get($path)->addMethod($method);
                 }
             } else {
-                $this->resourceCollection->set($resource);
+                $this->operations->set($resource);
             }
         }
 
@@ -95,7 +95,7 @@ class Specification implements SpecificationInterface, \JsonSerializable
     {
         return [
             'security' => $this->security,
-            'resources' => $this->resourceCollection,
+            'resources' => $this->operations,
             'definitions' => $this->definitions,
         ];
     }

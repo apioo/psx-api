@@ -23,16 +23,16 @@ namespace PSX\Api\Attribute;
 use Attribute;
 
 /**
- * Security
+ * Authorization
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
-class Security
+class Authorization
 {
-    public function __construct(public array $scopes)
+    public function __construct(public bool $authorization)
     {
     }
 }

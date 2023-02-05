@@ -20,6 +20,8 @@
 
 namespace PSX\Api\Parser\Attribute;
 
+use PSX\Api\Attribute\Authorization;
+use PSX\Api\Attribute\Deprecated;
 use PSX\Api\Attribute\Description;
 use PSX\Api\Attribute\Exclude;
 use PSX\Api\Attribute\Incoming;
@@ -62,6 +64,8 @@ class Meta
     private ?OperationId $operationId = null;
     private ?Tags $tags = null;
     private ?Security $security = null;
+    private ?Deprecated $deprecated = null;
+    private ?Authorization $authorization = null;
 
     public function __construct(array $attributes)
     {
@@ -88,6 +92,10 @@ class Meta
                 $this->tags = $attribute;
             } elseif ($attribute instanceof Security) {
                 $this->security = $attribute;
+            } elseif ($attribute instanceof Deprecated) {
+                $this->deprecated = $attribute;
+            } elseif ($attribute instanceof Authorization) {
+                $this->authorization = $attribute;
             }
         }
     }
@@ -215,6 +223,16 @@ class Meta
     public function getSecurity(): ?Security
     {
         return $this->security;
+    }
+
+    public function getDeprecated(): ?Deprecated
+    {
+        return $this->deprecated;
+    }
+
+    public function getAuthorization(): ?Authorization
+    {
+        return $this->authorization;
     }
 
     public function isExcluded(): bool

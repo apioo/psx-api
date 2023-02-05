@@ -18,21 +18,39 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Attribute;
+namespace PSX\Api\Operation;
 
-use Attribute;
+use PSX\Schema\TypeInterface;
 
 /**
- * Security
+ * Argument
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
-class Security
+class Argument
 {
-    public function __construct(public array $scopes)
+    private string $in;
+    private TypeInterface $type;
+
+    public function __construct(string $in, TypeInterface $type)
     {
+        if (!in_array($in, ['path', 'query', 'body'])) {
+            throw new \InvalidArgumentException('Provided an invalid "in" value, must be path, query or body');
+        }
+
+        $this->in = $in;
+        $this->type = $type;
+    }
+
+    public function getIn(): int
+    {
+        return $this->in;
+    }
+
+    public function getType(): TypeInterface
+    {
+        return $this->type;
     }
 }

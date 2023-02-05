@@ -18,21 +18,20 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Attribute;
+namespace PSX\Api;
 
-use Attribute;
+use ArrayIterator;
+use IteratorAggregate;
+use PSX\Api\Resource\MethodAbstract;
 
 /**
- * Security
+ * OperationInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
-class Security
+interface OperationInterface
 {
-    public function __construct(public array $scopes)
-    {
-    }
+
 }

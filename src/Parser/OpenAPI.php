@@ -20,6 +20,8 @@
 
 namespace PSX\Api\Parser;
 
+use PSX\Api\Operations;
+use PSX\Api\OperationsInterface;
 use PSX\Api\ParserInterface;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
@@ -86,7 +88,7 @@ class OpenAPI implements ParserInterface
     {
         $this->parseOpenAPI($schema);
 
-        $collection = new ResourceCollection();
+        $operations = new Operations();
 
         if ($path !== null) {
             $path = Inflection::convertPlaceholderToCurly($path);
@@ -98,27 +100,18 @@ class OpenAPI implements ParserInterface
                 continue;
             }
 
-            $resource = $this->parseResource($spec, Inflection::convertPlaceholderToColon($key));
-            $collection->set($resource);
+            $this->parseResource($spec, Inflection::convertPlaceholderToColon($key), $operations);
         }
 
         return new Specification(
-            $collection,
+            $operations,
             $this->definitions,
             $this->parseSecurity()
         );
     }
 
-    private function parseResource(PathItem $data, string $path): Resource
+    private function parseResource(PathItem $data, string $path, OperationsInterface $operations): Operation
     {
-        $status   = Resource::STATUS_ACTIVE;
-        $resource = new Resource($status, $path);
-        $typePrefix = Inflection::generateTitleFromRoute($path);
-
-        $resource->setDescription($data->getDescription());
-
-        $this->parseUriParameters($resource, $data, $typePrefix);
-
         $methods = [
             'get' => $data->getGet(),
             'post' => $data->getPost(),
@@ -132,20 +125,21 @@ class OpenAPI implements ParserInterface
                 continue;
             }
 
-            $method = Resource\Factory::getMethod(strtoupper($methodName));
+            $return = $this->parseRequest($method, $operation->getRequestBody(), $typePrefix);
 
-            $method->setOperationId($operation->getOperationId());
-            $method->setDescription($operation->getSummary());
-            $method->setTags($operation->getTags() ?? []);
+            $result = new \PSX\Api\Operation(strtoupper($methodName), $path, $return);
 
+            $result->setDescription($operation->getSummary());
+            $result->setTags($operation->getTags() ?? []);
+
+            $result->setArguments();
+
+            $this->parseUriParameters($resource, $data, $typePrefix);
             $this->parseQueryParameters($method, $operation, $typePrefix);
-            $this->parseRequest($method, $operation->getRequestBody(), $typePrefix);
             $this->parseResponses($method, $operation, $typePrefix);
 
-            $resource->addMethod($method);
+            $operations->add($operation->getOperationId(), $result);
         }
-
-        return $resource;
     }
 
     /**

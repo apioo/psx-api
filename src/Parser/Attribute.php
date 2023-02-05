@@ -21,18 +21,18 @@
 namespace PSX\Api\Parser;
 
 use PSX\Api\Attribute as Attr;
+use PSX\Api\Operation;
 use PSX\Api\Parser\Attribute\Meta;
 use PSX\Api\ParserInterface;
-use PSX\Api\Resource;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\Type\NumberType;
 use PSX\Schema\Type\ScalarType;
 use PSX\Schema\Type\StringType;
-use PSX\Schema\Type\StructType;
 use PSX\Schema\Type\TypeAbstract;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
@@ -104,22 +104,9 @@ class Attribute implements ParserInterface
 
             $typePrefix = str_replace('\\', '_', $controller->getName()) . '_' . $method->getName();
 
-            if ($specification->getResourceCollection()->has($path)) {
-                $resource = $specification->getResourceCollection()->get($path);
-            } else {
-                $specification->getResourceCollection()->set($resource = new Resource(Resource::STATUS_ACTIVE, $path));
-
-                $description = $rootMeta->getDescription();
-                if ($description instanceof Attr\Description) {
-                    $resource->setDescription($this->resolveDescription($description));
-                }
-
-                $pathType = $this->getParamType($meta->getPathParams());
-                if ($pathType instanceof StructType) {
-                    $typeName = $typePrefix . '_Path';
-                    $specification->getDefinitions()->addType($typeName, $pathType);
-                    $resource->setPathParameters($typeName);
-                }
+            $operationId = $this->buildOperationId($controller->getName(), $method->getName());
+            if ($specification->getOperations()->has($operationId)) {
+                continue;
             }
 
             if (!$meta->hasMethod()) {
@@ -135,6 +122,8 @@ class Attribute implements ParserInterface
 
             // if we have no incoming attribute we parse it from the type hint of the first parameter
             if (!$meta->hasIncoming()) {
+                // @TODO use all arguments
+                /*
                 $firstParameter = $method->getParameters()[0] ?? null;
                 if ($firstParameter instanceof \ReflectionParameter) {
                     $schema = $this->getSchemaFromTypeHint($firstParameter->getType());
@@ -142,6 +131,7 @@ class Attribute implements ParserInterface
                         $meta->setIncoming(new Attr\Incoming($schema));
                     }
                 }
+                */
             }
 
             // if we have no outgoing attribute we parse it from the return type hint
@@ -152,13 +142,40 @@ class Attribute implements ParserInterface
                 }
             }
 
-            $resource->addMethod($this->parseMethod(
-                $httpMethod,
-                $meta,
-                $specification->getDefinitions(),
-                $typePrefix,
-                $basePath
-            ));
+            $return = $this->getReturn($meta, $specification->getDefinitions(), $basePath, $typePrefix);
+            if (!$return instanceof Operation\Response) {
+                throw new \RuntimeException('Method ' . $controller->getName() . '::' . $method->getName() . ' has not defined a successful response');
+            }
+
+            $operation = new Operation($httpMethod, $path, $return);
+            $operation->setArguments($this->getArguments($meta, $specification->getDefinitions(), $basePath, $typePrefix));
+
+            $throws = $this->getThrows($meta, $specification->getDefinitions(), $basePath, $typePrefix);
+            if (count($throws) > 0) {
+                $operation->setThrows($throws);
+            }
+
+            if ($meta->getDescription() instanceof Attr\Description) {
+                $operation->setDescription($this->resolveDescription($meta->getDescription()));
+            }
+
+            if ($meta->getDeprecated() instanceof Attr\Deprecated) {
+                $operation->setDeprecated($meta->getDeprecated()->deprecated);
+            }
+
+            if ($meta->getTags() instanceof Attr\Tags) {
+                $operation->setTags($meta->getTags()->tags);
+            }
+
+            if ($meta->getAuthorization() instanceof Attr\Authorization) {
+                $operation->setAuthorization($meta->getAuthorization()->authorization);
+            }
+
+            if ($meta->getSecurity() instanceof Attr\Security) {
+                $operation->setSecurity($meta->getSecurity()->scopes);
+            }
+
+            $specification->getOperations()->add($operationId, $operation);
         }
     }
 
@@ -166,58 +183,84 @@ class Attribute implements ParserInterface
      * @throws \PSX\Api\Exception\InvalidMethodException
      * @throws \PSX\Schema\Exception\InvalidSchemaException
      */
-    private function parseMethod(string $httpMethod, Meta $meta, DefinitionsInterface $definitions, string $typePrefix, string $basePath): Resource\MethodAbstract
+    private function getArguments(Meta $meta, DefinitionsInterface $definitions, string $basePath, string $typePrefix): array
     {
-        $method = Resource\Factory::getMethod($httpMethod);
+        $arguments = [];
 
-        if ($meta->getOperationId() instanceof Attr\OperationId) {
-            $method->setOperationId($meta->getOperationId()->operationId);
-        } else {
-            $method->setOperationId($typePrefix);
+        foreach ($meta->getPathParams() as $attribute) {
+            if (!$attribute instanceof Attr\ParamAbstract) {
+                continue;
+            }
+
+            $arguments[] = new Operation\Argument('path', $this->getParameter($attribute));
         }
 
-        if ($meta->getDescription() instanceof Attr\Description) {
-            $method->setDescription($this->resolveDescription($meta->getDescription()));
-        }
+        foreach ($meta->getQueryParams() as $attribute) {
+            if (!$attribute instanceof Attr\ParamAbstract) {
+                continue;
+            }
 
-        $typePrefix = $typePrefix . '_' . $httpMethod;
-
-        $queryType = $this->getParamType($meta->getQueryParams());
-        if ($queryType instanceof StructType) {
-            $typeName = $typePrefix . '_Query';
-            $definitions->addType($typeName, $queryType);
-            $method->setQueryParameters($typeName);
+            $arguments[] = new Operation\Argument('query', $this->getParameter($attribute));
         }
 
         if ($meta->getIncoming() instanceof Attr\Incoming) {
             $schema = $this->getBodySchema($meta->getIncoming(), $definitions, $basePath, $typePrefix . '_Request');
-            if (!empty($schema)) {
-                $method->setRequest($schema);
-            }
+
+            $arguments[] = new Operation\Argument('body', $schema);
         }
 
-        foreach ($meta->getOutgoing() as $outgoing) {
-            $schema = $this->getBodySchema($outgoing, $definitions, $basePath, $typePrefix . '_' . $outgoing->code . '_Response');
-            if (!empty($schema)) {
-                $method->addResponse($outgoing->code, $schema);
-            }
+        return $arguments;
+    }
+
+    private function getReturn(Meta $meta, DefinitionsInterface $definitions, string $basePath, string $typePrefix): ?Operation\Response
+    {
+        $responses = $this->getResponsesInRange($meta, 200, 300);
+        $response = $responses[0] ?? null;
+
+        if (!$response instanceof Attr\Outgoing) {
+            return null;
         }
 
-        if ($meta->getTags() instanceof Attr\Tags) {
-            $method->setTags($meta->getTags()->tags);
-        }
+        $schema = $this->getBodySchema($response, $definitions, $basePath, $typePrefix . '_' . $response->code . '_Response');
 
-        if ($meta->getSecurity() instanceof Attr\Security) {
-            $method->setSecurity($meta->getSecurity()->name, $meta->getSecurity()->scopes);
-        }
-
-        return $method;
+        return new Operation\Response($response->code, $schema);
     }
 
     /**
-     * @throws \PSX\Schema\Exception\InvalidSchemaException
+     * @return Operation\Response[]
      */
-    private function getBodySchema(Attr\SchemaAbstract $annotation, DefinitionsInterface $definitions, string $basePath, string $typeName): string
+    private function getThrows(Meta $meta, DefinitionsInterface $definitions, string $basePath, string $typePrefix): array
+    {
+        $throws = [];
+
+        $responses = $this->getResponsesInRange($meta, 400, 600);
+        foreach ($responses as $response) {
+            $schema = $this->getBodySchema($response, $definitions, $basePath, $typePrefix . '_' . $response->code . '_Response');
+
+            $throws[] = new Operation\Response($response->code, $schema);
+        }
+
+        return $throws;
+    }
+
+    /**
+     * @return Attr\Outgoing[]
+     */
+    public function getResponsesInRange(Meta $meta, int $start, int $end): array
+    {
+        $result = [];
+        foreach ($meta->getOutgoing() as $outgoing) {
+            if ($outgoing->code >= $start && $outgoing->code < $end) {
+                $result[] = $outgoing;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @throws InvalidSchemaException
+     */
+    private function getBodySchema(Attr\SchemaAbstract $annotation, DefinitionsInterface $definitions, string $basePath, string $typeName): TypeInterface
     {
         $schema = $annotation->schema;
         $type   = $annotation->type;
@@ -234,62 +277,20 @@ class Attribute implements ParserInterface
 
         $definitions->addSchema($typeName, $schema);
 
-        return $typeName;
+        return $schema->getType();
     }
 
     /**
-     * @throws \PSX\Schema\Exception\InvalidSchemaException
-     */
-    private function getParamType(array $params): ?StructType
-    {
-        if (empty($params)) {
-            return null;
-        }
-
-        $required = [];
-        $struct = TypeFactory::getStruct();
-        foreach ($params as $attribute) {
-            if (!$attribute instanceof Attr\ParamAbstract) {
-                continue;
-            }
-
-            if ($attribute->required) {
-                $required[] = $attribute->name;
-            }
-
-            $struct->addProperty($attribute->name, $this->getParameter($attribute));
-        }
-
-        if (!empty($required)) {
-            $struct->setRequired($required);
-        }
-
-        return $struct;
-    }
-
-    /**
-     * @throws \PSX\Schema\Exception\InvalidSchemaException
+     * @throws InvalidSchemaException
      */
     private function getParameter(Attr\ParamAbstract $param): TypeInterface
     {
-        switch ($param->type) {
-            case 'integer':
-                $type = TypeFactory::getInteger();
-                break;
-
-            case 'number':
-                $type = TypeFactory::getNumber();
-                break;
-
-            case 'boolean':
-                $type = TypeFactory::getBoolean();
-                break;
-
-            case 'string':
-            default:
-                $type = TypeFactory::getString();
-                break;
-        }
+        $type = match ($param->type) {
+            TypeAbstract::TYPE_INTEGER => TypeFactory::getInteger(),
+            TypeAbstract::TYPE_NUMBER => TypeFactory::getNumber(),
+            TypeAbstract::TYPE_BOOLEAN => TypeFactory::getBoolean(),
+            default => TypeFactory::getString(),
+        };
 
         if ($type instanceof TypeAbstract) {
             $description = $param->description;
@@ -366,5 +367,83 @@ class Attribute implements ParserInterface
         }
 
         return null;
+    }
+
+    /*
+    private function getArgumentAttributeForProperty(\ReflectionParameter $parameter): ?Attr\Argument
+    {
+        $attributes = $parameter->getAttributes();
+        foreach ($attributes as $attribute) {
+            $instance = $attribute->newInstance();
+            if ($instance instanceof Attr\Argument) {
+                return $instance;
+            }
+        }
+
+        return null;
+    }
+
+    private function getTypeFromType(\ReflectionType $type, DefinitionsInterface $definitions, string &$in): ?TypeInterface
+    {
+        if (!$type instanceof \ReflectionNamedType) {
+            return null;
+        }
+
+        $return = match ($type->getName()) {
+            'string' => TypeFactory::getString(),
+            'int' => TypeFactory::getInteger(),
+            'float' => TypeFactory::getNumber(),
+            'bool' => TypeFactory::getBoolean(),
+            'mixed' => TypeFactory::getAny(),
+            'resource' => TypeFactory::getBinary(),
+            DateTime::class, \DateTimeInterface::class, \DateTimeImmutable::class, \DateTime::class => TypeFactory::getDateTime(),
+            Date::class => TypeFactory::getDate(),
+            Time::class => TypeFactory::getTime(),
+            Duration::class, \DateInterval::class => TypeFactory::getDuration(),
+            Uri::class => TypeFactory::getUri(),
+            default => null,
+        };
+
+        if ($return === null) {
+            if (enum_exists($type->getName())) {
+                $type = $this->getTypeFromEnum(new \ReflectionEnum($type->getName()), $definitions);
+            } elseif (class_exists($type->getName())) {
+                $in = 'body';
+                $type = $this->getTypeFromClass(new ReflectionClass($type->getName()), $definitions);
+            }
+        }
+
+        if ($return !== null) {
+            $return->setNullable($type->allowsNull());
+        }
+
+        return $return;
+    }
+
+    private function getTypeFromEnum(\ReflectionEnum $enum, DefinitionsInterface $definitions): TypeInterface
+    {
+        if ($enum->isBacked()) {
+            $type = $this->getTypeFromType($enum->getBackingType(), $definitions, $in);
+        } else {
+            $type = TypeFactory::getString();
+        }
+
+        $values = [];
+        $cases = $enum->getCases();
+        foreach ($cases as $case) {
+            if ($case instanceof \ReflectionEnumBackedCase) {
+                $values[] = $case->getBackingValue();
+            } elseif ($case instanceof \ReflectionEnumUnitCase) {
+                $values[] = $case->getName();
+            }
+        }
+
+        return $type->setEnum($values);
+    }
+    */
+
+    private function buildOperationId(string $controllerName, string $methodName): string
+    {
+        return str_replace('\\', '.', $controllerName . '.' . $methodName);
     }
 }

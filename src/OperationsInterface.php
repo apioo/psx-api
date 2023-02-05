@@ -18,21 +18,34 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Attribute;
+namespace PSX\Api;
 
-use Attribute;
+use PSX\Api\Exception\OperationNotFoundException;
 
 /**
- * Security
+ * OperationsInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
-class Security
+interface OperationsInterface
 {
-    public function __construct(public array $scopes)
-    {
-    }
+    public function add(string $name, OperationInterface $type): void;
+
+    public function has(string $name): bool;
+
+    /**
+     * @throws OperationNotFoundException
+     */
+    public function get(string $name): OperationInterface;
+
+    /**
+     * @return array<OperationInterface>
+     */
+    public function getAll(): iterable;
+
+    public function remove(string $name): void;
+
+    public function merge(OperationsInterface $operations): void;
 }
