@@ -23,10 +23,9 @@ namespace PSX\Api\Tests\Parser\Attribute;
 use PSX\Api\Attribute\Description;
 use PSX\Api\Attribute\Incoming;
 use PSX\Api\Attribute\Outgoing;
+use PSX\Api\Attribute\Path;
 use PSX\Api\Attribute\PathParam;
 use PSX\Api\Attribute\QueryParam;
-use PSX\Api\DocumentedInterface;
-use PSX\Api\SpecificationInterface;
 
 /**
  * TestController
@@ -36,6 +35,7 @@ use PSX\Api\SpecificationInterface;
  * @link    https://phpsx.org
  */
 #[Description('Test description')]
+#[Path('/foo')]
 #[PathParam(name: 'fooId', type: 'string', required: true)]
 class TestController
 {

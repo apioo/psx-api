@@ -79,17 +79,17 @@ abstract class ListingTestCase extends TestCase
         $specification = $listing->find('/foo');
 
         $this->assertInstanceOf(SpecificationInterface::class, $specification);
-        $this->assertEquals('/foo', $specification->getResourceCollection()->get('/foo')->getPath());
+        $this->assertEquals('/foo', $specification->getOperations()->get('/foo')->getPath());
 
         $specification = $listing->find('/foo');
 
         $this->assertInstanceOf(SpecificationInterface::class, $specification);
-        $this->assertEquals('/foo', $specification->getResourceCollection()->get('/foo')->getPath());
+        $this->assertEquals('/foo', $specification->getOperations()->get('/foo')->getPath());
 
         $specification = $listing->find('/bar');
 
         $this->assertInstanceOf(SpecificationInterface::class, $specification);
-        $this->assertEquals('/bar', $specification->getResourceCollection()->get('/bar')->getPath());
+        $this->assertEquals('/bar', $specification->getOperations()->get('/bar')->getPath());
     }
 
     public function testFindAll()
@@ -98,16 +98,16 @@ abstract class ListingTestCase extends TestCase
         $specification = $listing->findAll();
 
         $this->assertInstanceOf(SpecificationInterface::class, $specification);
-        $this->assertEquals(2, $specification->getResourceCollection()->count());
-        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/foo'));
-        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/bar'));
+        $this->assertEquals(2, $specification->getOperations()->count());
+        $this->assertInstanceOf(Resource::class, $specification->getOperations()->get('/foo'));
+        $this->assertInstanceOf(Resource::class, $specification->getOperations()->get('/bar'));
 
         $specification = $listing->findAll();
 
         $this->assertInstanceOf(SpecificationInterface::class, $specification);
-        $this->assertEquals(2, $specification->getResourceCollection()->count());
-        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/foo'));
-        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/bar'));
+        $this->assertEquals(2, $specification->getOperations()->count());
+        $this->assertInstanceOf(Resource::class, $specification->getOperations()->get('/foo'));
+        $this->assertInstanceOf(Resource::class, $specification->getOperations()->get('/bar'));
     }
 
     public function testFindAllFilter()
@@ -116,14 +116,14 @@ abstract class ListingTestCase extends TestCase
         $specification = $listing->findAll(null, new RegxpFilter('^/foo'));
 
         $this->assertInstanceOf(SpecificationInterface::class, $specification);
-        $this->assertEquals(1, $specification->getResourceCollection()->count());
-        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/foo'));
+        $this->assertEquals(1, $specification->getOperations()->count());
+        $this->assertInstanceOf(Resource::class, $specification->getOperations()->get('/foo'));
 
         $specification = $listing->findAll(null, new RegxpFilter('^/bar'));
 
         $this->assertInstanceOf(SpecificationInterface::class, $specification);
-        $this->assertEquals(1, $specification->getResourceCollection()->count());
-        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/bar'));
+        $this->assertEquals(1, $specification->getOperations()->count());
+        $this->assertInstanceOf(Resource::class, $specification->getOperations()->get('/bar'));
     }
 
     /**

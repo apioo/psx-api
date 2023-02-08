@@ -21,6 +21,7 @@
 namespace PSX\Api\Tests\Parser\Attribute;
 
 use PSX\Api\Attribute\Description;
+use PSX\Api\Attribute\Path;
 use PSX\Api\Attribute\Post;
 use PSX\Api\Tests\Parser\Model\Incoming;
 use PSX\Api\Tests\Parser\Model\Outgoing;
@@ -33,6 +34,7 @@ use PSX\Api\Tests\Parser\Model\Outgoing;
  * @link    https://phpsx.org
  */
 #[Description('Bar endpoint')]
+#[Path('/foo')]
 class BarController
 {
     #[Post]

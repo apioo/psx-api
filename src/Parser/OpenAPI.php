@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Parser;
 
+use PSX\Api\Exception\ParserException;
 use PSX\Api\Operations;
 use PSX\Api\OperationsInterface;
 use PSX\Api\ParserInterface;
@@ -47,6 +48,7 @@ use PSX\Model\OpenAPI\Reference;
 use PSX\Model\OpenAPI\RequestBody;
 use PSX\Model\OpenAPI\Response;
 use PSX\Model\OpenAPI\Responses;
+use PSX\Model\OpenAPI\SecurityRequirement;
 use PSX\Model\OpenAPI\SecurityScheme;
 use PSX\Model\OpenAPI\SecuritySchemes;
 use PSX\Schema\DefinitionsInterface;
@@ -84,22 +86,29 @@ class OpenAPI implements ParserInterface
     /**
      * @inheritdoc
      */
-    public function parse(string $schema, ?string $path = null): SpecificationInterface
+    public function parse(string $schema): SpecificationInterface
     {
-        $this->parseOpenAPI($schema);
+        $data = Parser::decode($schema);
+        if (!$data instanceof \stdClass) {
+            throw new ParserException('Provided schema must be an object');
+        }
+
+        return $this->parseObject($data);
+    }
+
+    public function parseObject(\stdClass $data): SpecificationInterface
+    {
+        // create a schema based on the open API models
+        $parser = new SchemaParser\Popo();
+        $schema = $parser->parse(OpenAPIModel::class);
+
+        $this->definitions = $this->schemaParser->parseSchema($data)->getDefinitions();
+        $this->document    = (new SchemaTraverser())->traverse($data, $schema, new TypeVisitor());
 
         $operations = new Operations();
 
-        if ($path !== null) {
-            $path = Inflection::convertPlaceholderToCurly($path);
-        }
-
         $paths = $this->document->getPaths();
         foreach ($paths as $key => $spec) {
-            if ($path !== null && $path !== $key) {
-                continue;
-            }
-
             $this->parseResource($spec, Inflection::convertPlaceholderToColon($key), $operations);
         }
 
@@ -129,14 +138,30 @@ class OpenAPI implements ParserInterface
 
             $result = new \PSX\Api\Operation(strtoupper($methodName), $path, $return);
 
-            $result->setDescription($operation->getSummary());
-            $result->setTags($operation->getTags() ?? []);
-
             $result->setArguments();
 
             $this->parseUriParameters($resource, $data, $typePrefix);
             $this->parseQueryParameters($method, $operation, $typePrefix);
             $this->parseResponses($method, $operation, $typePrefix);
+
+            if ($operation->getSummary() !== null) {
+                $result->setDescription($operation->getSummary());
+            }
+
+            if ($operation->getDeprecated() !== null) {
+                $result->setDeprecated($operation->getDeprecated());
+            }
+
+            if ($operation->getSecurity() !== null) {
+                $scopes = $this->getFirstSecurityScopes($operation->getSecurity());
+                if ($scopes !== null) {
+                    $result->setSecurity($scopes);
+                }
+            }
+
+            if ($operation->getTags() !== null) {
+                $result->setTags($operation->getTags());
+            }
 
             $operations->add($operation->getOperationId(), $result);
         }
@@ -385,20 +410,27 @@ class OpenAPI implements ParserInterface
 
     private function parseOpenAPI(string $data): void
     {
-        $data = Parser::decode($data);
 
-        // create a schema based on the open API models
-        $parser = new SchemaParser\Popo();
-        $schema = $parser->parse(OpenAPIModel::class);
 
-        $this->definitions = $this->schemaParser->parseSchema($data)->getDefinitions();
-        $this->document    = (new SchemaTraverser())->traverse($data, $schema, new TypeVisitor());
     }
 
-    public static function fromFile(string $file, ?string $path = null): SpecificationInterface
+    private function getFirstSecurityScopes(array $security): ?array
+    {
+        foreach ($security as $securityRequirement) {
+            $properties = $securityRequirement->getProperties();
+            $scopes = reset($properties);
+            if (is_array($scopes)) {
+                return $scopes;
+            }
+        }
+
+        return null;
+    }
+
+    public static function fromFile(string $file): SpecificationInterface
     {
         if (empty($file) || !is_file($file)) {
-            throw new RuntimeException('Could not load OpenAPI schema ' . $file);
+            throw new ParserException('Could not load OpenAPI schema ' . $file);
         }
 
         $extension = pathinfo($file, PATHINFO_EXTENSION);
@@ -411,6 +443,6 @@ class OpenAPI implements ParserInterface
         $basePath = pathinfo($file, PATHINFO_DIRNAME);
         $parser   = new OpenAPI($basePath);
 
-        return $parser->parse($data, $path);
+        return $parser->parse($data);
     }
 }

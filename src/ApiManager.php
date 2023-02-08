@@ -24,9 +24,12 @@ use Doctrine\Common\Annotations\Reader;
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\Builder\SpecificationBuilder;
 use PSX\Api\Builder\SpecificationBuilderInterface;
+use PSX\Api\Exception\ParserException;
 use PSX\Api\Parser\OpenAPI;
+use PSX\Api\Parser\TypeAPI;
 use PSX\Schema\SchemaManagerInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * ApiManager
@@ -39,6 +42,7 @@ class ApiManager implements ApiManagerInterface
 {
     public const TYPE_ATTRIBUTE = 1;
     public const TYPE_OPENAPI = 2;
+    public const TYPE_TYPEAPI = 3;
 
     private SchemaManagerInterface $schemaManager;
     private Parser\Attribute $attributeParser;
@@ -53,7 +57,7 @@ class ApiManager implements ApiManagerInterface
         $this->debug = $debug;
     }
 
-    public function getApi(string $source, ?string $path, ?int $type = null): SpecificationInterface
+    public function getApi(string $source, ?int $type = null): SpecificationInterface
     {
         $item = null;
         if (!$this->debug) {
@@ -63,16 +67,40 @@ class ApiManager implements ApiManagerInterface
             }
         }
 
-        if ($type === null) {
-            $type = $this->guessTypeFromSource($source);
+        $data = null;
+        if (class_exists($source)) {
+            $type = self::TYPE_ATTRIBUTE;
+        } elseif (is_file($source)) {
+            $extension = pathinfo($source, PATHINFO_EXTENSION);
+            if (in_array($extension, ['yaml', 'yml'])) {
+                $data = json_decode(json_encode(Yaml::parse(file_get_contents($source))));
+            } else {
+                $data = json_decode(file_get_contents($source));
+            }
+
+            if (!$data instanceof \stdClass) {
+                throw new ParserException('Provided source must be an JSON or YAML file containing an object');
+            }
+
+            if (isset($data->paths)) {
+                $type = self::TYPE_OPENAPI;
+            } elseif (isset($data->operations)) {
+                $type = self::TYPE_TYPEAPI;
+            } else {
+                throw new ParserException('Could not detect schema format of the provided source ' . $source);
+            }
+        } else {
+            throw new ParserException('Provided source must be either a class or a file');
         }
 
         if ($type === self::TYPE_OPENAPI) {
-            $api = OpenAPI::fromFile($source, $path);
+            $api = (new OpenAPI())->parseObject($data);
+        } elseif ($type === self::TYPE_TYPEAPI) {
+            $api = (new TypeAPI())->parseObject($data);
         } elseif ($type === self::TYPE_ATTRIBUTE) {
-            $api = $this->attributeParser->parse($source, $path);
+            $api = $this->attributeParser->parse($source);
         } else {
-            throw new \RuntimeException('Schema ' . $source . ' does not exist');
+            throw new ParserException('Schema ' . $source . ' does not exist');
         }
 
         if (!$this->debug && $item !== null) {
@@ -88,12 +116,33 @@ class ApiManager implements ApiManagerInterface
         return new SpecificationBuilder($this->schemaManager);
     }
 
-    private function guessTypeFromSource($source): ?int
+    private function guessTypeFromSource(string $source): ?int
     {
         if (class_exists($source)) {
             return self::TYPE_ATTRIBUTE;
-        } else {
-            return self::TYPE_OPENAPI;
         }
+
+        if (is_file($source)) {
+            $extension = pathinfo($source, PATHINFO_EXTENSION);
+            if (in_array($extension, ['yaml', 'yml'])) {
+                $data = json_decode(json_encode(Yaml::parse(file_get_contents($source))));
+            } else {
+                $data = json_decode(file_get_contents($source));
+            }
+
+            if (!$data instanceof \stdClass) {
+                throw new ParserException('Provided source must be an JSON or YAML file containing an object');
+            }
+
+            if (isset($data->paths)) {
+                return self::TYPE_OPENAPI;
+            } elseif (isset($data->operations)) {
+                return self::TYPE_TYPEAPI;
+            } else {
+                throw new ParserException('Could not detect schema format of the provided source ' . $source);
+            }
+        }
+
+        throw new ParserException('Provided source must be either a class or a file');
     }
 }

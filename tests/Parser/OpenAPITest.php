@@ -50,7 +50,7 @@ class OpenAPITest extends ParserTestCase
     {
         $specification = OpenAPI::fromFile(__DIR__ . '/openapi/complex.json', '/foo');
 
-        $resource = $specification->getResourceCollection()->get('/foo');
+        $resource = $specification->getOperations()->get('/foo');
         $definitions = $specification->getDefinitions();
 
         $this->assertEquals('/foo', $resource->getPath());
@@ -92,14 +92,14 @@ class OpenAPITest extends ParserTestCase
     {
         $specification = OpenAPI::fromFile(__DIR__ . '/openapi/test.json', '/foo/:fooId');
 
-        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/foo/:fooId'));
+        $this->assertInstanceOf(Resource::class, $specification->getOperations()->get('/foo/:fooId'));
     }
 
     public function testParseInvalidPath()
     {
         $specification = OpenAPI::fromFile(__DIR__ . '/openapi/test.json', '/test');
 
-        $this->assertEquals(0, count($specification->getResourceCollection()));
+        $this->assertEquals(0, count($specification->getOperations()));
     }
 
     public function testParseAll()
@@ -107,7 +107,7 @@ class OpenAPITest extends ParserTestCase
         $parser = new OpenAPI(__DIR__ . '/openapi');
         $specification = $parser->parse(file_get_contents(__DIR__ . '/openapi/simple.json'));
 
-        $this->assertInstanceOf(ResourceCollection::class, $specification->getResourceCollection());
-        $this->assertEquals(['/foo'], array_keys($specification->getResourceCollection()->getArrayCopy()));
+        $this->assertInstanceOf(ResourceCollection::class, $specification->getOperations());
+        $this->assertEquals(['/foo'], array_keys($specification->getOperations()->getArrayCopy()));
     }
 }

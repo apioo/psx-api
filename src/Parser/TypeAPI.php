@@ -20,17 +20,22 @@
 
 namespace PSX\Api\Parser;
 
+use PSX\Api\Attribute\Security;
 use PSX\Api\Exception\InvalidOperationException;
+use PSX\Api\Exception\ParserException;
 use PSX\Api\Operation;
 use PSX\Api\Operations;
 use PSX\Api\OperationsInterface;
 use PSX\Api\ParserInterface;
+use PSX\Api\SecurityInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Json\Parser;
 use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Parser as SchemaParser;
 use PSX\Schema\TypeFactory;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * TypeAPI
@@ -52,10 +57,23 @@ class TypeAPI implements ParserInterface
         $this->schemaParser = new SchemaParser\TypeSchema(null, $basePath);
     }
 
-    public function parse(string $schema, ?string $path = null): SpecificationInterface
+    /**
+     * @throws ParserException
+     * @throws InvalidSchemaException
+     * @throws \JsonException
+     */
+    public function parse(string $schema): SpecificationInterface
     {
         $data = Parser::decode($schema);
+        if (!$data instanceof \stdClass) {
+            throw new ParserException('Provided schema must be an object');
+        }
 
+        return $this->parseObject($data);
+    }
+
+    public function parseObject(\stdClass $data): SpecificationInterface
+    {
         $schema = $this->schemaParser->parseSchema($data);
 
         $this->definitions = $schema->getDefinitions();
@@ -65,11 +83,17 @@ class TypeAPI implements ParserInterface
             $this->parseOperations($data->operations);
         }
 
-        return new Specification($this->operations, $this->definitions);
+        $security = null;
+        if (isset($data->security) && $data->security instanceof \stdClass) {
+            $security = $this->parseSecurity($data->security);
+        }
+
+        return new Specification($this->operations, $this->definitions, $security);
     }
 
     /**
-     * @throws InvalidOperationException
+     * @throws ParserException
+     * @throws InvalidSchemaException
      */
     private function parseOperations(\stdClass $operations): void
     {
@@ -80,29 +104,22 @@ class TypeAPI implements ParserInterface
         }
     }
 
+    /**
+     * @throws ParserException
+     * @throws InvalidSchemaException
+     */
     private function parseOperation(\stdClass $operation): Operation
     {
         $method = $operation->method ?? null;
         $path = $operation->path ?? null;
         $return = $operation->return ?? null;
 
-        $description = $operation->description ?? '';
-        $deprecated = $operation->deprecated ?? false;
-        $public = $operation->public ?? false;
-        $arguments = $operation->arguments ?? null;
-        $security = $operation->security ?? null;
-        $throws = $operation->throws ?? null;
-
-        if (empty($method) || empty($path)) {
-            throw new InvalidOperationException('');
+        if (empty($method) || !is_string($method)) {
+            throw new ParserException('Property "method" must be a string and not empty');
         }
 
-        if (!is_string($method)) {
-            throw new InvalidOperationException('');
-        }
-
-        if (!is_string($path)) {
-            throw new InvalidOperationException('');
+        if (empty($path) || !is_string($path)) {
+            throw new ParserException('Property "path" must be a string and not empty');
         }
 
         if (!$return instanceof \stdClass) {
@@ -110,23 +127,41 @@ class TypeAPI implements ParserInterface
         }
 
         $result = new Operation($method, $path, $this->parseReturn($return));
-        $result->setDescription($description);
-        $result->setDeprecated($deprecated);
-        $result->setAuthorization($public);
 
-        if ($arguments instanceof \stdClass) {
-            $result->setArguments($this->parseArguments($arguments));
+        if (isset($operation->arguments) && $operation->arguments instanceof \stdClass) {
+            $result->setArguments($this->parseArguments($operation->arguments));
         }
 
-        if (is_array($throws)) {
-            $result->setThrows($this->parseThrows($throws));
+        if (is_array($operation->throws ?? null)) {
+            $result->setThrows($this->parseThrows($operation->throws));
+        }
+
+        if (is_string($operation->description ?? null)) {
+            $result->setDescription($operation->description);
+        }
+
+        if (is_bool($operation->deprecated ?? null)) {
+            $result->setDeprecated($operation->deprecated);
+        }
+
+        if (is_array($operation->security ?? null)) {
+            $result->setSecurity($operation->security);
+        }
+
+        if (is_bool($operation->authorization ?? null)) {
+            $result->setAuthorization($operation->authorization);
+        }
+
+        if (is_array($operation->tags ?? null)) {
+            $result->setTags($operation->tags);
         }
 
         return $result;
     }
 
     /**
-     * @throws InvalidOperationException
+     * @throws ParserException
+     * @throws InvalidSchemaException
      */
     private function parseReturn(?\stdClass $data): Operation\Response
     {
@@ -138,7 +173,8 @@ class TypeAPI implements ParserInterface
     }
 
     /**
-     * @throws InvalidOperationException
+     * @throws ParserException
+     * @throws InvalidSchemaException
      */
     private function parseArguments(\stdClass $data): array
     {
@@ -152,23 +188,28 @@ class TypeAPI implements ParserInterface
         return $return;
     }
 
+    /**
+     * @throws ParserException
+     * @throws InvalidSchemaException
+     */
     private function parseArgument(\stdClass $data): Operation\Argument
     {
         $in = $data->in ?? null;
-        if (empty($in)) {
-            throw new InvalidOperationException('');
+        if (empty($in) || !is_string($in)) {
+            throw new ParserException('Property "in" must be a string and not empty');
         }
 
         $schema = $data->schema ?? null;
         if (!$schema instanceof \stdClass) {
-            throw new InvalidOperationException('');
+            throw new ParserException('Property "schema" must be an object');
         }
 
         return new Operation\Argument($in, $this->schemaParser->parseType($schema));
     }
 
     /**
-     * @throws InvalidOperationException
+     * @throws ParserException
+     * @throws InvalidSchemaException
      */
     private function parseThrows(array $data): array
     {
@@ -182,15 +223,64 @@ class TypeAPI implements ParserInterface
         return $return;
     }
 
+    /**
+     * @throws ParserException
+     * @throws InvalidSchemaException
+     */
     private function parseResponse(\stdClass $data): Operation\Response
     {
         $code = $data->code ?? 200;
+        if (empty($code) || !is_int($code)) {
+            throw new ParserException('Property "code" must be an int and not empty');
+        }
 
         $schema = $data->schema ?? null;
         if (!$schema instanceof \stdClass) {
-            throw new InvalidOperationException('');
+            throw new ParserException('Property "schema" must be an object');
         }
 
         return new Operation\Response($code, $this->schemaParser->parseType($schema));
+    }
+
+    private function parseSecurity(\stdClass $data): ?SecurityInterface
+    {
+        $type = $data->type ?? null;
+        if (!is_string($type)) {
+            return null;
+        }
+
+        $type = strtolower($type);
+        if ($type === 'http') {
+            $scheme = $data->scheme ?? null;
+
+        }
+        switch (strtolower($type)) {
+            case 'http':
+            case 'apikey':
+            case 'oauth2':
+                break;
+
+        }
+
+        return new Security();
+    }
+
+    public static function fromFile(string $file): SpecificationInterface
+    {
+        if (empty($file) || !is_file($file)) {
+            throw new ParserException('Could not load TypeAPI schema ' . $file);
+        }
+
+        $extension = pathinfo($file, PATHINFO_EXTENSION);
+        if (in_array($extension, ['yaml', 'yml'])) {
+            $data = json_encode(Yaml::parse(file_get_contents($file)));
+        } else {
+            $data = file_get_contents($file);
+        }
+
+        $basePath = pathinfo($file, PATHINFO_DIRNAME);
+        $parser   = new TypeAPI($basePath);
+
+        return $parser->parse($data);
     }
 }

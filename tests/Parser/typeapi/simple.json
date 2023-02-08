@@ -1,0 +1,108 @@
+{
+  "$import": {
+    "my_schema": "file:///../schema/schema.json"
+  },
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Simple API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/foo": {
+      "summary": "Test",
+      "description": "Test description",
+      "parameters": [{
+        "name": "fooId",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        }
+      }],
+      "get": {
+        "summary": "A long **Test** description",
+        "parameters": [{
+          "name": "foo",
+          "in": "query",
+          "schema": {
+            "description": "Test",
+            "type": "string"
+          }
+        }, {
+          "name": "bar",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }, {
+          "name": "baz",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": ["foo", "bar"]
+          }
+        }, {
+          "name": "boz",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "pattern": "[A-z]+"
+          }
+        }, {
+          "name": "integer",
+          "in": "query",
+          "schema": {
+            "type": "integer"
+          }
+        }, {
+          "name": "number",
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        }, {
+          "name": "date",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        }, {
+          "name": "boolean",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        }, {
+          "name": "string",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        }],
+        "requestBody": {
+          "description": "Request body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "my_schema:Song"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "my_schema:Song"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

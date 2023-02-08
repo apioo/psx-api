@@ -21,6 +21,9 @@
 namespace PSX\Api\Tests\Parser;
 
 use PSX\Api\ApiManager;
+use PSX\Api\Exception\ParserException;
+use PSX\Api\Operation;
+use PSX\Api\OperationInterface;
 use PSX\Api\Parser\Attribute as AttributeParser;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Attribute\BarController;
@@ -40,32 +43,35 @@ class AttributeTest extends ParserTestCase
      */
     protected function getSpecification(): SpecificationInterface
     {
-        return $this->apiManager->getApi(TestController::class, '/foo', ApiManager::TYPE_ATTRIBUTE);
+        return $this->apiManager->getApi(TestController::class, ApiManager::TYPE_ATTRIBUTE);
     }
 
     public function testOperationId()
     {
-        $specification = $this->apiManager->getApi(TestController::class, '/foo');
-        $resource = $specification->getResourceCollection()->get('/foo');
+        $specification = $this->apiManager->getApi(TestController::class);
+        $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.TestController.doGet');
 
-        $this->assertEquals('PSX_Api_Tests_Parser_Attribute_TestController_doGet', $resource->getMethod('GET')->getOperationId());
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals('A long **Test** description', $operation->getDescription());
     }
 
     public function testParseTypeHint()
     {
         $annotation = new AttributeParser($this->schemaManager);
-        $specification = $annotation->parse(BarController::class, '/foo');
-        $resource = $specification->getResourceCollection()->get('/foo');
+        $specification = $annotation->parse(BarController::class);
+        $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.BarController.myMethod');
 
-        $this->assertEquals('PSX_Api_Tests_Parser_Attribute_BarController_myMethod_POST_Request', $resource->getMethod('POST')->getRequest());
-        $this->assertEquals('PSX_Api_Tests_Parser_Attribute_BarController_myMethod_POST_200_Response', $resource->getMethod('POST')->getResponse(200));
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals([], $operation->getArguments());
+        $this->assertEquals(200, $operation->getReturn()->getCode());
+        $this->assertEquals(['$ref' => 'Outgoing'], $operation->getReturn()->getSchema()->toArray());
     }
 
     public function testParseInvalid()
     {
-        $this->expectException(\ReflectionException::class);
+        $this->expectException(ParserException::class);
 
         $annotation = new AttributeParser($this->schemaManager);
-        $annotation->parse('foo', '/foo');
+        $annotation->parse('foo');
     }
 }

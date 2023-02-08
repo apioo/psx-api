@@ -18,26 +18,15 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
-
-use PSX\Api\Builder\SpecificationBuilderInterface;
+namespace PSX\Api\Exception;
 
 /**
- * ApiManagerInterface
+ * ParserException
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-interface ApiManagerInterface
+class ParserException extends \Exception
 {
-    /**
-     * Returns the specification for the provided source
-     */
-    public function getApi(string $source, ?int $type = null): SpecificationInterface;
-
-    /**
-     * Returns a builder which helps to create a specification
-     */
-    public function getBuilder(): SpecificationBuilderInterface;
 }

@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Parser;
 
+use PSX\Api\OperationInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
 use PSX\Schema\Type\ReferenceType;
@@ -40,11 +41,13 @@ abstract class ParserTestCase extends ApiManagerTestCase
     {
         $specification = $this->getSpecification();
         $definitions = $specification->getDefinitions();
-        $resource = $specification->getResourceCollection()->get('/foo');
+        $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.TestController.doGet');
 
-        $this->assertEquals('/foo', $resource->getPath());
-        $this->assertEquals('Test description', $resource->getDescription());
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals('GET', $operation->getMethod());
+        $this->assertEquals('Test description', $operation->getDescription());
 
+        $arguments = $operation->getArguments();
         $path = $definitions->getType($resource->getPathParameters());
 
         $this->assertInstanceOf(TypeInterface::class, $path);

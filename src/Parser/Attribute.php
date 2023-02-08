@@ -21,6 +21,7 @@
 namespace PSX\Api\Parser;
 
 use PSX\Api\Attribute as Attr;
+use PSX\Api\Exception\ParserException;
 use PSX\Api\Operation;
 use PSX\Api\Parser\Attribute\Meta;
 use PSX\Api\ParserInterface;
@@ -63,28 +64,32 @@ class Attribute implements ParserInterface
     }
 
     /**
-     * @throws \PSX\Schema\Exception\InvalidSchemaException
-     * @throws \PSX\Api\Exception\InvalidMethodException
-     * @throws \ReflectionException
+     * @throws ParserException
      */
-    public function parse(string $schema, ?string $path = null): SpecificationInterface
+    public function parse(string $schema): SpecificationInterface
     {
-        $controller = new ReflectionClass($schema);
-        $basePath   = dirname($controller->getFileName());
+        try {
+            $controller = new ReflectionClass($schema);
+            $basePath   = dirname($controller->getFileName());
 
-        $rootMeta = Meta::fromAttributes($controller->getAttributes());
-        $specification = new Specification();
+            $rootMeta = Meta::fromAttributes($controller->getAttributes());
+            $specification = new Specification();
 
-        $this->parseMethods($controller, $specification, $basePath, $rootMeta, $path);
+            $this->parseMethods($controller, $specification, $basePath, $rootMeta);
 
-        return $specification;
+            return $specification;
+        } catch (\ReflectionException $e) {
+            throw new ParserException('Provided schema must be a valid class', 0, $e);
+        } catch (InvalidSchemaException $e) {
+            throw new ParserException('Provided an invalid schema', 0, $e);
+        }
     }
 
     /**
-     * @throws \PSX\Schema\Exception\InvalidSchemaException
-     * @throws \PSX\Api\Exception\InvalidMethodException
+     * @throws ParserException
+     * @throws InvalidSchemaException
      */
-    private function parseMethods(ReflectionClass $controller, SpecificationInterface $specification, string $basePath, Meta $rootMeta, ?string $path)
+    private function parseMethods(ReflectionClass $controller, SpecificationInterface $specification, string $basePath, Meta $rootMeta)
     {
         foreach ($controller->getMethods() as $method) {
             $meta = Meta::fromAttributes($method->getAttributes());
@@ -94,6 +99,7 @@ class Attribute implements ParserInterface
                 continue;
             }
 
+            $path = null;
             if ($meta->hasPath()) {
                 $path = $meta->getPath()->path;
             }
@@ -144,7 +150,7 @@ class Attribute implements ParserInterface
 
             $return = $this->getReturn($meta, $specification->getDefinitions(), $basePath, $typePrefix);
             if (!$return instanceof Operation\Response) {
-                throw new \RuntimeException('Method ' . $controller->getName() . '::' . $method->getName() . ' has not defined a successful response');
+                throw new ParserException('Method ' . $controller->getName() . '::' . $method->getName() . ' has not defined a successful response');
             }
 
             $operation = new Operation($httpMethod, $path, $return);
@@ -163,16 +169,16 @@ class Attribute implements ParserInterface
                 $operation->setDeprecated($meta->getDeprecated()->deprecated);
             }
 
-            if ($meta->getTags() instanceof Attr\Tags) {
-                $operation->setTags($meta->getTags()->tags);
+            if ($meta->getSecurity() instanceof Attr\Security) {
+                $operation->setSecurity($meta->getSecurity()->scopes);
             }
 
             if ($meta->getAuthorization() instanceof Attr\Authorization) {
                 $operation->setAuthorization($meta->getAuthorization()->authorization);
             }
 
-            if ($meta->getSecurity() instanceof Attr\Security) {
-                $operation->setSecurity($meta->getSecurity()->scopes);
+            if ($meta->getTags() instanceof Attr\Tags) {
+                $operation->setTags($meta->getTags()->tags);
             }
 
             $specification->getOperations()->add($operationId, $operation);
@@ -180,8 +186,7 @@ class Attribute implements ParserInterface
     }
 
     /**
-     * @throws \PSX\Api\Exception\InvalidMethodException
-     * @throws \PSX\Schema\Exception\InvalidSchemaException
+     * @throws InvalidSchemaException
      */
     private function getArguments(Meta $meta, DefinitionsInterface $definitions, string $basePath, string $typePrefix): array
     {
@@ -212,6 +217,9 @@ class Attribute implements ParserInterface
         return $arguments;
     }
 
+    /**
+     * @throws InvalidSchemaException
+     */
     private function getReturn(Meta $meta, DefinitionsInterface $definitions, string $basePath, string $typePrefix): ?Operation\Response
     {
         $responses = $this->getResponsesInRange($meta, 200, 300);
@@ -228,6 +236,7 @@ class Attribute implements ParserInterface
 
     /**
      * @return Operation\Response[]
+     * @throws InvalidSchemaException
      */
     private function getThrows(Meta $meta, DefinitionsInterface $definitions, string $basePath, string $typePrefix): array
     {
@@ -266,7 +275,7 @@ class Attribute implements ParserInterface
         $type   = $annotation->type;
 
         // if we have a file append base path
-        if (strpos($schema, '.') !== false) {
+        if (str_contains($schema, '.')) {
             $type = SchemaManager::TYPE_TYPESCHEMA;
             if (!is_file($schema)) {
                 $schema = $basePath . '/' . $schema;
@@ -341,6 +350,9 @@ class Attribute implements ParserInterface
         return $type;
     }
 
+    /**
+     * @throws ParserException
+     */
     private function resolveDescription(Attr\Description $attribute): string
     {
         $description = $attribute->description;
@@ -348,7 +360,7 @@ class Attribute implements ParserInterface
         if (str_starts_with($description, 'file://')) {
             $file = substr($description, 7);
             if (!is_file($file)) {
-                throw new \RuntimeException('Provided description file "' . $file . '" does not exist');
+                throw new ParserException('Provided description file "' . $file . '" does not exist');
             }
 
             return file_get_contents($file);

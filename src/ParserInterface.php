@@ -20,9 +20,10 @@
 
 namespace PSX\Api;
 
+use PSX\Api\Exception\ParserException;
+
 /**
- * The parser reads an arbitrary schema format and returns a specification
- * object
+ * The parser reads an arbitrary schema format and returns a specification object
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -33,9 +34,7 @@ interface ParserInterface
     /**
      * Parses a specification and returns a specification object
      *
-     * @param string $schema
-     * @param string|null $path
-     * @return SpecificationInterface
+     * @throws ParserException
      */
-    public function parse(string $schema, ?string $path = null): SpecificationInterface;
+    public function parse(string $schema): SpecificationInterface;
 }

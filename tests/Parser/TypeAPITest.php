@@ -18,26 +18,31 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
+namespace PSX\Api\Tests\Parser;
 
-use PSX\Api\Builder\SpecificationBuilderInterface;
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use PSX\Api\ApiManager;
+use PSX\Api\Parser\OpenAPI;
+use PSX\Api\Resource;
+use PSX\Api\ResourceCollection;
+use PSX\Api\SpecificationInterface;
+use PSX\Schema\Type\StructType;
+use PSX\Schema\TypeInterface;
 
 /**
- * ApiManagerInterface
+ * TypeAPITest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-interface ApiManagerInterface
+class TypeAPITest extends ParserTestCase
 {
     /**
-     * Returns the specification for the provided source
+     * @inheritDoc
      */
-    public function getApi(string $source, ?int $type = null): SpecificationInterface;
-
-    /**
-     * Returns a builder which helps to create a specification
-     */
-    public function getBuilder(): SpecificationBuilderInterface;
+    protected function getSpecification(): SpecificationInterface
+    {
+        return $this->apiManager->getApi(__DIR__ . '/typeapi/simple.json', null, ApiManager::TYPE_OPENAPI);
+    }
 }

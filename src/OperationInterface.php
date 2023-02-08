@@ -22,6 +22,8 @@ namespace PSX\Api;
 
 use ArrayIterator;
 use IteratorAggregate;
+use PSX\Api\Operation\Argument;
+use PSX\Api\Operation\Response;
 use PSX\Api\Resource\MethodAbstract;
 
 /**
@@ -33,5 +35,17 @@ use PSX\Api\Resource\MethodAbstract;
  */
 interface OperationInterface
 {
-
+    public function getMethod(): string;
+    public function getPath(): string;
+    public function getReturn(): Response;
+    public function getDescription(): string;
+    /**
+     * @return array<string, Argument>
+     */
+    public function getArguments(): array;
+    public function hasAuthorization(): bool;
+    public function getSecurity(): array;
+    public function isDeprecated(): bool;
+    public function getThrows(): array;
+    public function getTags(): array;
 }
