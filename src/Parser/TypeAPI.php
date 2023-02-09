@@ -176,12 +176,12 @@ class TypeAPI implements ParserInterface
      * @throws ParserException
      * @throws InvalidSchemaException
      */
-    private function parseArguments(\stdClass $data): array
+    private function parseArguments(\stdClass $data): Operation\Arguments
     {
-        $return = [];
+        $return = new Operation\Arguments();
         foreach ($data as $name => $argument) {
             if ($argument instanceof \stdClass) {
-                $return[$name] = $this->parseArgument($argument);
+                $return->add($name, $this->parseArgument($argument));
             }
         }
 

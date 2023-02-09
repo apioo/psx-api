@@ -18,18 +18,22 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
+namespace PSX\Api\Operation;
 
+use PSX\Api\Exception\ArgumentNotFoundException;
 use PSX\Api\Exception\OperationNotFoundException;
+use PSX\Api\OperationInterface;
+use PSX\Api\OperationsInterface;
+use PSX\Schema\TypeInterface;
 
 /**
- * Operations
+ * Arguments
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Operations implements OperationsInterface
+class Arguments
 {
     private array $container;
 
@@ -38,9 +42,9 @@ class Operations implements OperationsInterface
         $this->container = [];
     }
 
-    public function add(string $name, OperationInterface $operation): void
+    public function add(string $name, Argument $argument): void
     {
-        $this->container[$name] = $operation;
+        $this->container[$name] = $argument;
     }
 
     public function has(string $name): bool
@@ -48,14 +52,14 @@ class Operations implements OperationsInterface
         return isset($this->container[$name]);
     }
 
-    public function get(string $name): OperationInterface
+    public function get(string $name): Argument
     {
-        $operation = $this->container[$name] ?? null;
-        if (!$operation instanceof OperationInterface) {
-            throw new OperationNotFoundException('Provided operation name does not exist');
+        $argument = $this->container[$name] ?? null;
+        if (!$argument instanceof Argument) {
+            throw new ArgumentNotFoundException('Provided argument name does not exist');
         }
 
-        return $operation;
+        return $argument;
     }
 
     public function getAll(): array
@@ -70,8 +74,13 @@ class Operations implements OperationsInterface
         }
     }
 
-    public function merge(OperationsInterface $operations): void
+    public function isEmpty(): bool
     {
-        $this->container = array_merge($this->container, $operations->getAll());
+        return count($this->container) === 0;
+    }
+
+    public function merge(Arguments $arguments): void
+    {
+        $this->container = array_merge($this->container, $arguments->getAll());
     }
 }

@@ -21,6 +21,7 @@
 namespace PSX\Api;
 
 use PSX\Api\Operation\Argument;
+use PSX\Api\Operation\Arguments;
 use PSX\Api\Operation\Response;
 
 /**
@@ -37,7 +38,7 @@ class Operation implements OperationInterface
     private Response $return;
 
     private string $description = '';
-    private array $arguments = [];
+    private Arguments $arguments;
     private bool $authorization = true;
     private array $security = [];
     private bool $deprecated = false;
@@ -49,6 +50,7 @@ class Operation implements OperationInterface
         $this->method = $method;
         $this->path = $path;
         $this->return = $return;
+        $this->arguments = new Arguments();
     }
 
     public function getMethod(): string
@@ -91,18 +93,12 @@ class Operation implements OperationInterface
         $this->description = $description;
     }
 
-    /**
-     * @return array<string, Argument>
-     */
-    public function getArguments(): array
+    public function getArguments(): Arguments
     {
         return $this->arguments;
     }
 
-    /**
-     * @param array<string, Argument> $arguments
-     */
-    public function setArguments(array $arguments): void
+    public function setArguments(Arguments $arguments): void
     {
         $this->arguments = $arguments;
     }

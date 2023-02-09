@@ -31,7 +31,7 @@ use PSX\Api\Exception\OperationNotFoundException;
  */
 interface OperationsInterface
 {
-    public function add(string $name, OperationInterface $type): void;
+    public function add(string $name, OperationInterface $operation): void;
 
     public function has(string $name): bool;
 
@@ -43,7 +43,7 @@ interface OperationsInterface
     /**
      * @return array<OperationInterface>
      */
-    public function getAll(): iterable;
+    public function getAll(): array;
 
     public function remove(string $name): void;
 

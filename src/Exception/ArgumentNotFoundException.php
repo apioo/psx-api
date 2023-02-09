@@ -18,32 +18,15 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
-
-use ArrayIterator;
-use IteratorAggregate;
-use PSX\Api\Operation\Argument;
-use PSX\Api\Operation\Arguments;
-use PSX\Api\Operation\Response;
-use PSX\Api\Resource\MethodAbstract;
+namespace PSX\Api\Exception;
 
 /**
- * OperationInterface
+ * ArgumentNotFoundException
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-interface OperationInterface
+class ArgumentNotFoundException extends \Exception
 {
-    public function getMethod(): string;
-    public function getPath(): string;
-    public function getReturn(): Response;
-    public function getDescription(): string;
-    public function getArguments(): Arguments;
-    public function hasAuthorization(): bool;
-    public function getSecurity(): array;
-    public function isDeprecated(): bool;
-    public function getThrows(): array;
-    public function getTags(): array;
 }

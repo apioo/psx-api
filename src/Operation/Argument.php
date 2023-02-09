@@ -32,25 +32,25 @@ use PSX\Schema\TypeInterface;
 class Argument
 {
     private string $in;
-    private TypeInterface $type;
+    private TypeInterface $schema;
 
-    public function __construct(string $in, TypeInterface $type)
+    public function __construct(string $in, TypeInterface $schema)
     {
         if (!in_array($in, ['path', 'query', 'body'])) {
             throw new \InvalidArgumentException('Provided an invalid "in" value, must be path, query or body');
         }
 
         $this->in = $in;
-        $this->type = $type;
+        $this->schema = $schema;
     }
 
-    public function getIn(): int
+    public function getIn(): string
     {
         return $this->in;
     }
 
-    public function getType(): TypeInterface
+    public function getSchema(): TypeInterface
     {
-        return $this->type;
+        return $this->schema;
     }
 }

@@ -188,16 +188,16 @@ class Attribute implements ParserInterface
     /**
      * @throws InvalidSchemaException
      */
-    private function getArguments(Meta $meta, DefinitionsInterface $definitions, string $basePath, string $typePrefix): array
+    private function getArguments(Meta $meta, DefinitionsInterface $definitions, string $basePath, string $typePrefix): Operation\Arguments
     {
-        $arguments = [];
+        $arguments = new Operation\Arguments();
 
         foreach ($meta->getPathParams() as $attribute) {
             if (!$attribute instanceof Attr\ParamAbstract) {
                 continue;
             }
 
-            $arguments[] = new Operation\Argument('path', $this->getParameter($attribute));
+            $arguments->add($attribute->name, new Operation\Argument('path', $this->getParameter($attribute)));
         }
 
         foreach ($meta->getQueryParams() as $attribute) {
@@ -205,13 +205,13 @@ class Attribute implements ParserInterface
                 continue;
             }
 
-            $arguments[] = new Operation\Argument('query', $this->getParameter($attribute));
+            $arguments->add($attribute->name, new Operation\Argument('query', $this->getParameter($attribute)));
         }
 
         if ($meta->getIncoming() instanceof Attr\Incoming) {
             $schema = $this->getBodySchema($meta->getIncoming(), $definitions, $basePath, $typePrefix . '_Request');
 
-            $arguments[] = new Operation\Argument('body', $schema);
+            $arguments->add('payload', new Operation\Argument('body', $schema));
         }
 
         return $arguments;
