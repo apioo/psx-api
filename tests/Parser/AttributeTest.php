@@ -62,7 +62,7 @@ class AttributeTest extends ParserTestCase
         $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.BarController.myMethod');
 
         $this->assertInstanceOf(OperationInterface::class, $operation);
-        $this->assertEquals([], $operation->getArguments());
+        $this->assertTrue($operation->getArguments()->isEmpty());
         $this->assertEquals(200, $operation->getReturn()->getCode());
         $this->assertEquals(['$ref' => 'Outgoing'], $operation->getReturn()->getSchema()->toArray());
     }

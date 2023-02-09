@@ -43,6 +43,6 @@ class TypeAPITest extends ParserTestCase
      */
     protected function getSpecification(): SpecificationInterface
     {
-        return $this->apiManager->getApi(__DIR__ . '/typeapi/simple.json', null, ApiManager::TYPE_OPENAPI);
+        return $this->apiManager->getApi(__DIR__ . '/typeapi/simple.json', ApiManager::TYPE_TYPEAPI);
     }
 }

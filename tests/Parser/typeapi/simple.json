@@ -2,104 +2,90 @@
   "$import": {
     "my_schema": "file:///../schema/schema.json"
   },
-  "openapi": "3.0.0",
-  "info": {
-    "title": "Simple API",
-    "version": "1.0.0"
-  },
-  "paths": {
-    "/foo": {
-      "summary": "Test",
-      "description": "Test description",
-      "parameters": [{
-        "name": "fooId",
-        "in": "path",
+  "operations": {
+    "PSX.Api.Tests.Parser.Attribute.TestController.doGet": {
+      "description": "A long **Test** description",
+      "method": "GET",
+      "path": "/foo",
+      "return": {
+        "code": 200,
         "schema": {
-          "type": "string"
+          "$ref": "my_schema:Song"
         }
-      }],
-      "get": {
-        "summary": "A long **Test** description",
-        "parameters": [{
-          "name": "foo",
+      },
+      "arguments": {
+        "fooId": {
+          "in": "path",
+          "schema": {
+            "type": "string"
+          }
+        },
+        "foo": {
           "in": "query",
           "schema": {
             "description": "Test",
             "type": "string"
           }
-        }, {
-          "name": "bar",
+        },
+        "bar": {
           "in": "query",
           "required": true,
           "schema": {
             "type": "string"
           }
-        }, {
-          "name": "baz",
+        },
+        "baz": {
           "in": "query",
           "schema": {
             "type": "string",
-            "enum": ["foo", "bar"]
+            "enum": [
+              "foo",
+              "bar"
+            ]
           }
-        }, {
-          "name": "boz",
+        },
+        "boz": {
           "in": "query",
           "schema": {
             "type": "string",
             "pattern": "[A-z]+"
           }
-        }, {
-          "name": "integer",
+        },
+        "integer": {
           "in": "query",
           "schema": {
             "type": "integer"
           }
-        }, {
-          "name": "number",
+        },
+        "number": {
           "in": "query",
           "schema": {
             "type": "number"
           }
-        }, {
-          "name": "date",
+        },
+        "date": {
           "in": "query",
           "schema": {
             "type": "string",
             "format": "date"
           }
-        }, {
-          "name": "boolean",
+        },
+        "boolean": {
           "in": "query",
           "schema": {
             "type": "boolean"
           }
-        }, {
-          "name": "string",
+        },
+        "string": {
           "in": "query",
           "schema": {
             "type": "string"
           }
-        }],
-        "requestBody": {
-          "description": "Request body",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "my_schema:Song"
-              }
-            }
-          }
         },
-        "responses": {
-          "200": {
-            "description": "Response body",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "my_schema:Song"
-                }
-              }
-            }
+        "payload": {
+          "in": "body",
+          "schema": {
+            "$ref": "my_schema:Song"
           }
         }
       }

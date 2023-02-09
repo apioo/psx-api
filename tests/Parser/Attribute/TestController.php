@@ -46,7 +46,7 @@ class TestController
     #[QueryParam(name: "boz", type: "string", pattern: "[A-z]+")]
     #[QueryParam(name: "integer", type: "integer")]
     #[QueryParam(name: "number", type: "number")]
-    #[QueryParam(name: "date", type: "date")]
+    #[QueryParam(name: "date", type: "date", format: 'date-time')]
     #[QueryParam(name: "boolean", type: "boolean")]
     #[QueryParam(name: "string", type: "string")]
     #[Incoming(schema: __DIR__ . "/../schema/schema.json")]

@@ -43,12 +43,12 @@ class OpenAPITest extends ParserTestCase
      */
     protected function getSpecification(): SpecificationInterface
     {
-        return $this->apiManager->getApi(__DIR__ . '/openapi/simple.json', '/foo', ApiManager::TYPE_OPENAPI);
+        return $this->apiManager->getApi(__DIR__ . '/openapi/simple.json', ApiManager::TYPE_OPENAPI);
     }
 
     public function testParseComplex()
     {
-        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/complex.json', '/foo');
+        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/complex.json');
 
         $resource = $specification->getOperations()->get('/foo');
         $definitions = $specification->getDefinitions();

@@ -45,52 +45,35 @@ abstract class ParserTestCase extends ApiManagerTestCase
 
         $this->assertInstanceOf(OperationInterface::class, $operation);
         $this->assertEquals('GET', $operation->getMethod());
-        $this->assertEquals('Test description', $operation->getDescription());
+        $this->assertEquals('/foo', $operation->getPath());
+        $this->assertEquals('A long **Test** description', $operation->getDescription());
 
         $arguments = $operation->getArguments();
-        $path = $definitions->getType($resource->getPathParameters());
+        $this->assertEquals('path', $arguments->get('fooId')->getIn());
+        $this->assertEquals(['type' => 'string'], $arguments->get('fooId')->getSchema()->toArray());
+        $this->assertEquals('query', $arguments->get('foo')->getIn());
+        $this->assertEquals(['type' => 'string', 'description' => 'Test'], $arguments->get('foo')->getSchema()->toArray());
+        $this->assertEquals('query', $arguments->get('bar')->getIn());
+        $this->assertEquals(['type' => 'string'], $arguments->get('bar')->getSchema()->toArray());
+        $this->assertEquals('query', $arguments->get('baz')->getIn());
+        $this->assertEquals(['type' => 'string', 'enum' => ['foo', 'bar']], $arguments->get('baz')->getSchema()->toArray());
+        $this->assertEquals('query', $arguments->get('boz')->getIn());
+        $this->assertEquals(['type' => 'string', 'pattern' => '[A-z]+'], $arguments->get('boz')->getSchema()->toArray());
+        $this->assertEquals('query', $arguments->get('integer')->getIn());
+        $this->assertEquals(['type' => 'integer'], $arguments->get('integer')->getSchema()->toArray());
+        $this->assertEquals('query', $arguments->get('number')->getIn());
+        $this->assertEquals(['type' => 'number'], $arguments->get('number')->getSchema()->toArray());
+        $this->assertEquals('query', $arguments->get('date')->getIn());
+        $this->assertEquals(['type' => 'string', 'format' => 'date-time'], $arguments->get('date')->getSchema()->toArray());
+        $this->assertEquals('query', $arguments->get('boolean')->getIn());
+        $this->assertEquals(['type' => 'boolean'], $arguments->get('boolean')->getSchema()->toArray());
+        $this->assertEquals('query', $arguments->get('string')->getIn());
+        $this->assertEquals(['type' => 'string'], $arguments->get('string')->getSchema()->toArray());
+        $this->assertEquals('body', $arguments->get('payload')->getIn());
+        $this->assertEquals(['$ref' => 'Song'], $arguments->get('payload')->getSchema()->toArray());
 
-        $this->assertInstanceOf(TypeInterface::class, $path);
-        $this->assertInstanceOf(TypeInterface::class, $path->getProperty('fooId'));
-
-        $methods = $resource->getMethods();
-
-        $this->assertEquals(['GET'], array_keys($methods));
-
-        $this->assertEquals('A long **Test** description', $methods['GET']->getDescription());
-
-        $query = $definitions->getType($methods['GET']->getQueryParameters());
-
-        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('foo'));
-        $this->assertEquals('Test', $query->getProperty('foo')->getDescription());
-        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('bar'));
-        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('baz'));
-        $this->assertEquals(['foo', 'bar'], $query->getProperty('baz')->getEnum());
-        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('boz'));
-        $this->assertEquals('[A-z]+', $query->getProperty('boz')->getPattern());
-        $this->assertInstanceOf(TypeInterface::class, $query);
-        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('integer'));
-        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('number'));
-        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('date'));
-        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('boolean'));
-        $this->assertInstanceOf(TypeInterface::class, $query->getProperty('string'));
-
-        $request = $definitions->getType($methods['GET']->getRequest());
-        if ($request instanceof ReferenceType) {
-            $request = $definitions->getType($request->getRef());
-        }
-
-        $this->assertInstanceOf(StructType::class, $request);
-        $this->assertInstanceOf(StringType::class, $request->getProperty('artist'));
-
-        $response = $definitions->getType($methods['GET']->getResponse(200));
-
-        if ($response instanceof ReferenceType) {
-            $response = $definitions->getType($response->getRef());
-        }
-
-        $this->assertInstanceOf(StructType::class, $response);
-        $this->assertInstanceOf(StringType::class, $response->getProperty('artist'));
+        $this->assertEquals(200, $operation->getReturn()->getCode());
+        $this->assertEquals(['$ref' => 'Song'], $operation->getReturn()->getSchema()->toArray());
     }
 
     /**
