@@ -48,8 +48,6 @@ class TypeAPI implements ParserInterface
 {
     private ?string $basePath;
     private SchemaParser\TypeSchema $schemaParser;
-    private ?DefinitionsInterface $definitions = null;
-    private ?OperationsInterface $operations = null;
 
     public function __construct(?string $basePath = null)
     {
@@ -72,15 +70,19 @@ class TypeAPI implements ParserInterface
         return $this->parseObject($data);
     }
 
+    /**
+     * @throws ParserException
+     * @throws InvalidSchemaException
+     */
     public function parseObject(\stdClass $data): SpecificationInterface
     {
         $schema = $this->schemaParser->parseSchema($data);
 
-        $this->definitions = $schema->getDefinitions();
-        $this->operations = new Operations();
+        $definitions = $schema->getDefinitions();
 
+        $operations = new Operations();
         if (isset($data->operations) && $data->operations instanceof \stdClass) {
-            $this->parseOperations($data->operations);
+            $operations = $this->parseOperations($data->operations);
         }
 
         $security = null;
@@ -88,20 +90,22 @@ class TypeAPI implements ParserInterface
             $security = $this->parseSecurity($data->security);
         }
 
-        return new Specification($this->operations, $this->definitions, $security);
+        return new Specification($operations, $definitions, $security);
     }
 
     /**
      * @throws ParserException
      * @throws InvalidSchemaException
      */
-    private function parseOperations(\stdClass $operations): void
+    private function parseOperations(\stdClass $operations): OperationsInterface
     {
+        $return = new Operations();
         foreach ($operations as $name => $operation) {
             if ($operation instanceof \stdClass) {
-                $this->operations[$name] = $this->parseOperation($operation);
+                $return->add($name, $this->parseOperation($operation));
             }
         }
+        return $return;
     }
 
     /**
@@ -165,7 +169,7 @@ class TypeAPI implements ParserInterface
      */
     private function parseReturn(?\stdClass $data): Operation\Response
     {
-        if (!$data instanceof \stdClass) {
+        if ($data instanceof \stdClass) {
             return $this->parseResponse($data);
         } else {
             return new Operation\Response(204, TypeFactory::getAny());

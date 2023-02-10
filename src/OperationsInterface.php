@@ -47,5 +47,5 @@ interface OperationsInterface
 
     public function remove(string $name): void;
 
-    public function merge(OperationsInterface $operations): void;
+    public function merge(OperationsInterface $operations): Operations;
 }

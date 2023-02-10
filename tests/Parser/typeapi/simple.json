@@ -1,16 +1,13 @@
 {
-  "$import": {
-    "my_schema": "file:///../schema/schema.json"
-  },
   "operations": {
     "PSX.Api.Tests.Parser.Attribute.TestController.doGet": {
       "description": "A long **Test** description",
       "method": "GET",
-      "path": "/foo",
+      "path": "/foo/:fooId",
       "return": {
         "code": 200,
         "schema": {
-          "$ref": "my_schema:Song"
+          "$ref": "Song"
         }
       },
       "arguments": {
@@ -67,7 +64,7 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           }
         },
         "boolean": {
@@ -85,8 +82,67 @@
         "payload": {
           "in": "body",
           "schema": {
-            "$ref": "my_schema:Song"
+            "$ref": "Song"
           }
+        }
+      },
+      "throws": [{
+        "code": 500,
+        "schema": {
+          "$ref": "Error"
+        }
+      }]
+    }
+  },
+  "definitions": {
+    "Song": {
+      "description": "A canonical song",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "artist": {
+          "type": "string"
+        },
+        "length": {
+          "type": "integer"
+        },
+        "ratings": {
+          "type": "array",
+          "items": {
+            "$ref": "Rating"
+          }
+        }
+      },
+      "required": [
+        "title",
+        "artist"
+      ]
+    },
+    "Rating": {
+      "title": "Rating",
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
         }
       }
     }

@@ -1,14 +1,11 @@
 {
-  "$import": {
-    "my_schema": "file:///../schema/schema.json"
-  },
   "openapi": "3.0.0",
   "info": {
     "title": "Simple API",
     "version": "1.0.0"
   },
   "paths": {
-    "/foo": {
+    "/foo/:fooId": {
       "summary": "Test",
       "description": "Test description",
       "parameters": [{
@@ -20,6 +17,7 @@
       }],
       "get": {
         "summary": "A long **Test** description",
+        "operationId": "PSX.Api.Tests.Parser.Attribute.TestController.doGet",
         "parameters": [{
           "name": "foo",
           "in": "query",
@@ -65,7 +63,7 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           }
         }, {
           "name": "boolean",
@@ -85,21 +83,86 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "my_schema:Song"
+                "$ref": "#/components/schemas/Song"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Response body",
+            "description": "Success response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "my_schema:Song"
+                  "$ref": "#/components/schemas/Song"
                 }
               }
             }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Song": {
+        "description": "A canonical song",
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "artist": {
+            "type": "string"
+          },
+          "length": {
+            "type": "integer"
+          },
+          "ratings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Rating"
+            }
+          }
+        },
+        "required": [
+          "title",
+          "artist"
+        ]
+      },
+      "Rating": {
+        "title": "Rating",
+        "type": "object",
+        "properties": {
+          "author": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
           }
         }
       }

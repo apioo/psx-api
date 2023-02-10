@@ -37,9 +37,9 @@ class Arguments
 {
     private array $container;
 
-    public function __construct()
+    public function __construct(array $arguments = [])
     {
-        $this->container = [];
+        $this->container = $arguments;
     }
 
     public function add(string $name, Argument $argument): void
@@ -79,8 +79,8 @@ class Arguments
         return count($this->container) === 0;
     }
 
-    public function merge(Arguments $arguments): void
+    public function merge(Arguments $arguments): Arguments
     {
-        $this->container = array_merge($this->container, $arguments->getAll());
+        return new Arguments(array_merge($this->container, $arguments->getAll()));
     }
 }

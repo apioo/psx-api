@@ -67,10 +67,12 @@ class ApiManager implements ApiManagerInterface
             }
         }
 
+        $basePath = null;
         $data = null;
         if (class_exists($source)) {
             $type = self::TYPE_ATTRIBUTE;
         } elseif (is_file($source)) {
+            $basePath  = pathinfo($source, PATHINFO_DIRNAME);
             $extension = pathinfo($source, PATHINFO_EXTENSION);
             if (in_array($extension, ['yaml', 'yml'])) {
                 $data = json_decode(json_encode(Yaml::parse(file_get_contents($source))));
@@ -94,9 +96,9 @@ class ApiManager implements ApiManagerInterface
         }
 
         if ($type === self::TYPE_OPENAPI) {
-            $api = (new OpenAPI())->parseObject($data);
+            $api = (new OpenAPI($basePath))->parseObject($data);
         } elseif ($type === self::TYPE_TYPEAPI) {
-            $api = (new TypeAPI())->parseObject($data);
+            $api = (new TypeAPI($basePath))->parseObject($data);
         } elseif ($type === self::TYPE_ATTRIBUTE) {
             $api = $this->attributeParser->parse($source);
         } else {

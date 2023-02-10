@@ -35,7 +35,7 @@ use PSX\Api\Attribute\QueryParam;
  * @link    https://phpsx.org
  */
 #[Description('Test description')]
-#[Path('/foo')]
+#[Path('/foo/:fooId')]
 #[PathParam(name: 'fooId', type: 'string', required: true)]
 class TestController
 {
@@ -51,6 +51,7 @@ class TestController
     #[QueryParam(name: "string", type: "string")]
     #[Incoming(schema: __DIR__ . "/../schema/schema.json")]
     #[Outgoing(code: 200, schema: __DIR__ . "/../schema/schema.json")]
+    #[Outgoing(code: 500, schema: __DIR__ . "/../schema/error.json")]
     protected function doGet()
     {
     }

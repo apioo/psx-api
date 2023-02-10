@@ -45,7 +45,7 @@ abstract class ParserTestCase extends ApiManagerTestCase
 
         $this->assertInstanceOf(OperationInterface::class, $operation);
         $this->assertEquals('GET', $operation->getMethod());
-        $this->assertEquals('/foo', $operation->getPath());
+        $this->assertEquals('/foo/:fooId', $operation->getPath());
         $this->assertEquals('A long **Test** description', $operation->getDescription());
 
         $arguments = $operation->getArguments();
@@ -74,6 +74,10 @@ abstract class ParserTestCase extends ApiManagerTestCase
 
         $this->assertEquals(200, $operation->getReturn()->getCode());
         $this->assertEquals(['$ref' => 'Song'], $operation->getReturn()->getSchema()->toArray());
+
+        $this->assertCount(1, $operation->getThrows());
+        $this->assertEquals(500, $operation->getThrows()[0]->getCode());
+        $this->assertEquals(['$ref' => 'Error'], $operation->getThrows()[0]->getSchema()->toArray());
     }
 
     /**

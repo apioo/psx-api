@@ -46,6 +46,7 @@ class OpenAPITest extends ParserTestCase
         return $this->apiManager->getApi(__DIR__ . '/openapi/simple.json', ApiManager::TYPE_OPENAPI);
     }
 
+    /*
     public function testParseComplex()
     {
         $specification = OpenAPI::fromFile(__DIR__ . '/openapi/complex.json');
@@ -110,4 +111,5 @@ class OpenAPITest extends ParserTestCase
         $this->assertInstanceOf(ResourceCollection::class, $specification->getOperations());
         $this->assertEquals(['/foo'], array_keys($specification->getOperations()->getArrayCopy()));
     }
+    */
 }

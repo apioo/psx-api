@@ -33,9 +33,9 @@ class Operations implements OperationsInterface
 {
     private array $container;
 
-    public function __construct()
+    public function __construct(array $operations = [])
     {
-        $this->container = [];
+        $this->container = $operations;
     }
 
     public function add(string $name, OperationInterface $operation): void
@@ -70,8 +70,8 @@ class Operations implements OperationsInterface
         }
     }
 
-    public function merge(OperationsInterface $operations): void
+    public function merge(OperationsInterface $operations): Operations
     {
-        $this->container = array_merge($this->container, $operations->getAll());
+        return new Operations(array_merge($this->container, $operations->getAll()));
     }
 }
