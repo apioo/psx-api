@@ -21,9 +21,11 @@
 namespace PSX\Api\Operation;
 
 use PSX\Api\Exception\ArgumentNotFoundException;
+use PSX\Api\Exception\InvalidArgumentException;
 use PSX\Api\Exception\OperationNotFoundException;
 use PSX\Api\OperationInterface;
 use PSX\Api\OperationsInterface;
+use PSX\Schema\Type\StructType;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -44,6 +46,10 @@ class Arguments
 
     public function add(string $name, Argument $argument): void
     {
+        if ($argument->getSchema() instanceof StructType) {
+            throw new InvalidArgumentException('It is not allowed to pass a struct type as argument, please add it to the definitions and pass a reference');
+        }
+
         $this->container[$name] = $argument;
     }
 
@@ -79,7 +85,12 @@ class Arguments
         return count($this->container) === 0;
     }
 
-    public function merge(Arguments $arguments): Arguments
+    public function merge(Arguments $arguments): void
+    {
+        $this->container = array_merge($this->container, $arguments->getAll());
+    }
+
+    public function withAdded(Arguments $arguments): Arguments
     {
         return new Arguments(array_merge($this->container, $arguments->getAll()));
     }

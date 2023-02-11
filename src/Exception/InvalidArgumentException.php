@@ -18,36 +18,15 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
-
-use PSX\Api\Exception\OperationNotFoundException;
+namespace PSX\Api\Exception;
 
 /**
- * OperationsInterface
+ * InvalidArgumentException
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-interface OperationsInterface
+class InvalidArgumentException extends \Exception
 {
-    public function add(string $name, OperationInterface $operation): void;
-
-    public function has(string $name): bool;
-
-    /**
-     * @throws OperationNotFoundException
-     */
-    public function get(string $name): OperationInterface;
-
-    /**
-     * @return array<OperationInterface>
-     */
-    public function getAll(): array;
-
-    public function remove(string $name): void;
-
-    public function merge(OperationsInterface $operations): void;
-
-    public function withAdded(OperationsInterface $operations): Operations;
 }

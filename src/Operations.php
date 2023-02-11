@@ -70,7 +70,12 @@ class Operations implements OperationsInterface
         }
     }
 
-    public function merge(OperationsInterface $operations): Operations
+    public function merge(OperationsInterface $operations): void
+    {
+        $this->container = array_merge($this->container, $operations->getAll());
+    }
+
+    public function withAdded(OperationsInterface $operations): Operations
     {
         return new Operations(array_merge($this->container, $operations->getAll()));
     }

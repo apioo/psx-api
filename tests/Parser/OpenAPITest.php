@@ -22,11 +22,13 @@ namespace PSX\Api\Tests\Parser;
 
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\ApiManager;
+use PSX\Api\OperationInterface;
 use PSX\Api\Parser\OpenAPI;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\Type\StructType;
+use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -44,6 +46,69 @@ class OpenAPITest extends ParserTestCase
     protected function getSpecification(): SpecificationInterface
     {
         return $this->apiManager->getApi(__DIR__ . '/openapi/simple.json', ApiManager::TYPE_OPENAPI);
+    }
+
+    public function testParsePetstore()
+    {
+        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/petstore.json');
+        $definitions = $specification->getDefinitions();
+        $operation = $specification->getOperations()->get('listPets');
+
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals('GET', $operation->getMethod());
+        $this->assertEquals('/pets', $operation->getPath());
+        $this->assertEquals('List all pets', $operation->getDescription());
+
+        $arguments = $operation->getArguments();
+        $this->assertEquals('query', $arguments->get('limit')->getIn());
+        $this->assertEquals(['type' => 'integer', 'format' => 'int32', 'maximum' => 100], $arguments->get('limit')->getSchema()->toArray());
+
+        $this->assertEquals(200, $operation->getReturn()->getCode());
+        $this->assertEquals(['$ref' => 'Pets'], $operation->getReturn()->getSchema()->toArray());
+
+        $this->assertCount(0, $operation->getThrows());
+
+        $this->assertEquals([
+            'type' => 'array',
+            'items' => TypeFactory::getReference('Pet'),
+            'maxItems' => 100
+        ], $definitions->getType('Pets')->toArray());
+        $this->assertEquals([
+            'type' => 'object',
+            'properties' => [
+                'id' => TypeFactory::getInteger()->setFormat('int64'),
+                'name' => TypeFactory::getString(),
+                'tag' => TypeFactory::getString()
+            ],
+            'required' => ['id', 'name']
+        ], $definitions->getType('Pet')->toArray());
+    }
+
+    public function testParseInline()
+    {
+        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/inline.json');
+        $definitions = $specification->getDefinitions();
+        $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.TestController.doGet');
+
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals('GET', $operation->getMethod());
+        $this->assertEquals('/foo', $operation->getPath());
+        $this->assertEquals('', $operation->getDescription());
+
+        $this->assertTrue($operation->getArguments()->isEmpty());
+
+        $this->assertEquals(200, $operation->getReturn()->getCode());
+        $this->assertEquals(['$ref' => 'Inline01fd4b61'], $operation->getReturn()->getSchema()->toArray());
+
+        $this->assertCount(0, $operation->getThrows());
+
+        $this->assertEquals([
+            'type' => 'object',
+            'properties' => [
+                'success' => TypeFactory::getBoolean(),
+                'message' => TypeFactory::getString(),
+            ],
+        ], $definitions->getType('Inline01fd4b61')->toArray());
     }
 
     /*

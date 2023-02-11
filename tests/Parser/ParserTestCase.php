@@ -26,6 +26,7 @@ use PSX\Api\Tests\ApiManagerTestCase;
 use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\Type\StringType;
 use PSX\Schema\Type\StructType;
+use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -78,6 +79,25 @@ abstract class ParserTestCase extends ApiManagerTestCase
         $this->assertCount(1, $operation->getThrows());
         $this->assertEquals(500, $operation->getThrows()[0]->getCode());
         $this->assertEquals(['$ref' => 'Error'], $operation->getThrows()[0]->getSchema()->toArray());
+
+        $this->assertEquals([
+            'description' => 'A canonical song',
+            'type' => 'object',
+            'properties' => [
+                'title' => TypeFactory::getString(),
+                'artist' => TypeFactory::getString(),
+                'length' => TypeFactory::getInteger(),
+                'ratings' => TypeFactory::getArray(TypeFactory::getReference('Rating')),
+            ],
+            'required' => ['title', 'artist']
+        ], $definitions->getType('Song')->toArray());
+        $this->assertEquals([
+            'type' => 'object',
+            'properties' => [
+                'success' => TypeFactory::getBoolean(),
+                'message' => TypeFactory::getString(),
+            ],
+        ], $definitions->getType('Error')->toArray());
     }
 
     /**

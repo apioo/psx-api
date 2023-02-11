@@ -20,7 +20,9 @@
 
 namespace PSX\Api\Parser;
 
+use PSX\Api\Exception\InvalidArgumentException;
 use PSX\Api\Exception\ParserException;
+use PSX\Api\Operation;
 use PSX\Api\Operation\Argument;
 use PSX\Api\Operation\Arguments;
 use PSX\Api\Operation\Response;
@@ -44,7 +46,7 @@ use PSX\Model\OpenAPI\MediaType;
 use PSX\Model\OpenAPI\MediaTypes;
 use PSX\Model\OpenAPI\OAuthFlow;
 use PSX\Model\OpenAPI\OpenAPI as OpenAPIModel;
-use PSX\Model\OpenAPI\Operation;
+use PSX\Model\OpenAPI\Operation as OpenAPIOperation;
 use PSX\Model\OpenAPI\Parameter;
 use PSX\Model\OpenAPI\PathItem;
 use PSX\Model\OpenAPI\Reference;
@@ -56,14 +58,17 @@ use PSX\Model\OpenAPI\SecuritySchemes;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Exception\TypeNotFoundException;
+use PSX\Schema\Inspector\Hash;
 use PSX\Schema\Parser as SchemaParser;
 use PSX\Schema\SchemaInterface;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Type\ArrayType;
+use PSX\Schema\Type\IntersectionType;
 use PSX\Schema\Type\MapType;
 use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\Type\ScalarType;
 use PSX\Schema\Type\StructType;
+use PSX\Schema\Type\UnionType;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 use PSX\Schema\Visitor\TypeVisitor;
@@ -81,6 +86,7 @@ class OpenAPI implements ParserInterface
 {
     private ?string $basePath;
     private SchemaParser\TypeSchema $schemaParser;
+    private Hash $hashInspector;
     private ?DefinitionsInterface $definitions = null;
     private ?\PSX\Model\OpenAPI\OpenAPI $document = null;
 
@@ -88,6 +94,7 @@ class OpenAPI implements ParserInterface
     {
         $this->basePath = $basePath;
         $this->schemaParser = new SchemaParser\TypeSchema(null, $basePath);
+        $this->hashInspector = new Hash();
     }
 
     /**
@@ -122,6 +129,11 @@ class OpenAPI implements ParserInterface
         );
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws TypeNotFoundException
+     * @throws InvalidSchemaException
+     */
     private function parseResource(PathItem $data, string $path, OperationsInterface $operations): void
     {
         $methods = [
@@ -132,31 +144,30 @@ class OpenAPI implements ParserInterface
             'patch' => $data->getPatch(),
         ];
 
-        $arguments = $this->parseUriParameters($data);
+        $pathArguments = $this->parseUriParameters($data);
 
         foreach ($methods as $methodName => $operation) {
-            if (!$operation instanceof Operation) {
+            if (!$operation instanceof OpenAPIOperation) {
                 continue;
             }
 
             $responses = $this->parseResponseInRange($operation, 200, 300);
             $return = $responses[0] ?? null;
             if (!$return instanceof Response) {
-                continue;
+                $return = new Response(204, TypeFactory::getAny());
             }
 
-            $result = new \PSX\Api\Operation(strtoupper($methodName), $path, $return);
-
-            $args = $arguments->merge($this->parseQueryParameters($operation));
+            $arguments = $pathArguments->withAdded($this->parseQueryParameters($operation));
 
             $request = $this->parseRequest($operation->getRequestBody());
             if ($request instanceof Argument) {
-                $args->add('payload', $request);
+                $arguments->add('payload', $request);
             }
 
-            $result->setArguments($args);
-
             $responses = $this->parseResponseInRange($operation, 400, 600);
+
+            $result = new Operation(strtoupper($methodName), $path, $return);
+            $result->setArguments($arguments);
             $result->setThrows($responses);
 
             if ($operation->getSummary() !== null) {
@@ -244,7 +255,7 @@ class OpenAPI implements ParserInterface
      * @throws InvalidSchemaException
      * @throws TypeNotFoundException
      */
-    private function parseQueryParameters(Operation $data): Arguments
+    private function parseQueryParameters(OpenAPIOperation $data): Arguments
     {
         return $this->parseParameters('query', $data->getParameters() ?? []);
     }
@@ -306,6 +317,9 @@ class OpenAPI implements ParserInterface
         ];
     }
 
+    /**
+     * @throws InvalidSchemaException
+     */
     private function parseRequest($requestBody): ?Argument
     {
         if ($requestBody instanceof Reference) {
@@ -323,7 +337,10 @@ class OpenAPI implements ParserInterface
         return null;
     }
 
-    private function parseResponseInRange(Operation $operation, int $start, int $end): array
+    /**
+     * @throws InvalidSchemaException
+     */
+    private function parseResponseInRange(OpenAPIOperation $operation, int $start, int $end): array
     {
         $result = [];
         $responses = $operation->getResponses();
@@ -338,7 +355,7 @@ class OpenAPI implements ParserInterface
                 $mediaTypes = $response->getContent();
                 if ($mediaTypes instanceof MediaTypes) {
                     $schema = $this->getSchemaFromMediaTypes($mediaTypes);
-                    if (!empty($schema)) {
+                    if ($schema instanceof TypeInterface) {
                         $result[] = new Response($statusCode, $schema);
                     }
                 }
@@ -348,6 +365,9 @@ class OpenAPI implements ParserInterface
         return $result;
     }
 
+    /**
+     * @throws InvalidSchemaException
+     */
     private function getSchemaFromMediaTypes(MediaTypes $mediaTypes): ?TypeInterface
     {
         $mediaType = $mediaTypes['application/json'] ?? null;
@@ -360,27 +380,53 @@ class OpenAPI implements ParserInterface
             return null;
         }
 
-        return $this->schemaParser->parseType($schema);
+        $type = $this->schemaParser->parseType($schema);
 
-        // @TODO we need to move StructType to definitions etc.
-        /*
-        if ($type instanceof ReferenceType) {
-            return $type;
-        } elseif ($type instanceof ScalarType) {
-            return $type;
-        }
+        return $this->transformInlineStruct($type);
+    }
 
-        if ($type instanceof ArrayType) {
-            $child = $type->getItems();
+    /**
+     * TypeAPI can not handle inline struct references mostly in OpenAPI specs refer to the components section but in
+     * case of an inline definition we automatically move it to the definitions and generate an inline type
+     *
+     * @throws InvalidSchemaException
+     */
+    private function transformInlineStruct(TypeInterface $type): TypeInterface
+    {
+        if ($type instanceof StructType) {
+            // we have an inline struct type we automatically add this ot the definitions, since we have no name we generate
+            // it based on the type, this should motivate users to move the definition to the components section
+            $typeName = 'Inline' . substr($this->hashInspector->generateByType($type), 0, 8);
+            $this->definitions->addType($typeName, $type);
 
+            return TypeFactory::getReference($typeName);
         } elseif ($type instanceof MapType) {
-
+            $child = $type->getAdditionalProperties();
+            if ($child instanceof TypeInterface) {
+                $r = $this->transformInlineStruct($child);
+                return TypeFactory::getMap($r);
+            }
+        } elseif ($type instanceof ArrayType) {
+            $child = $type->getItems();
+            if ($child instanceof TypeInterface) {
+                $r = $this->transformInlineStruct($child);
+                return TypeFactory::getArray($r);
+            }
+        } elseif ($type instanceof UnionType) {
+            $result = [];
+            foreach ($type->getOneOf() as $child) {
+                $result[] = $this->transformInlineStruct($child);
+            }
+            return TypeFactory::getUnion($result);
+        } elseif ($type instanceof IntersectionType) {
+            $result = [];
+            foreach ($type->getAllOf() as $child) {
+                $result[] = $this->transformInlineStruct($child);
+            }
+            return TypeFactory::getIntersection($result);
         }
-        $typeName = '';
-        $this->definitions->addType($typeName, $type);
 
-        return TypeFactory::getReference($typeName);
-        */
+        return $type;
     }
 
     private function resolveReference(string $reference)
