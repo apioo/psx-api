@@ -80,8 +80,8 @@ class Attribute implements ParserInterface
             return $specification;
         } catch (\ReflectionException $e) {
             throw new ParserException('Provided schema must be a valid class', 0, $e);
-        } catch (InvalidSchemaException $e) {
-            throw new ParserException('Provided an invalid schema', 0, $e);
+        } catch (\Throwable $e) {
+            throw new ParserException('An error occurred while parsing: ' . $e->getMessage(), 0, $e);
         }
     }
 

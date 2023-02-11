@@ -22,11 +22,14 @@ namespace PSX\Api;
 
 use Doctrine\Common\Annotations\Reader;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Cache\InvalidArgumentException;
 use PSX\Api\Builder\SpecificationBuilder;
 use PSX\Api\Builder\SpecificationBuilderInterface;
+use PSX\Api\Exception\InvalidMethodException;
 use PSX\Api\Exception\ParserException;
 use PSX\Api\Parser\OpenAPI;
 use PSX\Api\Parser\TypeAPI;
+use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\SchemaManagerInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Yaml\Yaml;
@@ -57,11 +60,14 @@ class ApiManager implements ApiManagerInterface
         $this->debug = $debug;
     }
 
+    /**
+     * @throws ParserException
+     */
     public function getApi(string $source, ?int $type = null): SpecificationInterface
     {
         $item = null;
         if (!$this->debug) {
-            $item = $this->cache->getItem(md5($source));
+            $item = $this->cache->getItem('psx-api-' . md5($source));
             if ($item->isHit()) {
                 return $item->get();
             }
@@ -116,35 +122,5 @@ class ApiManager implements ApiManagerInterface
     public function getBuilder(): SpecificationBuilderInterface
     {
         return new SpecificationBuilder($this->schemaManager);
-    }
-
-    private function guessTypeFromSource(string $source): ?int
-    {
-        if (class_exists($source)) {
-            return self::TYPE_ATTRIBUTE;
-        }
-
-        if (is_file($source)) {
-            $extension = pathinfo($source, PATHINFO_EXTENSION);
-            if (in_array($extension, ['yaml', 'yml'])) {
-                $data = json_decode(json_encode(Yaml::parse(file_get_contents($source))));
-            } else {
-                $data = json_decode(file_get_contents($source));
-            }
-
-            if (!$data instanceof \stdClass) {
-                throw new ParserException('Provided source must be an JSON or YAML file containing an object');
-            }
-
-            if (isset($data->paths)) {
-                return self::TYPE_OPENAPI;
-            } elseif (isset($data->operations)) {
-                return self::TYPE_TYPEAPI;
-            } else {
-                throw new ParserException('Could not detect schema format of the provided source ' . $source);
-            }
-        }
-
-        throw new ParserException('Provided source must be either a class or a file');
     }
 }

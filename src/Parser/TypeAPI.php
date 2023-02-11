@@ -57,40 +57,45 @@ class TypeAPI implements ParserInterface
 
     /**
      * @throws ParserException
-     * @throws InvalidSchemaException
-     * @throws \JsonException
      */
     public function parse(string $schema): SpecificationInterface
     {
-        $data = Parser::decode($schema);
-        if (!$data instanceof \stdClass) {
-            throw new ParserException('Provided schema must be an object');
-        }
+        try {
+            $data = Parser::decode($schema);
+            if (!$data instanceof \stdClass) {
+                throw new ParserException('Provided schema must be an object');
+            }
 
-        return $this->parseObject($data);
+            return $this->parseObject($data);
+        } catch (\JsonException $e) {
+            throw new ParserException('Could not parse JSON: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
      * @throws ParserException
-     * @throws InvalidSchemaException
      */
     public function parseObject(\stdClass $data): SpecificationInterface
     {
-        $schema = $this->schemaParser->parseSchema($data);
+        try {
+            $schema = $this->schemaParser->parseSchema($data);
 
-        $definitions = $schema->getDefinitions();
+            $definitions = $schema->getDefinitions();
 
-        $operations = new Operations();
-        if (isset($data->operations) && $data->operations instanceof \stdClass) {
-            $operations = $this->parseOperations($data->operations);
+            $operations = new Operations();
+            if (isset($data->operations) && $data->operations instanceof \stdClass) {
+                $operations = $this->parseOperations($data->operations);
+            }
+
+            $security = null;
+            if (isset($data->security) && $data->security instanceof \stdClass) {
+                $security = $this->parseSecurity($data->security);
+            }
+
+            return new Specification($operations, $definitions, $security);
+        } catch (\Throwable $e) {
+            throw new ParserException('An error occurred while parsing: ' . $e->getMessage(), 0, $e);
         }
-
-        $security = null;
-        if (isset($data->security) && $data->security instanceof \stdClass) {
-            $security = $this->parseSecurity($data->security);
-        }
-
-        return new Specification($operations, $definitions, $security);
     }
 
     /**

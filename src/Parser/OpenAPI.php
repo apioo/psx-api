@@ -29,8 +29,6 @@ use PSX\Api\Operation\Response;
 use PSX\Api\Operations;
 use PSX\Api\OperationsInterface;
 use PSX\Api\ParserInterface;
-use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
 use PSX\Api\Security\ApiKey;
 use PSX\Api\Security\AuthorizationCode;
 use PSX\Api\Security\ClientCredentials;
@@ -52,7 +50,6 @@ use PSX\Model\OpenAPI\PathItem;
 use PSX\Model\OpenAPI\Reference;
 use PSX\Model\OpenAPI\RequestBody;
 use PSX\Model\OpenAPI\Responses;
-use PSX\Model\OpenAPI\SecurityRequirement;
 use PSX\Model\OpenAPI\SecurityScheme;
 use PSX\Model\OpenAPI\SecuritySchemes;
 use PSX\Schema\DefinitionsInterface;
@@ -66,13 +63,11 @@ use PSX\Schema\Type\ArrayType;
 use PSX\Schema\Type\IntersectionType;
 use PSX\Schema\Type\MapType;
 use PSX\Schema\Type\ReferenceType;
-use PSX\Schema\Type\ScalarType;
 use PSX\Schema\Type\StructType;
 use PSX\Schema\Type\UnionType;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 use PSX\Schema\Visitor\TypeVisitor;
-use RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -88,7 +83,7 @@ class OpenAPI implements ParserInterface
     private SchemaParser\TypeSchema $schemaParser;
     private Hash $hashInspector;
     private ?DefinitionsInterface $definitions = null;
-    private ?\PSX\Model\OpenAPI\OpenAPI $document = null;
+    private ?OpenAPIModel $document = null;
 
     public function __construct(?string $basePath = null)
     {
@@ -98,35 +93,46 @@ class OpenAPI implements ParserInterface
     }
 
     /**
-     * @inheritdoc
+     * @throws ParserException
      */
     public function parse(string $schema): SpecificationInterface
     {
-        $data = Parser::decode($schema);
-        if (!$data instanceof \stdClass) {
-            throw new ParserException('Provided schema must be an object');
-        }
+        try {
+            $data = Parser::decode($schema);
+            if (!$data instanceof \stdClass) {
+                throw new ParserException('Provided schema must be an object');
+            }
 
-        return $this->parseObject($data);
+            return $this->parseObject($data);
+        } catch (\JsonException $e) {
+            throw new ParserException('Could not parse JSON: ' . $e->getMessage(), 0, $e);
+        }
     }
 
+    /**
+     * @throws ParserException
+     */
     public function parseObject(\stdClass $data): SpecificationInterface
     {
-        $this->definitions = $this->schemaParser->parseSchema($data)->getDefinitions();
-        $this->document    = (new SchemaTraverser())->traverse($data, $this->getSchema(), new TypeVisitor());
+        try {
+            $this->definitions = $this->schemaParser->parseSchema($data)->getDefinitions();
+            $this->document    = (new SchemaTraverser())->traverse($data, $this->getSchema(), new TypeVisitor());
 
-        $operations = new Operations();
+            $operations = new Operations();
 
-        $paths = $this->document->getPaths();
-        foreach ($paths as $key => $spec) {
-            $this->parseResource($spec, Inflection::convertPlaceholderToColon($key), $operations);
+            $paths = $this->document->getPaths();
+            foreach ($paths as $key => $spec) {
+                $this->parseResource($spec, Inflection::convertPlaceholderToColon($key), $operations);
+            }
+
+            return new Specification(
+                $operations,
+                $this->definitions,
+                $this->parseSecurity()
+            );
+        } catch (\Throwable $e) {
+            throw new ParserException('An error occurred while parsing: ' . $e->getMessage(), 0, $e);
         }
-
-        return new Specification(
-            $operations,
-            $this->definitions,
-            $this->parseSecurity()
-        );
     }
 
     /**
