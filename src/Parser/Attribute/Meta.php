@@ -25,7 +25,6 @@ use PSX\Api\Attribute\Deprecated;
 use PSX\Api\Attribute\Description;
 use PSX\Api\Attribute\Exclude;
 use PSX\Api\Attribute\Incoming;
-use PSX\Api\Attribute\Method;
 use PSX\Api\Attribute\MethodAbstract;
 use PSX\Api\Attribute\OperationId;
 use PSX\Api\Attribute\Outgoing;
