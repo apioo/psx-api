@@ -48,6 +48,7 @@ abstract class ParserTestCase extends ApiManagerTestCase
         $this->assertEquals('GET', $operation->getMethod());
         $this->assertEquals('/foo/:fooId', $operation->getPath());
         $this->assertEquals('A long **Test** description', $operation->getDescription());
+        $this->assertEquals(['foo'], $operation->getTags());
 
         $arguments = $operation->getArguments();
         $this->assertEquals('path', $arguments->get('fooId')->getIn());

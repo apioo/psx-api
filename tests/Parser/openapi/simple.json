@@ -18,6 +18,7 @@
       "get": {
         "summary": "A long **Test** description",
         "operationId": "PSX.Api.Tests.Parser.Attribute.TestController.doGet",
+        "tags": ["foo"],
         "parameters": [{
           "name": "foo",
           "in": "query",

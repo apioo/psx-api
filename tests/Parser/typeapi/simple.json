@@ -4,6 +4,7 @@
       "description": "A long **Test** description",
       "method": "GET",
       "path": "/foo/:fooId",
+      "tags": ["foo"],
       "return": {
         "code": 200,
         "schema": {

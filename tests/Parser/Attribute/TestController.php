@@ -26,6 +26,7 @@ use PSX\Api\Attribute\Outgoing;
 use PSX\Api\Attribute\Path;
 use PSX\Api\Attribute\PathParam;
 use PSX\Api\Attribute\QueryParam;
+use PSX\Api\Attribute\Tags;
 
 /**
  * TestController
@@ -52,6 +53,7 @@ class TestController
     #[Incoming(schema: __DIR__ . "/../schema/schema.json")]
     #[Outgoing(code: 200, schema: __DIR__ . "/../schema/schema.json")]
     #[Outgoing(code: 500, schema: __DIR__ . "/../schema/error.json")]
+    #[Tags(['foo'])]
     protected function doGet()
     {
     }
