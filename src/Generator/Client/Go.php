@@ -37,7 +37,7 @@ class Go extends LanguageAbstract
         return 'go.go.twig';
     }
 
-    protected function getGroupTemplate(): string
+    protected function getTagTemplate(): string
     {
         return 'go-group.go.twig';
     }

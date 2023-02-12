@@ -20,6 +20,8 @@
 
 namespace PSX\Api\Generator\Client;
 
+use PSX\Api\Generator\Client\Dto\Exception;
+use PSX\Api\Generator\Client\Dto\Tag;
 use PSX\Api\Generator\Client\Util\Naming;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\SpecificationInterface;
@@ -85,31 +87,51 @@ abstract class LanguageAbstract implements GeneratorInterface
 
         $client = $this->converter->getClient($specification);
 
+        foreach ($client->tags as $tag) {
+            /** @var Tag $tag */
+            $operations = $this->engine->render($this->getOperationTemplate(), [
+                'operations' => $tag->operations,
+            ]);
+
+            $code = $this->engine->render($this->getTagTemplate(), [
+                'namespace' => $this->namespace,
+                'className' => $tag->className,
+                'operations' => $operations,
+            ]);
+
+            $chunks->append($this->getFileName($tag->className), $this->getFileContent($code, $tag->className));
+        }
+
+        foreach ($client->exceptions as $exception) {
+            /** @var Exception $exception */
+            $code = $this->engine->render($this->getExceptionTemplate(), [
+                'namespace' => $this->namespace,
+                'className' => $exception->className,
+                'type' => $exception->type,
+                'message' => $exception->message,
+                'code' => $exception->code,
+            ]);
+
+            $chunks->append($this->getFileName($exception->className), $this->getFileContent($code, $exception->className));
+        }
+
+        $operations = '';
+        if (count($client->operations) > 0) {
+            $operations = $this->engine->render($this->getOperationTemplate(), [
+                'operations' => $client->operations,
+            ]);
+        }
+
         $code = $this->engine->render($this->getClientTemplate(), [
             'baseUrl' => $this->baseUrl,
             'namespace' => $this->namespace,
             'className' => $client->className,
             'security' => $client->security,
-            'resources' => $client->getResources(),
+            'tags' => $client->tags,
+            'operations' => $operations,
         ]);
 
         $chunks->append($this->getFileName($client->className), $this->getFileContent($code, $client->className));
-
-        foreach ($client->resources as $resource) {
-            /** @var Dto\Resource $resource */
-
-            $code = $this->engine->render($this->getTemplate(), [
-                'baseUrl' => $this->baseUrl,
-                'namespace' => $this->namespace,
-                'className' => $resource->className,
-                'urlParts' => $resource->urlParts,
-                'properties' => $resource->properties,
-                'methods' => $resource->methods,
-                'imports' => $resource->imports,
-            ]);
-
-            $chunks->append($this->getFileName($resource->className), $this->getFileContent($code, $resource->className));
-        }
 
         $this->generateSchema($specification->getDefinitions(), $chunks);
 
@@ -135,9 +157,10 @@ abstract class LanguageAbstract implements GeneratorInterface
         return $code;
     }
 
-    abstract protected function getTemplate(): string;
+    abstract protected function getOperationTemplate(): string;
 
-    abstract protected function getGroupTemplate(): string;
+    abstract protected function getTagTemplate(): string;
+    abstract protected function getExceptionTemplate(): string;
 
     abstract protected function getClientTemplate(): string;
 

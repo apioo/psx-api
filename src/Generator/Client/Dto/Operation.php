@@ -24,17 +24,25 @@ use PSX\Schema;
 use PSX\Schema\GeneratorInterface;
 
 /**
- * UrlPart
+ * Operations
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class UrlPart
+class Operation
 {
     public function __construct(
-        public string $type,
-        public string $value,
+        public string $methodName,
+        public string $method,
+        public string $path,
+        public string $description,
+        public array $arguments,
+        public array $pathNames,
+        public array $queryNames,
+        public ?string $bodyName,
+        public ?Type $return,
+        public array $throws,
     )
     {
     }

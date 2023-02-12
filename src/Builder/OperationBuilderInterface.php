@@ -20,38 +20,43 @@
 
 namespace PSX\Api\Builder;
 
-use PSX\Api\Resource\MethodAbstract;
+use PSX\Api\Exception\InvalidArgumentException;
+use PSX\Api\Exception\InvalidMethodException;
+use PSX\Api\OperationInterface;
+use PSX\Api\Resource;
+use PSX\Api\SpecificationInterface;
 use PSX\Schema\Builder;
-use PSX\Schema\Exception\InvalidSchemaException;
+use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\TypeInterface;
 
 /**
- * MethodBuilderInterface
+ * ResourceBuilderInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-interface MethodBuilderInterface
+interface OperationBuilderInterface
 {
-    public function setOperationId(?string $operationId): void;
-
-    public function setDescription(?string $description): void;
-
-    public function setQueryParameters(?string $typeName): Builder;
+    public function setDescription(string $description): self;
 
     /**
-     * @throws InvalidSchemaException
+     * @throws InvalidArgumentException
      */
-    public function setRequest(string $schemaName): void;
+    public function addArgument(string $name, string $in, TypeInterface $schema): TypeInterface;
+
+    public function setAuthorization(bool $authorization): self;
+
+    public function setSecurity(array $security): self;
+
+    public function setDeprecated(bool $deprecated): self;
 
     /**
-     * @throws InvalidSchemaException
+     * @throws InvalidArgumentException
      */
-    public function addResponse(int $statusCode, string $schemaName): void;
+    public function addThrow(int $statusCode, TypeInterface $schema): TypeInterface;
 
-    public function setSecurity(string $name, array $scopes): void;
+    public function setTags(array $tags): self;
 
-    public function setTags(array $tags): void;
-
-    public function getMethod(): MethodAbstract;
+    public function getOperation(): OperationInterface;
 }

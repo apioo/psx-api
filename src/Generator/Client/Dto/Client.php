@@ -31,26 +31,11 @@ class Client
 {
     public function __construct(
         public string $className,
-        public array $resources,
+        public array $operations,
+        public array $tags,
+        public array $exceptions,
         public ?array $security,
     )
     {
-    }
-
-    public function getResources(): array
-    {
-        $resources = [];
-        foreach ($this->resources as $resource) {
-            /** @var Resource $resource */
-
-            $resources[$resource->className] = [
-                'description' => $resource->description,
-                'methodName' => $resource->methodName,
-                'path' => $resource->path,
-                'properties' => $resource->properties,
-            ];
-        }
-
-        return $resources;
     }
 }

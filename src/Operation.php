@@ -149,6 +149,11 @@ class Operation implements OperationInterface
         $this->throws = $throws;
     }
 
+    public function addThrow(Response $response): void
+    {
+        $this->throws[] = $response;
+    }
+
     public function getTags(): array
     {
         return $this->tags;

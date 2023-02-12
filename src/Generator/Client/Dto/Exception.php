@@ -20,43 +20,24 @@
 
 namespace PSX\Api\Generator\Client\Dto;
 
+use PSX\Schema;
+use PSX\Schema\GeneratorInterface;
+
 /**
- * Arguments
+ * Exception
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Arguments implements \IteratorAggregate, \Countable
+class Exception
 {
     public function __construct(
-        public ?Type $query = null,
-        public ?Type $data = null,
+        public string $className,
+        public string $type,
+        public string $message,
+        public int $code,
     )
     {
-    }
-
-    public function getIterator(): \ArrayIterator
-    {
-        return new \ArrayIterator($this->getArray());
-    }
-
-    public function count(): int
-    {
-        return \count($this->getArray());
-    }
-
-    private function getArray(): array
-    {
-        $result = [];
-        if ($this->query !== null) {
-            $result['query'] = $this->query;
-        }
-
-        if ($this->data !== null) {
-            $result['data'] = $this->data;
-        }
-
-        return $result;
     }
 }

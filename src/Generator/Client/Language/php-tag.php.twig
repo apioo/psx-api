@@ -1,0 +1,10 @@
+{% if namespace %}
+namespace {{ namespace }};
+{% endif %}
+
+use Sdkgen\Client\TagAbstract;
+
+class {{ className }} extends TagAbstract
+{
+{{ operations }}
+}

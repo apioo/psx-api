@@ -25,6 +25,7 @@ use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\Builder;
 use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\TypeInterface;
 
 /**
  * SpecificationBuilderInterface
@@ -37,7 +38,7 @@ interface SpecificationBuilderInterface
 {
     public function setSecurity(SecurityInterface $security): void;
 
-    public function addResource(int $status, string $path): ResourceBuilderInterface;
+    public function addOperation(string $operationId, string $method, string $path, int $statusCode, TypeInterface $schema): OperationBuilderInterface;
 
-    public function getSpecification(): SpecificationInterface;
+    public function getSpecification(): self;
 }

@@ -68,6 +68,9 @@ class Arguments
         return $argument;
     }
 
+    /**
+     * @return array<string, Argument>
+     */
     public function getAll(): array
     {
         return $this->container;

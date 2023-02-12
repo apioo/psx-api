@@ -121,6 +121,6 @@ class ApiManager implements ApiManagerInterface
 
     public function getBuilder(): SpecificationBuilderInterface
     {
-        return new SpecificationBuilder($this->schemaManager);
+        return new SpecificationBuilder();
     }
 }

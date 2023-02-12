@@ -44,6 +44,14 @@ interface OperationInterface
     public function hasAuthorization(): bool;
     public function getSecurity(): array;
     public function isDeprecated(): bool;
+
+    /**
+     * @return array<Response>
+     */
     public function getThrows(): array;
+
+    /**
+     * @return array<string>
+     */
     public function getTags(): array;
 }

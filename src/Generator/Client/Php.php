@@ -32,14 +32,19 @@ use PSX\Schema\GeneratorInterface;
  */
 class Php extends LanguageAbstract
 {
-    protected function getTemplate(): string
+    protected function getOperationTemplate(): string
     {
-        return 'php.php.twig';
+        return 'php-operation.php.twig';
     }
 
-    protected function getGroupTemplate(): string
+    protected function getTagTemplate(): string
     {
-        return 'php-group.php.twig';
+        return 'php-tag.php.twig';
+    }
+
+    protected function getExceptionTemplate(): string
+    {
+        return 'php-exception.php.twig';
     }
 
     protected function getClientTemplate(): string

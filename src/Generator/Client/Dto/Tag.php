@@ -20,24 +20,22 @@
 
 namespace PSX\Api\Generator\Client\Dto;
 
+use PSX\Schema;
+use PSX\Schema\GeneratorInterface;
+
 /**
- * Resource
+ * Tag
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Resource
+class Tag
 {
     public function __construct(
         public string $className,
         public string $methodName,
-        public string $path,
-        public ?string $description,
-        public array $urlParts,
-        public ?array $properties,
-        public array $methods,
-        public array $imports,
+        public array $operations,
     )
     {
     }

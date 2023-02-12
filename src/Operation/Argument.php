@@ -31,13 +31,17 @@ use PSX\Schema\TypeInterface;
  */
 class Argument
 {
+    public const IN_PATH = 'path';
+    public const IN_QUERY = 'query';
+    public const IN_BODY = 'body';
+
     private string $in;
     private TypeInterface $schema;
 
     public function __construct(string $in, TypeInterface $schema)
     {
-        if (!in_array($in, ['path', 'query', 'body'])) {
-            throw new \InvalidArgumentException('Provided an invalid "in" value, must be path, query or body');
+        if (!in_array($in, [self::IN_PATH, self::IN_QUERY, self::IN_BODY])) {
+            throw new \InvalidArgumentException('Provided an invalid "in" value, must be one of: ' . implode(', ', [self::IN_PATH, self::IN_QUERY, self::IN_BODY]));
         }
 
         $this->in = $in;

@@ -37,7 +37,7 @@ class Java extends LanguageAbstract
         return 'java.java.twig';
     }
 
-    protected function getGroupTemplate(): string
+    protected function getTagTemplate(): string
     {
         return 'java-group.java.twig';
     }

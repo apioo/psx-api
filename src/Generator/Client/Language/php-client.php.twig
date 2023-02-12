@@ -14,22 +14,17 @@ class Client extends ClientAbstract
         parent::__construct($baseUrl, {% if security.type == 'httpBasic' %}new Credentials\HttpBasic($userName, $password){% elseif security.type == 'httpBearer' %}new Credentials\HttpBearer($token){% elseif security.type == 'apiKey' %}new Credentials\ApiKey($token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new Credentials\ClientCredentials($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new Credentials\AuthorizationCode($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}$credentials{% endif %}, $tokenStore, $scopes);
     }
 
-{% for className, resource in resources %}
-    /**
-     * Endpoint: {{ resource.path|raw }}
-     *
-     * {{ resource.description|raw }}
-     */
-    public function {{ resource.methodName }}({% for name, arg in resource.properties %}{{ arg.type }} ${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}): {{ className }}
+{% for tag in tags %}
+    public function {{ tag.methodName }}(): {{ tag.className }}
     {
-        return new {{ className }}(
-            {% for name, arg in resource.properties %}${{ name }},
-            {% endfor %}
-$this->baseUrl,
-            $this->newHttpClient(),
-            $this->schemaManager
+        return new {{ tag.className }}(
+            $this->httpClient,
+            $this->parser
         );
     }
 
 {% endfor %}
+
+{{ operations }}
+
 }

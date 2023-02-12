@@ -37,7 +37,7 @@ class Typescript extends LanguageAbstract
         return 'typescript.ts.twig';
     }
 
-    protected function getGroupTemplate(): string
+    protected function getTagTemplate(): string
     {
         return 'typescript-group.ts.twig';
     }
