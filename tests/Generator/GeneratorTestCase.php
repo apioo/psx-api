@@ -20,12 +20,15 @@
 
 namespace PSX\Api\Tests\Generator;
 
+use PSX\Api\Builder\SpecificationBuilderInterface;
 use PSX\Api\Resource;
 use PSX\Api\Security\HttpBearer;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
 use PSX\Schema\Generator\Code\Chunks;
 use PSX\Schema\SchemaManager;
+use PSX\Schema\TypeFactory;
+use PSX\Schema\TypeInterface;
 
 /**
  * GeneratorTestCase
@@ -38,56 +41,57 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
 {
     protected function getSpecification(): SpecificationInterface
     {
-        $schemaManager = new SchemaManager();
-
-        $return = $schemaManager->getSchema(Schema\Collection::class)->getType();
-
         $builder = $this->apiManager->getBuilder();
         $builder->setSecurity(new HttpBearer());
-        $operation = $builder->addOperation('', 'GET', '/foo/:name/:type', 200, $return);
 
-        $resource->setDescription('lorem ipsum');
-        $path = $resource->setPathParameters('Path');
-        $path->addString('name')
+        $collection = $this->addSchema($builder, Schema\Collection::class);
+        $message = $this->addSchema($builder, Schema\Message::class);
+        $create = $this->addSchema($builder, Schema\Create::class);
+        $update = $this->addSchema($builder, Schema\Update::class);
+        $delete = $this->addSchema($builder, Schema\Delete::class);
+        $patch = $this->addSchema($builder, Schema\Patch::class);
+
+        $operation = $builder->addOperation('get', 'GET', '/foo/:name/:type', 200, $collection);
+        $operation->setDescription('Returns a collection');
+        $operation->addArgument('name', 'path', TypeFactory::getString()
             ->setDescription('Name parameter')
             ->setMinLength(0)
             ->setMaxLength(16)
-            ->setPattern('[A-z]+');
-        $path->addString('type')
-            ->setEnum(['foo', 'bar']);
-        $path->setRequired(['name']);
-
-        $get = $resource->addMethod('GET');
-        $get->setDescription('Returns a collection');
-        $get->setOperationId('list.foo');
-        $query = $get->setQueryParameters('GetQuery');
-        $query->addInteger('startIndex')
+            ->setPattern('[A-z]+'));
+        $operation->addArgument('type', 'path', TypeFactory::getString()
+            ->setEnum(['foo', 'bar']));
+        $operation->addArgument('startIndex', 'query', TypeFactory::getInteger()
             ->setDescription('startIndex parameter')
             ->setMinimum(0)
-            ->setMaximum(32);
-        $query->addNumber('float');
-        $query->addBoolean('boolean');
-        $query->addDate('date');
-        $query->addDateTime('datetime');
-        $query->setRequired(['startIndex']);
-        $get->addResponse(200, Schema\Collection::class);
+            ->setMaximum(32));
+        $operation->addArgument('float', 'query', TypeFactory::getNumber());
+        $operation->addArgument('boolean', 'query', TypeFactory::getBoolean());
+        $operation->addArgument('date', 'query', TypeFactory::getString()
+            ->setFormat('date'));
+        $operation->addArgument('datetime', 'query', TypeFactory::getString()
+            ->setFormat('date-time'));
 
-        $post = $resource->addMethod('POST');
-        $post->setOperationId('create.foo');
-        $post->setRequest(Schema\Create::class);
-        $post->addResponse(201, Schema\Message::class);
+        $operation = $builder->addOperation('create', 'POST', '/foo/:name/:type', 201, $message);
+        $operation->addArgument('name', 'path', TypeFactory::getString());
+        $operation->addArgument('type', 'path', TypeFactory::getString());
+        $operation->addArgument('payload', 'body', $create);
+        $operation->addThrow(400, $message);
+        $operation->addThrow(500, $message);
 
-        $put = $resource->addMethod('PUT');
-        $put->setRequest(Schema\Update::class);
-        $put->addResponse(200, Schema\Message::class);
+        $operation = $builder->addOperation('update', 'PUT', '/foo/:name/:type', 200, $message);
+        $operation->addArgument('name', 'path', TypeFactory::getString());
+        $operation->addArgument('type', 'path', TypeFactory::getString());
+        $operation->addArgument('payload', 'body', $update);
 
-        $delete = $resource->addMethod('DELETE');
-        $delete->setRequest(Schema\Delete::class);
-        $delete->addResponse(200, Schema\Message::class);
+        $operation = $builder->addOperation('delete', 'DELETE', '/foo/:name/:type', 200, $message);
+        $operation->addArgument('name', 'path', TypeFactory::getString());
+        $operation->addArgument('type', 'path', TypeFactory::getString());
+        $operation->addArgument('payload', 'body', $delete);
 
-        $patch = $resource->addMethod('PATCH');
-        $patch->setRequest(Schema\Patch::class);
-        $patch->addResponse(200, Schema\Message::class);
+        $operation = $builder->addOperation('patch', 'PATCH', '/foo/:name/:type', 200, $message);
+        $operation->addArgument('name', 'path', TypeFactory::getString());
+        $operation->addArgument('type', 'path', TypeFactory::getString());
+        $operation->addArgument('payload', 'body', $patch);
 
         return $builder->getSpecification();
     }
@@ -96,43 +100,36 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
     {
         $builder = $this->apiManager->getBuilder();
         $builder->setSecurity(new HttpBearer());
-        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo');
-        $resource->setDescription('foo');
-        $resource->setTags(['foo']);
 
-        $get = $resource->addMethod('GET');
-        $get->setDescription('Returns a collection');
-        $get->addResponse(200, Schema\Collection::class);
+        $collection = $this->addSchema($builder, Schema\Collection::class);
+        $message = $this->addSchema($builder, Schema\Message::class);
+        $create = $this->addSchema($builder, Schema\Create::class);
 
-        $post = $resource->addMethod('POST');
-        $post->setRequest(Schema\Create::class);
-        $post->addResponse(201, Schema\Message::class);
+        $operation = $builder->addOperation('get', 'GET', '/foo', 200, $collection);
+        $operation->setDescription('Returns a collection');
+        $operation->setTags(['foo']);
 
-        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/bar/:foo');
-        $resource->setDescription('bar');
-        $resource->setPathParameters('PathFoo')->addString('foo');
-        $resource->setTags(['bar']);
+        $operation = $builder->addOperation('create', 'POST', '/foo', 201, $message);
+        $operation->setTags(['foo']);
+        $operation->addArgument('payload', 'body', $create);
 
-        $get = $resource->addMethod('GET');
-        $get->setDescription('Returns a collection');
-        $get->addResponse(200, Schema\Collection::class);
+        $operation = $builder->addOperation('get', 'GET', '/bar/:foo', 200, $collection);
+        $operation->setDescription('Returns a collection');
+        $operation->setTags(['bar']);
+        $operation->addArgument('foo', 'path', TypeFactory::getString());
 
-        $post = $resource->addMethod('POST');
-        $post->setRequest(Schema\Create::class);
-        $post->addResponse(201, Schema\Message::class);
+        $operation = $builder->addOperation('create', 'POST', '/bar/:foo', 201, $message);
+        $operation->setTags(['bar']);
+        $operation->addArgument('payload', 'body', $create);
 
-        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/bar/$year<[0-9]+>');
-        $resource->setDescription('bar');
-        $resource->setPathParameters('PathYear')->addString('year');
-        $resource->setTags(['bar']);
+        $operation = $builder->addOperation('create', 'GET', '/bar/$year<[0-9]+>', 200, $collection);
+        $operation->setDescription('Returns a collection');
+        $operation->setTags(['baz']);
+        $operation->addArgument('year', 'path', TypeFactory::getString());
 
-        $get = $resource->addMethod('GET');
-        $get->setDescription('Returns a collection');
-        $get->addResponse(200, Schema\Collection::class);
-
-        $post = $resource->addMethod('POST');
-        $post->setRequest(Schema\Create::class);
-        $post->addResponse(201, Schema\Message::class);
+        $operation = $builder->addOperation('create', 'POST', '/bar/$year<[0-9]+>', 201, $message);
+        $operation->setTags(['baz']);
+        $operation->addArgument('payload', 'body', $create);
 
         return $builder->getSpecification();
     }
@@ -140,21 +137,17 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
     protected function getSpecificationComplex(): SpecificationInterface
     {
         $builder = $this->apiManager->getBuilder();
-        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
+        $builder->setSecurity(new HttpBearer());
 
-        $resource->setDescription('lorem ipsum');
-        $path = $resource->setPathParameters('Path');
-        $path->addString('name');
-        $path->addString('type');
-        $path->setRequired(['name', 'type']);
+        $complex = $this->addSchema($builder, Schema\Complex::class);
 
-        $post = $resource->addMethod('POST');
-        $post->setDescription('Returns a collection');
-        $post->setOperationId('postEntryOrMessage');
-        $post->setTags(['foo']);
-        $post->setRequest(Schema\Complex::class);
-        $post->addResponse(200, Schema\Complex::class);
-        $post->setSecurity('OAuth2', ['foo']);
+        $operation = $builder->addOperation('get', 'GET', '/foo/:name/:type', 200, $complex);
+        $operation->setDescription('Returns a collection');
+        $operation->setTags(['foo']);
+        $operation->setSecurity(['foo']);
+        $operation->addArgument('name', 'path', TypeFactory::getString());
+        $operation->addArgument('type', 'path', TypeFactory::getString());
+        $operation->addArgument('payload', 'body', $complex);
 
         return $builder->getSpecification();
     }
@@ -169,5 +162,12 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         foreach ($result->getChunks() as $file => $code) {
             file_put_contents($target . '/' . $file, $code);
         }
+    }
+
+    private function addSchema(SpecificationBuilderInterface $builder, string $schema): TypeInterface
+    {
+        $result = $this->schemaManager->getSchema($schema);
+        $builder->addDefinitions($result->getDefinitions());
+        return $result->getType();
     }
 }

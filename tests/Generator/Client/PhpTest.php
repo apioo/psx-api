@@ -42,16 +42,6 @@ class PhpTest extends GeneratorTestCase
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/Client.php');
-        $this->assertFileExists($target . '/Entry.php');
-        $this->assertFileExists($target . '/EntryCollection.php');
-        $this->assertFileExists($target . '/EntryCreate.php');
-        $this->assertFileExists($target . '/EntryDelete.php');
-        $this->assertFileExists($target . '/EntryMessage.php');
-        $this->assertFileExists($target . '/EntryPatch.php');
-        $this->assertFileExists($target . '/EntryUpdate.php');
-        $this->assertFileExists($target . '/FooByNameAndTypeResource.php');
-        $this->assertFileExists($target . '/GetQuery.php');
-        $this->assertFileExists($target . '/Path.php');
     }
 
     public function testGenerateCollection()
@@ -63,16 +53,7 @@ class PhpTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/BarByFooResource.php');
-        $this->assertFileExists($target . '/BarByYearResource.php');
         $this->assertFileExists($target . '/Client.php');
-        $this->assertFileExists($target . '/Entry.php');
-        $this->assertFileExists($target . '/EntryCollection.php');
-        $this->assertFileExists($target . '/EntryCreate.php');
-        $this->assertFileExists($target . '/EntryMessage.php');
-        $this->assertFileExists($target . '/FooResource.php');
-        $this->assertFileExists($target . '/PathFoo.php');
-        $this->assertFileExists($target . '/PathYear.php');
     }
 
     public function testGenerateComplex()

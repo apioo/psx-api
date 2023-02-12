@@ -6,7 +6,8 @@
 {% for name, arg in operation.arguments %}     * @param {{ arg.docType }}{% if arg.optional %}|null{% endif %} ${{ name }}
 {% endfor %}
      * @return {% if operation.return %}{{ operation.return.docType }}{% else %}void{% endif %}
-{% for throw in operation.throws %}     * @throws {{ throw.docType }}
+
+{% for throw in operation.throws %}     * @throws {{ throw.docType }}Exception
 {% endfor %}
      * @throws \Sdkgen\Client\ErrorException
      */
@@ -20,7 +21,7 @@
         ]);
 
         $options = [
-            'query' => $this->query([
+            'query' => $this->parser->query([
 {% for name in operation.queryNames %}
                 '{{ name }}' => ${{ name }},
 {% endfor %}
@@ -35,22 +36,14 @@
             $data     = (string) $response->getBody();
 
 {% if operation.return %}
-            return $this->parse($data, {{ operation.return.type }}::class);
+            return $this->parser->parse($data, {{ operation.return.type }}::class);
 {% endif %}
         } catch (BadResponseException $e) {
-            $class = match ($e->getResponse()->getStatusCode()) {
+            throw $this->parser->newException($e, [
 {% for code, return in operation.throws %}
                 {{ code }} => {{ return.type }}::class,
 {% endfor %}
-                default => null,
-            };
-
-            if ($class !== null) {
-                $data = (string) $e->getResponse()->getBody();
-                throw new {{ return.type }}Exception($this->parse($data, $class));
-            }
-
-            throw new ErrorException('The server returned an unknown status code');
+            ]);
         } catch (\Throwable $e) {
             throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
         }

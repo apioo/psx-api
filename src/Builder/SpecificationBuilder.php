@@ -23,6 +23,7 @@ namespace PSX\Api\Builder;
 use PSX\Api\SecurityInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -51,6 +52,12 @@ class SpecificationBuilder implements SpecificationBuilderInterface
         $builder = new OperationBuilder($method, $path, $statusCode, $schema);
         $this->specification->getOperations()->add($operationId, $builder->getOperation());
         return $builder;
+    }
+
+    public function addDefinitions(DefinitionsInterface $definitions): self
+    {
+        $this->specification->getDefinitions()->merge($definitions);
+        return $this;
     }
 
     public function addType(string $name, TypeInterface $schema): self

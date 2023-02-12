@@ -43,7 +43,7 @@ interface OperationBuilderInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function addArgument(string $name, string $in, TypeInterface $schema): TypeInterface;
+    public function addArgument(string $name, string $in, TypeInterface $schema): self;
 
     public function setAuthorization(bool $authorization): self;
 
@@ -54,7 +54,7 @@ interface OperationBuilderInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function addThrow(int $statusCode, TypeInterface $schema): TypeInterface;
+    public function addThrow(int $statusCode, TypeInterface $schema): self;
 
     public function setTags(array $tags): self;
 

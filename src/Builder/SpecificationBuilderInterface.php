@@ -40,5 +40,9 @@ interface SpecificationBuilderInterface
 
     public function addOperation(string $operationId, string $method, string $path, int $statusCode, TypeInterface $schema): OperationBuilderInterface;
 
-    public function getSpecification(): self;
+    public function addDefinitions(DefinitionsInterface $definitions): self;
+
+    public function addType(string $name, TypeInterface $schema): self;
+
+    public function getSpecification(): SpecificationInterface;
 }

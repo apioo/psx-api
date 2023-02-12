@@ -105,7 +105,7 @@ class LanguageBuilder
             $operations = [];
         } else {
             $tagOperations = reset($grouped);
-            if ($tagOperations instanceof OperationsInterface) {
+            if (!empty($tagOperations)) {
                 $exceptions = array_merge($exceptions, $this->getExceptions($tagOperations));
                 $operations = $this->getOperations($tagOperations);
             }
@@ -120,10 +120,10 @@ class LanguageBuilder
         );
     }
 
-    private function getOperations(OperationsInterface $operations): array
+    private function getOperations(array $operations): array
     {
         $result = [];
-        foreach ($operations->getAll() as $operationId => $operation) {
+        foreach ($operations as $operationId => $operation) {
             $methodName = $this->naming->buildMethodNameByOperationId($operationId);
             if (empty($methodName)) {
                 continue;
@@ -145,7 +145,7 @@ class LanguageBuilder
                 }
             }
 
-            $arguments = array_merge($path, $body !== null ? [$body] : [], $query);
+            $arguments = array_merge($path, $body !== null ? ['payload' => $body] : [], $query);
 
             $return = null;
             if (in_array($operation->getReturn()->getCode(), [200, 201])) {
@@ -174,17 +174,17 @@ class LanguageBuilder
         return $result;
     }
 
-    private function getExceptions(OperationsInterface $operations): array
+    private function getExceptions(array $operations): array
     {
         $result = [];
 
-        foreach ($operations->getAll() as $operation) {
+        foreach ($operations as $operation) {
             $throws = $operation->getThrows();
             foreach ($throws as $throw) {
                 $type = $throw->getSchema();
                 if ($type instanceof ReferenceType) {
                     $className = $this->naming->buildClassNameByException($type->getRef());
-                    $result[$className] = new Exception($className, $type->getRef(), 'The server returned an error status code ' . $throw->getCode(), $throw->getCode());
+                    $result[$className] = new Exception($className, $type->getRef(), 'The server returned an error');
                 }
             }
         }

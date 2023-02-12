@@ -109,7 +109,6 @@ abstract class LanguageAbstract implements GeneratorInterface
                 'className' => $exception->className,
                 'type' => $exception->type,
                 'message' => $exception->message,
-                'code' => $exception->code,
             ]);
 
             $chunks->append($this->getFileName($exception->className), $this->getFileContent($code, $exception->className));

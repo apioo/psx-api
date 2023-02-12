@@ -36,7 +36,6 @@ class Exception
         public string $className,
         public string $type,
         public string $message,
-        public int $code,
     )
     {
     }
