@@ -25,6 +25,7 @@ use PSX\Api\Security\HttpBearer;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
 use PSX\Schema\Generator\Code\Chunks;
+use PSX\Schema\SchemaManager;
 
 /**
  * GeneratorTestCase
@@ -37,9 +38,13 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
 {
     protected function getSpecification(): SpecificationInterface
     {
+        $schemaManager = new SchemaManager();
+
+        $return = $schemaManager->getSchema(Schema\Collection::class)->getType();
+
         $builder = $this->apiManager->getBuilder();
         $builder->setSecurity(new HttpBearer());
-        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo/:name/:type');
+        $operation = $builder->addOperation('', 'GET', '/foo/:name/:type', 200, $return);
 
         $resource->setDescription('lorem ipsum');
         $path = $resource->setPathParameters('Path');
