@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Builder;
 
+use PSX\Api\Exception\OperationAlreadyExistsException;
 use PSX\Api\SecurityInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
@@ -49,6 +50,10 @@ class SpecificationBuilder implements SpecificationBuilderInterface
 
     public function addOperation(string $operationId, string $method, string $path, int $statusCode, TypeInterface $schema): OperationBuilderInterface
     {
+        if ($this->specification->getOperations()->has($operationId)) {
+            throw new OperationAlreadyExistsException('Operation "' . $operationId . '" already exists');
+        }
+
         $builder = new OperationBuilder($method, $path, $statusCode, $schema);
         $this->specification->getOperations()->add($operationId, $builder->getOperation());
         return $builder;

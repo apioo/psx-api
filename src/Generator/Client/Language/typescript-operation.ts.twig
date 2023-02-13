@@ -1,0 +1,33 @@
+{% for operation in operations %}
+    /**
+{% if operation.description %}     * {{ operation.description }}
+     *
+{% endif %}
+{% for name, arg in method.args %}     * @param {{ '{' }}{{ arg.docType }}{{ '}' }} {{ name }}
+{% endfor %}
+     * @returns {{ '{' }}Promise<AxiosResponse<{% if method.return %}{{ method.return.docType|raw }}{% else %}void{% endif %}>>{{ '}' }}
+     */
+    public async {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ name }}{% if arg.optional %}?{% endif %}: {{ arg.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<AxiosResponse<{% if operation.return %}{{ operation.return.type|raw }}{% else %}void{% endif %}>> {
+        const url = this.parser.url('{{ operation.path }}', {
+{% for name in operation.pathNames %}
+            {{ name }}: {{ name }},
+{% endfor %}
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: '{{ operation.method }}',
+            params: this.parser.query({
+{% for name in operation.queryNames %}
+                {{ name }}: {{ name }},
+{% endfor %}
+            }),
+{% if operation.bodyName is not null %}
+            data: {{ operation.bodyName }}
+{% endif %}
+        };
+
+        return this.httpClient.request{% if operation.return %}<{{ operation.return.type }}>{% endif %}(params);
+    }
+
+{% endfor %}

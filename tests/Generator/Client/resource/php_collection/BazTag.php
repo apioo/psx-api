@@ -11,6 +11,37 @@ use Sdkgen\Client\TagAbstract;
 class BazTag extends TagAbstract
 {
     /**
+     * Returns a collection
+     *
+     * @param string $year
+     * @return EntryCollection
+     * @throws \Sdkgen\Client\ErrorException
+     */
+    public function get(string $year): EntryCollection
+    {
+        $url = $this->parser->url('/bar/$year&lt;[0-9]+&gt;', [
+            'year' => $year,
+        ]);
+
+        $options = [
+            'query' => $this->parser->query([
+            ]),
+        ];
+
+        try {
+            $response = $this->httpClient->request('GET', $url, $options);
+            $data     = (string) $response->getBody();
+
+            return $this->parser->parse($data, EntryCollection::class);
+        } catch (BadResponseException $e) {
+            throw $this->parser->newException($e, [
+            ]);
+        } catch (\Throwable $e) {
+            throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * @param EntryCreate $payload
      * @return EntryMessage
      * @throws \Sdkgen\Client\ErrorException

@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Generator\Client;
 
+use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Dto\Exception;
 use PSX\Api\Generator\Client\Dto\Tag;
 use PSX\Api\Generator\Client\Dto\Type;
@@ -93,7 +94,7 @@ class LanguageBuilder
         if (count($grouped) > 1) {
             foreach ($grouped as $tagName => $tagOperations) {
                 $exceptions = array_merge($exceptions, $this->getExceptions($tagOperations));
-                $operations = $this->getOperations($tagOperations);
+                $operations = $this->getOperations($tagOperations, $specification->getDefinitions());
 
                 $tags[] = new Tag(
                     $this->naming->buildClassNameByTag($tagName),
@@ -107,7 +108,7 @@ class LanguageBuilder
             $tagOperations = reset($grouped);
             if (!empty($tagOperations)) {
                 $exceptions = array_merge($exceptions, $this->getExceptions($tagOperations));
-                $operations = $this->getOperations($tagOperations);
+                $operations = $this->getOperations($tagOperations, $specification->getDefinitions());
             }
         }
 
@@ -120,7 +121,7 @@ class LanguageBuilder
         );
     }
 
-    private function getOperations(array $operations): array
+    private function getOperations(array $operations, DefinitionsInterface $definitions): array
     {
         $result = [];
         foreach ($operations as $operationId => $operation) {
@@ -134,13 +135,13 @@ class LanguageBuilder
             $body = $bodyName = null;
             foreach ($operation->getArguments()->getAll() as $name => $argument) {
                 if ($argument->getIn() === Argument::IN_PATH) {
-                    $path[$name] = $this->newTypeBySchema($argument->getSchema(), false);
+                    $path[$name] = $this->newTypeBySchema($argument->getSchema(), false, $definitions);
                     $pathNames[] = $name;
                 } elseif ($argument->getIn() === Argument::IN_QUERY) {
-                    $query[$name] = $this->newTypeBySchema($argument->getSchema(), true);
+                    $query[$name] = $this->newTypeBySchema($argument->getSchema(), true, $definitions);
                     $queryNames[] = $name;
                 } elseif ($argument->getIn() === Argument::IN_BODY) {
-                    $body = $this->newTypeBySchema($argument->getSchema(), false);
+                    $body = $this->newTypeBySchema($argument->getSchema(), false, $definitions);
                     $bodyName = $name;
                 }
             }
@@ -149,12 +150,12 @@ class LanguageBuilder
 
             $return = null;
             if (in_array($operation->getReturn()->getCode(), [200, 201])) {
-                $return = $this->newTypeBySchema($operation->getReturn()->getSchema(), false);
+                $return = $this->newTypeBySchema($operation->getReturn()->getSchema(), false, $definitions);
             }
 
             $throws = [];
             foreach ($operation->getThrows() as $throw) {
-                $throws[$throw->getCode()] = $this->newTypeBySchema($throw->getSchema(), false);
+                $throws[$throw->getCode()] = $this->newTypeBySchema($throw->getSchema(), false, $definitions);
             }
 
             $result[] = new Dto\Operation(
@@ -192,8 +193,17 @@ class LanguageBuilder
         return $result;
     }
 
-    private function newTypeBySchema(TypeInterface $type, bool $optional): Type
+    private function newTypeBySchema(TypeInterface $type, bool $optional, DefinitionsInterface $definitions): Type
     {
+        if ($type instanceof ReferenceType) {
+            // in case we have a reference type we take a look at the reference, normally this is a struct type but in
+            // some special cases we need to extract the type
+            $refType = $definitions->getType($type->getRef());
+            if (!$refType instanceof StructType) {
+                throw new InvalidTypeException('A reference can only point to a struct type, got: ' . get_class($refType));
+            }
+        }
+
         return new Dto\Type(
             $this->typeGenerator->getType($type),
             $this->typeGenerator->getDocType($type),

@@ -20,21 +20,17 @@ export default class {{ className }} extends ClientAbstract {
         super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}credentials{% endif %}, tokenStore, scopes);
     }
 
-{% for className, resource in resources %}
-    /**
-     * Endpoint: {{ resource.path|raw }}
-     *
-     * {{ resource.description|raw }}
-     */
-    public async {{ resource.methodName }}({% for name, arg in resource.properties %}{{ name }}: {{ arg.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ className }}>
+{% for tag in tags %}
+    public function {{ tag.methodName }}(): {{ tag.className }}
     {
-        return new {{ className }}(
-            {% for name, arg in resource.properties %}{{ name }},
-            {% endfor %}
-this.baseUrl,
-            await this.newHttpClient()
+        return new {{ tag.className }}(
+            this.httpClient,
+            this.parser
         );
     }
 
 {% endfor %}
+
+{{ operations|raw }}
+
 }

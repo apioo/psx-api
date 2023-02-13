@@ -32,14 +32,19 @@ use PSX\Schema\GeneratorInterface;
  */
 class Typescript extends LanguageAbstract
 {
-    protected function getTemplate(): string
+    protected function getOperationTemplate(): string
     {
-        return 'typescript.ts.twig';
+        return 'typescript-operation.ts.twig';
     }
 
     protected function getTagTemplate(): string
     {
-        return 'typescript-group.ts.twig';
+        return 'typescript-tag.ts.twig';
+    }
+
+    protected function getExceptionTemplate(): string
+    {
+        return 'typescript-exception.ts.twig';
     }
 
     protected function getClientTemplate(): string

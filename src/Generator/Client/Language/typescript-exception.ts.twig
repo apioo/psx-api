@@ -1,0 +1,13 @@
+import {KnownErrorException} from "sdkgen-client"
+
+export default class {{ className }} extends KnownErrorException {
+
+    public constructor(private payload: {{ type }}) {
+        super();
+    }
+
+    public getPayload(): {{ type }} {
+        return this.payload;
+    }
+
+}

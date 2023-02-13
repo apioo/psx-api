@@ -18,6 +18,14 @@ class Client extends ClientAbstract
         parent::__construct($baseUrl, new Credentials\HttpBearer($token), $tokenStore, $scopes);
     }
 
+    public function foo(): FooTag
+    {
+        return new FooTag(
+            $this->httpClient,
+            $this->parser
+        );
+    }
+
     public function bar(): BarTag
     {
         return new BarTag(

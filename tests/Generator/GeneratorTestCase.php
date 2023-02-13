@@ -105,29 +105,29 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $message = $this->addSchema($builder, Schema\Message::class);
         $create = $this->addSchema($builder, Schema\Create::class);
 
-        $operation = $builder->addOperation('get', 'GET', '/foo', 200, $collection);
+        $operation = $builder->addOperation('foo.get', 'GET', '/foo', 200, $collection);
         $operation->setDescription('Returns a collection');
         $operation->setTags(['foo']);
 
-        $operation = $builder->addOperation('create', 'POST', '/foo', 201, $message);
+        $operation = $builder->addOperation('foo.create', 'POST', '/foo', 201, $message);
         $operation->setTags(['foo']);
         $operation->addArgument('payload', 'body', $create);
 
-        $operation = $builder->addOperation('get', 'GET', '/bar/:foo', 200, $collection);
+        $operation = $builder->addOperation('bar.get', 'GET', '/bar/:foo', 200, $collection);
         $operation->setDescription('Returns a collection');
         $operation->setTags(['bar']);
         $operation->addArgument('foo', 'path', TypeFactory::getString());
 
-        $operation = $builder->addOperation('create', 'POST', '/bar/:foo', 201, $message);
+        $operation = $builder->addOperation('bar.create', 'POST', '/bar/:foo', 201, $message);
         $operation->setTags(['bar']);
         $operation->addArgument('payload', 'body', $create);
 
-        $operation = $builder->addOperation('create', 'GET', '/bar/$year<[0-9]+>', 200, $collection);
+        $operation = $builder->addOperation('baz.get', 'GET', '/bar/$year<[0-9]+>', 200, $collection);
         $operation->setDescription('Returns a collection');
         $operation->setTags(['baz']);
         $operation->addArgument('year', 'path', TypeFactory::getString());
 
-        $operation = $builder->addOperation('create', 'POST', '/bar/$year<[0-9]+>', 201, $message);
+        $operation = $builder->addOperation('baz.create', 'POST', '/bar/$year<[0-9]+>', 201, $message);
         $operation->setTags(['baz']);
         $operation->addArgument('payload', 'body', $create);
 

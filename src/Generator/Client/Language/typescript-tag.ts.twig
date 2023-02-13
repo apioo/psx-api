@@ -1,0 +1,9 @@
+import {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
+import {TagAbstract} from "sdkgen-client"
+{% for className in imports %}
+import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
+{% endfor %}
+
+export default class {{ className }} extends TagAbstract {
+{{ operations|raw }}
+}

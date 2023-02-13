@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Generator\Client;
 
+use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Php;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 
@@ -42,6 +43,14 @@ class PhpTest extends GeneratorTestCase
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/Client.php');
+        $this->assertFileExists($target . '/Entry.php');
+        $this->assertFileExists($target . '/EntryCollection.php');
+        $this->assertFileExists($target . '/EntryCreate.php');
+        $this->assertFileExists($target . '/EntryDelete.php');
+        $this->assertFileExists($target . '/EntryMessage.php');
+        $this->assertFileExists($target . '/EntryMessageException.php');
+        $this->assertFileExists($target . '/EntryPatch.php');
+        $this->assertFileExists($target . '/EntryUpdate.php');
     }
 
     public function testGenerateCollection()
@@ -53,22 +62,21 @@ class PhpTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
+        $this->assertFileExists($target . '/BarTag.php');
+        $this->assertFileExists($target . '/BazTag.php');
         $this->assertFileExists($target . '/Client.php');
+        $this->assertFileExists($target . '/Entry.php');
+        $this->assertFileExists($target . '/EntryCollection.php');
+        $this->assertFileExists($target . '/EntryCreate.php');
+        $this->assertFileExists($target . '/EntryMessage.php');
+        $this->assertFileExists($target . '/FooTag.php');
     }
 
     public function testGenerateComplex()
     {
+        $this->expectException(InvalidTypeException::class);
+
         $generator = new Php('http://api.foo.com', 'Foo\Bar');
-
-        $result = $generator->generate($this->getSpecificationComplex());
-        $target = __DIR__ . '/resource/php_complex';
-
-        $this->writeChunksToFolder($result, $target);
-
-        $this->assertFileExists($target . '/Client.php');
-        $this->assertFileExists($target . '/Entry.php');
-        $this->assertFileExists($target . '/EntryMessage.php');
-        $this->assertFileExists($target . '/FooByNameAndTypeResource.php');
-        $this->assertFileExists($target . '/Path.php');
+        $generator->generate($this->getSpecificationComplex());
     }
 }
