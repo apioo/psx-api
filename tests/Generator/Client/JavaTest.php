@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Generator\Client;
 
+use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Java;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 
@@ -49,9 +50,6 @@ class JavaTest extends GeneratorTestCase
         $this->assertFileExists($target . '/EntryMessage.java');
         $this->assertFileExists($target . '/EntryPatch.java');
         $this->assertFileExists($target . '/EntryUpdate.java');
-        $this->assertFileExists($target . '/FooByNameAndTypeResource.java');
-        $this->assertFileExists($target . '/GetQuery.java');
-        $this->assertFileExists($target . '/Path.java');
     }
 
     public function testGenerateCollection()
@@ -63,31 +61,14 @@ class JavaTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/BarByFooResource.java');
-        $this->assertFileExists($target . '/BarByYearResource.java');
         $this->assertFileExists($target . '/Client.java');
-        $this->assertFileExists($target . '/Entry.java');
-        $this->assertFileExists($target . '/EntryCollection.java');
-        $this->assertFileExists($target . '/EntryCreate.java');
-        $this->assertFileExists($target . '/EntryMessage.java');
-        $this->assertFileExists($target . '/FooResource.java');
-        $this->assertFileExists($target . '/PathFoo.java');
-        $this->assertFileExists($target . '/PathYear.java');
     }
 
     public function testGenerateComplex()
     {
+        $this->expectException(InvalidTypeException::class);
+
         $generator = new Java('http://api.foo.com');
-
-        $result = $generator->generate($this->getSpecificationComplex());
-        $target = __DIR__ . '/resource/java_complex';
-
-        $this->writeChunksToFolder($result, $target);
-
-        $this->assertFileExists($target . '/Client.java');
-        $this->assertFileExists($target . '/Entry.java');
-        $this->assertFileExists($target . '/EntryMessage.java');
-        $this->assertFileExists($target . '/FooByNameAndTypeResource.java');
-        $this->assertFileExists($target . '/Path.java');
+        $generator->generate($this->getSpecificationComplex());
     }
 }

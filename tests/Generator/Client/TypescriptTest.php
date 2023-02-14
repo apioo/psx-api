@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Generator\Client;
 
+use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Typescript;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 
@@ -47,11 +48,9 @@ class TypescriptTest extends GeneratorTestCase
         $this->assertFileExists($target . '/EntryCreate.ts');
         $this->assertFileExists($target . '/EntryDelete.ts');
         $this->assertFileExists($target . '/EntryMessage.ts');
+        $this->assertFileExists($target . '/EntryMessageException.ts');
         $this->assertFileExists($target . '/EntryPatch.ts');
         $this->assertFileExists($target . '/EntryUpdate.ts');
-        $this->assertFileExists($target . '/FooByNameAndTypeResource.ts');
-        $this->assertFileExists($target . '/GetQuery.ts');
-        $this->assertFileExists($target . '/Path.ts');
     }
 
     public function testGenerateCollection()
@@ -63,32 +62,14 @@ class TypescriptTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/BarByFooResource.ts');
-        $this->assertFileExists($target . '/BarByYearResource.ts');
         $this->assertFileExists($target . '/Client.ts');
-        $this->assertFileExists($target . '/Entry.ts');
-        $this->assertFileExists($target . '/EntryCollection.ts');
-        $this->assertFileExists($target . '/EntryCreate.ts');
-        $this->assertFileExists($target . '/EntryMessage.ts');
-        $this->assertFileExists($target . '/FooResource.ts');
-        $this->assertFileExists($target . '/PathFoo.ts');
-        $this->assertFileExists($target . '/PathYear.ts');
     }
 
     public function testGenerateComplex()
     {
+        $this->expectException(InvalidTypeException::class);
+
         $generator = new Typescript('http://api.foo.com');
-
-        $result = $generator->generate($this->getSpecificationComplex());
-        $target = __DIR__ . '/resource/typescript_complex';
-
-        $this->writeChunksToFolder($result, $target);
-
-        $this->assertFileExists($target . '/Client.ts');
-        $this->assertFileExists($target . '/Entry.ts');
-        $this->assertFileExists($target . '/EntryMessage.ts');
-        $this->assertFileExists($target . '/EntryOrMessage.ts');
-        $this->assertFileExists($target . '/FooByNameAndTypeResource.ts');
-        $this->assertFileExists($target . '/Path.ts');
+        $generator->generate($this->getSpecificationComplex());
     }
 }

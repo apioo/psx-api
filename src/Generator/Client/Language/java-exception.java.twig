@@ -1,0 +1,21 @@
+{% if namespace %}
+package {{ namespace }};
+{% endif %}
+
+import app.sdkgen.client.KnownErrorException;
+
+public class {{ className }} extends KnownErrorException {
+
+    private {{ type }} payload;
+
+    public {{ className }}({{ type }} payload) {
+        super("{{ message }}");
+
+        this.payload = payload;
+    }
+
+    public {{ type }} getPayload() {
+        return this.payload;
+    }
+
+}

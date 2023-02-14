@@ -21,7 +21,7 @@ export default class {{ className }} extends ClientAbstract {
     }
 
 {% for tag in tags %}
-    public function {{ tag.methodName }}(): {{ tag.className }}
+    public {{ tag.methodName }}(): {{ tag.className }}
     {
         return new {{ tag.className }}(
             this.httpClient,

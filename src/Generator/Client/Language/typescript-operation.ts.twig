@@ -3,9 +3,9 @@
 {% if operation.description %}     * {{ operation.description }}
      *
 {% endif %}
-{% for name, arg in method.args %}     * @param {{ '{' }}{{ arg.docType }}{{ '}' }} {{ name }}
+{% for name, arg in operation.args %}     * @param {{ '{' }}{{ arg.docType }}{{ '}' }} {{ name }}
 {% endfor %}
-     * @returns {{ '{' }}Promise<AxiosResponse<{% if method.return %}{{ method.return.docType|raw }}{% else %}void{% endif %}>>{{ '}' }}
+     * @returns {{ '{' }}Promise<AxiosResponse<{% if operation.return %}{{ operation.return.docType|raw }}{% else %}void{% endif %}>>{{ '}' }}
      */
     public async {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ name }}{% if arg.optional %}?{% endif %}: {{ arg.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<AxiosResponse<{% if operation.return %}{{ operation.return.type|raw }}{% else %}void{% endif %}>> {
         const url = this.parser.url('{{ operation.path }}', {

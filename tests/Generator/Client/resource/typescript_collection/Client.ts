@@ -6,54 +6,37 @@
 import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
 import {HttpBearer} from "sdkgen-client"
 
-import FooResource from "./FooResource";
-import BarByFooResource from "./BarByFooResource";
-import BarByYearResource from "./BarByYearResource";
 
 export default class Client extends ClientAbstract {
     public constructor(baseUrl: string, token: string, tokenStore: TokenStoreInterface|null = null, scopes: Array<string>|null = []) {
         super(baseUrl, new HttpBearer(token), tokenStore, scopes);
     }
 
-    /**
-     * Endpoint: /foo
-     *
-     * foo
-     */
-    public async getFoo(): Promise<FooResource>
+    public foo(): FooTag
     {
-        return new FooResource(
-            this.baseUrl,
-            await this.newHttpClient()
+        return new FooTag(
+            this.httpClient,
+            this.parser
         );
     }
 
-    /**
-     * Endpoint: /bar/:foo
-     *
-     * bar
-     */
-    public async getBarByFoo(foo: string): Promise<BarByFooResource>
+    public bar(): BarTag
     {
-        return new BarByFooResource(
-            foo,
-            this.baseUrl,
-            await this.newHttpClient()
+        return new BarTag(
+            this.httpClient,
+            this.parser
         );
     }
 
-    /**
-     * Endpoint: /bar/$year<[0-9]+>
-     *
-     * bar
-     */
-    public async getBarByYear(year: string): Promise<BarByYearResource>
+    public baz(): BazTag
     {
-        return new BarByYearResource(
-            year,
-            this.baseUrl,
-            await this.newHttpClient()
+        return new BazTag(
+            this.httpClient,
+            this.parser
         );
     }
+
+
+
 
 }

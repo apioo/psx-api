@@ -6,26 +6,119 @@
 import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
 import {HttpBearer} from "sdkgen-client"
 
-import FooByNameAndTypeResource from "./FooByNameAndTypeResource";
 
 export default class Client extends ClientAbstract {
     public constructor(baseUrl: string, token: string, tokenStore: TokenStoreInterface|null = null, scopes: Array<string>|null = []) {
         super(baseUrl, new HttpBearer(token), tokenStore, scopes);
     }
 
+
     /**
-     * Endpoint: /foo/:name/:type
+     * Returns a collection
      *
-     * lorem ipsum
+     * @returns {Promise<AxiosResponse<EntryCollection>>}
      */
-    public async getFooByNameAndType(name: string, type: string): Promise<FooByNameAndTypeResource>
-    {
-        return new FooByNameAndTypeResource(
-            name,
-            type,
-            this.baseUrl,
-            await this.newHttpClient()
-        );
+    public async get(name: string, type: string, startIndex?: number, float?: number, boolean?: boolean, date?: string, datetime?: string): Promise<AxiosResponse<EntryCollection>> {
+        const url = this.parser.url('/foo/:name/:type', {
+            name: name,
+            type: type,
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'GET',
+            params: this.parser.query({
+                startIndex: startIndex,
+                float: float,
+                boolean: boolean,
+                date: date,
+                datetime: datetime,
+            }),
+        };
+
+        return this.httpClient.request<EntryCollection>(params);
     }
+
+    /**
+     * @returns {Promise<AxiosResponse<EntryMessage>>}
+     */
+    public async create(name: string, type: string, payload: EntryCreate): Promise<AxiosResponse<EntryMessage>> {
+        const url = this.parser.url('/foo/:name/:type', {
+            name: name,
+            type: type,
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'POST',
+            params: this.parser.query({
+            }),
+            data: payload
+        };
+
+        return this.httpClient.request<EntryMessage>(params);
+    }
+
+    /**
+     * @returns {Promise<AxiosResponse<EntryMessage>>}
+     */
+    public async update(name: string, type: string, payload: EntryUpdate): Promise<AxiosResponse<EntryMessage>> {
+        const url = this.parser.url('/foo/:name/:type', {
+            name: name,
+            type: type,
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'PUT',
+            params: this.parser.query({
+            }),
+            data: payload
+        };
+
+        return this.httpClient.request<EntryMessage>(params);
+    }
+
+    /**
+     * @returns {Promise<AxiosResponse<EntryMessage>>}
+     */
+    public async delete(name: string, type: string, payload: EntryDelete): Promise<AxiosResponse<EntryMessage>> {
+        const url = this.parser.url('/foo/:name/:type', {
+            name: name,
+            type: type,
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'DELETE',
+            params: this.parser.query({
+            }),
+            data: payload
+        };
+
+        return this.httpClient.request<EntryMessage>(params);
+    }
+
+    /**
+     * @returns {Promise<AxiosResponse<EntryMessage>>}
+     */
+    public async patch(name: string, type: string, payload: EntryPatch): Promise<AxiosResponse<EntryMessage>> {
+        const url = this.parser.url('/foo/:name/:type', {
+            name: name,
+            type: type,
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'PATCH',
+            params: this.parser.query({
+            }),
+            data: payload
+        };
+
+        return this.httpClient.request<EntryMessage>(params);
+    }
+
+
 
 }

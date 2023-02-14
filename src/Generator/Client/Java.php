@@ -32,14 +32,19 @@ use PSX\Schema\GeneratorInterface;
  */
 class Java extends LanguageAbstract
 {
-    protected function getTemplate(): string
+    protected function getOperationTemplate(): string
     {
-        return 'java.java.twig';
+        return 'java-operation.java.twig';
     }
 
     protected function getTagTemplate(): string
     {
-        return 'java-group.java.twig';
+        return 'java-tag.java.twig';
+    }
+
+    protected function getExceptionTemplate(): string
+    {
+        return 'java-exception.java.twig';
     }
 
     protected function getClientTemplate(): string

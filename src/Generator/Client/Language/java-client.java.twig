@@ -13,21 +13,17 @@ public class {{ className }} extends ClientAbstract {
         super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}credentials{% endif %}, tokenStore, scopes);
     }
 
-{% for className, resource in resources %}
-    /**
-     * Endpoint: {{ resource.path }}
-     *
-     * {{ resource.description }}
-     */
-    public {{ className }} {{ resource.methodName }}({% for name, arg in resource.properties %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) {
-        return new {{ className }}(
-            {% for name, arg in resource.properties %}{{ name }},
-            {% endfor %}
-this.baseUrl,
-            this.newHttpClient(),
-            this.objectMapper
+{% for tag in tags %}
+    public function {{ tag.className }} {{ tag.methodName }}()
+    {
+        return new {{ tag.className }}(
+            $this->httpClient,
+            $this->parser
         );
     }
 
 {% endfor %}
+
+{{ operations|raw }}
+
 }
