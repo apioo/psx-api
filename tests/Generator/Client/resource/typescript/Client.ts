@@ -16,9 +16,10 @@ export default class Client extends ClientAbstract {
     /**
      * Returns a collection
      *
-     * @returns {Promise<AxiosResponse<EntryCollection>>}
+     * @returns {Promise<EntryCollection>}
+     * @throws {ErrorException}
      */
-    public async get(name: string, type: string, startIndex?: number, float?: number, boolean?: boolean, date?: string, datetime?: string): Promise<AxiosResponse<EntryCollection>> {
+    public async get(name: string, type: string, startIndex?: number, float?: number, boolean?: boolean, date?: string, datetime?: string): Promise<EntryCollection> {
         const url = this.parser.url('/foo/:name/:type', {
             name: name,
             type: type,
@@ -36,13 +37,28 @@ export default class Client extends ClientAbstract {
             }),
         };
 
-        return this.httpClient.request<EntryCollection>(params);
+        try {
+            const response = await this.httpClient.request<EntryCollection>(params);
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                switch (error.response.status) {
+                    default:
+                        throw new ErrorException('The server returned an unknown status code');
+                }
+            }
+
+            throw new ErrorException('An unknown error occurred: ' + String(error));
+        }
     }
 
     /**
-     * @returns {Promise<AxiosResponse<EntryMessage>>}
+     * @returns {Promise<EntryMessage>}
+     * @throws {EntryMessageException}
+     * @throws {EntryMessageException}
+     * @throws {ErrorException}
      */
-    public async create(name: string, type: string, payload: EntryCreate): Promise<AxiosResponse<EntryMessage>> {
+    public async create(name: string, type: string, payload: EntryCreate): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
             name: name,
             type: type,
@@ -56,13 +72,30 @@ export default class Client extends ClientAbstract {
             data: payload
         };
 
-        return this.httpClient.request<EntryMessage>(params);
+        try {
+            const response = await this.httpClient.request<EntryMessage>(params);
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                switch (error.response.status) {
+                    case 400:
+                        throw new EntryMessageException(error.response.data);
+                    case 500:
+                        throw new EntryMessageException(error.response.data);
+                    default:
+                        throw new ErrorException('The server returned an unknown status code');
+                }
+            }
+
+            throw new ErrorException('An unknown error occurred: ' + String(error));
+        }
     }
 
     /**
-     * @returns {Promise<AxiosResponse<EntryMessage>>}
+     * @returns {Promise<EntryMessage>}
+     * @throws {ErrorException}
      */
-    public async update(name: string, type: string, payload: EntryUpdate): Promise<AxiosResponse<EntryMessage>> {
+    public async update(name: string, type: string, payload: EntryUpdate): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
             name: name,
             type: type,
@@ -76,13 +109,26 @@ export default class Client extends ClientAbstract {
             data: payload
         };
 
-        return this.httpClient.request<EntryMessage>(params);
+        try {
+            const response = await this.httpClient.request<EntryMessage>(params);
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                switch (error.response.status) {
+                    default:
+                        throw new ErrorException('The server returned an unknown status code');
+                }
+            }
+
+            throw new ErrorException('An unknown error occurred: ' + String(error));
+        }
     }
 
     /**
-     * @returns {Promise<AxiosResponse<EntryMessage>>}
+     * @returns {Promise<EntryMessage>}
+     * @throws {ErrorException}
      */
-    public async delete(name: string, type: string, payload: EntryDelete): Promise<AxiosResponse<EntryMessage>> {
+    public async delete(name: string, type: string, payload: EntryDelete): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
             name: name,
             type: type,
@@ -96,13 +142,26 @@ export default class Client extends ClientAbstract {
             data: payload
         };
 
-        return this.httpClient.request<EntryMessage>(params);
+        try {
+            const response = await this.httpClient.request<EntryMessage>(params);
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                switch (error.response.status) {
+                    default:
+                        throw new ErrorException('The server returned an unknown status code');
+                }
+            }
+
+            throw new ErrorException('An unknown error occurred: ' + String(error));
+        }
     }
 
     /**
-     * @returns {Promise<AxiosResponse<EntryMessage>>}
+     * @returns {Promise<EntryMessage>}
+     * @throws {ErrorException}
      */
-    public async patch(name: string, type: string, payload: EntryPatch): Promise<AxiosResponse<EntryMessage>> {
+    public async patch(name: string, type: string, payload: EntryPatch): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
             name: name,
             type: type,
@@ -116,7 +175,19 @@ export default class Client extends ClientAbstract {
             data: payload
         };
 
-        return this.httpClient.request<EntryMessage>(params);
+        try {
+            const response = await this.httpClient.request<EntryMessage>(params);
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                switch (error.response.status) {
+                    default:
+                        throw new ErrorException('The server returned an unknown status code');
+                }
+            }
+
+            throw new ErrorException('An unknown error occurred: ' + String(error));
+        }
     }
 
 

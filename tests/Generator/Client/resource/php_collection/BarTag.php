@@ -30,12 +30,16 @@ class BarTag extends TagAbstract
 
         try {
             $response = $this->httpClient->request('GET', $url, $options);
-            $data     = (string) $response->getBody();
+            $data = (string) $response->getBody();
 
             return $this->parser->parse($data, EntryCollection::class);
         } catch (BadResponseException $e) {
-            throw $this->parser->newException($e, [
-            ]);
+            $data = (string) $e->getResponse()->getBody();
+
+            switch ($e->getResponse()->getStatusCode()) {
+                default:
+                    throw new ErrorException('The server returned an unknown status code');
+            }
         } catch (\Throwable $e) {
             throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -59,12 +63,16 @@ class BarTag extends TagAbstract
 
         try {
             $response = $this->httpClient->request('POST', $url, $options);
-            $data     = (string) $response->getBody();
+            $data = (string) $response->getBody();
 
             return $this->parser->parse($data, EntryMessage::class);
         } catch (BadResponseException $e) {
-            throw $this->parser->newException($e, [
-            ]);
+            $data = (string) $e->getResponse()->getBody();
+
+            switch ($e->getResponse()->getStatusCode()) {
+                default:
+                    throw new ErrorException('The server returned an unknown status code');
+            }
         } catch (\Throwable $e) {
             throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
         }

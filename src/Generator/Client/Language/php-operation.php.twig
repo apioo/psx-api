@@ -33,17 +33,22 @@
 
         try {
             $response = $this->httpClient->request('{{ operation.method }}', $url, $options);
-            $data     = (string) $response->getBody();
+            $data = (string) $response->getBody();
 
 {% if operation.return %}
             return $this->parser->parse($data, {{ operation.return.type }}::class);
 {% endif %}
         } catch (BadResponseException $e) {
-            throw $this->parser->newException($e, [
+            $data = (string) $e->getResponse()->getBody();
+
+            switch ($e->getResponse()->getStatusCode()) {
 {% for code, return in operation.throws %}
-                {{ code }} => {{ return.type }}::class,
+                case {{ code }}:
+                    throw new {{ return.type }}Exception($this->parser->parse($data, {{ return.type }}::class));
 {% endfor %}
-            ]);
+                default:
+                    throw new ErrorException('The server returned an unknown status code');
+            }
         } catch (\Throwable $e) {
             throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
         }

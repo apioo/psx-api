@@ -15,37 +15,61 @@ public class BazTag extends TagAbstract {
     /**
      * Returns a collection
      */
-    public EntryCollection get(String year) throws URISyntaxException, IOException {
-        Map<String, Object> pathParams = new HashMap<>();
-        pathParams.put("year", year);
+    public EntryCollection get(String year) throws ErrorException {
+        try {
+            Map<String, Object> pathParams = new HashMap<>();
+            pathParams.put("year", year);
 
-        Map<String, Object> queryParams = new HashMap<>();
+            Map<String, Object> queryParams = new HashMap<>();
 
-        URIBuilder builder = new URIBuilder(this.parser.url('/bar/$year&lt;[0-9]+&gt;', pathParams));
-        this.parser.query(builder, queryParams);
+            URIBuilder builder = new URIBuilder(this.parser.url('/bar/$year&lt;[0-9]+&gt;', pathParams));
+            this.parser.query(builder, queryParams);
 
-        HttpGet request = new HttpGet(builder.build());
+            HttpGet request = new HttpGet(builder.build());
 
-        HttpResponse response = this.httpClient.execute(request);
+            HttpResponse response = this.httpClient.execute(request);
+            int statusCode = response.getStatusLine().getStatusCode();
 
-        return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryCollection.class);
+            if (statusCode >= 200 && statusCode < 300) {
+                return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryCollection.class);
+            }
+
+            switch (statusCode) {
+                default:
+                    throw new ErrorException('The server returned an unknown status code');
+            }
+        } catch (Exception e) {
+            throw new ErrorException('An unknown error occurred: ' . e.getMessage());
+        }
     }
 
-    public EntryMessage create(EntryCreate payload) throws URISyntaxException, IOException {
-        Map<String, Object> pathParams = new HashMap<>();
+    public EntryMessage create(EntryCreate payload) throws ErrorException {
+        try {
+            Map<String, Object> pathParams = new HashMap<>();
 
-        Map<String, Object> queryParams = new HashMap<>();
+            Map<String, Object> queryParams = new HashMap<>();
 
-        URIBuilder builder = new URIBuilder(this.parser.url('/bar/$year&lt;[0-9]+&gt;', pathParams));
-        this.parser.query(builder, queryParams);
+            URIBuilder builder = new URIBuilder(this.parser.url('/bar/$year&lt;[0-9]+&gt;', pathParams));
+            this.parser.query(builder, queryParams);
 
-        HttpPost request = new HttpPost(builder.build());
-        request.addHeader("Content-Type", "application/json");
-        request.setEntity(new StringEntity(this.objectMapper.writeValueAsString(payload), ContentType.APPLICATION_JSON));
+            HttpPost request = new HttpPost(builder.build());
+            request.addHeader("Content-Type", "application/json");
+            request.setEntity(new StringEntity(this.objectMapper.writeValueAsString(payload), ContentType.APPLICATION_JSON));
 
-        HttpResponse response = this.httpClient.execute(request);
+            HttpResponse response = this.httpClient.execute(request);
+            int statusCode = response.getStatusLine().getStatusCode();
 
-        return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
+            if (statusCode >= 200 && statusCode < 300) {
+                return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
+            }
+
+            switch (statusCode) {
+                default:
+                    throw new ErrorException('The server returned an unknown status code');
+            }
+        } catch (Exception e) {
+            throw new ErrorException('An unknown error occurred: ' . e.getMessage());
+        }
     }
 
 

@@ -50,12 +50,16 @@ class Client extends ClientAbstract
 
         try {
             $response = $this->httpClient->request('GET', $url, $options);
-            $data     = (string) $response->getBody();
+            $data = (string) $response->getBody();
 
             return $this->parser->parse($data, EntryCollection::class);
         } catch (BadResponseException $e) {
-            throw $this->parser->newException($e, [
-            ]);
+            $data = (string) $e->getResponse()->getBody();
+
+            switch ($e->getResponse()->getStatusCode()) {
+                default:
+                    throw new ErrorException('The server returned an unknown status code');
+            }
         } catch (\Throwable $e) {
             throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -85,14 +89,20 @@ class Client extends ClientAbstract
 
         try {
             $response = $this->httpClient->request('POST', $url, $options);
-            $data     = (string) $response->getBody();
+            $data = (string) $response->getBody();
 
             return $this->parser->parse($data, EntryMessage::class);
         } catch (BadResponseException $e) {
-            throw $this->parser->newException($e, [
-                400 => EntryMessage::class,
-                500 => EntryMessage::class,
-            ]);
+            $data = (string) $e->getResponse()->getBody();
+
+            switch ($e->getResponse()->getStatusCode()) {
+                case 400:
+                    throw new EntryMessageException($this->parser->parse($data, EntryMessage::class));
+                case 500:
+                    throw new EntryMessageException($this->parser->parse($data, EntryMessage::class));
+                default:
+                    throw new ErrorException('The server returned an unknown status code');
+            }
         } catch (\Throwable $e) {
             throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -120,12 +130,16 @@ class Client extends ClientAbstract
 
         try {
             $response = $this->httpClient->request('PUT', $url, $options);
-            $data     = (string) $response->getBody();
+            $data = (string) $response->getBody();
 
             return $this->parser->parse($data, EntryMessage::class);
         } catch (BadResponseException $e) {
-            throw $this->parser->newException($e, [
-            ]);
+            $data = (string) $e->getResponse()->getBody();
+
+            switch ($e->getResponse()->getStatusCode()) {
+                default:
+                    throw new ErrorException('The server returned an unknown status code');
+            }
         } catch (\Throwable $e) {
             throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -153,12 +167,16 @@ class Client extends ClientAbstract
 
         try {
             $response = $this->httpClient->request('DELETE', $url, $options);
-            $data     = (string) $response->getBody();
+            $data = (string) $response->getBody();
 
             return $this->parser->parse($data, EntryMessage::class);
         } catch (BadResponseException $e) {
-            throw $this->parser->newException($e, [
-            ]);
+            $data = (string) $e->getResponse()->getBody();
+
+            switch ($e->getResponse()->getStatusCode()) {
+                default:
+                    throw new ErrorException('The server returned an unknown status code');
+            }
         } catch (\Throwable $e) {
             throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -186,12 +204,16 @@ class Client extends ClientAbstract
 
         try {
             $response = $this->httpClient->request('PATCH', $url, $options);
-            $data     = (string) $response->getBody();
+            $data = (string) $response->getBody();
 
             return $this->parser->parse($data, EntryMessage::class);
         } catch (BadResponseException $e) {
-            throw $this->parser->newException($e, [
-            ]);
+            $data = (string) $e->getResponse()->getBody();
+
+            switch ($e->getResponse()->getStatusCode()) {
+                default:
+                    throw new ErrorException('The server returned an unknown status code');
+            }
         } catch (\Throwable $e) {
             throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
         }

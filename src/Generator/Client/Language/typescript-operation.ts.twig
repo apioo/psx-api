@@ -5,9 +5,12 @@
 {% endif %}
 {% for name, arg in operation.args %}     * @param {{ '{' }}{{ arg.docType }}{{ '}' }} {{ name }}
 {% endfor %}
-     * @returns {{ '{' }}Promise<AxiosResponse<{% if operation.return %}{{ operation.return.docType|raw }}{% else %}void{% endif %}>>{{ '}' }}
+     * @returns {{ '{' }}Promise<{% if operation.return %}{{ operation.return.docType|raw }}{% else %}void{% endif %}>{{ '}' }}
+{% for throw in operation.throws %}     * @throws {{ '{' }}{{ throw.docType }}Exception{{ '}' }}
+{% endfor %}
+     * @throws {{ '{' }}ErrorException{{ '}' }}
      */
-    public async {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ name }}{% if arg.optional %}?{% endif %}: {{ arg.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<AxiosResponse<{% if operation.return %}{{ operation.return.type|raw }}{% else %}void{% endif %}>> {
+    public async {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ name }}{% if arg.optional %}?{% endif %}: {{ arg.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{% if operation.return %}{{ operation.return.type|raw }}{% else %}void{% endif %}> {
         const url = this.parser.url('{{ operation.path }}', {
 {% for name in operation.pathNames %}
             {{ name }}: {{ name }},
@@ -27,7 +30,25 @@
 {% endif %}
         };
 
-        return this.httpClient.request{% if operation.return %}<{{ operation.return.type }}>{% endif %}(params);
+        try {
+            const response = await this.httpClient.request{% if operation.return %}<{{ operation.return.type }}>{% endif %}(params);
+{% if operation.return %}
+            return response.data;
+{% endif %}
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                switch (error.response.status) {
+{% for code, return in operation.throws %}
+                    case {{ code }}:
+                        throw new {{ return.type }}Exception(error.response.data);
+{% endfor %}
+                    default:
+                        throw new ErrorException('The server returned an unknown status code');
+                }
+            }
+
+            throw new ErrorException('An unknown error occurred: ' + String(error));
+        }
     }
 
 {% endfor %}

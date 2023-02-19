@@ -5,31 +5,49 @@
      * {{ operation.description }}
      */
 {% endif %}
-    public {% if operation.return %}{{ operation.return.type|raw }}{% else %}void{% endif %} {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws URISyntaxException, IOException {
-        Map<String, Object> pathParams = new HashMap<>();
+    public {% if operation.return %}{{ operation.return.type|raw }}{% else %}void{% endif %} {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws {% for return in operation.throws %}{{ return.type }}Exception, {% endfor %}ErrorException {
+        try {
+            Map<String, Object> pathParams = new HashMap<>();
 {% for name in operation.pathNames %}
-        pathParams.put("{{ name }}", {{ name }});
+            pathParams.put("{{ name }}", {{ name }});
 {% endfor %}
 
-        Map<String, Object> queryParams = new HashMap<>();
+            Map<String, Object> queryParams = new HashMap<>();
 {% for name in operation.queryNames %}
-        queryParams.put("{{ name }}", {{ name }});
+            queryParams.put("{{ name }}", {{ name }});
 {% endfor %}
 
-        URIBuilder builder = new URIBuilder(this.parser.url('{{ operation.path }}', pathParams));
-        this.parser.query(builder, queryParams);
+            URIBuilder builder = new URIBuilder(this.parser.url("{{ operation.path }}", pathParams));
+            this.parser.query(builder, queryParams);
 
-        Http{{ operation.method|lower|capitalize }} request = new Http{{ operation.method|lower|capitalize }}(builder.build());
+            Http{{ operation.method|lower|capitalize }} request = new Http{{ operation.method|lower|capitalize }}(builder.build());
 {% if operation.bodyName is not null %}
-        request.addHeader("Content-Type", "application/json");
-        request.setEntity(new StringEntity(this.objectMapper.writeValueAsString({{ operation.bodyName }}), ContentType.APPLICATION_JSON));
+            request.addHeader("Content-Type", "application/json");
+            request.setEntity(new StringEntity(this.objectMapper.writeValueAsString({{ operation.bodyName }}), ContentType.APPLICATION_JSON));
 {% endif %}
 
-        HttpResponse response = this.httpClient.execute(request);
+            HttpResponse response = this.httpClient.execute(request);
+            int statusCode = response.getStatusLine().getStatusCode();
 
+            if (statusCode >= 200 && statusCode < 300) {
 {% if operation.return %}
-        return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), {{ operation.return.type }}.class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), {{ operation.return.type }}.class);
+{% else %}
+                return;
 {% endif %}
+            }
+
+            switch (statusCode) {
+{% for code, return in operation.throws %}
+                case {{ code }}:
+                    throw new {{ return.type }}Exception(this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), {{ return.type }}.class));
+{% endfor %}
+                default:
+                    throw new ErrorException("The server returned an unknown status code");
+            }
+        } catch (Exception e) {
+            throw new ErrorException("An unknown error occurred: " + e.getMessage());
+        }
     }
 
 {% endfor %}

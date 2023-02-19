@@ -10,9 +10,10 @@ export default class BazTag extends TagAbstract {
     /**
      * Returns a collection
      *
-     * @returns {Promise<AxiosResponse<EntryCollection>>}
+     * @returns {Promise<EntryCollection>}
+     * @throws {ErrorException}
      */
-    public async get(year: string): Promise<AxiosResponse<EntryCollection>> {
+    public async get(year: string): Promise<EntryCollection> {
         const url = this.parser.url('/bar/$year&lt;[0-9]+&gt;', {
             year: year,
         });
@@ -24,13 +25,26 @@ export default class BazTag extends TagAbstract {
             }),
         };
 
-        return this.httpClient.request<EntryCollection>(params);
+        try {
+            const response = await this.httpClient.request<EntryCollection>(params);
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                switch (error.response.status) {
+                    default:
+                        throw new ErrorException('The server returned an unknown status code');
+                }
+            }
+
+            throw new ErrorException('An unknown error occurred: ' + String(error));
+        }
     }
 
     /**
-     * @returns {Promise<AxiosResponse<EntryMessage>>}
+     * @returns {Promise<EntryMessage>}
+     * @throws {ErrorException}
      */
-    public async create(payload: EntryCreate): Promise<AxiosResponse<EntryMessage>> {
+    public async create(payload: EntryCreate): Promise<EntryMessage> {
         const url = this.parser.url('/bar/$year&lt;[0-9]+&gt;', {
         });
 
@@ -42,7 +56,19 @@ export default class BazTag extends TagAbstract {
             data: payload
         };
 
-        return this.httpClient.request<EntryMessage>(params);
+        try {
+            const response = await this.httpClient.request<EntryMessage>(params);
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                switch (error.response.status) {
+                    default:
+                        throw new ErrorException('The server returned an unknown status code');
+                }
+            }
+
+            throw new ErrorException('An unknown error occurred: ' + String(error));
+        }
     }
 
 
