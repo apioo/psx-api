@@ -6,6 +6,9 @@
 
 namespace Foo\Bar;
 
+use GuzzleHttp\Exception\BadResponseException;
+use Sdkgen\Client\Exception\ClientException;
+use Sdkgen\Client\Exception\UnknownStatusCodeException;
 use Sdkgen\Client\TagAbstract;
 
 class BazTag extends TagAbstract
@@ -15,11 +18,11 @@ class BazTag extends TagAbstract
      *
      * @param string $year
      * @return EntryCollection
-     * @throws \Sdkgen\Client\ErrorException
+     * @throws ClientException
      */
     public function get(string $year): EntryCollection
     {
-        $url = $this->parser->url('/bar/$year&lt;[0-9]+&gt;', [
+        $url = $this->parser->url('/bar/$year<[0-9]+>', [
             'year' => $year,
         ]);
 
@@ -38,21 +41,21 @@ class BazTag extends TagAbstract
 
             switch ($e->getResponse()->getStatusCode()) {
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
         } catch (\Throwable $e) {
-            throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
     }
 
     /**
      * @param EntryCreate $payload
      * @return EntryMessage
-     * @throws \Sdkgen\Client\ErrorException
+     * @throws ClientException
      */
     public function create(EntryCreate $payload): EntryMessage
     {
-        $url = $this->parser->url('/bar/$year&lt;[0-9]+&gt;', [
+        $url = $this->parser->url('/bar/$year<[0-9]+>', [
         ]);
 
         $options = [
@@ -71,10 +74,10 @@ class BazTag extends TagAbstract
 
             switch ($e->getResponse()->getStatusCode()) {
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
         } catch (\Throwable $e) {
-            throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
     }
 

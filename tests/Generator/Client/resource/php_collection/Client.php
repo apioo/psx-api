@@ -6,18 +6,14 @@
 
 namespace Foo\Bar;
 
+use GuzzleHttp\Exception\BadResponseException;
 use Sdkgen\Client\ClientAbstract;
 use Sdkgen\Client\Credentials;
-use Sdkgen\Client\CredentialsInterface;
-use Sdkgen\Client\TokenStoreInterface;
+use Sdkgen\Client\Exception\ClientException;
+use Sdkgen\Client\Exception\UnknownStatusCodeException;
 
 class Client extends ClientAbstract
 {
-    public function __construct(string $baseUrl, string $token, ?TokenStoreInterface $tokenStore = null, ?array $scopes = null)
-    {
-        parent::__construct($baseUrl, new Credentials\HttpBearer($token), $tokenStore, $scopes);
-    }
-
     public function foo(): FooTag
     {
         return new FooTag(
@@ -44,5 +40,8 @@ class Client extends ClientAbstract
 
 
 
-
+    public static function build(string $baseUrl, string $token): self
+    {
+        return new self($baseUrl, new Credentials\HttpBearer($token));
+    }
 }

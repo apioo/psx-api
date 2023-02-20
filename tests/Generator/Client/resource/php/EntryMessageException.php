@@ -5,9 +5,9 @@
  */
 
 
-use Sdkgen\Client\KnownErrorException;
+use Sdkgen\Client\Exception\KnownStatusCodeException;
 
-class EntryMessageException extends KnownErrorException
+class EntryMessageException extends KnownStatusCodeException
 {
     private EntryMessage $payload;
 

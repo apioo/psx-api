@@ -6,6 +6,9 @@
 
 namespace Foo\Bar;
 
+use GuzzleHttp\Exception\BadResponseException;
+use Sdkgen\Client\Exception\ClientException;
+use Sdkgen\Client\Exception\UnknownStatusCodeException;
 use Sdkgen\Client\TagAbstract;
 
 class FooTag extends TagAbstract
@@ -14,7 +17,7 @@ class FooTag extends TagAbstract
      * Returns a collection
      *
      * @return EntryCollection
-     * @throws \Sdkgen\Client\ErrorException
+     * @throws ClientException
      */
     public function get(): EntryCollection
     {
@@ -36,17 +39,17 @@ class FooTag extends TagAbstract
 
             switch ($e->getResponse()->getStatusCode()) {
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
         } catch (\Throwable $e) {
-            throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
     }
 
     /**
      * @param EntryCreate $payload
      * @return EntryMessage
-     * @throws \Sdkgen\Client\ErrorException
+     * @throws ClientException
      */
     public function create(EntryCreate $payload): EntryMessage
     {
@@ -69,10 +72,10 @@ class FooTag extends TagAbstract
 
             switch ($e->getResponse()->getStatusCode()) {
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
         } catch (\Throwable $e) {
-            throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
     }
 

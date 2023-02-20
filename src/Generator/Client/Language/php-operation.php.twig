@@ -9,12 +9,12 @@
 
 {% for throw in operation.throws %}     * @throws {{ throw.docType }}Exception
 {% endfor %}
-     * @throws \Sdkgen\Client\ErrorException
+     * @throws ClientException
      */
     public function {{ operation.methodName }}({% for name, arg in operation.arguments %}{% if arg.optional %}?{% endif %}{{ arg.type }} ${{ name }}{% if arg.optional %} = null{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): {% if operation.return %}{{ operation.return.type }}{% else %}void{% endif %}
 
     {
-        $url = $this->parser->url('{{ operation.path }}', [
+        $url = $this->parser->url('{{ operation.path|raw }}', [
 {% for name in operation.pathNames %}
             '{{ name }}' => ${{ name }},
 {% endfor %}
@@ -47,10 +47,10 @@
                     throw new {{ return.type }}Exception($this->parser->parse($data, {{ return.type }}::class));
 {% endfor %}
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
         } catch (\Throwable $e) {
-            throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
     }
 

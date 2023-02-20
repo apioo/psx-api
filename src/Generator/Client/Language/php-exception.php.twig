@@ -2,9 +2,9 @@
 namespace {{ namespace }};
 {% endif %}
 
-use Sdkgen\Client\KnownErrorException;
+use Sdkgen\Client\Exception\KnownStatusCodeException;
 
-class {{ className }} extends KnownErrorException
+class {{ className }} extends KnownStatusCodeException
 {
     private {{ type }} $payload;
 

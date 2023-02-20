@@ -5,19 +5,14 @@
  */
 
 
+use GuzzleHttp\Exception\BadResponseException;
 use Sdkgen\Client\ClientAbstract;
 use Sdkgen\Client\Credentials;
-use Sdkgen\Client\CredentialsInterface;
-use Sdkgen\Client\TokenStoreInterface;
+use Sdkgen\Client\Exception\ClientException;
+use Sdkgen\Client\Exception\UnknownStatusCodeException;
 
 class Client extends ClientAbstract
 {
-    public function __construct(string $baseUrl, string $token, ?TokenStoreInterface $tokenStore = null, ?array $scopes = null)
-    {
-        parent::__construct($baseUrl, new Credentials\HttpBearer($token), $tokenStore, $scopes);
-    }
-
-
     /**
      * Returns a collection
      *
@@ -29,7 +24,7 @@ class Client extends ClientAbstract
      * @param \PSX\DateTime\Date|null $date
      * @param \DateTime|null $datetime
      * @return EntryCollection
-     * @throws \Sdkgen\Client\ErrorException
+     * @throws ClientException
      */
     public function get(string $name, string $type, ?int $startIndex = null, ?float $float = null, ?bool $boolean = null, ?\PSX\DateTime\Date $date = null, ?\DateTime $datetime = null): EntryCollection
     {
@@ -58,10 +53,10 @@ class Client extends ClientAbstract
 
             switch ($e->getResponse()->getStatusCode()) {
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
         } catch (\Throwable $e) {
-            throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
     }
 
@@ -72,7 +67,7 @@ class Client extends ClientAbstract
      * @return EntryMessage
      * @throws EntryMessageException
      * @throws EntryMessageException
-     * @throws \Sdkgen\Client\ErrorException
+     * @throws ClientException
      */
     public function create(string $name, string $type, EntryCreate $payload): EntryMessage
     {
@@ -101,10 +96,10 @@ class Client extends ClientAbstract
                 case 500:
                     throw new EntryMessageException($this->parser->parse($data, EntryMessage::class));
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
         } catch (\Throwable $e) {
-            throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
     }
 
@@ -113,7 +108,7 @@ class Client extends ClientAbstract
      * @param string $type
      * @param EntryUpdate $payload
      * @return EntryMessage
-     * @throws \Sdkgen\Client\ErrorException
+     * @throws ClientException
      */
     public function update(string $name, string $type, EntryUpdate $payload): EntryMessage
     {
@@ -138,10 +133,10 @@ class Client extends ClientAbstract
 
             switch ($e->getResponse()->getStatusCode()) {
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
         } catch (\Throwable $e) {
-            throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
     }
 
@@ -150,7 +145,7 @@ class Client extends ClientAbstract
      * @param string $type
      * @param EntryDelete $payload
      * @return EntryMessage
-     * @throws \Sdkgen\Client\ErrorException
+     * @throws ClientException
      */
     public function delete(string $name, string $type, EntryDelete $payload): EntryMessage
     {
@@ -175,10 +170,10 @@ class Client extends ClientAbstract
 
             switch ($e->getResponse()->getStatusCode()) {
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
         } catch (\Throwable $e) {
-            throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
     }
 
@@ -187,7 +182,7 @@ class Client extends ClientAbstract
      * @param string $type
      * @param EntryPatch $payload
      * @return EntryMessage
-     * @throws \Sdkgen\Client\ErrorException
+     * @throws ClientException
      */
     public function patch(string $name, string $type, EntryPatch $payload): EntryMessage
     {
@@ -212,13 +207,17 @@ class Client extends ClientAbstract
 
             switch ($e->getResponse()->getStatusCode()) {
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
         } catch (\Throwable $e) {
-            throw new ErrorException('An unknown error occurred: ' . $e->getMessage());
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
     }
 
 
 
+    public static function build(string $baseUrl, string $token): self
+    {
+        return new self($baseUrl, new Credentials\HttpBearer($token));
+    }
 }
