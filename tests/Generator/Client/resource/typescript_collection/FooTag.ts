@@ -11,7 +11,7 @@ export default class FooTag extends TagAbstract {
      * Returns a collection
      *
      * @returns {Promise<EntryCollection>}
-     * @throws {ErrorException}
+     * @throws {ClientException}
      */
     public async get(): Promise<EntryCollection> {
         const url = this.parser.url('/foo', {
@@ -31,17 +31,17 @@ export default class FooTag extends TagAbstract {
             if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
                     default:
-                        throw new ErrorException('The server returned an unknown status code');
+                        throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
             }
 
-            throw new ErrorException('An unknown error occurred: ' + String(error));
+            throw new ClientException('An unknown error occurred: ' + String(error));
         }
     }
 
     /**
      * @returns {Promise<EntryMessage>}
-     * @throws {ErrorException}
+     * @throws {ClientException}
      */
     public async create(payload: EntryCreate): Promise<EntryMessage> {
         const url = this.parser.url('/foo', {
@@ -62,11 +62,11 @@ export default class FooTag extends TagAbstract {
             if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
                     default:
-                        throw new ErrorException('The server returned an unknown status code');
+                        throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
             }
 
-            throw new ErrorException('An unknown error occurred: ' + String(error));
+            throw new ClientException('An unknown error occurred: ' + String(error));
         }
     }
 

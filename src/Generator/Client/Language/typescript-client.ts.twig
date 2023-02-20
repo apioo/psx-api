@@ -1,4 +1,5 @@
-import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
+import axios, {AxiosRequestConfig} from "axios";
+import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
 {% if security.type == 'httpBasic' %}
 import {HttpBasic} from "sdkgen-client"
 {% elseif security.type == 'httpBearer' %}
@@ -10,16 +11,13 @@ import {ClientCredentials} from "sdkgen-client"
 {% elseif security.type == 'authorizationCode' %}
 import {AuthorizationCode} from "sdkgen-client"
 {% endif %}
+import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
 {% for className, resource in resources %}
 import {{ className }} from "./{{ className }}";
 {% endfor %}
 
 export default class {{ className }} extends ClientAbstract {
-    public constructor(baseUrl: string, {% if security.type == 'httpBasic' %}userName: string, password: string, {% elseif security.type in ['httpBearer', 'apiKey'] %}token: string, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}clientId: string, clientSecret: string, {% else %}credentials: CredentialsInterface|null = null, {% endif %}tokenStore: TokenStoreInterface|null = null, scopes: Array<string>|null = []) {
-        super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}credentials{% endif %}, tokenStore, scopes);
-    }
-
 {% for tag in tags %}
     public {{ tag.methodName }}(): {{ tag.className }}
     {
@@ -30,7 +28,32 @@ export default class {{ className }} extends ClientAbstract {
     }
 
 {% endfor %}
-
 {{ operations|raw }}
 
+{% if security.type == 'httpBasic' %}
+    public static build(baseUrl: string, userName: string, password: string): {{ className }}
+    {
+        return new {{ className }}(baseUrl, new HttpBasic(userName, password));
+    }
+{% elseif security.type == 'httpBearer' %}
+    public static build(baseUrl: string, token: string): {{ className }}
+    {
+        return new {{ className }}(baseUrl, new HttpBearer(token));
+    }
+{% elseif security.type == 'apiKey' %}
+    public static build(baseUrl: string, token: string): {{ className }}
+    {
+        return new {{ className }}($baseUrl, new ApiKey($token, '{{ security.name }}', '{{ security.in }}'));
+    }
+{% elseif security.type == 'clientCredentials' %}
+    public static build(baseUrl: string, clientId: string, clientSecret: string, tokenStore: TokenStoreInterface|null, scopes: Array<string>|null): {{ className }}
+    {
+        return new {{ className }}(baseUrl, new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
+    }
+{% elseif security.type == 'authorizationCode' %}
+    public static build(baseUrl: string, clientId: string, clientSecret: string, tokenStore: TokenStoreInterface|null, scopes: Array<string>|null): {{ className }}
+    {
+        return new {{ className }}(baseUrl, new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
+    }
+{% endif %}
 }

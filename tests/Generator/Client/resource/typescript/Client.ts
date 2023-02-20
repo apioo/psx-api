@@ -3,21 +3,18 @@
  * {@link https://sdkgen.app}
  */
 
-import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
+import axios, {AxiosRequestConfig} from "axios";
+import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
 import {HttpBearer} from "sdkgen-client"
+import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
 
 export default class Client extends ClientAbstract {
-    public constructor(baseUrl: string, token: string, tokenStore: TokenStoreInterface|null = null, scopes: Array<string>|null = []) {
-        super(baseUrl, new HttpBearer(token), tokenStore, scopes);
-    }
-
-
     /**
      * Returns a collection
      *
      * @returns {Promise<EntryCollection>}
-     * @throws {ErrorException}
+     * @throws {ClientException}
      */
     public async get(name: string, type: string, startIndex?: number, float?: number, boolean?: boolean, date?: string, datetime?: string): Promise<EntryCollection> {
         const url = this.parser.url('/foo/:name/:type', {
@@ -44,11 +41,11 @@ export default class Client extends ClientAbstract {
             if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
                     default:
-                        throw new ErrorException('The server returned an unknown status code');
+                        throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
             }
 
-            throw new ErrorException('An unknown error occurred: ' + String(error));
+            throw new ClientException('An unknown error occurred: ' + String(error));
         }
     }
 
@@ -56,7 +53,7 @@ export default class Client extends ClientAbstract {
      * @returns {Promise<EntryMessage>}
      * @throws {EntryMessageException}
      * @throws {EntryMessageException}
-     * @throws {ErrorException}
+     * @throws {ClientException}
      */
     public async create(name: string, type: string, payload: EntryCreate): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
@@ -83,17 +80,17 @@ export default class Client extends ClientAbstract {
                     case 500:
                         throw new EntryMessageException(error.response.data);
                     default:
-                        throw new ErrorException('The server returned an unknown status code');
+                        throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
             }
 
-            throw new ErrorException('An unknown error occurred: ' + String(error));
+            throw new ClientException('An unknown error occurred: ' + String(error));
         }
     }
 
     /**
      * @returns {Promise<EntryMessage>}
-     * @throws {ErrorException}
+     * @throws {ClientException}
      */
     public async update(name: string, type: string, payload: EntryUpdate): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
@@ -116,17 +113,17 @@ export default class Client extends ClientAbstract {
             if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
                     default:
-                        throw new ErrorException('The server returned an unknown status code');
+                        throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
             }
 
-            throw new ErrorException('An unknown error occurred: ' + String(error));
+            throw new ClientException('An unknown error occurred: ' + String(error));
         }
     }
 
     /**
      * @returns {Promise<EntryMessage>}
-     * @throws {ErrorException}
+     * @throws {ClientException}
      */
     public async delete(name: string, type: string, payload: EntryDelete): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
@@ -149,17 +146,17 @@ export default class Client extends ClientAbstract {
             if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
                     default:
-                        throw new ErrorException('The server returned an unknown status code');
+                        throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
             }
 
-            throw new ErrorException('An unknown error occurred: ' + String(error));
+            throw new ClientException('An unknown error occurred: ' + String(error));
         }
     }
 
     /**
      * @returns {Promise<EntryMessage>}
-     * @throws {ErrorException}
+     * @throws {ClientException}
      */
     public async patch(name: string, type: string, payload: EntryPatch): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
@@ -182,14 +179,18 @@ export default class Client extends ClientAbstract {
             if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
                     default:
-                        throw new ErrorException('The server returned an unknown status code');
+                        throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
             }
 
-            throw new ErrorException('An unknown error occurred: ' + String(error));
+            throw new ClientException('An unknown error occurred: ' + String(error));
         }
     }
 
 
 
+    public static build(baseUrl: string, token: string): Client
+    {
+        return new Client(baseUrl, new HttpBearer(token));
+    }
 }

@@ -3,15 +3,13 @@
  * {@link https://sdkgen.app}
  */
 
-import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
+import axios, {AxiosRequestConfig} from "axios";
+import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
 import {HttpBearer} from "sdkgen-client"
+import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
 
 export default class Client extends ClientAbstract {
-    public constructor(baseUrl: string, token: string, tokenStore: TokenStoreInterface|null = null, scopes: Array<string>|null = []) {
-        super(baseUrl, new HttpBearer(token), tokenStore, scopes);
-    }
-
     public foo(): FooTag
     {
         return new FooTag(
@@ -38,5 +36,8 @@ export default class Client extends ClientAbstract {
 
 
 
-
+    public static build(baseUrl: string, token: string): Client
+    {
+        return new Client(baseUrl, new HttpBearer(token));
+    }
 }
