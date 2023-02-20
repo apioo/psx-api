@@ -134,15 +134,16 @@ class LanguageBuilder
             $query = $queryNames = [];
             $body = $bodyName = null;
             foreach ($operation->getArguments()->getAll() as $name => $argument) {
+                $normalized = $this->normalizer->argument($name);
                 if ($argument->getIn() === Argument::IN_PATH) {
-                    $path[$name] = $this->newTypeBySchema($argument->getSchema(), false, $definitions);
-                    $pathNames[] = $name;
+                    $path[$normalized] = $this->newTypeBySchema($argument->getSchema(), false, $definitions);
+                    $pathNames[$normalized] = $name;
                 } elseif ($argument->getIn() === Argument::IN_QUERY) {
-                    $query[$name] = $this->newTypeBySchema($argument->getSchema(), true, $definitions);
-                    $queryNames[] = $name;
+                    $query[$normalized] = $this->newTypeBySchema($argument->getSchema(), true, $definitions);
+                    $queryNames[$normalized] = $name;
                 } elseif ($argument->getIn() === Argument::IN_BODY) {
                     $body = $this->newTypeBySchema($argument->getSchema(), false, $definitions);
-                    $bodyName = $name;
+                    $bodyName = $normalized;
                 }
             }
 

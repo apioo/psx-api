@@ -15,15 +15,15 @@
 
     {
         $url = $this->parser->url('{{ operation.path|raw }}', [
-{% for name in operation.pathNames %}
-            '{{ name }}' => ${{ name }},
+{% for name, realName in operation.pathNames %}
+            '{{ realName }}' => ${{ name }},
 {% endfor %}
         ]);
 
         $options = [
             'query' => $this->parser->query([
-{% for name in operation.queryNames %}
-                '{{ name }}' => ${{ name }},
+{% for name, realName in operation.queryNames %}
+                '{{ realName }}' => ${{ name }},
 {% endfor %}
             ]),
 {% if operation.bodyName is not null %}

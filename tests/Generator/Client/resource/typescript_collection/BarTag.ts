@@ -3,8 +3,10 @@
  * {@link https://sdkgen.app}
  */
 
-import {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
+import axios, {AxiosRequestConfig} from "axios";
 import {TagAbstract} from "sdkgen-client"
+import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
+
 
 export default class BarTag extends TagAbstract {
     /**
@@ -15,7 +17,7 @@ export default class BarTag extends TagAbstract {
      */
     public async get(foo: string): Promise<EntryCollection> {
         const url = this.parser.url('/bar/:foo', {
-            foo: foo,
+            'foo': foo,
         });
 
         let params: AxiosRequestConfig = {

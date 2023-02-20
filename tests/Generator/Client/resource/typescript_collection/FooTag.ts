@@ -3,8 +3,10 @@
  * {@link https://sdkgen.app}
  */
 
-import {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
+import axios, {AxiosRequestConfig} from "axios";
 import {TagAbstract} from "sdkgen-client"
+import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
+
 
 export default class FooTag extends TagAbstract {
     /**

@@ -18,19 +18,19 @@ export default class Client extends ClientAbstract {
      */
     public async get(name: string, type: string, startIndex?: number, float?: number, boolean?: boolean, date?: string, datetime?: string): Promise<EntryCollection> {
         const url = this.parser.url('/foo/:name/:type', {
-            name: name,
-            type: type,
+            'name': name,
+            'type': type,
         });
 
         let params: AxiosRequestConfig = {
             url: url,
             method: 'GET',
             params: this.parser.query({
-                startIndex: startIndex,
-                float: float,
-                boolean: boolean,
-                date: date,
-                datetime: datetime,
+                'startIndex': startIndex,
+                'float': float,
+                'boolean': boolean,
+                'date': date,
+                'datetime': datetime,
             }),
         };
 
@@ -57,8 +57,8 @@ export default class Client extends ClientAbstract {
      */
     public async create(name: string, type: string, payload: EntryCreate): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
-            name: name,
-            type: type,
+            'name': name,
+            'type': type,
         });
 
         let params: AxiosRequestConfig = {
@@ -94,8 +94,8 @@ export default class Client extends ClientAbstract {
      */
     public async update(name: string, type: string, payload: EntryUpdate): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
-            name: name,
-            type: type,
+            'name': name,
+            'type': type,
         });
 
         let params: AxiosRequestConfig = {
@@ -127,8 +127,8 @@ export default class Client extends ClientAbstract {
      */
     public async delete(name: string, type: string, payload: EntryDelete): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
-            name: name,
-            type: type,
+            'name': name,
+            'type': type,
         });
 
         let params: AxiosRequestConfig = {
@@ -160,8 +160,8 @@ export default class Client extends ClientAbstract {
      */
     public async patch(name: string, type: string, payload: EntryPatch): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
-            name: name,
-            type: type,
+            'name': name,
+            'type': type,
         });
 
         let params: AxiosRequestConfig = {

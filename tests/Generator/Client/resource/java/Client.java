@@ -6,21 +6,27 @@
 
 import app.sdkgen.client.ClientAbstract;
 import app.sdkgen.client.Credentials.*;
-import app.sdkgen.client.CredentialsInterface;
-import app.sdkgen.client.TokenStoreInterface;
-import java.util.List;
+import app.sdkgen.client.Exception.ClientException;
+import app.sdkgen.client.Exception.UnkownStatusCodeException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Client extends ClientAbstract {
-    public Client(String baseUrl, String token, TokenStoreInterface tokenStore, List<String> scopes) {
-        super(baseUrl, new HttpBearer(token), tokenStore, scopes);
-    }
-
-
 
     /**
      * Returns a collection
      */
-    public EntryCollection get(String name, String type, int startIndex, float float, boolean boolean, LocalDate date, LocalDateTime datetime) throws ErrorException {
+    public EntryCollection get(String name, String type, int startIndex, float _float, boolean _boolean, LocalDate date, LocalDateTime datetime) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -28,12 +34,12 @@ public class Client extends ClientAbstract {
 
             Map<String, Object> queryParams = new HashMap<>();
             queryParams.put("startIndex", startIndex);
-            queryParams.put("float", float);
-            queryParams.put("boolean", boolean);
+            queryParams.put("float", _float);
+            queryParams.put("boolean", _boolean);
             queryParams.put("date", date);
             queryParams.put("datetime", datetime);
 
-            URIBuilder builder = new URIBuilder(this.parser.url('/foo/:name/:type', pathParams));
+            URIBuilder builder = new URIBuilder(this.parser.url("/foo/:name/:type", pathParams));
             this.parser.query(builder, queryParams);
 
             HttpGet request = new HttpGet(builder.build());
@@ -42,19 +48,19 @@ public class Client extends ClientAbstract {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryCollection.class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryCollection.class);
             }
 
             switch (statusCode) {
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnkownStatusCodeException("The server returned an unknown status code");
             }
         } catch (Exception e) {
-            throw new ErrorException('An unknown error occurred: ' . e.getMessage());
+            throw new ClientException("An unknown error occurred: " + e.getMessage());
         }
     }
 
-    public EntryMessage create(String name, String type, EntryCreate payload) throws EntryMessageException, EntryMessageException, ErrorException {
+    public EntryMessage create(String name, String type, EntryCreate payload) throws EntryMessageException, EntryMessageException, ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -62,7 +68,7 @@ public class Client extends ClientAbstract {
 
             Map<String, Object> queryParams = new HashMap<>();
 
-            URIBuilder builder = new URIBuilder(this.parser.url('/foo/:name/:type', pathParams));
+            URIBuilder builder = new URIBuilder(this.parser.url("/foo/:name/:type", pathParams));
             this.parser.query(builder, queryParams);
 
             HttpPost request = new HttpPost(builder.build());
@@ -73,23 +79,23 @@ public class Client extends ClientAbstract {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
             }
 
             switch (statusCode) {
                 case 400:
-                    throw new EntryMessageException(this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class));
+                    throw new EntryMessageException(this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class));
                 case 500:
-                    throw new EntryMessageException(this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class));
+                    throw new EntryMessageException(this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class));
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnkownStatusCodeException("The server returned an unknown status code");
             }
         } catch (Exception e) {
-            throw new ErrorException('An unknown error occurred: ' . e.getMessage());
+            throw new ClientException("An unknown error occurred: " + e.getMessage());
         }
     }
 
-    public EntryMessage update(String name, String type, EntryUpdate payload) throws ErrorException {
+    public EntryMessage update(String name, String type, EntryUpdate payload) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -97,7 +103,7 @@ public class Client extends ClientAbstract {
 
             Map<String, Object> queryParams = new HashMap<>();
 
-            URIBuilder builder = new URIBuilder(this.parser.url('/foo/:name/:type', pathParams));
+            URIBuilder builder = new URIBuilder(this.parser.url("/foo/:name/:type", pathParams));
             this.parser.query(builder, queryParams);
 
             HttpPut request = new HttpPut(builder.build());
@@ -108,19 +114,19 @@ public class Client extends ClientAbstract {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
             }
 
             switch (statusCode) {
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnkownStatusCodeException("The server returned an unknown status code");
             }
         } catch (Exception e) {
-            throw new ErrorException('An unknown error occurred: ' . e.getMessage());
+            throw new ClientException("An unknown error occurred: " + e.getMessage());
         }
     }
 
-    public EntryMessage delete(String name, String type, EntryDelete payload) throws ErrorException {
+    public EntryMessage delete(String name, String type, EntryDelete payload) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -128,7 +134,7 @@ public class Client extends ClientAbstract {
 
             Map<String, Object> queryParams = new HashMap<>();
 
-            URIBuilder builder = new URIBuilder(this.parser.url('/foo/:name/:type', pathParams));
+            URIBuilder builder = new URIBuilder(this.parser.url("/foo/:name/:type", pathParams));
             this.parser.query(builder, queryParams);
 
             HttpDelete request = new HttpDelete(builder.build());
@@ -139,19 +145,19 @@ public class Client extends ClientAbstract {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
             }
 
             switch (statusCode) {
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnkownStatusCodeException("The server returned an unknown status code");
             }
         } catch (Exception e) {
-            throw new ErrorException('An unknown error occurred: ' . e.getMessage());
+            throw new ClientException("An unknown error occurred: " + e.getMessage());
         }
     }
 
-    public EntryMessage patch(String name, String type, EntryPatch payload) throws ErrorException {
+    public EntryMessage patch(String name, String type, EntryPatch payload) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -159,7 +165,7 @@ public class Client extends ClientAbstract {
 
             Map<String, Object> queryParams = new HashMap<>();
 
-            URIBuilder builder = new URIBuilder(this.parser.url('/foo/:name/:type', pathParams));
+            URIBuilder builder = new URIBuilder(this.parser.url("/foo/:name/:type", pathParams));
             this.parser.query(builder, queryParams);
 
             HttpPatch request = new HttpPatch(builder.build());
@@ -170,18 +176,22 @@ public class Client extends ClientAbstract {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                return this.objectMapper.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
             }
 
             switch (statusCode) {
                 default:
-                    throw new ErrorException('The server returned an unknown status code');
+                    throw new UnkownStatusCodeException("The server returned an unknown status code");
             }
         } catch (Exception e) {
-            throw new ErrorException('An unknown error occurred: ' . e.getMessage());
+            throw new ClientException("An unknown error occurred: " + e.getMessage());
         }
     }
 
 
 
+    public static Client build(String baseUrl, String token): Client
+    {
+        return new Client(baseUrl, new HttpBearer(token));
+    }
 }

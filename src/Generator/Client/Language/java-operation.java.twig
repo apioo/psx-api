@@ -5,16 +5,16 @@
      * {{ operation.description }}
      */
 {% endif %}
-    public {% if operation.return %}{{ operation.return.type|raw }}{% else %}void{% endif %} {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws {% for return in operation.throws %}{{ return.type }}Exception, {% endfor %}ErrorException {
+    public {% if operation.return %}{{ operation.return.type|raw }}{% else %}void{% endif %} {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws {% for return in operation.throws %}{{ return.type }}Exception, {% endfor %}ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
-{% for name in operation.pathNames %}
-            pathParams.put("{{ name }}", {{ name }});
+{% for name, realName in operation.pathNames %}
+            pathParams.put("{{ realName }}", {{ name }});
 {% endfor %}
 
             Map<String, Object> queryParams = new HashMap<>();
-{% for name in operation.queryNames %}
-            queryParams.put("{{ name }}", {{ name }});
+{% for name, realName in operation.queryNames %}
+            queryParams.put("{{ realName }}", {{ name }});
 {% endfor %}
 
             URIBuilder builder = new URIBuilder(this.parser.url("{{ operation.path }}", pathParams));
@@ -43,10 +43,10 @@
                     throw new {{ return.type }}Exception(this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), {{ return.type }}.class));
 {% endfor %}
                 default:
-                    throw new ErrorException("The server returned an unknown status code");
+                    throw new UnkownStatusCodeException("The server returned an unknown status code");
             }
         } catch (Exception e) {
-            throw new ErrorException("An unknown error occurred: " + e.getMessage());
+            throw new ClientException("An unknown error occurred: " + e.getMessage());
         }
     }
 

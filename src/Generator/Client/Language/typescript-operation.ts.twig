@@ -12,8 +12,8 @@
      */
     public async {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ name }}{% if arg.optional %}?{% endif %}: {{ arg.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{% if operation.return %}{{ operation.return.type|raw }}{% else %}void{% endif %}> {
         const url = this.parser.url('{{ operation.path|raw }}', {
-{% for name in operation.pathNames %}
-            {{ name }}: {{ name }},
+{% for name, realName in operation.pathNames %}
+            '{{ realName }}': {{ name }},
 {% endfor %}
         });
 
@@ -21,8 +21,8 @@
             url: url,
             method: '{{ operation.method }}',
             params: this.parser.query({
-{% for name in operation.queryNames %}
-                {{ name }}: {{ name }},
+{% for name, realName in operation.queryNames %}
+                '{{ realName }}': {{ name }},
 {% endfor %}
             }),
 {% if operation.bodyName is not null %}

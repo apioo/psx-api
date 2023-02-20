@@ -4,7 +4,7 @@
  */
 
 
-import app.sdkgen.client.KnownErrorException;
+import app.sdkgen.client.Exception.KnownErrorException;
 
 public class EntryMessageException extends KnownErrorException {
 

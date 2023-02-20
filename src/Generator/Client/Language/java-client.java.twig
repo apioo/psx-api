@@ -4,15 +4,22 @@ package {{ namespace }};
 
 import app.sdkgen.client.ClientAbstract;
 import app.sdkgen.client.Credentials.*;
-import app.sdkgen.client.CredentialsInterface;
-import app.sdkgen.client.TokenStoreInterface;
-import java.util.List;
+import app.sdkgen.client.Exception.ClientException;
+import app.sdkgen.client.Exception.UnkownStatusCodeException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public class {{ className }} extends ClientAbstract {
-    public {{ className }}(String baseUrl, {% if security.type == 'httpBasic' %}String userName, String password, {% elseif security.type in ['httpBearer', 'apiKey'] %}String token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}String clientId, String clientSecret, {% else %}CredentialsInterface credentials, {% endif %}TokenStoreInterface tokenStore, List<String> scopes) {
-        super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}credentials{% endif %}, tokenStore, scopes);
-    }
-
 {% for tag in tags %}
     public function {{ tag.className }} {{ tag.methodName }}()
     {
@@ -23,7 +30,32 @@ public class {{ className }} extends ClientAbstract {
     }
 
 {% endfor %}
-
 {{ operations|raw }}
 
+{% if security.type == 'httpBasic' %}
+    public static {{ className }} build(String baseUrl, String userName, String password): {{ className }}
+    {
+        return new {{ className }}(baseUrl, new HttpBasic(userName, password));
+    }
+{% elseif security.type == 'httpBearer' %}
+    public static {{ className }} build(String baseUrl, String token): {{ className }}
+    {
+        return new {{ className }}(baseUrl, new HttpBearer(token));
+    }
+{% elseif security.type == 'apiKey' %}
+    public static {{ className }} build(String baseUrl, String token): {{ className }}
+    {
+        return new {{ className }}(baseUrl, new ApiKey(token, '{{ security.name }}', '{{ security.in }}'));
+    }
+{% elseif security.type == 'clientCredentials' %}
+    public static {{ className }} build(String baseUrl, String clientId, String clientSecret, TokenStoreInterface tokenStore, List<String> scopes): {{ className }}
+    {
+        return new {{ className }}(baseUrl, new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
+    }
+{% elseif security.type == 'authorizationCode' %}
+    public static {{ className }} build(String baseUrl, String clientId, String clientSecret, TokenStoreInterface tokenStore, List<String> scopes): {{ className }}
+    {
+        return new self($baseUrl, new Credentials\AuthorizationCode($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', $tokenStore, $scopes));
+    }
+{% endif %}
 }
