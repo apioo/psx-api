@@ -7,6 +7,9 @@ import axios, {AxiosRequestConfig} from "axios";
 import {TagAbstract} from "sdkgen-client"
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
+import {EntryCollection} from "./EntryCollection";
+import {EntryCreate} from "./EntryCreate";
+import {EntryMessage} from "./EntryMessage";
 
 export default class BarTag extends TagAbstract {
     /**
