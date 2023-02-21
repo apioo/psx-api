@@ -1,13 +1,14 @@
 
 # API
 
-The API component provides models to describe an API specification. You can create those models either by parsing an
-OpenAPI specification or by using PHP Attributes. Based on those models it is then possible to generate i.e. an OpenAPI
-specification or client SDKs.
+The API component is the reference implementation of the [TypeAPI](http://typeapi.org/) specification.
+It provides models to describe an REST API and generate based on those models different outputs. You can create those
+models either by parsing a TypeAPI or OpenAPI specification or by using PHP Attributes. Based on those models it is then
+possible to generate i.e. client SDKs.
 
 ## Usage
 
-The root model object is called a `Specification` which then contains `Resources` and `Definitions`. The resources
+The root model object is called a `Specification` which then contains `Operations` and `Definitions`. The operations
 contain all available metadata of your endpoints and the definitions represent the available schemas.
 
 ### Framework
@@ -28,17 +29,14 @@ class MyController
     #[Get]
     #[Path('/my/endpoint')]
     #[QueryParam(name='foo', type='integer')]
-    #[Outgoing(code=200, schema=\My\Response\Model::class)]
-    public function getModel()
+    public function getModel(QueryParam $param, ): \My\Response\Model
     {
         // @TODO implement
     }
     
     #[Post]
     #[Path('/my/endpoint')]
-    #[Incoming(schema=\My\Request\Model::class)]
-    #[Outgoing(code=200, schema=\My\Response\Model::class)]
-    public function insertModel(\My\Request\Model $model)
+    public function insertModel(\My\Request\Model $model): \My\Response\Model
     {
         // @TODO implement
     }
@@ -52,58 +50,37 @@ way you can also implement a custom `ParserInterface`.
 
 ### Standalone
 
-Beside the framework integration you can use this component also to simply parse existing OpenAPI specifications and
+Beside the framework integration you can use this component also to simply parse existing TypeAPI specification and
 generate specific output. The following is a simple example how to use the PHP API and how to generate code.
 
 ```php
 <?php
 
-// reads the OpenAPI specification and generates a resource object which was defined under the path /foo
-$specification = \PSX\Api\Parser\OpenAPI::fromFile('openapi.json');
+// reads the TypeAPI specification and generates a specification
+$specification = \PSX\Api\Parser\TypeAPI::fromFile('typeapi.json');
 
 // contains all schema type definitions
 $definitions = $specification->getDefinitions();
 
 // returns the resource foo from the specification
-$resource = $specification->get('/foo');
+$operation = $specification->getOperations()->get('my.operation');
 
-// returns path parameters type as string
-$resource->getPathParameters();
+// returns all available arguments
+$operation->getArguments();
 
-// you can get the actual schema type from the definitions
-$pathType = $definitions->getType($resource->getPathParameters());
+// returns the return type
+$operation->getReturn();
 
-// checks whether a specific request method is supported
-$resource->hasMethod('POST');
+// returns all exceptions which are described
+$operation->getThrows();
 
-// returns all allowed methods
-$resource->getAllowedMethods();
+// returns the assigned HTTP method
+$operation->getMethod();
 
-// returns the available query parameters type as string
-$resource->getMethod('POST')->getQueryParameters();
+// returns the assigned HTTP path
+$operation->getPath();
 
-// you can get the actual schema type from the definitions
-$queryType = $definitions->getType($resource->getMethod('POST')->getQueryParameters());
-
-// checks whether the method has a request
-$resource->getMethod('POST')->hasRequest();
-
-// returns the request type as string
-$resource->getMethod('POST')->getRequest();
-
-// you can get the actual schema type from the definitions
-$requestType = $definitions->getType($resource->getMethod('POST')->getRequest());
-
-// checks whether the method has a response with the status code 201
-$resource->getMethod('POST')->hasResponse(201);
-
-// returns the response type as string
-$resource->getMethod('POST')->getResponse(201);
-
-// you can get the actual schema type from the definitions
-$responseType = $definitions->getType($resource->getMethod('POST')->getResponse(201));
-
-// creates a PHP client which consumes the defined /foo resource
+// creates a PHP client which consumes the defined operations
 $generator = new \PSX\Api\Generator\Client\Php();
 
 $source = $generator->generate($resource);
@@ -114,10 +91,10 @@ $source = $generator->generate($resource);
 
 ### Client
 
-- PHP (stable)
-- Typescript (stable)
-- Go (in development)
-- Java (in development)
+- Go
+- Java
+- PHP
+- Typescript
 
 ### Markup
 
@@ -126,6 +103,7 @@ $source = $generator->generate($resource);
 
 ### Spec
 
-- OpenAPI (Generates a [OpenAPI 3.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md) specification)
-- RAML (Generates a [RAML 1.0](http://raml.org/) specification)
-- TypeSchema (Generates a [TypeSchema](https://typeschema.org/) specification)
+- [OpenAPI 3.0](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md)
+- [RAML 1.0](http://raml.org/)
+- [TypeAPI](https://typeapi.org/)
+- [TypeSchema](https://typeschema.org/)
