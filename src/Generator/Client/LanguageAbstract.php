@@ -88,6 +88,12 @@ abstract class LanguageAbstract implements GeneratorInterface
         $client = $this->converter->getClient($specification);
 
         foreach ($client->tags as $tag) {
+            $imports = [];
+            foreach ($tag->operations as $operation) {
+                $imports = array_merge($imports, $operation->imports);
+            }
+            sort($imports);
+
             /** @var Tag $tag */
             $operations = $this->engine->render($this->getOperationTemplate(), [
                 'operations' => $tag->operations,
@@ -97,6 +103,7 @@ abstract class LanguageAbstract implements GeneratorInterface
                 'namespace' => $this->namespace,
                 'className' => $tag->className,
                 'operations' => $operations,
+                'imports' => $imports,
             ]);
 
             $chunks->append($this->getFileName($tag->className), $this->getFileContent($code, $tag->className));
@@ -115,7 +122,13 @@ abstract class LanguageAbstract implements GeneratorInterface
         }
 
         $operations = '';
+        $imports = [];
         if (count($client->operations) > 0) {
+            foreach ($client->operations as $operation) {
+                $imports = array_merge($imports, $operation->imports);
+            }
+            sort($imports);
+
             $operations = $this->engine->render($this->getOperationTemplate(), [
                 'operations' => $client->operations,
             ]);
@@ -128,6 +141,7 @@ abstract class LanguageAbstract implements GeneratorInterface
             'security' => $client->security,
             'tags' => $client->tags,
             'operations' => $operations,
+            'imports' => $imports,
         ]);
 
         $chunks->append($this->getFileName($client->className), $this->getFileContent($code, $client->className));

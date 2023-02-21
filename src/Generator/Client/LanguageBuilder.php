@@ -130,6 +130,7 @@ class LanguageBuilder
                 continue;
             }
 
+            $imports = [];
             $path = $pathNames = [];
             $query = $queryNames = [];
             $body = $bodyName = null;
@@ -145,6 +146,8 @@ class LanguageBuilder
                     $body = $this->newTypeBySchema($argument->getSchema(), false, $definitions);
                     $bodyName = $normalized;
                 }
+
+                $this->resolveImport($argument->getSchema(), $imports);
             }
 
             $arguments = array_merge($path, $body !== null ? ['payload' => $body] : [], $query);
@@ -152,11 +155,15 @@ class LanguageBuilder
             $return = null;
             if (in_array($operation->getReturn()->getCode(), [200, 201])) {
                 $return = $this->newTypeBySchema($operation->getReturn()->getSchema(), false, $definitions);
+
+                $this->resolveImport($operation->getReturn()->getSchema(), $imports);
             }
 
             $throws = [];
             foreach ($operation->getThrows() as $throw) {
                 $throws[$throw->getCode()] = $this->newTypeBySchema($throw->getSchema(), false, $definitions);
+
+                $this->resolveImport($throw->getSchema(), $imports);
             }
 
             $result[] = new Dto\Operation(
@@ -169,7 +176,8 @@ class LanguageBuilder
                 $queryNames,
                 $bodyName,
                 $return,
-                $throws
+                $throws,
+                $imports
             );
         }
 

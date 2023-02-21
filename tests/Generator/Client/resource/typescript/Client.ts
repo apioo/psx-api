@@ -8,6 +8,12 @@ import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
 import {HttpBearer} from "sdkgen-client"
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
+import {EntryCollection} from "./EntryCollection";
+import {EntryCreate} from "./EntryCreate";
+import {EntryDelete} from "./EntryDelete";
+import {EntryMessage} from "./EntryMessage";
+import {EntryPatch} from "./EntryPatch";
+import {EntryUpdate} from "./EntryUpdate";
 
 export default class Client extends ClientAbstract {
     /**

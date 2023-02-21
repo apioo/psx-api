@@ -2,7 +2,7 @@ import axios, {AxiosRequestConfig} from "axios";
 import {TagAbstract} from "sdkgen-client"
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
-{% for className in imports %}
+{% for ref, className in imports %}
 import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
 {% endfor %}
 
