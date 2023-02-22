@@ -45,14 +45,14 @@ class CachedListing implements ListingInterface
         $this->expire  = $expire;
     }
 
-    public function getAvailableRoutes(?FilterInterface $filter = null): iterable
+    public function getNames(?FilterInterface $filter = null): iterable
     {
         $item = $this->cache->getItem($this->getResourceIndexKey($filter));
         if ($item->isHit()) {
             return $item->get();
         }
 
-        $result = $this->listing->getAvailableRoutes($filter);
+        $result = $this->listing->getNames($filter);
 
         $item->set($result);
         $item->expiresAfter($this->expire);

@@ -21,6 +21,7 @@
 namespace PSX\Api\Listing;
 
 use PSX\Api\ListingInterface;
+use PSX\Api\Operations;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
 use PSX\Api\Specification;
@@ -43,12 +44,12 @@ class MemoryListing implements ListingInterface
     {
         $this->routes = [];
         $this->specification = new Specification(
-            new ResourceCollection(),
+            new Operations(),
             new Definitions()
         );
     }
 
-    public function getAvailableRoutes(?FilterInterface $filter = null): iterable
+    public function getNames(?FilterInterface $filter = null): iterable
     {
         if ($filter !== null) {
             return array_values(array_filter($this->routes, static function(Route $route) use ($filter){
@@ -61,12 +62,12 @@ class MemoryListing implements ListingInterface
 
     public function find(string $path, ?string $version = null): ?SpecificationInterface
     {
-        $resource = $this->specification->getResourceCollection()->get($path);
+        $resource = $this->specification->getOperations()->get($path);
         if (!$resource instanceof Resource) {
             return null;
         }
 
-        $collection = new ResourceCollection();
+        $collection = new Operations();
         $collection->set($resource);
 
         return new Specification(
@@ -79,7 +80,7 @@ class MemoryListing implements ListingInterface
     {
         if ($filter !== null) {
             return new Specification(
-                $this->specification->getResourceCollection()->filter($filter),
+                $this->specification->getOperations()->filter($filter),
                 $this->specification->getDefinitions()
             );
         } else {

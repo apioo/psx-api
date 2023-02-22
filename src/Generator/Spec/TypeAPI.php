@@ -21,6 +21,8 @@
 namespace PSX\Api\Generator\Spec;
 
 use PSX\Api\GeneratorAbstract;
+use PSX\Api\GeneratorInterface;
+use PSX\Api\OperationsInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Json\Parser;
 use PSX\Schema\DefinitionsInterface;
@@ -28,35 +30,30 @@ use PSX\Schema\Generator;
 use PSX\Schema\TypeFactory;
 
 /**
- * TypeSchema
+ * TypeAPI
  *
  * @see     https://typeschema.org/
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class TypeSchema extends GeneratorAbstract
+class TypeAPI implements GeneratorInterface
 {
     public function generate(SpecificationInterface $specification): Generator\Code\Chunks|string
     {
-        $collection = $specification->getResourceCollection();
+        $operations = $specification->getOperations();
         $definitions = $specification->getDefinitions();
 
-        $resources = [];
-        foreach ($collection as $path => $resource) {
-            $resources[$path] = $resource->toArray();
-        }
-
-        if (count($resources) === 1) {
-            $data = reset($resources);
-        } else {
-            $data = [];
-            $data['paths'] = $resources;
-        }
-
+        $data['operations'] = $this->generateOperations($operations);
         $data['definitions'] = $this->generateDefinitions($definitions);
 
         return Parser::encode($data, \JSON_PRETTY_PRINT);
+    }
+
+    private function generateOperations(OperationsInterface $operations): array
+    {
+
+        return [];
     }
 
     private function generateDefinitions(DefinitionsInterface $definitions): ?array

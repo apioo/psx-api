@@ -21,6 +21,7 @@
 namespace PSX\Api\Generator\Spec;
 
 use PSX\Api\GeneratorAbstract;
+use PSX\Api\GeneratorInterface;
 use PSX\Model\OpenAPI\Tag;
 use PSX\Schema\Parser\Popo\Dumper;
 
@@ -31,7 +32,7 @@ use PSX\Schema\Parser\Popo\Dumper;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-abstract class OpenAPIAbstract extends GeneratorAbstract
+abstract class OpenAPIAbstract implements GeneratorInterface
 {
     public const FLOW_AUTHORIZATION_CODE = 0;
     public const FLOW_IMPLICIT = 1;

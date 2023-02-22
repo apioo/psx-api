@@ -53,19 +53,6 @@ class Specification implements SpecificationInterface, \JsonSerializable
         return $this->definitions;
     }
 
-    public function get(string $path): ?SpecificationInterface
-    {
-        $resource = $this->getOperations()->get($path);
-        if (!$resource instanceof Resource) {
-            return null;
-        }
-
-        return new Specification(
-            new ResourceCollection([$resource]),
-            $this->definitions
-        );
-    }
-
     public function getSecurity(): ?SecurityInterface
     {
         return $this->security;
@@ -78,16 +65,7 @@ class Specification implements SpecificationInterface, \JsonSerializable
 
     public function merge(SpecificationInterface $specification): void
     {
-        foreach ($specification->getOperations() as $path => $resource) {
-            if ($this->operations->has($path)) {
-                foreach ($resource->getMethods() as $method) {
-                    $this->operations->get($path)->addMethod($method);
-                }
-            } else {
-                $this->operations->set($resource);
-            }
-        }
-
+        $this->operations->merge($specification->getOperations());
         $this->definitions->merge($specification->getDefinitions());
     }
 
@@ -95,16 +73,8 @@ class Specification implements SpecificationInterface, \JsonSerializable
     {
         return [
             'security' => $this->security,
-            'resources' => $this->operations,
+            'operations' => $this->operations,
             'definitions' => $this->definitions,
         ];
-    }
-
-    public static function fromResource(Resource $resource, DefinitionsInterface $definitions): self
-    {
-        $collection = new ResourceCollection();
-        $collection->set($resource);
-
-        return new static($collection, $definitions);
     }
 }

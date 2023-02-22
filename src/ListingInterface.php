@@ -33,9 +33,11 @@ use PSX\Api\Listing\FilterInterface;
 interface ListingInterface
 {
     /**
-     * Returns all available routes
+     * Returns all available operation names
+     *
+     * @return array<string>
      */
-    public function getAvailableRoutes(?FilterInterface $filter = null): iterable;
+    public function getNames(?FilterInterface $filter = null): array;
 
     /**
      * Returns a specification for a specific resource path

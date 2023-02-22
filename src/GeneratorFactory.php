@@ -79,8 +79,8 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 $generator = new Generator\Spec\Raml(1, $baseUri);
                 break;
 
-            case GeneratorFactoryInterface::SPEC_TYPESCHEMA:
-                $generator = new Generator\Spec\TypeSchema();
+            case GeneratorFactoryInterface::SPEC_TYPEAPI:
+                $generator = new Generator\Spec\TypeAPI();
                 break;
 
             default:

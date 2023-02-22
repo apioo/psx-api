@@ -21,6 +21,7 @@
 namespace PSX\Api\Generator\Spec;
 
 use PSX\Api\GeneratorAbstract;
+use PSX\Api\GeneratorInterface;
 use PSX\Api\Resource;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
@@ -46,7 +47,7 @@ use Symfony\Component\Yaml\Yaml;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Raml extends GeneratorAbstract
+class Raml implements GeneratorInterface
 {
     private int $apiVersion;
     private string $baseUri;

@@ -40,7 +40,7 @@ interface GeneratorFactoryInterface
     public const MARKUP_HTML = 'markup-html';
     public const MARKUP_MARKDOWN = 'markup-markdown';
 
-    public const SPEC_TYPESCHEMA = 'spec-typeschema';
+    public const SPEC_TYPEAPI = 'spec-typeapi';
     public const SPEC_OPENAPI = 'spec-openapi';
     public const SPEC_RAML = 'spec-raml';
 
