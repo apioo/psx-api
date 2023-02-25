@@ -44,16 +44,10 @@ class TypeAPI extends ApiAbstract
         $operations = $specification->getOperations();
         $definitions = $specification->getDefinitions();
 
-        $data['operations'] = $this->generateOperations($operations);
+        $data['operations'] = $operations;
         $data['definitions'] = $this->generateDefinitions($definitions);
 
         return Parser::encode($data, \JSON_PRETTY_PRINT);
-    }
-
-    private function generateOperations(OperationsInterface $operations): array
-    {
-
-        return [];
     }
 
     private function generateDefinitions(DefinitionsInterface $definitions): ?array

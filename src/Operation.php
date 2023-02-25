@@ -31,7 +31,7 @@ use PSX\Api\Operation\Response;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Operation implements OperationInterface
+class Operation implements OperationInterface, \JsonSerializable
 {
     private string $method;
     private string $path;
@@ -165,5 +165,23 @@ class Operation implements OperationInterface
     public function setTags(array $tags): void
     {
         $this->tags = $tags;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return array_filter([
+            'path' => $this->path,
+            'method' => $this->method,
+            'return' => $this->return,
+            'description' => $this->description,
+            'arguments' => $this->arguments,
+            'authorization' => $this->authorization,
+            'security' => $this->security,
+            'deprecated' => $this->deprecated,
+            'throws' => $this->throws,
+            'tags' => $this->tags,
+        ], static function ($value) {
+            return $value !== null;
+        });
     }
 }

@@ -13,7 +13,7 @@
     "\/foo\/{name}\/{type}": {
       "get": {
         "description": "Returns a collection",
-        "operationId": "list.foo",
+        "operationId": "get",
         "parameters": [
           {
             "name": "startIndex",
@@ -30,7 +30,7 @@
           {
             "name": "float",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "number"
             }
@@ -38,7 +38,7 @@
           {
             "name": "boolean",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "boolean"
             }
@@ -46,7 +46,7 @@
           {
             "name": "date",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "format": "date",
               "type": "string"
@@ -55,7 +55,7 @@
           {
             "name": "datetime",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -64,7 +64,6 @@
         ],
         "responses": {
           "200": {
-            "description": "GET 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -76,8 +75,8 @@
         }
       },
       "put": {
+        "operationId": "update",
         "requestBody": {
-          "description": "PUT Request",
           "content": {
             "application\/json": {
               "schema": {
@@ -88,7 +87,6 @@
         },
         "responses": {
           "200": {
-            "description": "PUT 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -100,9 +98,8 @@
         }
       },
       "post": {
-        "operationId": "create.foo",
+        "operationId": "create",
         "requestBody": {
-          "description": "POST Request",
           "content": {
             "application\/json": {
               "schema": {
@@ -113,7 +110,24 @@
         },
         "responses": {
           "201": {
-            "description": "POST 201 Response",
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/EntryMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/EntryMessage"
+                }
+              }
+            }
+          },
+          "500": {
             "content": {
               "application\/json": {
                 "schema": {
@@ -125,8 +139,8 @@
         }
       },
       "delete": {
+        "operationId": "delete",
         "requestBody": {
-          "description": "DELETE Request",
           "content": {
             "application\/json": {
               "schema": {
@@ -137,7 +151,6 @@
         },
         "responses": {
           "200": {
-            "description": "DELETE 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -149,8 +162,8 @@
         }
       },
       "patch": {
+        "operationId": "patch",
         "requestBody": {
-          "description": "PATCH Request",
           "content": {
             "application\/json": {
               "schema": {
@@ -161,7 +174,6 @@
         },
         "responses": {
           "200": {
-            "description": "PATCH 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -176,25 +188,16 @@
         {
           "name": "name",
           "in": "path",
-          "description": "Name parameter",
           "required": true,
           "schema": {
-            "description": "Name parameter",
-            "type": "string",
-            "pattern": "[A-z]+",
-            "minLength": 0,
-            "maxLength": 16
+            "type": "string"
           }
         },
         {
           "name": "type",
           "in": "path",
-          "required": false,
+          "required": true,
           "schema": {
-            "enum": [
-              "foo",
-              "bar"
-            ],
             "type": "string"
           }
         }

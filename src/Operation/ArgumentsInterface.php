@@ -20,45 +20,31 @@
 
 namespace PSX\Api\Operation;
 
+use PSX\Api\Exception\ArgumentNotFoundException;
+use PSX\Api\Exception\InvalidArgumentException;
+use PSX\Api\Exception\OperationNotFoundException;
+use PSX\Api\OperationInterface;
+use PSX\Api\OperationsInterface;
+use PSX\Schema\Type\StructType;
 use PSX\Schema\TypeInterface;
 
 /**
- * Response
+ * ArgumentsInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Response implements ResponseInterface, \JsonSerializable
+interface ArgumentsInterface
 {
-    private int $code;
-    private TypeInterface $schema;
+    public function has(string $name): bool;
 
-    public function __construct(int $code, TypeInterface $schema)
-    {
-        if (!($code >= 200 && $code < 600)) {
-            throw new \InvalidArgumentException('Provided an invalid "code" value, must be a valid HTTP status code');
-        }
+    public function get(string $name): Argument;
 
-        $this->code = $code;
-        $this->schema = $schema;
-    }
+    /**
+     * @return array<string, Argument>
+     */
+    public function getAll(): array;
 
-    public function getCode(): int
-    {
-        return $this->code;
-    }
-
-    public function getSchema(): TypeInterface
-    {
-        return $this->schema;
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'code' => $this->code,
-            'schema' => $this->schema,
-        ];
-    }
+    public function isEmpty(): bool;
 }

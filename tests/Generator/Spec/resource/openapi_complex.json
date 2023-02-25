@@ -22,14 +22,13 @@
   ],
   "paths": {
     "\/foo\/{name}\/{type}": {
-      "post": {
+      "get": {
         "tags": [
           "foo"
         ],
         "description": "Returns a collection",
-        "operationId": "postEntryOrMessage",
+        "operationId": "get",
         "requestBody": {
-          "description": "POST Request",
           "content": {
             "application\/json": {
               "schema": {
@@ -40,7 +39,6 @@
         },
         "responses": {
           "200": {
-            "description": "POST 200 Response",
             "content": {
               "application\/json": {
                 "schema": {

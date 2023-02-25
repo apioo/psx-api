@@ -29,12 +29,8 @@ use PSX\Schema\TypeInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Argument
+class Argument implements ArgumentInterface, \JsonSerializable
 {
-    public const IN_PATH = 'path';
-    public const IN_QUERY = 'query';
-    public const IN_BODY = 'body';
-
     private string $in;
     private TypeInterface $schema;
 
@@ -56,5 +52,13 @@ class Argument
     public function getSchema(): TypeInterface
     {
         return $this->schema;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'in' => $this->in,
+            'schema' => $this->schema,
+        ];
     }
 }

@@ -18,27 +18,24 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests\Generator\Spec;
+namespace PSX\Api\Operation;
 
-use PSX\Api\Generator\Spec\TypeSchema;
-use PSX\Api\Tests\Generator\GeneratorTestCase;
+use PSX\Schema\TypeInterface;
 
 /**
- * TypeSchemaTest
+ * ArgumentInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class TypeSchemaTest extends GeneratorTestCase
+interface ArgumentInterface
 {
-    public function testGenerate()
-    {
-        $generator = new TypeSchema();
+    public const IN_PATH = 'path';
+    public const IN_QUERY = 'query';
+    public const IN_BODY = 'body';
 
-        $actual = $generator->generate($this->getSpecification());
-        $expect = file_get_contents(__DIR__ . '/resource/typeschema.json');
+    public function getIn(): string;
 
-        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
-    }
+    public function getSchema(): TypeInterface;
 }

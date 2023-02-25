@@ -18,47 +18,27 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Operation;
+namespace PSX\Api\Tests\Generator\Spec;
 
-use PSX\Schema\TypeInterface;
+use PSX\Api\Generator\Spec\TypeAPI;
+use PSX\Api\Tests\Generator\GeneratorTestCase;
 
 /**
- * Response
+ * TypeAPITest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Response implements ResponseInterface, \JsonSerializable
+class TypeAPITest extends GeneratorTestCase
 {
-    private int $code;
-    private TypeInterface $schema;
-
-    public function __construct(int $code, TypeInterface $schema)
+    public function testGenerate()
     {
-        if (!($code >= 200 && $code < 600)) {
-            throw new \InvalidArgumentException('Provided an invalid "code" value, must be a valid HTTP status code');
-        }
+        $generator = new TypeAPI();
 
-        $this->code = $code;
-        $this->schema = $schema;
-    }
+        $actual = $generator->generate($this->getSpecification());
+        $expect = file_get_contents(__DIR__ . '/resource/typeapi.json');
 
-    public function getCode(): int
-    {
-        return $this->code;
-    }
-
-    public function getSchema(): TypeInterface
-    {
-        return $this->schema;
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'code' => $this->code,
-            'schema' => $this->schema,
-        ];
+        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 }

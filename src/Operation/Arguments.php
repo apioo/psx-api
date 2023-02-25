@@ -35,7 +35,7 @@ use PSX\Schema\TypeInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Arguments
+class Arguments implements ArgumentsInterface, \JsonSerializable
 {
     private array $container;
 
@@ -96,5 +96,10 @@ class Arguments
     public function withAdded(Arguments $arguments): Arguments
     {
         return new Arguments(array_merge($this->container, $arguments->getAll()));
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->container;
     }
 }

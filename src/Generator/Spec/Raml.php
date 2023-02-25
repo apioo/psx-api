@@ -72,11 +72,11 @@ class Raml implements GeneratorInterface
 
     public function generate(SpecificationInterface $specification): Chunks|string
     {
-        $collection = $specification->getResourceCollection();
+        $operations = $specification->getOperations();
         $definitions = $specification->getDefinitions();
 
         $raml = $this->getDeclaration();
-        foreach ($collection as $path => $resource) {
+        foreach ($operations as $operationId => $operation) {
             $raml.= $this->getResource($resource, $definitions);
         }
 

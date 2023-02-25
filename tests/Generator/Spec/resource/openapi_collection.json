@@ -16,9 +16,9 @@
           "foo"
         ],
         "description": "Returns a collection",
+        "operationId": "foo.get",
         "responses": {
           "200": {
-            "description": "GET 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -33,8 +33,8 @@
         "tags": [
           "foo"
         ],
+        "operationId": "foo.create",
         "requestBody": {
-          "description": "POST Request",
           "content": {
             "application\/json": {
               "schema": {
@@ -45,7 +45,6 @@
         },
         "responses": {
           "201": {
-            "description": "POST 201 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -55,7 +54,8 @@
             }
           }
         }
-      }
+      },
+      "parameters": []
     },
     "\/bar\/{foo}": {
       "get": {
@@ -63,9 +63,9 @@
           "bar"
         ],
         "description": "Returns a collection",
+        "operationId": "bar.get",
         "responses": {
           "200": {
-            "description": "GET 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -80,8 +80,8 @@
         "tags": [
           "bar"
         ],
+        "operationId": "bar.create",
         "requestBody": {
-          "description": "POST Request",
           "content": {
             "application\/json": {
               "schema": {
@@ -92,7 +92,6 @@
         },
         "responses": {
           "201": {
-            "description": "POST 201 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -107,7 +106,7 @@
         {
           "name": "foo",
           "in": "path",
-          "required": false,
+          "required": true,
           "schema": {
             "type": "string"
           }
@@ -117,12 +116,12 @@
     "\/bar\/{year}": {
       "get": {
         "tags": [
-          "bar"
+          "baz"
         ],
         "description": "Returns a collection",
+        "operationId": "baz.get",
         "responses": {
           "200": {
-            "description": "GET 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -135,10 +134,10 @@
       },
       "post": {
         "tags": [
-          "bar"
+          "baz"
         ],
+        "operationId": "baz.create",
         "requestBody": {
-          "description": "POST Request",
           "content": {
             "application\/json": {
               "schema": {
@@ -149,7 +148,6 @@
         },
         "responses": {
           "201": {
-            "description": "POST 201 Response",
             "content": {
               "application\/json": {
                 "schema": {
@@ -164,7 +162,7 @@
         {
           "name": "year",
           "in": "path",
-          "required": false,
+          "required": true,
           "schema": {
             "type": "string"
           }

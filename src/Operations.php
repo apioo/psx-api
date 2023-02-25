@@ -29,7 +29,7 @@ use PSX\Api\Exception\OperationNotFoundException;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Operations implements OperationsInterface
+class Operations implements OperationsInterface, \JsonSerializable
 {
     private array $container;
 
@@ -78,5 +78,10 @@ class Operations implements OperationsInterface
     public function withAdded(OperationsInterface $operations): Operations
     {
         return new Operations(array_merge($this->container, $operations->getAll()));
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->container;
     }
 }
