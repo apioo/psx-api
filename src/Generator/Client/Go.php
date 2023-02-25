@@ -32,14 +32,19 @@ use PSX\Schema\GeneratorInterface;
  */
 class Go extends LanguageAbstract
 {
-    protected function getTemplate(): string
+    protected function getOperationTemplate(): string
     {
-        return 'go.go.twig';
+        return 'go-operation.go.twig';
     }
 
     protected function getTagTemplate(): string
     {
-        return 'go-group.go.twig';
+        return 'go-tag.go.twig';
+    }
+
+    protected function getExceptionTemplate(): string
+    {
+        return 'go-exception.go.twig';
     }
 
     protected function getClientTemplate(): string

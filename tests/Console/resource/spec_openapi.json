@@ -10,16 +10,19 @@
     }
   ],
   "paths": {
-    "\/foo": {
+    "\/foo\/{fooId}": {
       "get": {
+        "tags": [
+          "foo"
+        ],
         "description": "A long **Test** description",
-        "operationId": "PSX_Api_Tests_Parser_Attribute_TestController_doGet",
+        "operationId": "PSX.Api.Tests.Parser.Attribute.TestController.doGet",
         "parameters": [
           {
             "name": "foo",
             "in": "query",
             "description": "Test",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Test",
               "type": "string"
@@ -36,7 +39,7 @@
           {
             "name": "baz",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "enum": [
                 "foo",
@@ -48,7 +51,7 @@
           {
             "name": "boz",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "string",
               "pattern": "[A-z]+"
@@ -57,7 +60,7 @@
           {
             "name": "integer",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "integer"
             }
@@ -65,7 +68,7 @@
           {
             "name": "number",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "number"
             }
@@ -73,15 +76,16 @@
           {
             "name": "date",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
+              "format": "date-time",
               "type": "string"
             }
           },
           {
             "name": "boolean",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "boolean"
             }
@@ -89,29 +93,36 @@
           {
             "name": "string",
             "in": "query",
-            "required": false,
+            "required": true,
             "schema": {
               "type": "string"
             }
           }
         ],
         "requestBody": {
-          "description": "GET Request",
           "content": {
             "application\/json": {
               "schema": {
-                "$ref": "#\/components\/schemas\/PSX_Api_Tests_Parser_Attribute_TestController_doGet_GET_Request"
+                "$ref": "#\/components\/schemas\/Song"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "GET 200 Response",
             "content": {
               "application\/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/PSX_Api_Tests_Parser_Attribute_TestController_doGet_GET_200_Response"
+                  "$ref": "#\/components\/schemas\/Song"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application\/json": {
+                "schema": {
+                  "$ref": "#\/components\/schemas\/Error"
                 }
               }
             }
@@ -132,6 +143,26 @@
   },
   "components": {
     "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "PSX_Api_Tests_Parser_Attribute_TestController_doGet_200_Response": {
+        "$ref": "#\/components\/schemas\/Song"
+      },
+      "PSX_Api_Tests_Parser_Attribute_TestController_doGet_500_Response": {
+        "$ref": "#\/components\/schemas\/Error"
+      },
+      "PSX_Api_Tests_Parser_Attribute_TestController_doGet_Request": {
+        "$ref": "#\/components\/schemas\/Song"
+      },
       "Rating": {
         "title": "Rating",
         "type": "object",
@@ -146,12 +177,6 @@
             "type": "string"
           }
         }
-      },
-      "PSX_Api_Tests_Parser_Attribute_TestController_doGet_GET_200_Response": {
-        "$ref": "#\/components\/schemas\/Song"
-      },
-      "PSX_Api_Tests_Parser_Attribute_TestController_doGet_GET_Request": {
-        "$ref": "#\/components\/schemas\/Song"
       },
       "Song": {
         "description": "A canonical song",

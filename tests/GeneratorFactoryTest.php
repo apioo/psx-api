@@ -57,7 +57,7 @@ class GeneratorFactoryTest extends TestCase
             [GeneratorFactoryInterface::MARKUP_HTML],
             [GeneratorFactoryInterface::MARKUP_MARKDOWN],
 
-            [GeneratorFactoryInterface::SPEC_TYPESCHEMA],
+            [GeneratorFactoryInterface::SPEC_TYPEAPI],
             [GeneratorFactoryInterface::SPEC_OPENAPI],
             [GeneratorFactoryInterface::SPEC_RAML],
         ];

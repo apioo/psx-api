@@ -21,8 +21,11 @@
 namespace PSX\Api\Tests;
 
 use PHPUnit\Framework\TestCase;
+use PSX\Api\Operation;
+use PSX\Api\Operations;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
+use PSX\Schema\TypeFactory;
 
 /**
  * ResourceCollectionTest
@@ -31,19 +34,18 @@ use PSX\Api\ResourceCollection;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class ResourceCollectionTest extends TestCase
+class OperationsTest extends TestCase
 {
     public function testCollection()
     {
-        $collection = new ResourceCollection();
-        $resource   = new Resource(Resource::STATUS_ACTIVE, '/foo');
+        $operations = new Operations();
+        $operation  = new Operation('GET', '/foo', new Operation\Response(200, TypeFactory::getReference('My_Type')));
 
-        $this->assertNull($collection->get('/foo'));
-        $this->assertFalse($collection->has('/foo'));
-        
-        $collection->set($resource);
+        $this->assertFalse($operations->has('my.operation'));
 
-        $this->assertInstanceOf(Resource::class, $collection->get('/foo'));
-        $this->assertTrue($collection->has('/foo'));
+        $operations->add('my.operation', $operation);
+
+        $this->assertInstanceOf(Operation::class, $operations->get('my.operation'));
+        $this->assertTrue($operations->has('my.operation'));
     }
 }

@@ -48,9 +48,6 @@ class GoTest extends GeneratorTestCase
         $this->assertFileExists($target . '/entry_message.go');
         $this->assertFileExists($target . '/entry_patch.go');
         $this->assertFileExists($target . '/entry_update.go');
-        $this->assertFileExists($target . '/foo_by_name_and_type_resource.go');
-        $this->assertFileExists($target . '/get_query.go');
-        $this->assertFileExists($target . '/path.go');
     }
 
     public function testGenerateCollection()
@@ -62,15 +59,10 @@ class GoTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/bar_by_foo_resource.go');
-        $this->assertFileExists($target . '/bar_by_year_resource.go');
         $this->assertFileExists($target . '/entry.go');
         $this->assertFileExists($target . '/entry_collection.go');
         $this->assertFileExists($target . '/entry_create.go');
         $this->assertFileExists($target . '/entry_message.go');
-        $this->assertFileExists($target . '/foo_resource.go');
-        $this->assertFileExists($target . '/path_foo.go');
-        $this->assertFileExists($target . '/path_year.go');
     }
 
     public function testGenerateComplex()
@@ -84,7 +76,5 @@ class GoTest extends GeneratorTestCase
 
         $this->assertFileExists($target . '/entry.go');
         $this->assertFileExists($target . '/entry_message.go');
-        $this->assertFileExists($target . '/foo_by_name_and_type_resource.go');
-        $this->assertFileExists($target . '/path.go');
     }
 }

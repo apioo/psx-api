@@ -31,9 +31,9 @@ class Client
 {
     public function __construct(
         public string $className,
-        public array $operations,
+        /** @var array<Operation> */ public array $operations,
         public array $tags,
-        public array $exceptions,
+        /** @var array<Exception> */ public array $exceptions,
         public ?array $security,
     )
     {

@@ -18,33 +18,15 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Generator\Client\Dto;
-
-use PSX\Schema;
-use PSX\Schema\GeneratorInterface;
+namespace PSX\Api\Exception;
 
 /**
- * Operations
+ * GeneratorException
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Operation
+class GeneratorException extends \Exception
 {
-    public function __construct(
-        public string $methodName,
-        public string $method,
-        public string $path,
-        public string $description,
-        /** @var array<string, Argument> */ public array $arguments,
-        public ?Response $return,
-        /** @var array<int, Response> */ public array $throws,
-        public array $pathNames,
-        public array $queryNames,
-        public ?string $bodyName,
-        public array $imports,
-    )
-    {
-    }
 }

@@ -45,7 +45,6 @@ class ParseCommandTest extends TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'source'   => TestController::class,
-            'path'     => '/foo',
             '--dir'    => __DIR__ . '/output',
             '--format' => GeneratorFactoryInterface::SPEC_OPENAPI,
         ));

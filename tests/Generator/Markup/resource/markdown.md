@@ -1,17 +1,64 @@
-<div class="psx-resource" data-status="1" data-path="/foo/:name/:type"><h1 class="psx-resource-path">/foo/:name/:type</h1><div class="psx-resource-description">lorem ipsum</div><table><colgroup><col width="30%" /><col width="70%" /></colgroup><tr><td><span class="psx-property-name">Path-Parameters</span></td><td><a data-name="Path" class="psx-type-link">Path</a></td></tr><tr><td colspan="2" class="psx-resource-method"><h2 class="psx-resource-method-name">GET</h2></td></tr><tr><td colspan="2"><small class="psx-resource-method-description">Returns a collection</small></td></tr><tr><td><span class="psx-property-name">Operation-Id</span></td><td>list.foo</td></tr><tr><td><span class="psx-property-name">Query-Parameters</span></td><td><a data-name="GetQuery" class="psx-type-link">GetQuery</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryCollection" class="psx-type-link">EntryCollection</a></td></tr><tr><td colspan="2" class="psx-resource-method"><h2 class="psx-resource-method-name">POST</h2></td></tr><tr><td colspan="2"></td></tr><tr><td><span class="psx-property-name">Operation-Id</span></td><td>create.foo</td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryCreate" class="psx-type-link">EntryCreate</a></td></tr><tr><td><span class="psx-property-name">Response 201</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr><tr><td colspan="2" class="psx-resource-method"><h2 class="psx-resource-method-name">PUT</h2></td></tr><tr><td colspan="2"></td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryUpdate" class="psx-type-link">EntryUpdate</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr><tr><td colspan="2" class="psx-resource-method"><h2 class="psx-resource-method-name">DELETE</h2></td></tr><tr><td colspan="2"></td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryDelete" class="psx-type-link">EntryDelete</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr><tr><td colspan="2" class="psx-resource-method"><h2 class="psx-resource-method-name">PATCH</h2></td></tr><tr><td colspan="2"></td></tr><tr><td><span class="psx-property-name">Request</span></td><td><a data-name="EntryPatch" class="psx-type-link">EntryPatch</a></td></tr><tr><td><span class="psx-property-name">Response 200</span></td><td><a data-name="EntryMessage" class="psx-type-link">EntryMessage</a></td></tr></table></div>
+# get
+`GET /foo/:name/:type`
 
-<div id="Path" class="psx-object psx-struct"><h4><a class="psx-type-link" data-name="Path">Path</a></h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
-  <span class="psx-object-json-key">"name"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">String</span><span class="psx-object-json-pun">,</span>
-  <span class="psx-object-json-key">"type"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">String</span><span class="psx-object-json-pun">,</span>
-<span class="psx-object-json-pun">}</span></pre><table class="table psx-object-properties"><colgroup><col width="30%" /><col width="70%" /></colgroup><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td><span class="psx-property-name psx-property-required">name</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="String">String</a></span><br /><div class="psx-property-description">Name parameter</div><dl class="psx-property-constraint"><dt>MaxLength</dt><dd><span class="psx-constraint-maxlength">16</span></dd><dt>Pattern</dt><dd><span class="psx-constraint-pattern">[A-z]+</span></dd></dl></td></tr><tr><td><span class="psx-property-name psx-property-optional">type</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="String">String</a></span><br /><div class="psx-property-description"></div><dl class="psx-property-constraint"><dt>Enum</dt><dd><ul class="psx-constraint-enum"><li><code>&quot;foo&quot;</code></li><li><code>&quot;bar&quot;</code></li></ul></dd></dl></td></tr></tbody></table></div>
+> Returns a collection
 
-<div id="GetQuery" class="psx-object psx-struct"><h4><a class="psx-type-link" data-name="GetQuery">GetQuery</a></h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
-  <span class="psx-object-json-key">"startIndex"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Integer</span><span class="psx-object-json-pun">,</span>
-  <span class="psx-object-json-key">"float"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Number</span><span class="psx-object-json-pun">,</span>
-  <span class="psx-object-json-key">"boolean"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Boolean</span><span class="psx-object-json-pun">,</span>
-  <span class="psx-object-json-key">"date"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Date</span><span class="psx-object-json-pun">,</span>
-  <span class="psx-object-json-key">"datetime"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">DateTime</span><span class="psx-object-json-pun">,</span>
-<span class="psx-object-json-pun">}</span></pre><table class="table psx-object-properties"><colgroup><col width="30%" /><col width="70%" /></colgroup><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td><span class="psx-property-name psx-property-required">startIndex</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="Integer">Integer</a></span><br /><div class="psx-property-description">startIndex parameter</div><dl class="psx-property-constraint"><dt>Maximum</dt><dd><span class="psx-constraint-maximum">32</span></dd></dl></td></tr><tr><td><span class="psx-property-name psx-property-optional">float</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="Number">Number</a></span><br /><div class="psx-property-description"></div></td></tr><tr><td><span class="psx-property-name psx-property-optional">boolean</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="Boolean">Boolean</a></span><br /><div class="psx-property-description"></div></td></tr><tr><td><span class="psx-property-name psx-property-optional">date</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="Date">Date</a></span><br /><div class="psx-property-description"></div></td></tr><tr><td><span class="psx-property-name psx-property-optional">datetime</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="DateTime">DateTime</a></span><br /><div class="psx-property-description"></div></td></tr></tbody></table></div>
+## Request
+
+<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr><tr><td>startIndex</td><td>Integer</td><td>query</td></tr><tr><td>float</td><td>Number</td><td>query</td></tr><tr><td>boolean</td><td>Boolean</td><td>query</td></tr><tr><td>date</td><td>Date</td><td>query</td></tr><tr><td>datetime</td><td>DateTime</td><td>query</td></tr></tbody></table>
+
+## Response
+
+<table><colgroup><col width="40%" /><col width="60%" /></colgroup><thead><tr><th>Status-Code</th><th>Type</th></tr></thead><tbody><tr><td>200</td><td>EntryCollection</td></tr></tbody></table>
+
+# create
+`POST /foo/:name/:type`
+
+
+## Request
+
+<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr><tr><td>payload</td><td>EntryCreate</td><td>body</td></tr></tbody></table>
+
+## Response
+
+<table><colgroup><col width="40%" /><col width="60%" /></colgroup><thead><tr><th>Status-Code</th><th>Type</th></tr></thead><tbody><tr><td>201</td><td>EntryMessage</td></tr><tr><td>400</td><td>EntryMessage</td></tr><tr><td>500</td><td>EntryMessage</td></tr></tbody></table>
+
+# update
+`PUT /foo/:name/:type`
+
+
+## Request
+
+<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr><tr><td>payload</td><td>EntryUpdate</td><td>body</td></tr></tbody></table>
+
+## Response
+
+<table><colgroup><col width="40%" /><col width="60%" /></colgroup><thead><tr><th>Status-Code</th><th>Type</th></tr></thead><tbody><tr><td>200</td><td>EntryMessage</td></tr></tbody></table>
+
+# delete
+`DELETE /foo/:name/:type`
+
+
+## Request
+
+<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr><tr><td>payload</td><td>EntryDelete</td><td>body</td></tr></tbody></table>
+
+## Response
+
+<table><colgroup><col width="40%" /><col width="60%" /></colgroup><thead><tr><th>Status-Code</th><th>Type</th></tr></thead><tbody><tr><td>200</td><td>EntryMessage</td></tr></tbody></table>
+
+# patch
+`PATCH /foo/:name/:type`
+
+
+## Request
+
+<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr><tr><td>payload</td><td>EntryPatch</td><td>body</td></tr></tbody></table>
+
+## Response
+
+<table><colgroup><col width="40%" /><col width="60%" /></colgroup><thead><tr><th>Status-Code</th><th>Type</th></tr></thead><tbody><tr><td>200</td><td>EntryMessage</td></tr></tbody></table>
+
 
 <div id="EntryCollection" class="psx-object psx-struct"><h4><a class="psx-type-link" data-name="EntryCollection">EntryCollection</a></h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
   <span class="psx-object-json-key">"entry"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Array (Entry)</span><span class="psx-object-json-pun">,</span>
@@ -24,17 +71,17 @@
   <span class="psx-object-json-key">"date"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">DateTime</span><span class="psx-object-json-pun">,</span>
 <span class="psx-object-json-pun">}</span></pre><table class="table psx-object-properties"><colgroup><col width="30%" /><col width="70%" /></colgroup><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td><span class="psx-property-name psx-property-optional">id</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="Integer">Integer</a></span><br /><div class="psx-property-description"></div></td></tr><tr><td><span class="psx-property-name psx-property-optional">userId</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="Integer">Integer</a></span><br /><div class="psx-property-description"></div></td></tr><tr><td><span class="psx-property-name psx-property-optional">title</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="String">String</a></span><br /><div class="psx-property-description"></div><dl class="psx-property-constraint"><dt>MinLength</dt><dd><span class="psx-constraint-minlength">3</span></dd><dt>MaxLength</dt><dd><span class="psx-constraint-maxlength">16</span></dd><dt>Pattern</dt><dd><span class="psx-constraint-pattern">[A-z]+</span></dd></dl></td></tr><tr><td><span class="psx-property-name psx-property-optional">date</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="DateTime">DateTime</a></span><br /><div class="psx-property-description"></div></td></tr></tbody></table></div>
 
+<div id="EntryMessage" class="psx-object psx-struct"><h4><a class="psx-type-link" data-name="EntryMessage">EntryMessage</a></h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
+  <span class="psx-object-json-key">"success"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Boolean</span><span class="psx-object-json-pun">,</span>
+  <span class="psx-object-json-key">"message"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">String</span><span class="psx-object-json-pun">,</span>
+<span class="psx-object-json-pun">}</span></pre><table class="table psx-object-properties"><colgroup><col width="30%" /><col width="70%" /></colgroup><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td><span class="psx-property-name psx-property-optional">success</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="Boolean">Boolean</a></span><br /><div class="psx-property-description"></div></td></tr><tr><td><span class="psx-property-name psx-property-optional">message</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="String">String</a></span><br /><div class="psx-property-description"></div></td></tr></tbody></table></div>
+
 <div id="EntryCreate" class="psx-object psx-struct"><h4><a class="psx-type-link" data-name="EntryCreate">EntryCreate</a></h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
   <span class="psx-object-json-key">"id"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Integer</span><span class="psx-object-json-pun">,</span>
   <span class="psx-object-json-key">"userId"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Integer</span><span class="psx-object-json-pun">,</span>
   <span class="psx-object-json-key">"title"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">String</span><span class="psx-object-json-pun">,</span>
   <span class="psx-object-json-key">"date"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">DateTime</span><span class="psx-object-json-pun">,</span>
 <span class="psx-object-json-pun">}</span></pre><table class="table psx-object-properties"><colgroup><col width="30%" /><col width="70%" /></colgroup><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td><span class="psx-property-name psx-property-optional">id</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="Integer">Integer</a></span><br /><div class="psx-property-description"></div></td></tr><tr><td><span class="psx-property-name psx-property-optional">userId</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="Integer">Integer</a></span><br /><div class="psx-property-description"></div></td></tr><tr><td><span class="psx-property-name psx-property-required">title</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="String">String</a></span><br /><div class="psx-property-description"></div><dl class="psx-property-constraint"><dt>MinLength</dt><dd><span class="psx-constraint-minlength">3</span></dd><dt>MaxLength</dt><dd><span class="psx-constraint-maxlength">16</span></dd><dt>Pattern</dt><dd><span class="psx-constraint-pattern">[A-z]+</span></dd></dl></td></tr><tr><td><span class="psx-property-name psx-property-required">date</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="DateTime">DateTime</a></span><br /><div class="psx-property-description"></div></td></tr></tbody></table></div>
-
-<div id="EntryMessage" class="psx-object psx-struct"><h4><a class="psx-type-link" data-name="EntryMessage">EntryMessage</a></h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
-  <span class="psx-object-json-key">"success"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Boolean</span><span class="psx-object-json-pun">,</span>
-  <span class="psx-object-json-key">"message"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">String</span><span class="psx-object-json-pun">,</span>
-<span class="psx-object-json-pun">}</span></pre><table class="table psx-object-properties"><colgroup><col width="30%" /><col width="70%" /></colgroup><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td><span class="psx-property-name psx-property-optional">success</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="Boolean">Boolean</a></span><br /><div class="psx-property-description"></div></td></tr><tr><td><span class="psx-property-name psx-property-optional">message</span></td><td><span class="psx-property-type"><a class="psx-type-link" data-name="String">String</a></span><br /><div class="psx-property-description"></div></td></tr></tbody></table></div>
 
 <div id="EntryUpdate" class="psx-object psx-struct"><h4><a class="psx-type-link" data-name="EntryUpdate">EntryUpdate</a></h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>
   <span class="psx-object-json-key">"id"</span><span class="psx-object-json-pun">: </span><span class="psx-property-type">Integer</span><span class="psx-object-json-pun">,</span>

@@ -20,9 +20,18 @@
 
 namespace PSX\Api\Generator\Markup;
 
-use PSX\Api\Resource;
+use PSX\Api\Generator\Client\Dto;
+use PSX\Api\Generator\Client\LanguageBuilder;
+use PSX\Api\Generator\Client\Util\Naming;
+use PSX\Api\GeneratorInterface;
+use PSX\Api\Operation;
+use PSX\Api\OperationInterface;
+use PSX\Api\SpecificationInterface;
+use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
-use PSX\Schema\GeneratorInterface;
+use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
+use PSX\Schema\Schema;
+use PSX\Schema\TypeFactory;
 
 /**
  * Html
@@ -33,88 +42,86 @@ use PSX\Schema\GeneratorInterface;
  */
 class Html extends MarkupAbstract
 {
-    public function __construct(?GeneratorInterface $generator = null)
+    protected function generateOperation(Dto\Operation $operation, ?string $tagMethod = null): string
     {
-        $this->generator = $generator === null ? new Generator\Html(4) : $generator;
-    }
+        $return = '<div class="psx-operation" data-method="' . $operation->method . '" data-path="' . $operation->path . '">';
+        $return.= '<h1 class="psx-operation-id">' . $operation->methodName . '</h1>';
+        $return.= '<div class="psx-operation-path">' . htmlspecialchars($operation->method . ' ' . $operation->path) . '</div>';
 
-    protected function startResource(Resource $resource): string
-    {
-        $html = '<div class="psx-resource" data-status="' . $resource->getStatus() . '" data-path="' . $resource->getPath() . '">';
-        $html.= '<h1 class="psx-resource-path">' . $resource->getPath() . '</h1>';
-
-        $description = $resource->getDescription();
+        $description = $operation->description;
         if (!empty($description)) {
-            $html.= '<div class="psx-resource-description">' . htmlspecialchars($description) . '</div>';
+            $return.= '<div class="psx-operation-description">' . htmlspecialchars($description) . '</div>';
         }
 
-        $html.= '<table>';
-        $html.= '<colgroup>';
-        $html.= '<col width="30%" />';
-        $html.= '<col width="70%" />';
-        $html.= '</colgroup>';
-        return $html;
-    }
+        $return.= '<div class="psx-operation-request">';
+        $return.= '<h2>Request</h2>';
+        $return.= '<table>';
+        $return.= '<colgroup>';
+        $return.= '<col width="40%" />';
+        $return.= '<col width="40%" />';
+        $return.= '<col width="20%" />';
+        $return.= '</colgroup>';
+        $return.= '<thead>';
+        $return.= '<tr>';
+        $return.= '<th>Name</th>';
+        $return.= '<th>Type</th>';
+        $return.= '<th>Location</th>';
+        $return.= '</tr>';
+        $return.= '</thead>';
+        $return.= '<tbody>';
 
-    protected function endResource(): string
-    {
-        $html = '</table>';
-        $html.= '</div>';
-        return $html;
-    }
-
-    protected function startMethod(Resource\MethodAbstract $method): string
-    {
-        $html = '<tr>';
-        $html.= '<td colspan="2" class="psx-resource-method">';
-        $html.= '<h2 class="psx-resource-method-name">' . $method->getName() . '</h2>';
-
-        $tags = $method->getTags();
-        if (!empty($tags)) {
-            $list = [];
-            foreach ($tags as $tag) {
-                $list[] = '<span class="psx-resource-method-tag">' . htmlspecialchars($tag) . '</span>';
-            }
-
-            $html.= '<span class="psx-resource-method-tags">' . implode('', $list) . '</span>';
+        foreach ($operation->arguments as $argumentName => $argument) {
+            $return.= '<tr>';
+            $return.= '<td>' . $argumentName . '</td>';
+            $return.= '<td>' . $argument->schema->type . '</td>';
+            $return.= '<td>' . $argument->in . '</td>';
+            $return.= '</tr>';
         }
 
-        $html.= '</td>';
-        $html.= '</tr>';
-        $html.= '<tr>';
-        $html.= '<td colspan="2">';
+        $return.= '</tbody>';
+        $return.= '</table>';
+        $return.= '</div>';
 
-        $description = $method->getDescription();
-        if (!empty($description)) {
-            $html.= '<small class="psx-resource-method-description">' . htmlspecialchars($description) . '</small>';
+        $return.= '<div class="psx-operation-response">';
+        $return.= '<h2>Response</h2>';
+        $return.= '<table>';
+        $return.= '<colgroup>';
+        $return.= '<col width="40%" />';
+        $return.= '<col width="60%" />';
+        $return.= '</colgroup>';
+        $return.= '<thead>';
+        $return.= '<tr>';
+        $return.= '<th>Status-Code</th>';
+        $return.= '<th>Type</th>';
+        $return.= '</tr>';
+        $return.= '</thead>';
+        $return.= '<tbody>';
+
+        if ($operation->return) {
+            $return.= '<tr>';
+            $return.= '<td>' . $operation->return->code . '</td>';
+            $return.= '<td>' . $operation->return->schema->type . '</td>';
+            $return.= '</tr>';
         }
 
-        $html.= '</td>';
-        $html.= '</tr>';
+        foreach ($operation->throws as $response) {
+            $return.= '<tr>';
+            $return.= '<td>' . $response->code . '</td>';
+            $return.= '<td>' . $response->schema->type . '</td>';
+            $return.= '</tr>';
+        }
 
-        return $html;
+        $return.= '</tbody>';
+        $return.= '</table>';
+        $return.= '</div>';
+
+        $return.= '</div>';
+
+        return $return;
     }
 
-    protected function endMethod(): string
+    protected function newSchemaGenerator(): SchemaGeneratorInterface
     {
-        return '';
-    }
-
-    protected function renderSchema(string $title, string $schema): string
-    {
-        $html = '<tr>';
-        $html.= '<td><span class="psx-property-name">' . $title . '</span></td>';
-        $html.= '<td><a data-name="' . $schema . '" class="psx-type-link">' . $schema . '</a></td>';
-        $html.= '</tr>';
-        return $html;
-    }
-
-    protected function renderMeta(string $title, string $value): string
-    {
-        $html = '<tr>';
-        $html.= '<td><span class="psx-property-name">' . $title . '</span></td>';
-        $html.= '<td>' . htmlspecialchars($value) . '</td>';
-        $html.= '</tr>';
-        return $html;
+        return new Generator\Html(4);
     }
 }

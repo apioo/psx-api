@@ -20,12 +20,15 @@
 
 namespace PSX\Api\Generator\Markup;
 
+use PSX\Api\Exception\GeneratorException;
+use PSX\Api\Generator\Client\Dto;
+use PSX\Api\Generator\Client\LanguageBuilder;
+use PSX\Api\Generator\Client\Util\Naming;
 use PSX\Api\GeneratorInterface;
-use PSX\Api\Resource;
 use PSX\Api\SpecificationInterface;
-use PSX\Http\Http;
-use PSX\Schema\Definitions;
 use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\Generator\NormalizerAwareInterface;
+use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\Schema;
 use PSX\Schema\TypeFactory;
 
@@ -38,80 +41,58 @@ use PSX\Schema\TypeFactory;
  */
 abstract class MarkupAbstract implements GeneratorInterface
 {
-    protected \PSX\Schema\GeneratorInterface $generator;
+    private SchemaGeneratorInterface $generator;
+    private Naming $naming;
+    private LanguageBuilder $converter;
+
+    public function __construct()
+    {
+        $this->generator = $this->newSchemaGenerator();
+        if ($this->generator instanceof NormalizerAwareInterface) {
+            $this->naming = new Naming($this->generator->getNormalizer());
+            $this->converter = new LanguageBuilder($this->generator, $this->naming);
+        } else {
+            throw new GeneratorException('The provided schema generator must implement the interface: ' . NormalizerAwareInterface::class);
+        }
+    }
 
     public function generate(SpecificationInterface $specification): string
     {
-        $collection = $specification->getResourceCollection();
-        $definitions = $specification->getDefinitions();
+        $client = $this->converter->getClient($specification);
 
-        $text = '';
-        foreach ($collection as $path => $resource) {
-            $text.= $this->generateResource($resource, new Definitions()) . "\n\n";
+        $lines = $this->startLines($client);
+
+        foreach ($client->tags as $tag) {
+            /** @var Dto\Tag $tag */
+            foreach ($client->operations as $operation) {
+                $lines[] = $this->generateOperation($operation, $tag->methodName);
+            }
         }
 
-        // generate schemas
-        $schema = new Schema(TypeFactory::getAny(), $definitions);
-        $text.= $this->generator->generate($schema);
+        foreach ($client->operations as $operation) {
+            $lines[] = $this->generateOperation($operation);
+        }
 
-        return $text;
+        $lines[] = "";
+        $lines[] = $this->generateSchema($specification->getDefinitions());
+
+        return implode("\n", $lines);
     }
 
-    public function generateResource(Resource $resource, DefinitionsInterface $definitions): string
+    abstract protected function generateOperation(Dto\Operation $operation, ?string $tagMethod = null): string;
+
+    abstract protected function newSchemaGenerator(): SchemaGeneratorInterface;
+
+    protected function startLines(Dto\Client $client): array
     {
-        $text = $this->startResource($resource);
-
-        // path parameters
-        $pathParameters = $resource->getPathParameters();
-        if (!empty($pathParameters)) {
-            $text.= $this->renderSchema('Path-Parameters', $pathParameters);
-        }
-
-        $methods = $resource->getMethods();
-        foreach ($methods as $method) {
-            $text.= $this->startMethod($method);
-
-            $operationId = $method->getOperationId();
-            if (!empty($operationId)) {
-                $text.= $this->renderMeta('Operation-Id', $operationId);
-            }
-
-            $queryParameters = $method->getQueryParameters();
-            if (!empty($queryParameters)) {
-                $text.= $this->renderSchema('Query-Parameters', $queryParameters);
-            }
-
-            $request = $method->getRequest();
-            if (!empty($request)) {
-                $text.= $this->renderSchema('Request', $request);
-            }
-
-            $responses = $method->getResponses();
-            foreach ($responses as $statusCode => $response) {
-                $text.= $this->renderSchema('Response ' . $statusCode, $response);
-            }
-
-            $text.= $this->endMethod();
-        }
-
-        $text.= $this->endResource();
-
-        // generate schemas
-        $schema = new Schema(TypeFactory::getAny(), $definitions);
-        $text.= $this->generator->generate($schema);
-
-        return $text;
+        return [];
     }
 
-    abstract protected function startResource(Resource $resource): string;
+    protected function generateSchema(DefinitionsInterface $definitions): string
+    {
+        $schema = new Schema(TypeFactory::getAny(), $definitions);
+        $return = $this->generator->generate($schema);
 
-    abstract protected function endResource(): string;
-
-    abstract protected function startMethod(Resource\MethodAbstract $method): string;
-
-    abstract protected function endMethod(): string;
-
-    abstract protected function renderSchema(string $title, string $schema): string;
-
-    abstract protected function renderMeta(string $title, string $value): string;
+        return $return;
+    }
 }

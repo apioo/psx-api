@@ -1,22 +1,10 @@
-const client = new Client(...)
-client.getFooByNameAndType(name, type).listFoo(GetQuery): EntryCollection
-client.getFooByNameAndType(name, type).createFoo(EntryCreate): EntryMessage
-client.getFooByNameAndType(name, type).put(EntryUpdate): EntryMessage
-client.getFooByNameAndType(name, type).delete(): EntryMessage
-client.getFooByNameAndType(name, type).patch(EntryPatch): EntryMessage
+const client = new Client()
+client.get(name: string, type: string, startIndex: number, float: number, boolean: boolean, date: string, datetime: string): EntryCollection
+client.create(name: string, type: string, payload: EntryCreate): EntryMessage
+client.update(name: string, type: string, payload: EntryUpdate): EntryMessage
+client.delete(name: string, type: string, payload: EntryDelete): EntryMessage
+client.patch(name: string, type: string, payload: EntryPatch): EntryMessage
 
-interface Path {
-    name: string
-    type?: string
-}
-
-interface GetQuery {
-    startIndex: number
-    float?: number
-    boolean?: boolean
-    date?: string
-    datetime?: string
-}
 
 interface EntryCollection {
     entry?: Array<Entry>
@@ -29,16 +17,16 @@ interface Entry {
     date?: string
 }
 
+interface EntryMessage {
+    success?: boolean
+    message?: string
+}
+
 interface EntryCreate {
     id?: number
     userId?: number
     title: string
     date: string
-}
-
-interface EntryMessage {
-    success?: boolean
-    message?: string
 }
 
 interface EntryUpdate {

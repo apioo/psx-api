@@ -110,7 +110,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         }
 
         foreach ($client->exceptions as $exception) {
-            /** @var Exception $exception */
+            /** @var Dto\Exception $exception */
             $code = $this->engine->render($this->getExceptionTemplate(), [
                 'namespace' => $this->namespace,
                 'className' => $exception->className,

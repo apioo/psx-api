@@ -24,26 +24,17 @@ use PSX\Schema;
 use PSX\Schema\GeneratorInterface;
 
 /**
- * Operations
+ * Response
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Operation
+class Response
 {
     public function __construct(
-        public string $methodName,
-        public string $method,
-        public string $path,
-        public string $description,
-        /** @var array<string, Argument> */ public array $arguments,
-        public ?Response $return,
-        /** @var array<int, Response> */ public array $throws,
-        public array $pathNames,
-        public array $queryNames,
-        public ?string $bodyName,
-        public array $imports,
+        public int $code,
+        public Type $schema,
     )
     {
     }

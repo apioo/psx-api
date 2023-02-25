@@ -21,17 +21,14 @@
 namespace PSX\Api\Generator\Client;
 
 use PSX\Api\Exception\InvalidTypeException;
-use PSX\Api\Generator\Client\Dto\Exception;
-use PSX\Api\Generator\Client\Dto\Tag;
-use PSX\Api\Generator\Client\Dto\Type;
 use PSX\Api\Generator\Client\Util\Naming;
-use PSX\Api\Operation\Argument;
+use PSX\Api\Operation\ArgumentInterface;
 use PSX\Api\OperationInterface;
 use PSX\Api\OperationsInterface;
-use PSX\Api\Resource;
 use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\Exception\TypeNotFoundException;
 use PSX\Schema\Generator\Normalizer\NormalizerInterface;
 use PSX\Schema\Generator\NormalizerAwareInterface;
 use PSX\Schema\Generator\Type\GeneratorInterface as TypeGeneratorInterface;
@@ -79,6 +76,10 @@ class LanguageBuilder
         }
     }
 
+    /**
+     * @throws InvalidTypeException
+     * @throws TypeNotFoundException
+     */
     public function getClient(SpecificationInterface $specification): Dto\Client
     {
         $security = null;
@@ -96,7 +97,7 @@ class LanguageBuilder
                 $exceptions = array_merge($exceptions, $this->getExceptions($tagOperations));
                 $operations = $this->getOperations($tagOperations, $specification->getDefinitions());
 
-                $tags[] = new Tag(
+                $tags[] = new Dto\Tag(
                     $this->naming->buildClassNameByTag($tagName),
                     $this->naming->buildMethodNameByTag($tagName),
                     $operations
@@ -121,6 +122,11 @@ class LanguageBuilder
         );
     }
 
+    /**
+     * @param array<string, OperationInterface> $operations
+     * @throws TypeNotFoundException
+     * @throws InvalidTypeException
+     */
     private function getOperations(array $operations, DefinitionsInterface $definitions): array
     {
         $result = [];
@@ -136,32 +142,32 @@ class LanguageBuilder
             $body = $bodyName = null;
             foreach ($operation->getArguments()->getAll() as $name => $argument) {
                 $normalized = $this->normalizer->argument($name);
-                if ($argument->getIn() === Argument::IN_PATH) {
-                    $path[$normalized] = $this->newTypeBySchema($argument->getSchema(), false, $definitions);
+                if ($argument->getIn() === ArgumentInterface::IN_PATH) {
+                    $path[$normalized] = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions));
                     $pathNames[$normalized] = $name;
-                } elseif ($argument->getIn() === Argument::IN_QUERY) {
-                    $query[$normalized] = $this->newTypeBySchema($argument->getSchema(), true, $definitions);
+                } elseif ($argument->getIn() === ArgumentInterface::IN_QUERY) {
+                    $query[$normalized] = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), true, $definitions));
                     $queryNames[$normalized] = $name;
-                } elseif ($argument->getIn() === Argument::IN_BODY) {
-                    $body = $this->newTypeBySchema($argument->getSchema(), false, $definitions);
+                } elseif ($argument->getIn() === ArgumentInterface::IN_BODY) {
+                    $body = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions));
                     $bodyName = $normalized;
                 }
 
                 $this->resolveImport($argument->getSchema(), $imports);
             }
 
-            $arguments = array_merge($path, $body !== null ? ['payload' => $body] : [], $query);
+            $arguments = array_merge($path, $body !== null ? [$bodyName => $body] : [], $query);
 
             $return = null;
             if (in_array($operation->getReturn()->getCode(), [200, 201])) {
-                $return = $this->newTypeBySchema($operation->getReturn()->getSchema(), false, $definitions);
+                $return = new Dto\Response($operation->getReturn()->getCode(), $this->newType($operation->getReturn()->getSchema(), false, $definitions));
 
                 $this->resolveImport($operation->getReturn()->getSchema(), $imports);
             }
 
             $throws = [];
             foreach ($operation->getThrows() as $throw) {
-                $throws[$throw->getCode()] = $this->newTypeBySchema($throw->getSchema(), false, $definitions);
+                $throws[$throw->getCode()] = new Dto\Response($throw->getCode(), $this->newType($throw->getSchema(), false, $definitions));
 
                 $this->resolveImport($throw->getSchema(), $imports);
             }
@@ -172,11 +178,11 @@ class LanguageBuilder
                 $operation->getPath(),
                 $operation->getDescription(),
                 $arguments,
+                $return,
+                $throws,
                 $pathNames,
                 $queryNames,
                 $bodyName,
-                $return,
-                $throws,
                 $imports
             );
         }
@@ -194,7 +200,7 @@ class LanguageBuilder
                 $type = $throw->getSchema();
                 if ($type instanceof ReferenceType) {
                     $className = $this->naming->buildClassNameByException($type->getRef());
-                    $result[$className] = new Exception($className, $type->getRef(), 'The server returned an error');
+                    $result[$className] = new Dto\Exception($className, $type->getRef(), 'The server returned an error');
                 }
             }
         }
@@ -202,7 +208,11 @@ class LanguageBuilder
         return $result;
     }
 
-    private function newTypeBySchema(TypeInterface $type, bool $optional, DefinitionsInterface $definitions): Type
+    /**
+     * @throws InvalidTypeException
+     * @throws TypeNotFoundException
+     */
+    private function newType(TypeInterface $type, bool $optional, DefinitionsInterface $definitions): Dto\Type
     {
         if ($type instanceof ReferenceType) {
             // in case we have a reference type we take a look at the reference, normally this is a struct type but in
