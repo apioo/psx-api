@@ -16,11 +16,11 @@ class BazTag extends TagAbstract
     /**
      * Returns a collection
      *
-     * @param string $year
-     * @return EntryCollection
+     * @param  $year
+     * @return 
      * @throws ClientException
      */
-    public function get(string $year): EntryCollection
+    public function get( $year): 
     {
         $url = $this->parser->url('/bar/$year<[0-9]+>', [
             'year' => $year,
@@ -35,7 +35,7 @@ class BazTag extends TagAbstract
             $response = $this->httpClient->request('GET', $url, $options);
             $data = (string) $response->getBody();
 
-            return $this->parser->parse($data, EntryCollection::class);
+            return $this->parser->parse($data, ::class);
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
@@ -49,11 +49,11 @@ class BazTag extends TagAbstract
     }
 
     /**
-     * @param EntryCreate $payload
-     * @return EntryMessage
+     * @param  $payload
+     * @return 
      * @throws ClientException
      */
-    public function create(EntryCreate $payload): EntryMessage
+    public function create( $payload): 
     {
         $url = $this->parser->url('/bar/$year<[0-9]+>', [
         ]);
@@ -68,7 +68,7 @@ class BazTag extends TagAbstract
             $response = $this->httpClient->request('POST', $url, $options);
             $data = (string) $response->getBody();
 
-            return $this->parser->parse($data, EntryMessage::class);
+            return $this->parser->parse($data, ::class);
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 

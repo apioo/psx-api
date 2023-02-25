@@ -13,13 +13,8 @@ contain all available metadata of your endpoints and the definitions represent t
 
 ### Framework
 
-If you want to integrate this library into your framework you can implement a `ListingInterface`. A listing basically
-knows every API endpoint of your framework and returns a `SpecificationInterface`. The listing is then also used at
-our commands to generate an OpenAPI specification or the client SDK.
-
-You can use PHP attributes to describe the structure of your endpoints. The parser looks at the provided class and
-builds a specification based on the provided attributes. Most likely you want to add those attributes to your controller
-class. A controller class could then look like:
+You can use PHP attributes to describe the structure of your endpoints. You can then use the attribute parser (`PSX\Api\Parser\Attribute`)
+to automatically generate a specification for your controller. A controller class could then look like:
 
 ```php
 <?php
@@ -27,16 +22,15 @@ class. A controller class could then look like:
 class MyController
 {
     #[Get]
-    #[Path('/my/endpoint')]
-    #[QueryParam(name='foo', type='integer')]
-    public function getModel(QueryParam $param, ): \My\Response\Model
+    #[Path('/my/endpoint/:id')]
+    public function getModel(int $id, int $foo): \My\Response\Model
     {
         // @TODO implement
     }
     
     #[Post]
     #[Path('/my/endpoint')]
-    public function insertModel(\My\Request\Model $model): \My\Response\Model
+    public function insertModel(#[Body] \My\Request\Model $model): \My\Response\Model
     {
         // @TODO implement
     }
@@ -98,12 +92,11 @@ $source = $generator->generate($resource);
 
 ### Markup
 
+- Client
 - HTML
 - Markdown
 
 ### Spec
 
 - [OpenAPI 3.0](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md)
-- [RAML 1.0](http://raml.org/)
 - [TypeAPI](https://typeapi.org/)
-- [TypeSchema](https://typeschema.org/)

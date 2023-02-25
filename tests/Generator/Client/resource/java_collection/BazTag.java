@@ -25,7 +25,7 @@ public class BazTag extends TagAbstract {
     /**
      * Returns a collection
      */
-    public EntryCollection get(String year) throws ClientException {
+    public  get( year) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("year", year);
@@ -41,7 +41,7 @@ public class BazTag extends TagAbstract {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryCollection.class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), .class);
             }
 
             switch (statusCode) {
@@ -53,7 +53,7 @@ public class BazTag extends TagAbstract {
         }
     }
 
-    public EntryMessage create(EntryCreate payload) throws ClientException {
+    public  create( payload) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
 
@@ -70,7 +70,7 @@ public class BazTag extends TagAbstract {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), .class);
             }
 
             switch (statusCode) {

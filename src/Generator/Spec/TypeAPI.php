@@ -44,6 +44,7 @@ class TypeAPI extends ApiAbstract
         $operations = $specification->getOperations();
         $definitions = $specification->getDefinitions();
 
+        $data['security'] = $specification->getSecurity();
         $data['operations'] = $operations;
         $data['definitions'] = $this->generateDefinitions($definitions);
 

@@ -41,4 +41,35 @@ class TypeAPITest extends GeneratorTestCase
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
+
+    public function testGenerateAll()
+    {
+        $generator = new TypeAPI();
+
+        $actual = $generator->generate($this->getSpecificationCollection());
+        $expect = file_get_contents(__DIR__ . '/resource/typeapi_collection.json');
+
+        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
+    }
+
+    public function testGenerateComplex()
+    {
+        $generator = new TypeAPI();
+        $generator->setTitle('Sample Pet Store App');
+        $generator->setDescription('This is a sample server for a pet store.');
+        $generator->setTermsOfService('http://example.com/terms/');
+        $generator->setContactName('API Support');
+        $generator->setContactUrl('http://www.example.com/support');
+        $generator->setContactEmail('support@example.com');
+        $generator->setLicenseName('Apache 2.0');
+        $generator->setLicenseUrl('https://www.apache.org/licenses/LICENSE-2.0.html');
+        $generator->setAuthorizationFlow('OAuth2', TypeAPI::FLOW_AUTHORIZATION_CODE, 'http://api.phpsx.org/authorization', 'http://api.phpsx.org/token', null, ['foo' => 'Foo sope', 'bar' => 'Bar scope']);
+        $generator->addTag('foo', 'Foo tag');
+        $generator->addTag('bar', 'Boo tag');
+
+        $actual = $generator->generate($this->getSpecificationComplex());
+        $expect = file_get_contents(__DIR__ . '/resource/typeapi_complex.json');
+
+        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
+    }
 }

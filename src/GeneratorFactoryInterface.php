@@ -42,7 +42,6 @@ interface GeneratorFactoryInterface
 
     public const SPEC_TYPEAPI = 'spec-typeapi';
     public const SPEC_OPENAPI = 'spec-openapi';
-    public const SPEC_RAML = 'spec-raml';
 
     /**
      * Returns the fitting generator object for the provided type

@@ -75,10 +75,6 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 $generator = new Generator\Markup\Markdown();
                 break;
 
-            case GeneratorFactoryInterface::SPEC_RAML:
-                $generator = new Generator\Spec\Raml(1, $baseUri);
-                break;
-
             case GeneratorFactoryInterface::SPEC_TYPEAPI:
                 $generator = new Generator\Spec\TypeAPI();
                 break;
@@ -117,9 +113,6 @@ class GeneratorFactory implements GeneratorFactoryInterface
             case GeneratorFactoryInterface::SPEC_OPENAPI:
                 return 'json';
 
-            case GeneratorFactoryInterface::SPEC_RAML:
-                return 'raml';
-
             default:
                 return 'txt';
         }
@@ -147,8 +140,6 @@ class GeneratorFactory implements GeneratorFactoryInterface
             case GeneratorFactoryInterface::SPEC_TYPEAPI:
             case GeneratorFactoryInterface::SPEC_OPENAPI:
                 return 'application/json';
-            case GeneratorFactoryInterface::SPEC_RAML:
-                return 'application/raml+yaml';
 
             default:
                 return 'text/plain';
@@ -176,7 +167,6 @@ class GeneratorFactory implements GeneratorFactoryInterface
 
             GeneratorFactoryInterface::SPEC_TYPEAPI,
             GeneratorFactoryInterface::SPEC_OPENAPI,
-            GeneratorFactoryInterface::SPEC_RAML,
         ];
     }
 }

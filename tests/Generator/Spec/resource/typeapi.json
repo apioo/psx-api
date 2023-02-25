@@ -1,4 +1,7 @@
 {
+  "security": {
+    "type": "httpBearer"
+  },
   "operations": {
     "get": {
       "path": "\/foo\/:name\/:type",

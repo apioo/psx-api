@@ -20,18 +20,16 @@
 
 namespace PSX\Api\Parser;
 
-use PSX\Api\Attribute\Security;
-use PSX\Api\Exception\InvalidOperationException;
 use PSX\Api\Exception\ParserException;
 use PSX\Api\Operation;
 use PSX\Api\Operations;
 use PSX\Api\OperationsInterface;
 use PSX\Api\ParserInterface;
+use PSX\Api\Security;
 use PSX\Api\SecurityInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Json\Parser;
-use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Parser as SchemaParser;
 use PSX\Schema\TypeFactory;
@@ -46,12 +44,10 @@ use Symfony\Component\Yaml\Yaml;
  */
 class TypeAPI implements ParserInterface
 {
-    private ?string $basePath;
     private SchemaParser\TypeSchema $schemaParser;
 
     public function __construct(?string $basePath = null)
     {
-        $this->basePath = $basePath;
         $this->schemaParser = new SchemaParser\TypeSchema(null, $basePath);
     }
 
@@ -258,20 +254,20 @@ class TypeAPI implements ParserInterface
             return null;
         }
 
-        $type = strtolower($type);
-        if ($type === 'http') {
-            $scheme = $data->scheme ?? null;
-
-        }
         switch (strtolower($type)) {
-            case 'http':
+            case 'httpbasic':
+                return new Security\HttpBasic();
+            case 'httpbearer':
+                return new Security\HttpBearer();
             case 'apikey':
-            case 'oauth2':
-                break;
-
+                return new Security\ApiKey($data->name, $data->in);
+            case 'authorizationcode':
+                return new Security\AuthorizationCode($data->tokenUrl, $data->authorizationUrl, $data->refreshUrl, $data->scopes);
+            case 'clientcredentials':
+                return new Security\ClientCredentials($data->tokenUrl, $data->authorizationUrl, $data->refreshUrl, $data->scopes);
         }
 
-        return new Security();
+        return null;
     }
 
     public static function fromFile(string $file): SpecificationInterface

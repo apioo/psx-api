@@ -19,10 +19,10 @@ export default class Client extends ClientAbstract {
     /**
      * Returns a collection
      *
-     * @returns {Promise<EntryCollection>}
+     * @returns {Promise<>}
      * @throws {ClientException}
      */
-    public async get(name: string, type: string, startIndex?: number, float?: number, boolean?: boolean, date?: string, datetime?: string): Promise<EntryCollection> {
+    public async get(name: , type: , startIndex: , float: , boolean: , date: , datetime: ): Promise<> {
         const url = this.parser.url('/foo/:name/:type', {
             'name': name,
             'type': type,
@@ -41,7 +41,7 @@ export default class Client extends ClientAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<EntryCollection>(params);
+            const response = await this.httpClient.request<>(params);
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
@@ -56,12 +56,12 @@ export default class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<EntryMessage>}
-     * @throws {EntryMessageException}
-     * @throws {EntryMessageException}
+     * @returns {Promise<>}
+     * @throws {Exception}
+     * @throws {Exception}
      * @throws {ClientException}
      */
-    public async create(name: string, type: string, payload: EntryCreate): Promise<EntryMessage> {
+    public async create(name: , type: , payload: ): Promise<> {
         const url = this.parser.url('/foo/:name/:type', {
             'name': name,
             'type': type,
@@ -76,15 +76,15 @@ export default class Client extends ClientAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<EntryMessage>(params);
+            const response = await this.httpClient.request<>(params);
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
                     case 400:
-                        throw new EntryMessageException(error.response.data);
+                        throw new Exception(error.response.data);
                     case 500:
-                        throw new EntryMessageException(error.response.data);
+                        throw new Exception(error.response.data);
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
@@ -95,10 +95,10 @@ export default class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<EntryMessage>}
+     * @returns {Promise<>}
      * @throws {ClientException}
      */
-    public async update(name: string, type: string, payload: EntryUpdate): Promise<EntryMessage> {
+    public async update(name: , type: , payload: ): Promise<> {
         const url = this.parser.url('/foo/:name/:type', {
             'name': name,
             'type': type,
@@ -113,7 +113,7 @@ export default class Client extends ClientAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<EntryMessage>(params);
+            const response = await this.httpClient.request<>(params);
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
@@ -128,10 +128,10 @@ export default class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<EntryMessage>}
+     * @returns {Promise<>}
      * @throws {ClientException}
      */
-    public async delete(name: string, type: string, payload: EntryDelete): Promise<EntryMessage> {
+    public async delete(name: , type: , payload: ): Promise<> {
         const url = this.parser.url('/foo/:name/:type', {
             'name': name,
             'type': type,
@@ -146,7 +146,7 @@ export default class Client extends ClientAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<EntryMessage>(params);
+            const response = await this.httpClient.request<>(params);
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
@@ -161,10 +161,10 @@ export default class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<EntryMessage>}
+     * @returns {Promise<>}
      * @throws {ClientException}
      */
-    public async patch(name: string, type: string, payload: EntryPatch): Promise<EntryMessage> {
+    public async patch(name: , type: , payload: ): Promise<> {
         const url = this.parser.url('/foo/:name/:type', {
             'name': name,
             'type': type,
@@ -179,7 +179,7 @@ export default class Client extends ClientAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<EntryMessage>(params);
+            const response = await this.httpClient.request<>(params);
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {

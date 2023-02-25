@@ -59,7 +59,6 @@ class GeneratorFactoryTest extends TestCase
 
             [GeneratorFactoryInterface::SPEC_TYPEAPI],
             [GeneratorFactoryInterface::SPEC_OPENAPI],
-            [GeneratorFactoryInterface::SPEC_RAML],
         ];
     }
 }

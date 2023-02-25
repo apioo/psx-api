@@ -20,8 +20,11 @@
 
 namespace PSX\Api\Inspector;
 
+use PSX\Api\Exception\OperationNotFoundException;
 use PSX\Api\Operation;
+use PSX\Api\OperationInterface;
 use PSX\Api\Operations;
+use PSX\Api\OperationsInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\Inspector\ChangelogGenerator as SchemaChangelogGenerator;
 use PSX\Schema\Inspector\SemVer;
@@ -42,15 +45,21 @@ class ChangelogGenerator
         $this->changelogGenerator = new SchemaChangelogGenerator();
     }
 
+    /**
+     * @throws OperationNotFoundException
+     */
     public function generate(SpecificationInterface $left, SpecificationInterface $right): \Generator
     {
         yield from $this->generateCollection($left->getOperations(), $right->getOperations());
         yield from $this->changelogGenerator->generate($left->getDefinitions(), $right->getDefinitions());
     }
 
-    private function generateCollection(Operations $left, Operations $right): \Generator
+    /**
+     * @throws OperationNotFoundException
+     */
+    private function generateCollection(OperationsInterface $left, OperationsInterface $right): \Generator
     {
-        foreach ($left as $name => $operation) {
+        foreach ($left->getAll() as $name => $operation) {
             if ($right->has($name)) {
                 yield from $this->generateOperation($operation, $right->get($name), $name);
             } else {
@@ -58,14 +67,14 @@ class ChangelogGenerator
             }
         }
 
-        foreach ($right as $name => $operation) {
+        foreach ($right->getAll() as $name => $operation) {
             if (!$left->has($name)) {
                 yield SemVer::MINOR => $this->getMessageAdded([$name]);
             }
         }
     }
 
-    private function generateOperation(Operation $left, Operation $right, string $name): \Generator
+    private function generateOperation(OperationInterface $left, OperationInterface $right, string $name): \Generator
     {
         $this->generateResponse($left->getReturn(), $right->getReturn(), [$name, 'return']);
 
@@ -132,7 +141,7 @@ class ChangelogGenerator
             yield SemVer::MINOR => $this->getMessageChanged(array_merge($path, ['in']), $left->getIn(), $right->getIn());
         }
 
-        yield from $this->changelogGenerator->generateType($left->getSchema(), $right->getSchema());
+        yield from $this->changelogGenerator->generateType($left->getSchema(), $right->getSchema(), '');
     }
 
     private function generateResponse(Operation\Response $left, Operation\Response $right, array $path): \Generator
@@ -141,7 +150,7 @@ class ChangelogGenerator
             yield SemVer::PATCH => $this->getMessageChanged(array_merge($path, ['code']), $left->getCode(), $right->getCode());
         }
 
-        yield from $this->changelogGenerator->generateType($left->getSchema(), $right->getSchema());
+        yield from $this->changelogGenerator->generateType($left->getSchema(), $right->getSchema(), '');
     }
 
     private function getMessageAdded(array $path): string
