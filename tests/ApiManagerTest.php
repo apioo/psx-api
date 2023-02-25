@@ -20,9 +20,11 @@
 
 namespace PSX\Api\Tests;
 
+use PSX\Api\Exception\ParserException;
 use PSX\Api\Resource;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Attribute\TestController;
+use PSX\Schema\SchemaManager;
 
 /**
  * ApiManagerTest
@@ -35,49 +37,52 @@ class ApiManagerTest extends ApiManagerTestCase
 {
     public function testGetApiAttribute()
     {
-        $specification = $this->apiManager->getApi(TestController::class, '/foo');
+        $specification = $this->apiManager->getApi(TestController::class);
+
+        $this->assertInstanceOf(SpecificationInterface::class, $specification);
+    }
+
+    public function testGetApiTypeAPI()
+    {
+        $specification = $this->apiManager->getApi(__DIR__ . '/Parser/typeapi/simple.json');
 
         $this->assertInstanceOf(SpecificationInterface::class, $specification);
     }
 
     public function testGetApiOpenAPI()
     {
-        $specification = $this->apiManager->getApi(__DIR__ . '/Parser/openapi/test.json', '/foo/:fooId');
+        $specification = $this->apiManager->getApi(__DIR__ . '/Parser/openapi/simple.json');
 
         $this->assertInstanceOf(SpecificationInterface::class, $specification);
     }
 
     public function testGetApiFileDoesNotExist()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(ParserException::class);
 
-        $this->apiManager->getApi(__DIR__ . '/Parser/openapi/unknown.json', '/foo/:fooId');
+        $this->apiManager->getApi(__DIR__ . '/Parser/openapi/unknown.json');
     }
 
     public function testGetApiInvalidType()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(ParserException::class);
 
-        $this->apiManager->getApi('', '/foo', 12);
+        $this->apiManager->getApi('', 12);
     }
     
     public function testGetBuilder()
     {
         $builder = $this->apiManager->getBuilder();
+        $manager = new SchemaManager();
 
-        $resource = $builder->addResource(Resource::STATUS_ACTIVE, '/foo');
-        $resource->setDescription('My super resource');
-        $resource->setPathParameters('Path')->addInteger('todo_id');
-        $resource->setTags(['my_tag']);
-        
-        $post = $resource->addMethod('POST');
-        $post->setOperationId('my_action');
-        $post->setQueryParameters('PostQuery')->addInteger('startIndex');
-        $post->setDescription('My method description');
-        $post->setRequest(__DIR__ . '/Parser/schema/schema.json');
-        $post->addResponse(200, __DIR__ . '/Parser/schema/schema.json');
-        $post->setSecurity('OAuth2', ['foo']);
-        $post->setTags(['my_tag']);
+        $schema = $manager->getSchema(__DIR__ . '/Parser/schema/schema.json');
+        $builder->addDefinitions($schema->getDefinitions());
+
+        $operation = $builder->addOperation('my.operation', 'GET', '/foo', 200, $schema->getType());
+        $operation->addArgument('payload', 'body', $schema->getType());
+        $operation->setDescription('My operation description');
+        $operation->setSecurity(['foo']);
+        $operation->setTags(['my_tag']);
 
         $specification = $builder->getSpecification();
 

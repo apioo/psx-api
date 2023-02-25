@@ -113,7 +113,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
             case GeneratorFactoryInterface::MARKUP_MARKDOWN:
                 return 'md';
 
-            case GeneratorFactoryInterface::SPEC_TYPESCHEMA:
+            case GeneratorFactoryInterface::SPEC_TYPEAPI:
             case GeneratorFactoryInterface::SPEC_OPENAPI:
                 return 'json';
 
@@ -144,7 +144,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
             case GeneratorFactoryInterface::MARKUP_MARKDOWN:
                 return 'text/markdown';
 
-            case GeneratorFactoryInterface::SPEC_TYPESCHEMA:
+            case GeneratorFactoryInterface::SPEC_TYPEAPI:
             case GeneratorFactoryInterface::SPEC_OPENAPI:
                 return 'application/json';
             case GeneratorFactoryInterface::SPEC_RAML:
@@ -174,7 +174,7 @@ class GeneratorFactory implements GeneratorFactoryInterface
             GeneratorFactoryInterface::MARKUP_HTML,
             GeneratorFactoryInterface::MARKUP_MARKDOWN,
 
-            GeneratorFactoryInterface::SPEC_TYPESCHEMA,
+            GeneratorFactoryInterface::SPEC_TYPEAPI,
             GeneratorFactoryInterface::SPEC_OPENAPI,
             GeneratorFactoryInterface::SPEC_RAML,
         ];

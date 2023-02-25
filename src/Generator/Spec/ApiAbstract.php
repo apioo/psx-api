@@ -20,28 +20,20 @@
 
 namespace PSX\Api\Generator\Spec;
 
-use PSX\Api\GeneratorAbstract;
 use PSX\Api\GeneratorInterface;
-use PSX\Model\OpenAPI\Tag;
-use PSX\Schema\Parser\Popo\Dumper;
 
 /**
- * OpenAPIAbstract
- *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-abstract class OpenAPIAbstract implements GeneratorInterface
+abstract class ApiAbstract implements GeneratorInterface
 {
     public const FLOW_AUTHORIZATION_CODE = 0;
     public const FLOW_IMPLICIT = 1;
     public const FLOW_PASSWORD = 2;
     public const FLOW_CLIENT_CREDENTIALS = 3;
 
-    protected Dumper $dumper;
-    protected int $apiVersion;
-    protected string $baseUri;
     protected ?string $title = null;
     protected ?string $description = null;
     protected ?string $tos = null;
@@ -52,14 +44,6 @@ abstract class OpenAPIAbstract implements GeneratorInterface
     protected ?string $licenseUrl = null;
     protected array $authFlows = [];
     protected array $tags = [];
-
-    public function __construct(int $apiVersion, string $baseUri)
-    {
-        $this->dumper     = new Dumper();
-        $this->apiVersion = $apiVersion;
-        $this->baseUri    = $baseUri;
-        $this->authFlows  = [];
-    }
 
     /**
      * The title of the application
@@ -140,13 +124,11 @@ abstract class OpenAPIAbstract implements GeneratorInterface
 
     /**
      * Adds metadata to a single tag that is used by the Operation Object. It is
-     * not mandatory to have a Tag Object per tag defined in the Operation 
+     * not mandatory to have a Tag Object per tag defined in the Operation
      * Object instances
      */
     public function addTag(string $name, string $description): void
     {
-        $this->tags[] = $this->newTag($name, $description);
+        $this->tags[$name] = $description;
     }
-
-    abstract protected function newTag(string $name, string $description): Tag;
 }

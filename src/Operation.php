@@ -118,6 +118,9 @@ class Operation implements OperationInterface
         return $this->security;
     }
 
+    /**
+     * An array of scopes
+     */
     public function setSecurity(array $security): void
     {
         $this->security = $security;

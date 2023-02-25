@@ -37,7 +37,7 @@ use PSX\Schema\TypeFactory;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class TypeAPI implements GeneratorInterface
+class TypeAPI extends ApiAbstract
 {
     public function generate(SpecificationInterface $specification): Generator\Code\Chunks|string
     {

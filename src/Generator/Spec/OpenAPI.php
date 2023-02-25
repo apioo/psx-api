@@ -20,7 +20,9 @@
 
 namespace PSX\Api\Generator\Spec;
 
-use PSX\Api\Resource;
+use PSX\Api\Operation\Argument;
+use PSX\Api\OperationInterface;
+use PSX\Api\OperationsInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
@@ -49,7 +51,8 @@ use PSX\Model\OpenAPI\Server;
 use PSX\Model\OpenAPI\Tag;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
-use PSX\Schema\Type\StructType;
+use PSX\Schema\Parser\Popo\Dumper;
+use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 
@@ -60,22 +63,31 @@ use PSX\Schema\TypeInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class OpenAPI extends OpenAPIAbstract
+class OpenAPI extends ApiAbstract
 {
+    private int $apiVersion;
+    private string $baseUri;
+
+    private Dumper $dumper;
+    private Generator\JsonSchema $generator;
+
+    public function __construct(int $apiVersion, string $baseUri)
+    {
+        $this->apiVersion = $apiVersion;
+        $this->baseUri    = $baseUri;
+        $this->dumper     = new Dumper();
+        $this->generator  = new Generator\JsonSchema('#/components/schemas/');
+    }
+
     public function generate(SpecificationInterface $specification): Generator\Code\Chunks|string
     {
-        $collection = $specification->getResourceCollection();
+        $operations = $specification->getOperations();
         $definitions = $specification->getDefinitions();
 
-        $removeTypes = [];
         $paths = new Paths();
-        foreach ($collection as $path => $resource) {
-            $this->buildPaths($resource, $paths, $definitions, $removeTypes);
-        }
-
-        // the definitions contain types for path and query parameters which we can remove
-        foreach ($removeTypes as $type) {
-            $definitions->removeType($type);
+        $result = $this->groupOperationsByPath($operations);
+        foreach ($result as $path => $operations) {
+            $paths[Inflection::convertPlaceholderToCurly($path)] = $this->buildPathItem($operations, $definitions);
         }
 
         return $this->buildDeclaration($paths, $definitions);
@@ -110,8 +122,7 @@ class OpenAPI extends OpenAPIAbstract
         $server = new Server();
         $server->setUrl($this->baseUri);
 
-        $generator = new Generator\JsonSchema('#/components/schemas/');
-        $result    = $generator->toArray(TypeFactory::getAny(), $definitions);
+        $result = $this->generator->toArray(TypeFactory::getAny(), $definitions);
 
         $schemas = new Schemas();
         foreach ($result['definitions'] as $name => $schema) {
@@ -123,17 +134,21 @@ class OpenAPI extends OpenAPIAbstract
 
         $this->buildSecuritySchemes($components);
 
-        $openAPI = new Declaration();
-        $openAPI->setInfo($info);
-        $openAPI->setServers([$server]);
-        $openAPI->setPaths($paths);
-        $openAPI->setComponents($components);
+        $declaration = new Declaration();
+        $declaration->setInfo($info);
+        $declaration->setServers([$server]);
+        $declaration->setPaths($paths);
+        $declaration->setComponents($components);
 
         if (!empty($this->tags)) {
-            $openAPI->setTags($this->tags);
+            $tags = [];
+            foreach ($this->tags as $name => $description) {
+                $tags[] = $this->newTag($name, $description);
+            }
+            $declaration->setTags($tags);
         }
 
-        $data = $this->dumper->dump($openAPI);
+        $data = $this->dumper->dump($declaration);
         $data = Parser::encode($data, JSON_PRETTY_PRINT);
 
         return $data;
@@ -186,139 +201,41 @@ class OpenAPI extends OpenAPIAbstract
         }
     }
 
-    protected function buildPaths(Resource $resource, Paths $paths, DefinitionsInterface $definitions, array &$removeTypes): void
+    protected function buildPathItem(array $operations, DefinitionsInterface $definitions): PathItem
     {
-        $path = new PathItem();
+        $pathItem = new PathItem();
+        $pathItem->setParameters($this->getPathParameters($operations, $definitions));
 
-        // path parameter
-        $pathParameters = $resource->getPathParameters();
-        if (!empty($pathParameters) && $definitions->hasType($pathParameters)) {
-            $parameters = $this->newParameters($definitions->getType($pathParameters), 'path', $definitions);
-            if (!empty($parameters)) {
-                $path->setParameters($parameters);
-                $removeTypes[] = $pathParameters;
+        foreach ($operations as $config) {
+            [$method, $operationId, $operation] = $config;
+
+            if ($method === 'GET') {
+                $pathItem->setGet($this->getOperation($operationId, $operation, $definitions));
+            } elseif ($method === 'POST') {
+                $pathItem->setPost($this->getOperation($operationId, $operation, $definitions));
+            } elseif ($method === 'PUT') {
+                $pathItem->setPut($this->getOperation($operationId, $operation, $definitions));
+            } elseif ($method === 'DELETE') {
+                $pathItem->setDelete($this->getOperation($operationId, $operation, $definitions));
+            } elseif ($method === 'PATCH') {
+                $pathItem->setPatch($this->getOperation($operationId, $operation, $definitions));
             }
         }
 
-        $methods = $resource->getMethods();
-        foreach ($methods as $method) {
-            $operation = new Operation();
-
-            // operation
-            $operationId = $method->getOperationId();
-            if (!empty($operationId)) {
-                $operation->setOperationId($operationId);
-            }
-
-            // description
-            $description = $method->getDescription();
-            if (!empty($description)) {
-                $operation->setDescription($description);
-            }
-
-            // tags
-            $tags = array_merge($resource->getTags(), $method->getTags());
-            if (!empty($tags)) {
-                $operation->setTags($tags);
-            }
-
-            // query parameter
-            $queryParameters = $method->getQueryParameters();
-            if (!empty($queryParameters) && $definitions->hasType($queryParameters)) {
-                $parameters = $this->newParameters($definitions->getType($queryParameters), 'query', $definitions);
-                if (!empty($parameters)) {
-                    $operation->setParameters($parameters);
-                    $removeTypes[] = $queryParameters;
-                }
-            }
-
-            // request body
-            $request = $method->getRequest();
-            if (!empty($request)) {
-                $requestBody = new RequestBody();
-                $requestBody->setDescription($method->getName() . ' Request');
-                $requestBody->setContent($this->getMediaTypes($request));
-
-                $operation->setRequestBody($requestBody);
-            }
-
-            // response body
-            $responses = $method->getResponses();
-            $resps     = new Responses();
-
-            foreach ($responses as $statusCode => $response) {
-                $resp = new Response();
-                $resp->setDescription($method->getName() . ' ' . $statusCode . ' Response');
-                $resp->setContent($this->getMediaTypes($response));
-
-                $resps[strval($statusCode)] = $resp;
-            }
-
-            $operation->setResponses($resps);
-
-            // security
-            $security = $method->getSecurity();
-            if (!empty($security)) {
-                $operation->setSecurity([SecurityRequirement::fromArray($security)]);
-            }
-
-            // tags
-            $tags = $method->getTags();
-            if (!empty($tags)) {
-                $operation->setTags($tags);
-            }
-
-            if ($resource->getStatus() == Resource::STATUS_DEPRECATED) {
-                $operation->setDeprecated(true);
-            }
-
-            if ($method->getName() === 'GET') {
-                $path->setGet($operation);
-            } elseif ($method->getName() === 'POST') {
-                $path->setPost($operation);
-            } elseif ($method->getName() === 'PUT') {
-                $path->setPut($operation);
-            } elseif ($method->getName() === 'DELETE') {
-                $path->setDelete($operation);
-            } elseif ($method->getName() === 'PATCH') {
-                $path->setPatch($operation);
-            }
-        }
-
-        $paths[Inflection::convertPlaceholderToCurly($resource->getPath())] = $path;
+        return $pathItem;
     }
 
-    private function newParameters(TypeInterface $type, string $in, DefinitionsInterface $definitions): array
+    protected function newParameter(TypeInterface $type, bool $required, DefinitionsInterface $definitions): Parameter
     {
-        if (!$type instanceof StructType) {
-            return [];
+        $schema = $this->generator->toArray($type, $definitions);
+        if (isset($schema['definitions'])) {
+            unset($schema['definitions']);
         }
 
-        $parameters = [];
-        if ($type->getExtends() && $definitions->hasType($type->getExtends())) {
-            $parameters = $this->newParameters($definitions->getType($type->getExtends()), $in, $definitions);
-        }
-
-        $properties = $type->getProperties();
-        if ($properties) {
-            foreach ($properties as $name => $parameter) {
-                $param = $this->newParameter($parameter, in_array($name, $type->getRequired() ?: []));
-                $param->setName($name);
-                $param->setIn($in);
-
-                $parameters[] = $param;
-            }
-        }
-
-        return $parameters;
-    }
-
-    protected function newParameter(TypeInterface $type, bool $required): Parameter
-    {
         $param = new Parameter();
         $param->setDescription($type->getDescription());
         $param->setRequired($required);
-        $param->setSchema($type->toArray());
+        $param->setSchema($schema);
 
         return $param;
     }
@@ -332,14 +249,161 @@ class OpenAPI extends OpenAPIAbstract
         return $tag;
     }
 
-    private function getMediaTypes(string $type): MediaTypes
+    private function getMediaTypes(TypeInterface $type, DefinitionsInterface $definitions): MediaTypes
     {
         $mediaType = new MediaType();
-        $mediaType->setSchema((object) ['$ref' => '#/components/schemas/' . $type]);
+
+        if ($type instanceof ReferenceType) {
+            $mediaType->setSchema((object) ['$ref' => '#/components/schemas/' . $type->getRef()]);
+        } else {
+            $mediaType->setSchema((object) $this->generator->toArray($type, $definitions));
+        }
 
         $mediaTypes = new MediaTypes();
         $mediaTypes['application/json'] = $mediaType;
 
         return $mediaTypes;
+    }
+
+    private function groupOperationsByPath(OperationsInterface $operations): array
+    {
+        $result = [];
+        foreach ($operations->getAll() as $operationId => $operation) {
+            if (!isset($result[$operation->getPath()])) {
+                $result[$operation->getPath()] = [];
+            }
+
+            $result[$operation->getPath()][] = [$operation->getMethod(), $operationId, $operation];
+        }
+
+        return $result;
+    }
+
+    private function getPathParameters(array $operations, DefinitionsInterface $definitions): array
+    {
+        $result = [];
+        foreach ($operations as $config) {
+            [$method, $operationId, $operation] = $config;
+
+            $arguments = $operation->getArguments();
+            foreach ($arguments->getAll() as $argumentName => $argument) {
+                if ($argument->getIn() === Argument::IN_PATH) {
+                    $param = $this->newParameter($argument->getSchema(), true, $definitions);
+                    $param->setName($argumentName);
+                    $param->setIn('path');
+                    $result[$argumentName] = $param;
+                }
+            }
+        }
+
+        return array_values($result);
+    }
+
+    private function getQueryParameters(OperationInterface $operation, DefinitionsInterface $definitions): array
+    {
+        $result = [];
+        $arguments = $operation->getArguments();
+        foreach ($arguments->getAll() as $argumentName => $argument) {
+            if ($argument->getIn() === Argument::IN_QUERY) {
+                $param = $this->newParameter($argument->getSchema(), true, $definitions);
+                $param->setName($argumentName);
+                $param->setIn('query');
+                $result[$argumentName] = $param;
+            }
+        }
+
+        return array_values($result);
+    }
+
+    private function getBodyArgument(OperationInterface $operation): ?Argument
+    {
+        $arguments = $operation->getArguments();
+        foreach ($arguments->getAll() as $argumentName => $argument) {
+            if ($argument->getIn() === Argument::IN_BODY) {
+                return $argument;
+            }
+        }
+
+        return null;
+    }
+
+    private function getRequestBody(OperationInterface $operation, DefinitionsInterface $definitions): ?RequestBody
+    {
+        $argument = $this->getBodyArgument($operation);
+        if (!$argument instanceof Argument) {
+            return null;
+        }
+
+        $result = new RequestBody();
+        //$result->setDescription('');
+        $result->setContent($this->getMediaTypes($argument->getSchema(), $definitions));
+
+        return $result;
+    }
+
+    private function getResponses(OperationInterface $operation, DefinitionsInterface $definitions): Responses
+    {
+        $result = new Responses();
+        $result[strval($operation->getReturn()->getCode())] = $this->getResponse($operation->getReturn(), $definitions);
+
+        foreach ($operation->getThrows() as $throw) {
+            $result[strval($throw->getCode())] = $this->getResponse($throw, $definitions);
+        }
+
+        return $result;
+    }
+
+    private function getResponse(\PSX\Api\Operation\Response $response, DefinitionsInterface $definitions): Response
+    {
+        $result = new Response();
+        //$result->setDescription('');
+        $result->setContent($this->getMediaTypes($response->getSchema(), $definitions));
+
+        return $result;
+    }
+
+    private function getOperation(string $operationId, OperationInterface $operation, DefinitionsInterface $definitions): Operation
+    {
+        $result = new Operation();
+        $result->setOperationId($operationId);
+
+        $description = $operation->getDescription();
+        if (!empty($description)) {
+            $result->setDescription($description);
+        }
+
+        $queryParameters = $this->getQueryParameters($operation, $definitions);
+        if (!empty($queryParameters)) {
+            $result->setParameters($queryParameters);
+        }
+
+        $requestBody = $this->getRequestBody($operation, $definitions);
+        if ($requestBody instanceof RequestBody) {
+            $result->setRequestBody($requestBody);
+        }
+
+        $responses = $this->getResponses($operation, $definitions);
+        if (!empty($responses)) {
+            $result->setResponses($responses);
+        }
+
+        $security = $operation->getSecurity();
+        if (!empty($security)) {
+            $authName = array_key_first($this->authFlows);
+            if (!empty($authName)) {
+                $result->setSecurity([SecurityRequirement::fromArray([$authName => $security])]);
+            }
+        }
+
+        $tags = $operation->getTags();
+        if (!empty($tags)) {
+            $result->setTags($tags);
+        }
+
+        if ($operation->isDeprecated()) {
+            $result->setDeprecated(true);
+        }
+
+        return $result;
     }
 }

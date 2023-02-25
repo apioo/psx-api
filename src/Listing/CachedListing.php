@@ -45,7 +45,7 @@ class CachedListing implements ListingInterface
         $this->expire  = $expire;
     }
 
-    public function getNames(?FilterInterface $filter = null): iterable
+    public function getNames(?FilterInterface $filter = null): array
     {
         $item = $this->cache->getItem($this->getResourceIndexKey($filter));
         if ($item->isHit()) {

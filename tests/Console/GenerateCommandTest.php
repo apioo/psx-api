@@ -73,7 +73,7 @@ class GenerateCommandTest extends TestCase
 
         $listing = new MemoryListing();
         $listing->addRoute(new Route('/foo', ['GET'], '*'));
-        $listing->addSpecification($apiManager->getApi(TestController::class, '/foo'));
+        $listing->addSpecification($apiManager->getApi(TestController::class));
 
         $factory = new GeneratorFactory('urn:phpsx.org:2016#', 'http://foo.com', '');
 

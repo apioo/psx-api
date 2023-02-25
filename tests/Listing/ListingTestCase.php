@@ -38,7 +38,7 @@ abstract class ListingTestCase extends TestCase
     public function testGetAvailableRoutes()
     {
         $listing = $this->newListing();
-        $routes  = $listing->getAvailableRoutes();
+        $routes  = $listing->getNames();
 
         $this->assertIsArray($routes);
         $this->assertEquals(2, count($routes));
@@ -46,7 +46,7 @@ abstract class ListingTestCase extends TestCase
         $this->assertEquals('/foo', $routes[0]->getPath());
         $this->assertEquals('/bar', $routes[1]->getPath());
 
-        $routes = $listing->getAvailableRoutes();
+        $routes = $listing->getNames();
 
         $this->assertIsArray($routes);
         $this->assertEquals(2, count($routes));
@@ -58,14 +58,14 @@ abstract class ListingTestCase extends TestCase
     public function testGetAvailableRoutesFilter()
     {
         $listing = $this->newListing();
-        $routes  = $listing->getAvailableRoutes(new RegxpFilter('^/foo'));
+        $routes  = $listing->getNames(new RegxpFilter('^/foo'));
 
         $this->assertIsArray($routes);
         $this->assertEquals(1, count($routes));
         $this->assertInstanceOf(Route::class, $routes[0]);
         $this->assertEquals('/foo', $routes[0]->getPath());
 
-        $routes = $listing->getAvailableRoutes(new RegxpFilter('^/bar'));
+        $routes = $listing->getNames(new RegxpFilter('^/bar'));
 
         $this->assertIsArray($routes);
         $this->assertEquals(1, count($routes));

@@ -49,7 +49,7 @@ class MemoryListing implements ListingInterface
         );
     }
 
-    public function getNames(?FilterInterface $filter = null): iterable
+    public function getNames(?FilterInterface $filter = null): array
     {
         if ($filter !== null) {
             return array_values(array_filter($this->routes, static function(Route $route) use ($filter){

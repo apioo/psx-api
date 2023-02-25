@@ -21,6 +21,7 @@
 namespace PSX\Api\Tests\Generator;
 
 use PSX\Api\Builder\SpecificationBuilderInterface;
+use PSX\Api\Operation\Argument;
 use PSX\Api\Resource;
 use PSX\Api\Security\HttpBearer;
 use PSX\Api\SpecificationInterface;
@@ -53,45 +54,45 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
 
         $operation = $builder->addOperation('get', 'GET', '/foo/:name/:type', 200, $collection);
         $operation->setDescription('Returns a collection');
-        $operation->addArgument('name', 'path', TypeFactory::getString()
+        $operation->addArgument('name', Argument::IN_PATH, TypeFactory::getString()
             ->setDescription('Name parameter')
             ->setMinLength(0)
             ->setMaxLength(16)
             ->setPattern('[A-z]+'));
-        $operation->addArgument('type', 'path', TypeFactory::getString()
+        $operation->addArgument('type', Argument::IN_PATH, TypeFactory::getString()
             ->setEnum(['foo', 'bar']));
-        $operation->addArgument('startIndex', 'query', TypeFactory::getInteger()
+        $operation->addArgument('startIndex', Argument::IN_QUERY, TypeFactory::getInteger()
             ->setDescription('startIndex parameter')
             ->setMinimum(0)
             ->setMaximum(32));
-        $operation->addArgument('float', 'query', TypeFactory::getNumber());
-        $operation->addArgument('boolean', 'query', TypeFactory::getBoolean());
-        $operation->addArgument('date', 'query', TypeFactory::getString()
+        $operation->addArgument('float', Argument::IN_QUERY, TypeFactory::getNumber());
+        $operation->addArgument('boolean', Argument::IN_QUERY, TypeFactory::getBoolean());
+        $operation->addArgument('date', Argument::IN_QUERY, TypeFactory::getString()
             ->setFormat('date'));
-        $operation->addArgument('datetime', 'query', TypeFactory::getString()
+        $operation->addArgument('datetime', Argument::IN_QUERY, TypeFactory::getString()
             ->setFormat('date-time'));
 
         $operation = $builder->addOperation('create', 'POST', '/foo/:name/:type', 201, $message);
-        $operation->addArgument('name', 'path', TypeFactory::getString());
-        $operation->addArgument('type', 'path', TypeFactory::getString());
-        $operation->addArgument('payload', 'body', $create);
+        $operation->addArgument('name', Argument::IN_PATH, TypeFactory::getString());
+        $operation->addArgument('type', Argument::IN_PATH, TypeFactory::getString());
+        $operation->addArgument('payload', Argument::IN_BODY, $create);
         $operation->addThrow(400, $message);
         $operation->addThrow(500, $message);
 
         $operation = $builder->addOperation('update', 'PUT', '/foo/:name/:type', 200, $message);
-        $operation->addArgument('name', 'path', TypeFactory::getString());
-        $operation->addArgument('type', 'path', TypeFactory::getString());
-        $operation->addArgument('payload', 'body', $update);
+        $operation->addArgument('name', Argument::IN_PATH, TypeFactory::getString());
+        $operation->addArgument('type', Argument::IN_PATH, TypeFactory::getString());
+        $operation->addArgument('payload', Argument::IN_BODY, $update);
 
         $operation = $builder->addOperation('delete', 'DELETE', '/foo/:name/:type', 200, $message);
-        $operation->addArgument('name', 'path', TypeFactory::getString());
-        $operation->addArgument('type', 'path', TypeFactory::getString());
-        $operation->addArgument('payload', 'body', $delete);
+        $operation->addArgument('name', Argument::IN_PATH, TypeFactory::getString());
+        $operation->addArgument('type', Argument::IN_PATH, TypeFactory::getString());
+        $operation->addArgument('payload', Argument::IN_BODY, $delete);
 
         $operation = $builder->addOperation('patch', 'PATCH', '/foo/:name/:type', 200, $message);
-        $operation->addArgument('name', 'path', TypeFactory::getString());
-        $operation->addArgument('type', 'path', TypeFactory::getString());
-        $operation->addArgument('payload', 'body', $patch);
+        $operation->addArgument('name', Argument::IN_PATH, TypeFactory::getString());
+        $operation->addArgument('type', Argument::IN_PATH, TypeFactory::getString());
+        $operation->addArgument('payload', Argument::IN_BODY, $patch);
 
         return $builder->getSpecification();
     }
