@@ -22,17 +22,17 @@ class Client extends ClientAbstract
 {% endfor %}
 {{ operations|raw }}
 
-{% if security.type == 'httpbasic' %}
+{% if security.type == 'httpBasic' %}
     public static function build(string $baseUrl, string $userName, string $password): self
     {
         return new self($baseUrl, new Credentials\HttpBasic($userName, $password));
     }
-{% elseif security.type == 'httpbearer' %}
+{% elseif security.type == 'httpBearer' %}
     public static function build(string $baseUrl, string $token): self
     {
         return new self($baseUrl, new Credentials\HttpBearer($token));
     }
-{% elseif security.type == 'apikey' %}
+{% elseif security.type == 'apiKey' %}
     public static function build(string $baseUrl, string $token): self
     {
         return new self($baseUrl, new Credentials\ApiKey($token, '{{ security.name }}', '{{ security.in }}'));
