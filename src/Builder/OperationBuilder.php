@@ -64,9 +64,9 @@ class OperationBuilder implements OperationBuilderInterface
         return $this;
     }
 
-    public function setDeprecated(bool $deprecated): self
+    public function setStability(int $stability): self
     {
-        $this->operation->setStability($deprecated);
+        $this->operation->setStability($stability);
         return $this;
     }
 

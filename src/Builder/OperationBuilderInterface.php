@@ -49,7 +49,7 @@ interface OperationBuilderInterface
 
     public function setSecurity(array $security): self;
 
-    public function setDeprecated(bool $deprecated): self;
+    public function setStability(int $stability): self;
 
     /**
      * @throws InvalidArgumentException
