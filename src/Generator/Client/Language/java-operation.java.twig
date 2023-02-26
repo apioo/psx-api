@@ -5,7 +5,7 @@
      * {{ operation.description }}
      */
 {% endif %}
-    public {% if operation.return %}{{ operation.return.type|raw }}{% else %}void{% endif %} {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ arg.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws {% for return in operation.throws %}{{ return.type }}Exception, {% endfor %}ClientException {
+    public {% if operation.return %}{{ operation.return.schema.type|raw }}{% else %}void{% endif %} {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ arg.schema.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws {% for return in operation.throws %}{{ return.schema.type }}Exception, {% endfor %}ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
 {% for name, realName in operation.pathNames %}
@@ -31,7 +31,7 @@
 
             if (statusCode >= 200 && statusCode < 300) {
 {% if operation.return %}
-                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), {{ operation.return.type }}.class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), {{ operation.return.schema.type }}.class);
 {% else %}
                 return;
 {% endif %}
@@ -40,7 +40,7 @@
             switch (statusCode) {
 {% for code, return in operation.throws %}
                 case {{ code }}:
-                    throw new {{ return.type }}Exception(this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), {{ return.type }}.class));
+                    throw new {{ return.schema.type }}Exception(this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), {{ return.schema.type }}.class));
 {% endfor %}
                 default:
                     throw new UnkownStatusCodeException("The server returned an unknown status code");

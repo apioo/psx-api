@@ -3,15 +3,15 @@
 {% if operation.description %}     * {{ operation.description }}
      *
 {% endif %}
-{% for name, arg in operation.arguments %}     * @param {{ arg.docType }}{% if arg.optional %}|null{% endif %} ${{ name }}
+{% for name, arg in operation.arguments %}     * @param {{ arg.schema.docType }}{% if arg.schema.optional %}|null{% endif %} ${{ name }}
 {% endfor %}
-     * @return {% if operation.return %}{{ operation.return.docType }}{% else %}void{% endif %}
+     * @return {% if operation.return %}{{ operation.return.schema.docType }}{% else %}void{% endif %}
 
-{% for throw in operation.throws %}     * @throws {{ throw.docType }}Exception
+{% for throw in operation.throws %}     * @throws {{ throw.schema.docType }}Exception
 {% endfor %}
      * @throws ClientException
      */
-    public function {{ operation.methodName }}({% for name, arg in operation.arguments %}{% if arg.optional %}?{% endif %}{{ arg.type }} ${{ name }}{% if arg.optional %} = null{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): {% if operation.return %}{{ operation.return.type }}{% else %}void{% endif %}
+    public function {{ operation.methodName }}({% for name, arg in operation.arguments %}{% if arg.schema.optional %}?{% endif %}{{ arg.schema.type }} ${{ name }}{% if arg.schema.optional %} = null{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): {% if operation.return %}{{ operation.return.schema.type }}{% else %}void{% endif %}
 
     {
         $url = $this->parser->url('{{ operation.path|raw }}', [
@@ -36,7 +36,7 @@
             $data = (string) $response->getBody();
 
 {% if operation.return %}
-            return $this->parser->parse($data, {{ operation.return.type }}::class);
+            return $this->parser->parse($data, {{ operation.return.schema.type }}::class);
 {% endif %}
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
@@ -44,7 +44,7 @@
             switch ($e->getResponse()->getStatusCode()) {
 {% for code, return in operation.throws %}
                 case {{ code }}:
-                    throw new {{ return.type }}Exception($this->parser->parse($data, {{ return.type }}::class));
+                    throw new {{ return.schema.type }}Exception($this->parser->parse($data, {{ return.schema.type }}::class));
 {% endfor %}
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');

@@ -3,14 +3,14 @@
 {% if operation.description %}     * {{ operation.description }}
      *
 {% endif %}
-{% for name, arg in operation.args %}     * @param {{ '{' }}{{ arg.docType }}{{ '}' }} {{ name }}
+{% for name, arg in operation.args %}     * @param {{ '{' }}{{ arg.schema.docType }}{{ '}' }} {{ name }}
 {% endfor %}
-     * @returns {{ '{' }}Promise<{% if operation.return %}{{ operation.return.docType|raw }}{% else %}void{% endif %}>{{ '}' }}
-{% for throw in operation.throws %}     * @throws {{ '{' }}{{ throw.docType }}Exception{{ '}' }}
+     * @returns {{ '{' }}Promise<{% if operation.return %}{{ operation.return.schema.docType|raw }}{% else %}void{% endif %}>{{ '}' }}
+{% for throw in operation.throws %}     * @throws {{ '{' }}{{ throw.schema.docType }}Exception{{ '}' }}
 {% endfor %}
      * @throws {{ '{' }}ClientException{{ '}' }}
      */
-    public async {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ name }}{% if arg.optional %}?{% endif %}: {{ arg.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{% if operation.return %}{{ operation.return.type|raw }}{% else %}void{% endif %}> {
+    public async {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ name }}{% if arg.schema.optional %}?{% endif %}: {{ arg.schema.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{% if operation.return %}{{ operation.return.schema.type|raw }}{% else %}void{% endif %}> {
         const url = this.parser.url('{{ operation.path|raw }}', {
 {% for name, realName in operation.pathNames %}
             '{{ realName }}': {{ name }},
@@ -31,7 +31,7 @@
         };
 
         try {
-            const response = await this.httpClient.request{% if operation.return %}<{{ operation.return.type }}>{% endif %}(params);
+            const response = await this.httpClient.request{% if operation.return %}<{{ operation.return.schema.type }}>{% endif %}(params);
 {% if operation.return %}
             return response.data;
 {% endif %}
@@ -40,7 +40,7 @@
                 switch (error.response.status) {
 {% for code, return in operation.throws %}
                     case {{ code }}:
-                        throw new {{ return.type }}Exception(error.response.data);
+                        throw new {{ return.schema.type }}Exception(error.response.data);
 {% endfor %}
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
