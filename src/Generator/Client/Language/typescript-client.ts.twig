@@ -45,15 +45,10 @@ export default class {{ className }} extends ClientAbstract {
     {
         return new {{ className }}($baseUrl, new ApiKey($token, '{{ security.name }}', '{{ security.in }}'));
     }
-{% elseif security.type == 'clientCredentials' %}
+{% elseif security.type == 'oauth2' %}
     public static build(baseUrl: string, clientId: string, clientSecret: string, tokenStore: TokenStoreInterface|null, scopes: Array<string>|null): {{ className }}
     {
-        return new {{ className }}(baseUrl, new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
-    }
-{% elseif security.type == 'authorizationCode' %}
-    public static build(baseUrl: string, clientId: string, clientSecret: string, tokenStore: TokenStoreInterface|null, scopes: Array<string>|null): {{ className }}
-    {
-        return new {{ className }}(baseUrl, new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
+        return new {{ className }}(baseUrl, new OAuth2(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
     }
 {% endif %}
 }
