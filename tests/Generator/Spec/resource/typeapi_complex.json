@@ -12,7 +12,6 @@
           "$ref": "EntryOrMessage"
         }
       },
-      "description": "Returns a collection",
       "arguments": {
         "name": {
           "in": "path",
@@ -33,12 +32,13 @@
           }
         }
       },
-      "authorization": true,
+      "throws": [],
+      "description": "Returns a collection",
+      "stability": 1,
       "security": [
         "foo"
       ],
-      "deprecated": false,
-      "throws": [],
+      "authorization": true,
       "tags": [
         "foo"
       ]

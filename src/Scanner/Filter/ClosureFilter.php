@@ -18,28 +18,34 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Security;
+namespace PSX\Api\Scanner\Filter;
 
-use PSX\Api\SecurityInterface;
+use PSX\Api\OperationInterface;
+use PSX\Api\Scanner\FilterInterface;
 
 /**
- * HttpBearer
+ * ClosureFilter
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class HttpBearer implements SecurityInterface
+class ClosureFilter implements FilterInterface
 {
-    public function toArray(): array
+    private \Closure $closure;
+
+    public function __construct(\Closure $closure)
     {
-        return [
-            'type' => self::TYPE_HTTP_BEARER,
-        ];
+        $this->closure = $closure;
     }
 
-    public function jsonSerialize(): array
+    public function match(OperationInterface $operation): bool
     {
-        return $this->toArray();
+        return call_user_func($this->closure, $operation) === true;
+    }
+
+    public function getId(): string
+    {
+        return substr(md5((string) new \ReflectionFunction($this->closure)), 0, 8);
     }
 }

@@ -20,32 +20,17 @@
 
 namespace PSX\Api;
 
-use PSX\Api\Listing\FilterInterface;
+use PSX\Api\Scanner\FilterInterface;
 
 /**
- * A listing knows all API endpoints in a system and can be used to get resource definitions for specific endpoints or
- * to get an index of all available endpoints
+ * A scanner knows all available operations and can be used to generate a specification for the system. Through the
+ * filter it is possible restrict operations to a specific subset
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-interface ListingInterface
+interface ScannerInterface
 {
-    /**
-     * Returns all available operation names
-     *
-     * @return array<string>
-     */
-    public function getNames(?FilterInterface $filter = null): array;
-
-    /**
-     * Returns a specification for a specific resource path
-     */
-    public function find(string $path, ?string $version = null): ?SpecificationInterface;
-
-    /**
-     * Returns all available resources
-     */
-    public function findAll(?string $version = null, ?FilterInterface $filter = null): SpecificationInterface;
+    public function generate(?FilterInterface $filter = null): SpecificationInterface;
 }

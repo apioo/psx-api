@@ -166,7 +166,7 @@ class Attribute implements ParserInterface
             }
 
             if ($meta->getDeprecated() instanceof Attr\Deprecated) {
-                $operation->setDeprecated($meta->getDeprecated()->deprecated);
+                $operation->setStability($meta->getDeprecated()->deprecated);
             }
 
             if ($meta->getSecurity() instanceof Attr\Security) {

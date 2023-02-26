@@ -20,9 +20,7 @@
 
 namespace PSX\Api\Generator\Spec;
 
-use PSX\Api\GeneratorAbstract;
 use PSX\Api\GeneratorInterface;
-use PSX\Api\OperationsInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Json\Parser;
 use PSX\Schema\DefinitionsInterface;
@@ -37,7 +35,7 @@ use PSX\Schema\TypeFactory;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class TypeAPI extends ApiAbstract
+class TypeAPI implements GeneratorInterface
 {
     public function generate(SpecificationInterface $specification): Generator\Code\Chunks|string
     {

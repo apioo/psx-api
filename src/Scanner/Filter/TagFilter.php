@@ -18,54 +18,40 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Security;
+namespace PSX\Api\Scanner\Filter;
 
-use PSX\Api\SecurityInterface;
+use PSX\Api\OperationInterface;
+use PSX\Api\Scanner\FilterInterface;
 
 /**
- * OAuth2
+ * TagFilter
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-abstract class OAuth2Abstract implements SecurityInterface
+class TagFilter implements FilterInterface
 {
-    protected string $tokenUrl;
-    protected ?string $authorizationUrl;
-    protected ?string $refreshUrl;
-    protected ?array $scopes;
+    private array $tags;
 
-    public function __construct(string $tokenUrl, ?string $authorizationUrl, ?string $refreshUrl, ?array $scopes = null)
+    public function __construct(array $tags)
     {
-        $this->tokenUrl = $tokenUrl;
-        $this->authorizationUrl = $authorizationUrl;
-        $this->refreshUrl = $refreshUrl;
-        $this->scopes = $scopes;
+        $this->tags = $tags;
     }
 
-    public function getTokenUrl(): string
+    public function match(OperationInterface $operation): bool
     {
-        return $this->tokenUrl;
+        foreach ($operation->getTags() as $tag) {
+            if (in_array($tag, $this->tags)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public function getAuthorizationUrl(): ?string
+    public function getId(): string
     {
-        return $this->authorizationUrl;
-    }
-
-    public function getRefreshUrl(): ?string
-    {
-        return $this->refreshUrl;
-    }
-
-    public function getScopes(): ?array
-    {
-        return $this->scopes;
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->toArray();
+        return substr(md5(implode('-', $this->tags)), 0, 8);
     }
 }

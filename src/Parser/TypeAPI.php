@@ -145,8 +145,8 @@ class TypeAPI implements ParserInterface
             $result->setDescription($operation->description);
         }
 
-        if (is_bool($operation->deprecated ?? null)) {
-            $result->setDeprecated($operation->deprecated);
+        if (is_int($operation->stability ?? null)) {
+            $result->setStability($operation->stability);
         }
 
         if (is_array($operation->security ?? null)) {
@@ -247,6 +247,9 @@ class TypeAPI implements ParserInterface
         return new Operation\Response($code, $this->schemaParser->parseType($schema));
     }
 
+    /**
+     * @throws ParserException
+     */
     private function parseSecurity(\stdClass $data): ?SecurityInterface
     {
         $type = $data->type ?? null;
@@ -254,22 +257,30 @@ class TypeAPI implements ParserInterface
             return null;
         }
 
-        switch (strtolower($type)) {
-            case 'httpbasic':
+        switch ($type) {
+            case SecurityInterface::TYPE_HTTP_BASIC:
                 return new Security\HttpBasic();
-            case 'httpbearer':
+            case SecurityInterface::TYPE_HTTP_BEARER:
                 return new Security\HttpBearer();
-            case 'apikey':
-                return new Security\ApiKey($data->name, $data->in);
-            case 'authorizationcode':
-                return new Security\AuthorizationCode($data->tokenUrl, $data->authorizationUrl, $data->refreshUrl, $data->scopes);
-            case 'clientcredentials':
-                return new Security\ClientCredentials($data->tokenUrl, $data->authorizationUrl, $data->refreshUrl, $data->scopes);
+            case SecurityInterface::TYPE_API_KEY:
+                $name = isset($data->name) && is_string($data->name) ? $data->name : throw new ParserException('Provided security "apiKey" must contain a "name" property');
+                $in = isset($data->in) && is_string($data->in) ? $data->in : throw new ParserException('Provided security "apiKey" must contain an "in" property');
+
+                return new Security\ApiKey($name, $in);
+            case SecurityInterface::TYPE_OAUTH2:
+                $tokenUrl = isset($data->tokenUrl) && is_string($data->tokenUrl) ? $data->tokenUrl : throw new ParserException('Provided security "oauth2" must contain a "tokenUrl" property');
+                $authorizationUrl = isset($data->authorizationUrl) && is_string($data->authorizationUrl) ? $data->authorizationUrl : null;
+                $scopes = isset($data->scopes) && is_string($data->scopes) ? $data->scopes : [];
+
+                return new Security\OAuth2($tokenUrl, $authorizationUrl, $scopes);
         }
 
         return null;
     }
 
+    /**
+     * @throws ParserException
+     */
     public static function fromFile(string $file): SpecificationInterface
     {
         if (empty($file) || !is_file($file)) {

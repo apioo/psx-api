@@ -23,19 +23,50 @@ namespace PSX\Api\Security;
 use PSX\Api\SecurityInterface;
 
 /**
- * HttpBearer
+ * OAuth2
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class HttpBearer implements SecurityInterface
+class OAuth2 implements SecurityInterface
 {
+    protected string $tokenUrl;
+    protected ?string $authorizationUrl;
+    protected ?array $scopes;
+
+    public function __construct(string $tokenUrl, ?string $authorizationUrl, ?array $scopes = null)
+    {
+        $this->tokenUrl = $tokenUrl;
+        $this->authorizationUrl = $authorizationUrl;
+        $this->scopes = $scopes;
+    }
+
+    public function getTokenUrl(): string
+    {
+        return $this->tokenUrl;
+    }
+
+    public function getAuthorizationUrl(): ?string
+    {
+        return $this->authorizationUrl;
+    }
+
+    public function getScopes(): ?array
+    {
+        return $this->scopes;
+    }
+
     public function toArray(): array
     {
-        return [
-            'type' => self::TYPE_HTTP_BEARER,
-        ];
+        return array_filter([
+            'type' => self::TYPE_OAUTH2,
+            'tokenUrl' => $this->tokenUrl,
+            'authorizationUrl' => $this->authorizationUrl,
+            'scopes' => $this->scopes,
+        ], function($value){
+            return $value !== null;
+        });
     }
 
     public function jsonSerialize(): array

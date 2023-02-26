@@ -21,6 +21,7 @@
 namespace PSX\Api;
 
 use PSX\Api\Exception\OperationNotFoundException;
+use PSX\Api\Scanner\FilterInterface;
 
 /**
  * OperationsInterface
@@ -48,6 +49,8 @@ interface OperationsInterface
     public function remove(string $name): void;
 
     public function merge(OperationsInterface $operations): void;
+
+    public function filter(FilterInterface $filter): void;
 
     public function withAdded(OperationsInterface $operations): Operations;
 }

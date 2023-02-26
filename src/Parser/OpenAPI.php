@@ -181,7 +181,7 @@ class OpenAPI implements ParserInterface
             }
 
             if ($operation->getDeprecated() !== null) {
-                $result->setDeprecated($operation->getDeprecated());
+                $result->setStability($operation->getDeprecated());
             }
 
             if ($operation->getSecurity() !== null) {

@@ -30,5 +30,10 @@ namespace PSX\Api;
  */
 interface SecurityInterface extends \JsonSerializable
 {
+    public const TYPE_HTTP_BASIC = 'httpBasic';
+    public const TYPE_HTTP_BEARER = 'httpBearer';
+    public const TYPE_API_KEY = 'apiKey';
+    public const TYPE_OAUTH2 = 'oauth2';
+
     public function toArray(): array;
 }

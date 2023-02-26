@@ -18,27 +18,44 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Security;
+namespace PSX\Api\Scanner;
 
 /**
- * AuthorizationCode
+ * FilterFactory
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class AuthorizationCode extends OAuth2Abstract
+class FilterFactory implements FilterFactoryInterface
 {
-    public function toArray(): array
+    private array $container;
+    private ?string $default;
+
+    public function __construct()
     {
-        return array_filter([
-            'type' => 'authorizationCode',
-            'tokenUrl' => $this->tokenUrl,
-            'authorizationUrl' => $this->authorizationUrl,
-            'refreshUrl' => $this->refreshUrl,
-            'scopes' => $this->scopes,
-        ], function($value){
-            return $value !== null;
-        });
+        $this->container = [];
+        $this->default   = null;
+    }
+
+    public function addFilter(string $name, FilterInterface $filter): void
+    {
+        $this->container[$name] = $filter;
+    }
+
+    public function setDefault(string $name): void
+    {
+        $this->default = $name;
+    }
+
+    public function getFilter(string $name): ?FilterInterface
+    {
+        if (isset($this->container[$name])) {
+            return $this->container[$name];
+        } elseif ($this->default !== null) {
+            return $this->container[$this->default] ?? null;
+        } else {
+            return null;
+        }
     }
 }

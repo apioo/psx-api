@@ -18,28 +18,19 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Security;
-
-use PSX\Api\SecurityInterface;
+namespace PSX\Api\Scanner;
 
 /**
- * HttpBearer
+ * FilterFactoryInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class HttpBearer implements SecurityInterface
+interface FilterFactoryInterface
 {
-    public function toArray(): array
-    {
-        return [
-            'type' => self::TYPE_HTTP_BEARER,
-        ];
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->toArray();
-    }
+    /**
+     * Returns a specific filter by name
+     */
+    public function getFilter(string $name): ?FilterInterface;
 }

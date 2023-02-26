@@ -53,7 +53,7 @@ class ApiKey implements SecurityInterface
     public function toArray(): array
     {
         return array_filter([
-            'type' => 'apiKey',
+            'type' => self::TYPE_API_KEY,
             'name' => $this->name,
             'in' => $this->in,
         ], function($value){

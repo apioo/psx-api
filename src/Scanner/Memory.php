@@ -18,28 +18,29 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Security;
+namespace PSX\Api\Scanner;
 
-use PSX\Api\SecurityInterface;
+use PSX\Api\Builder\SpecificationBuilder;
+use PSX\Api\ScannerInterface;
+use PSX\Api\SpecificationInterface;
 
 /**
- * HttpBearer
+ * Memory
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class HttpBearer implements SecurityInterface
+class Memory extends SpecificationBuilder implements ScannerInterface
 {
-    public function toArray(): array
+    public function generate(?FilterInterface $filter = null): SpecificationInterface
     {
-        return [
-            'type' => self::TYPE_HTTP_BEARER,
-        ];
-    }
+        $spec = $this->getSpecification();
 
-    public function jsonSerialize(): array
-    {
-        return $this->toArray();
+        if ($filter !== null) {
+            $spec->getOperations()->filter($filter);
+        }
+
+        return $spec;
     }
 }

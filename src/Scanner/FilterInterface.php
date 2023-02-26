@@ -18,27 +18,26 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Security;
+namespace PSX\Api\Scanner;
+
+use PSX\Api\OperationInterface;
 
 /**
- * ClientCredentials
+ * FilterInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class ClientCredentials extends OAuth2Abstract
+interface FilterInterface
 {
-    public function toArray(): array
-    {
-        return array_filter([
-            'type' => 'clientCredentials',
-            'tokenUrl' => $this->tokenUrl,
-            'authorizationUrl' => $this->authorizationUrl,
-            'refreshUrl' => $this->refreshUrl,
-            'scopes' => $this->scopes,
-        ], function($value){
-            return $value !== null;
-        });
-    }
+    /**
+     * Returns whether the provided operation matches this filter
+     */
+    public function match(OperationInterface $operation): bool;
+
+    /**
+     * Returns a string which represents this filter constraint
+     */
+    public function getId(): string;
 }

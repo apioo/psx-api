@@ -36,19 +36,24 @@ use PSX\Api\Resource\MethodAbstract;
  */
 interface OperationInterface
 {
+    public const STABILITY_DEPRECATED = 0;
+    public const STABILITY_EXPERIMENTAL = 1;
+    public const STABILITY_STABLE = 2;
+    public const STABILITY_LEGACY = 3;
+
     public function getMethod(): string;
     public function getPath(): string;
     public function getReturn(): Response;
-    public function getDescription(): string;
     public function getArguments(): Arguments;
-    public function hasAuthorization(): bool;
-    public function getSecurity(): array;
-    public function isDeprecated(): bool;
 
     /**
      * @return array<Response>
      */
     public function getThrows(): array;
+    public function getDescription(): string;
+    public function getStability(): int;
+    public function getSecurity(): array;
+    public function hasAuthorization(): bool;
 
     /**
      * @return array<string>

@@ -41,17 +41,20 @@ class ChangelogGeneratorTest extends GeneratorTestCase
 
         $actual = iterator_to_array($generator->generate($left, $right), false);
         $expect = [
-            'Resource "/foo/:name/:type" was removed',
-            'Resource "/foo" was added',
-            'Resource "/bar/:foo" was added',
-            'Resource "/bar/$year<[0-9]+>" was added',
-            'Type "Path" was removed',
-            'Type "GetQuery" was removed',
+            'Operation "get" was removed',
+            'Operation "create" was removed',
+            'Operation "update" was removed',
+            'Operation "delete" was removed',
+            'Operation "patch" was removed',
+            'Operation "foo.get" was added',
+            'Operation "foo.create" was added',
+            'Operation "bar.get" was added',
+            'Operation "bar.create" was added',
+            'Operation "baz.get" was added',
+            'Operation "baz.create" was added',
             'Type "EntryUpdate" was removed',
             'Type "EntryDelete" was removed',
             'Type "EntryPatch" was removed',
-            'Type "PathFoo" was added',
-            'Type "PathYear" was added',
         ];
 
         $this->assertEquals($expect, $actual);

@@ -76,8 +76,6 @@ class ChangelogGenerator
 
     private function generateOperation(OperationInterface $left, OperationInterface $right, string $name): \Generator
     {
-        $this->generateResponse($left->getReturn(), $right->getReturn(), [$name, 'return']);
-
         if ($left->getMethod() !== $right->getMethod()) {
             yield SemVer::MINOR => $this->getMessageChanged([$name, 'method'], $left->getMethod(), $right->getMethod());
         }
@@ -86,9 +84,7 @@ class ChangelogGenerator
             yield SemVer::MINOR => $this->getMessageChanged([$name, 'path'], $left->getPath(), $right->getPath());
         }
 
-        if ($left->getDescription() !== $right->getDescription()) {
-            yield SemVer::MINOR => $this->getMessageChanged([$name, 'description'], $left->getDescription(), $right->getDescription());
-        }
+        $this->generateResponse($left->getReturn(), $right->getReturn(), [$name, 'return']);
 
         foreach ($left->getArguments() as $argumentName => $argument) {
             if ($right->getArguments()->has($argumentName)) {
@@ -104,22 +100,6 @@ class ChangelogGenerator
             }
         }
 
-        if ($left->hasAuthorization() !== $right->hasAuthorization()) {
-            yield SemVer::MAJOR => $this->getMessageChanged([$name, 'authorization'], $left->hasAuthorization(), $right->hasAuthorization());
-        }
-
-        if ($left->getSecurity() !== $right->getSecurity()) {
-            yield SemVer::MAJOR => $this->getMessageChanged([$name, 'security'], $left->getSecurity(), $right->getSecurity());
-        }
-
-        if ($left->isDeprecated() !== $right->isDeprecated()) {
-            yield SemVer::PATCH => $this->getMessageChanged([$name, 'deprecated'], $left->isDeprecated(), $right->isDeprecated());
-        }
-
-        if ($left->getTags() !== $right->getTags()) {
-            yield SemVer::PATCH => $this->getMessageChanged([$name, 'tags'], $left->getTags(), $right->getTags());
-        }
-
         foreach ($left->getThrows() as $index => $throw) {
             if (isset($right->getThrows()[$index])) {
                 yield from $this->generateResponse($throw, $right->getThrows()[$index], [$name, 'throws', $index]);
@@ -132,6 +112,26 @@ class ChangelogGenerator
             if (!isset($left->getThrows()[$index])) {
                 yield SemVer::PATCH => $this->getMessageAdded([$name, 'throws', $index]);
             }
+        }
+
+        if ($left->getDescription() !== $right->getDescription()) {
+            yield SemVer::MINOR => $this->getMessageChanged([$name, 'description'], $left->getDescription(), $right->getDescription());
+        }
+
+        if ($left->getStability() !== $right->getStability()) {
+            yield SemVer::PATCH => $this->getMessageChanged([$name, 'stability'], $left->getStability(), $right->getStability());
+        }
+
+        if ($left->getSecurity() !== $right->getSecurity()) {
+            yield SemVer::MAJOR => $this->getMessageChanged([$name, 'security'], $left->getSecurity(), $right->getSecurity());
+        }
+
+        if ($left->hasAuthorization() !== $right->hasAuthorization()) {
+            yield SemVer::MAJOR => $this->getMessageChanged([$name, 'authorization'], $left->hasAuthorization(), $right->hasAuthorization());
+        }
+
+        if ($left->getTags() !== $right->getTags()) {
+            yield SemVer::PATCH => $this->getMessageChanged([$name, 'tags'], $left->getTags(), $right->getTags());
         }
     }
 

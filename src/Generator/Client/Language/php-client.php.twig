@@ -22,30 +22,25 @@ class Client extends ClientAbstract
 {% endfor %}
 {{ operations|raw }}
 
-{% if security.type == 'httpBasic' %}
+{% if security.type == 'httpbasic' %}
     public static function build(string $baseUrl, string $userName, string $password): self
     {
         return new self($baseUrl, new Credentials\HttpBasic($userName, $password));
     }
-{% elseif security.type == 'httpBearer' %}
+{% elseif security.type == 'httpbearer' %}
     public static function build(string $baseUrl, string $token): self
     {
         return new self($baseUrl, new Credentials\HttpBearer($token));
     }
-{% elseif security.type == 'apiKey' %}
+{% elseif security.type == 'apikey' %}
     public static function build(string $baseUrl, string $token): self
     {
         return new self($baseUrl, new Credentials\ApiKey($token, '{{ security.name }}', '{{ security.in }}'));
     }
-{% elseif security.type == 'clientCredentials' %}
+{% elseif security.type == 'oauth2' %}
     public static function build(string $baseUrl, string $clientId, string $clientSecret, ?TokenStoreInterface $tokenStore = null, ?array $scopes = null): self
     {
-        return new self($baseUrl, new Credentials\ClientCredentials($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', $tokenStore, $scopes));
-    }
-{% elseif security.type == 'authorizationCode' %}
-    public static function build(string $baseUrl, string $clientId, string $clientSecret, ?TokenStoreInterface $tokenStore = null, ?array $scopes = null): self
-    {
-        return new self($baseUrl, new Credentials\AuthorizationCode($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', $tokenStore, $scopes));
+        return new self($baseUrl, new Credentials\OAuth2($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', $tokenStore, $scopes));
     }
 {% endif %}
 }

@@ -12,12 +12,12 @@
           "$ref": "EntryCollection"
         }
       },
-      "description": "Returns a collection",
       "arguments": [],
-      "authorization": true,
-      "security": [],
-      "deprecated": false,
       "throws": [],
+      "description": "Returns a collection",
+      "stability": 1,
+      "security": [],
+      "authorization": true,
       "tags": [
         "foo"
       ]
@@ -31,7 +31,6 @@
           "$ref": "EntryMessage"
         }
       },
-      "description": "",
       "arguments": {
         "payload": {
           "in": "body",
@@ -40,10 +39,11 @@
           }
         }
       },
-      "authorization": true,
-      "security": [],
-      "deprecated": false,
       "throws": [],
+      "description": "",
+      "stability": 1,
+      "security": [],
+      "authorization": true,
       "tags": [
         "foo"
       ]
@@ -57,7 +57,6 @@
           "$ref": "EntryCollection"
         }
       },
-      "description": "Returns a collection",
       "arguments": {
         "foo": {
           "in": "path",
@@ -66,10 +65,11 @@
           }
         }
       },
-      "authorization": true,
-      "security": [],
-      "deprecated": false,
       "throws": [],
+      "description": "Returns a collection",
+      "stability": 1,
+      "security": [],
+      "authorization": true,
       "tags": [
         "bar"
       ]
@@ -83,7 +83,6 @@
           "$ref": "EntryMessage"
         }
       },
-      "description": "",
       "arguments": {
         "payload": {
           "in": "body",
@@ -92,10 +91,11 @@
           }
         }
       },
-      "authorization": true,
-      "security": [],
-      "deprecated": false,
       "throws": [],
+      "description": "",
+      "stability": 1,
+      "security": [],
+      "authorization": true,
       "tags": [
         "bar"
       ]
@@ -109,7 +109,6 @@
           "$ref": "EntryCollection"
         }
       },
-      "description": "Returns a collection",
       "arguments": {
         "year": {
           "in": "path",
@@ -118,10 +117,11 @@
           }
         }
       },
-      "authorization": true,
-      "security": [],
-      "deprecated": false,
       "throws": [],
+      "description": "Returns a collection",
+      "stability": 1,
+      "security": [],
+      "authorization": true,
       "tags": [
         "baz"
       ]
@@ -135,7 +135,6 @@
           "$ref": "EntryMessage"
         }
       },
-      "description": "",
       "arguments": {
         "payload": {
           "in": "body",
@@ -144,10 +143,11 @@
           }
         }
       },
-      "authorization": true,
-      "security": [],
-      "deprecated": false,
       "throws": [],
+      "description": "",
+      "stability": 1,
+      "security": [],
+      "authorization": true,
       "tags": [
         "baz"
       ]

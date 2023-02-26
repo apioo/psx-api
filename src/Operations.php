@@ -21,6 +21,7 @@
 namespace PSX\Api;
 
 use PSX\Api\Exception\OperationNotFoundException;
+use PSX\Api\Scanner\FilterInterface;
 
 /**
  * Operations
@@ -73,6 +74,13 @@ class Operations implements OperationsInterface, \JsonSerializable
     public function merge(OperationsInterface $operations): void
     {
         $this->container = array_merge($this->container, $operations->getAll());
+    }
+
+    public function filter(FilterInterface $filter): void
+    {
+        $this->container = array_filter($this->container, static function(OperationInterface $operation) use ($filter): bool {
+            return $filter->match($operation);
+        });
     }
 
     public function withAdded(OperationsInterface $operations): Operations

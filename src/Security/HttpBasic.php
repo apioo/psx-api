@@ -34,7 +34,7 @@ class HttpBasic implements SecurityInterface
     public function toArray(): array
     {
         return [
-            'type' => 'httpBasic',
+            'type' => self::TYPE_HTTP_BASIC,
         ];
     }
 

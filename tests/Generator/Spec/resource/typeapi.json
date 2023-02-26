@@ -12,7 +12,6 @@
           "$ref": "EntryCollection"
         }
       },
-      "description": "Returns a collection",
       "arguments": {
         "name": {
           "in": "path",
@@ -70,10 +69,11 @@
           }
         }
       },
-      "authorization": true,
-      "security": [],
-      "deprecated": false,
       "throws": [],
+      "description": "Returns a collection",
+      "stability": 1,
+      "security": [],
+      "authorization": true,
       "tags": []
     },
     "create": {
@@ -85,7 +85,6 @@
           "$ref": "EntryMessage"
         }
       },
-      "description": "",
       "arguments": {
         "name": {
           "in": "path",
@@ -106,9 +105,6 @@
           }
         }
       },
-      "authorization": true,
-      "security": [],
-      "deprecated": false,
       "throws": [
         {
           "code": 400,
@@ -123,6 +119,10 @@
           }
         }
       ],
+      "description": "",
+      "stability": 1,
+      "security": [],
+      "authorization": true,
       "tags": []
     },
     "update": {
@@ -134,7 +134,6 @@
           "$ref": "EntryMessage"
         }
       },
-      "description": "",
       "arguments": {
         "name": {
           "in": "path",
@@ -155,10 +154,11 @@
           }
         }
       },
-      "authorization": true,
-      "security": [],
-      "deprecated": false,
       "throws": [],
+      "description": "",
+      "stability": 1,
+      "security": [],
+      "authorization": true,
       "tags": []
     },
     "delete": {
@@ -170,7 +170,6 @@
           "$ref": "EntryMessage"
         }
       },
-      "description": "",
       "arguments": {
         "name": {
           "in": "path",
@@ -191,10 +190,11 @@
           }
         }
       },
-      "authorization": true,
-      "security": [],
-      "deprecated": false,
       "throws": [],
+      "description": "",
+      "stability": 1,
+      "security": [],
+      "authorization": true,
       "tags": []
     },
     "patch": {
@@ -206,7 +206,6 @@
           "$ref": "EntryMessage"
         }
       },
-      "description": "",
       "arguments": {
         "name": {
           "in": "path",
@@ -227,10 +226,11 @@
           }
         }
       },
-      "authorization": true,
-      "security": [],
-      "deprecated": false,
       "throws": [],
+      "description": "",
+      "stability": 1,
+      "security": [],
+      "authorization": true,
       "tags": []
     }
   },

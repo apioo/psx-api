@@ -400,7 +400,7 @@ class OpenAPI extends ApiAbstract
             $result->setTags($tags);
         }
 
-        if ($operation->isDeprecated()) {
+        if ($operation->getStability() === OperationInterface::STABILITY_DEPRECATED) {
             $result->setDeprecated(true);
         }
 

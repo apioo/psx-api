@@ -41,7 +41,7 @@ class Operation implements OperationInterface, \JsonSerializable
     private Arguments $arguments;
     private bool $authorization = true;
     private array $security = [];
-    private bool $deprecated = false;
+    private int $stability = self::STABILITY_EXPERIMENTAL;
     private array $throws = [];
     private array $tags = [];
 
@@ -126,14 +126,14 @@ class Operation implements OperationInterface, \JsonSerializable
         $this->security = $security;
     }
 
-    public function isDeprecated(): bool
+    public function getStability(): int
     {
-        return $this->deprecated;
+        return $this->stability;
     }
 
-    public function setDeprecated(bool $deprecated): void
+    public function setStability(int $stability): void
     {
-        $this->deprecated = $deprecated;
+        $this->stability = $stability;
     }
 
     /**
@@ -173,12 +173,12 @@ class Operation implements OperationInterface, \JsonSerializable
             'path' => $this->path,
             'method' => $this->method,
             'return' => $this->return,
-            'description' => $this->description,
             'arguments' => $this->arguments,
-            'authorization' => $this->authorization,
-            'security' => $this->security,
-            'deprecated' => $this->deprecated,
             'throws' => $this->throws,
+            'description' => $this->description,
+            'stability' => $this->stability,
+            'security' => $this->security,
+            'authorization' => $this->authorization,
             'tags' => $this->tags,
         ], static function ($value) {
             return $value !== null;

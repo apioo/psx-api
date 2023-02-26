@@ -71,6 +71,12 @@ class SpecificationBuilder implements SpecificationBuilderInterface
         return $this;
     }
 
+    public function merge(SpecificationInterface $specification): self
+    {
+        $this->specification->merge($specification);
+        return $this;
+    }
+
     public function getSpecification(): SpecificationInterface
     {
         return $this->specification;

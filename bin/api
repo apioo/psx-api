@@ -39,12 +39,12 @@ if (!empty($autoloadFile)) {
     $schemaManager = new \PSX\Schema\SchemaManager();
     $apiManager    = new \PSX\Api\ApiManager($schemaManager);
 
-    $listing = new \PSX\Api\Listing\MemoryListing();
+    $scanner = new \PSX\Api\Scanner\Memory();
     $factory = new \PSX\Api\GeneratorFactory('urn:schema.phpsx.org#', 'http://localhost', '');
 
     $application = new Symfony\Component\Console\Application('PSX API');
     $application->add(new \PSX\Schema\Console\ParseCommand($schemaManager));
-    $application->add(new \PSX\Api\Console\GenerateCommand($listing, $factory));
+    $application->add(new \PSX\Api\Console\GenerateCommand($scanner, $factory));
     $application->add(new \PSX\Api\Console\ParseCommand($apiManager, $factory));
     $application->run();
 } else {
