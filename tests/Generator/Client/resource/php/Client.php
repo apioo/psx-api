@@ -16,17 +16,17 @@ class Client extends ClientAbstract
     /**
      * Returns a collection
      *
-     * @param  $name
-     * @param  $type
-     * @param  $startIndex
-     * @param  $float
-     * @param  $boolean
-     * @param  $date
-     * @param  $datetime
-     * @return 
+     * @param string $name
+     * @param string $type
+     * @param int|null $startIndex
+     * @param float|null $float
+     * @param bool|null $boolean
+     * @param \PSX\DateTime\Date|null $date
+     * @param \DateTime|null $datetime
+     * @return EntryCollection
      * @throws ClientException
      */
-    public function get( $name,  $type,  $startIndex,  $float,  $boolean,  $date,  $datetime): 
+    public function get(string $name, string $type, ?int $startIndex = null, ?float $float = null, ?bool $boolean = null, ?\PSX\DateTime\Date $date = null, ?\DateTime $datetime = null): EntryCollection
     {
         $url = $this->parser->url('/foo/:name/:type', [
             'name' => $name,
@@ -47,7 +47,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('GET', $url, $options);
             $data = (string) $response->getBody();
 
-            return $this->parser->parse($data, ::class);
+            return $this->parser->parse($data, EntryCollection::class);
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
@@ -61,15 +61,15 @@ class Client extends ClientAbstract
     }
 
     /**
-     * @param  $name
-     * @param  $type
-     * @param  $payload
-     * @return 
-     * @throws Exception
-     * @throws Exception
+     * @param string $name
+     * @param string $type
+     * @param EntryCreate $payload
+     * @return EntryMessage
+     * @throws EntryMessageException
+     * @throws EntryMessageException
      * @throws ClientException
      */
-    public function create( $name,  $type,  $payload): 
+    public function create(string $name, string $type, EntryCreate $payload): EntryMessage
     {
         $url = $this->parser->url('/foo/:name/:type', [
             'name' => $name,
@@ -86,15 +86,15 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('POST', $url, $options);
             $data = (string) $response->getBody();
 
-            return $this->parser->parse($data, ::class);
+            return $this->parser->parse($data, EntryMessage::class);
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
             switch ($e->getResponse()->getStatusCode()) {
                 case 400:
-                    throw new Exception($this->parser->parse($data, ::class));
+                    throw new EntryMessageException($this->parser->parse($data, EntryMessage::class));
                 case 500:
-                    throw new Exception($this->parser->parse($data, ::class));
+                    throw new EntryMessageException($this->parser->parse($data, EntryMessage::class));
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
@@ -104,13 +104,13 @@ class Client extends ClientAbstract
     }
 
     /**
-     * @param  $name
-     * @param  $type
-     * @param  $payload
-     * @return 
+     * @param string $name
+     * @param string $type
+     * @param EntryUpdate $payload
+     * @return EntryMessage
      * @throws ClientException
      */
-    public function update( $name,  $type,  $payload): 
+    public function update(string $name, string $type, EntryUpdate $payload): EntryMessage
     {
         $url = $this->parser->url('/foo/:name/:type', [
             'name' => $name,
@@ -127,7 +127,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('PUT', $url, $options);
             $data = (string) $response->getBody();
 
-            return $this->parser->parse($data, ::class);
+            return $this->parser->parse($data, EntryMessage::class);
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
@@ -141,13 +141,13 @@ class Client extends ClientAbstract
     }
 
     /**
-     * @param  $name
-     * @param  $type
-     * @param  $payload
-     * @return 
+     * @param string $name
+     * @param string $type
+     * @param EntryDelete $payload
+     * @return EntryMessage
      * @throws ClientException
      */
-    public function delete( $name,  $type,  $payload): 
+    public function delete(string $name, string $type, EntryDelete $payload): EntryMessage
     {
         $url = $this->parser->url('/foo/:name/:type', [
             'name' => $name,
@@ -164,7 +164,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('DELETE', $url, $options);
             $data = (string) $response->getBody();
 
-            return $this->parser->parse($data, ::class);
+            return $this->parser->parse($data, EntryMessage::class);
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
@@ -178,13 +178,13 @@ class Client extends ClientAbstract
     }
 
     /**
-     * @param  $name
-     * @param  $type
-     * @param  $payload
-     * @return 
+     * @param string $name
+     * @param string $type
+     * @param EntryPatch $payload
+     * @return EntryMessage
      * @throws ClientException
      */
-    public function patch( $name,  $type,  $payload): 
+    public function patch(string $name, string $type, EntryPatch $payload): EntryMessage
     {
         $url = $this->parser->url('/foo/:name/:type', [
             'name' => $name,
@@ -201,7 +201,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('PATCH', $url, $options);
             $data = (string) $response->getBody();
 
-            return $this->parser->parse($data, ::class);
+            return $this->parser->parse($data, EntryMessage::class);
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
@@ -216,4 +216,8 @@ class Client extends ClientAbstract
 
 
 
+    public static function build(string $baseUrl, string $token): self
+    {
+        return new self($baseUrl, new Credentials\HttpBearer($token));
+    }
 }

@@ -26,7 +26,7 @@ public class Client extends ClientAbstract {
     /**
      * Returns a collection
      */
-    public  get( name,  type,  startIndex,  _float,  _boolean,  date,  datetime) throws ClientException {
+    public EntryCollection get(String name, String type, int startIndex, float _float, boolean _boolean, LocalDate date, LocalDateTime datetime) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -48,7 +48,7 @@ public class Client extends ClientAbstract {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), .class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryCollection.class);
             }
 
             switch (statusCode) {
@@ -60,7 +60,7 @@ public class Client extends ClientAbstract {
         }
     }
 
-    public  create( name,  type,  payload) throws Exception, Exception, ClientException {
+    public EntryMessage create(String name, String type, EntryCreate payload) throws EntryMessageException, EntryMessageException, ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -79,14 +79,14 @@ public class Client extends ClientAbstract {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), .class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
             }
 
             switch (statusCode) {
                 case 400:
-                    throw new Exception(this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), .class));
+                    throw new EntryMessageException(this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class));
                 case 500:
-                    throw new Exception(this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), .class));
+                    throw new EntryMessageException(this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class));
                 default:
                     throw new UnkownStatusCodeException("The server returned an unknown status code");
             }
@@ -95,7 +95,7 @@ public class Client extends ClientAbstract {
         }
     }
 
-    public  update( name,  type,  payload) throws ClientException {
+    public EntryMessage update(String name, String type, EntryUpdate payload) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -114,7 +114,7 @@ public class Client extends ClientAbstract {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), .class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
             }
 
             switch (statusCode) {
@@ -126,7 +126,7 @@ public class Client extends ClientAbstract {
         }
     }
 
-    public  delete( name,  type,  payload) throws ClientException {
+    public EntryMessage delete(String name, String type, EntryDelete payload) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -145,7 +145,7 @@ public class Client extends ClientAbstract {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), .class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
             }
 
             switch (statusCode) {
@@ -157,7 +157,7 @@ public class Client extends ClientAbstract {
         }
     }
 
-    public  patch( name,  type,  payload) throws ClientException {
+    public EntryMessage patch(String name, String type, EntryPatch payload) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -176,7 +176,7 @@ public class Client extends ClientAbstract {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), .class);
+                return this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class);
             }
 
             switch (statusCode) {

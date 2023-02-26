@@ -15,10 +15,10 @@ export default class BazTag extends TagAbstract {
     /**
      * Returns a collection
      *
-     * @returns {Promise<>}
+     * @returns {Promise<EntryCollection>}
      * @throws {ClientException}
      */
-    public async get(year: ): Promise<> {
+    public async get(year: string): Promise<EntryCollection> {
         const url = this.parser.url('/bar/$year<[0-9]+>', {
             'year': year,
         });
@@ -31,7 +31,7 @@ export default class BazTag extends TagAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<>(params);
+            const response = await this.httpClient.request<EntryCollection>(params);
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
@@ -46,10 +46,10 @@ export default class BazTag extends TagAbstract {
     }
 
     /**
-     * @returns {Promise<>}
+     * @returns {Promise<EntryMessage>}
      * @throws {ClientException}
      */
-    public async create(payload: ): Promise<> {
+    public async create(payload: EntryCreate): Promise<EntryMessage> {
         const url = this.parser.url('/bar/$year<[0-9]+>', {
         });
 
@@ -62,7 +62,7 @@ export default class BazTag extends TagAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<>(params);
+            const response = await this.httpClient.request<EntryMessage>(params);
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {

@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Generator\Client;
 
+use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Go;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 
@@ -67,14 +68,9 @@ class GoTest extends GeneratorTestCase
 
     public function testGenerateComplex()
     {
+        $this->expectException(InvalidTypeException::class);
+
         $generator = new Go('http://api.foo.com');
-
-        $result = $generator->generate($this->getSpecificationComplex());
-        $target = __DIR__ . '/resource/go_complex';
-
-        $this->writeChunksToFolder($result, $target);
-
-        $this->assertFileExists($target . '/entry.go');
-        $this->assertFileExists($target . '/entry_message.go');
+        $generator->generate($this->getSpecificationComplex());
     }
 }

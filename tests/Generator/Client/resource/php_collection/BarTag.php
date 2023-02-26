@@ -16,11 +16,11 @@ class BarTag extends TagAbstract
     /**
      * Returns a collection
      *
-     * @param  $foo
-     * @return 
+     * @param string $foo
+     * @return EntryCollection
      * @throws ClientException
      */
-    public function get( $foo): 
+    public function get(string $foo): EntryCollection
     {
         $url = $this->parser->url('/bar/:foo', [
             'foo' => $foo,
@@ -35,7 +35,7 @@ class BarTag extends TagAbstract
             $response = $this->httpClient->request('GET', $url, $options);
             $data = (string) $response->getBody();
 
-            return $this->parser->parse($data, ::class);
+            return $this->parser->parse($data, EntryCollection::class);
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
@@ -49,11 +49,11 @@ class BarTag extends TagAbstract
     }
 
     /**
-     * @param  $payload
-     * @return 
+     * @param EntryCreate $payload
+     * @return EntryMessage
      * @throws ClientException
      */
-    public function create( $payload): 
+    public function create(EntryCreate $payload): EntryMessage
     {
         $url = $this->parser->url('/bar/:foo', [
         ]);
@@ -68,7 +68,7 @@ class BarTag extends TagAbstract
             $response = $this->httpClient->request('POST', $url, $options);
             $data = (string) $response->getBody();
 
-            return $this->parser->parse($data, ::class);
+            return $this->parser->parse($data, EntryMessage::class);
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 

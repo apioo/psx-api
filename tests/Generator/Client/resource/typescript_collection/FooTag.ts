@@ -15,10 +15,10 @@ export default class FooTag extends TagAbstract {
     /**
      * Returns a collection
      *
-     * @returns {Promise<>}
+     * @returns {Promise<EntryCollection>}
      * @throws {ClientException}
      */
-    public async get(): Promise<> {
+    public async get(): Promise<EntryCollection> {
         const url = this.parser.url('/foo', {
         });
 
@@ -30,7 +30,7 @@ export default class FooTag extends TagAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<>(params);
+            const response = await this.httpClient.request<EntryCollection>(params);
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
@@ -45,10 +45,10 @@ export default class FooTag extends TagAbstract {
     }
 
     /**
-     * @returns {Promise<>}
+     * @returns {Promise<EntryMessage>}
      * @throws {ClientException}
      */
-    public async create(payload: ): Promise<> {
+    public async create(payload: EntryCreate): Promise<EntryMessage> {
         const url = this.parser.url('/foo', {
         });
 
@@ -61,7 +61,7 @@ export default class FooTag extends TagAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<>(params);
+            const response = await this.httpClient.request<EntryMessage>(params);
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
