@@ -216,8 +216,8 @@ class Client extends ClientAbstract
 
 
 
-    public static function build(string $baseUrl, string $token): self
+    public static function build(string $token): self
     {
-        return new self($baseUrl, new Credentials\HttpBearer($token));
+        return new self('http://api.foo.com', new Credentials\HttpBearer($token));
     }
 }

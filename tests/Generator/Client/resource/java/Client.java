@@ -190,8 +190,8 @@ public class Client extends ClientAbstract {
 
 
 
-    public static Client build(String baseUrl, String token): Client
+    public static Client build(String token): Client
     {
-        return new Client(baseUrl, new HttpBearer(token));
+        return new Client('http://api.foo.com', new HttpBearer(token));
     }
 }

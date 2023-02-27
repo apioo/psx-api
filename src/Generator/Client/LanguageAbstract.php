@@ -135,7 +135,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         }
 
         $code = $this->engine->render($this->getClientTemplate(), [
-            'baseUrl' => $this->baseUrl,
+            'baseUrl' => $client->baseUrl ?? $this->baseUrl,
             'namespace' => $this->namespace,
             'className' => $client->className,
             'security' => $client->security,

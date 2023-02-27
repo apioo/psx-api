@@ -23,24 +23,40 @@ class Client extends ClientAbstract
 {{ operations|raw }}
 
 {% if security.type == 'httpBasic' %}
-    public static function build(string $baseUrl, string $userName, string $password): self
+    public static function build({% if not baseUrl %}string $baseUrl, {% endif %}string $userName, string $password): self
     {
+{% if not baseUrl %}
         return new self($baseUrl, new Credentials\HttpBasic($userName, $password));
-    }
+{% else %}
+        return new self('{{ baseUrl }}', new Credentials\HttpBasic($userName, $password));
+{% endif %}
+    }}
 {% elseif security.type == 'httpBearer' %}
-    public static function build(string $baseUrl, string $token): self
+    public static function build({% if not baseUrl %}string $baseUrl, {% endif %}string $token): self
     {
+{% if not baseUrl %}
         return new self($baseUrl, new Credentials\HttpBearer($token));
+{% else %}
+        return new self('{{ baseUrl }}', new Credentials\HttpBearer($token));
+{% endif %}
     }
 {% elseif security.type == 'apiKey' %}
-    public static function build(string $baseUrl, string $token): self
+    public static function build({% if not baseUrl %}string $baseUrl, {% endif %}string $token): self
     {
+{% if not baseUrl %}
         return new self($baseUrl, new Credentials\ApiKey($token, '{{ security.name }}', '{{ security.in }}'));
+{% else %}
+        return new self('{{ baseUrl }}', new Credentials\ApiKey($token, '{{ security.name }}', '{{ security.in }}'));
+{% endif %}
     }
 {% elseif security.type == 'oauth2' %}
-    public static function build(string $baseUrl, string $clientId, string $clientSecret, ?TokenStoreInterface $tokenStore = null, ?array $scopes = null): self
+    public static function build({% if not baseUrl %}string $baseUrl, {% endif %}string $clientId, string $clientSecret, ?TokenStoreInterface $tokenStore = null, ?array $scopes = null): self
     {
+{% if not baseUrl %}
         return new self($baseUrl, new Credentials\OAuth2($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', $tokenStore, $scopes));
+{% else %}
+        return new self('{{ baseUrl }}', new Credentials\OAuth2($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', $tokenStore, $scopes));
+{% endif %}
     }
 {% endif %}
 }

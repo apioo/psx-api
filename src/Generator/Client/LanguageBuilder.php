@@ -119,6 +119,7 @@ class LanguageBuilder
             $tags,
             $exceptions,
             $security,
+            $specification->getBaseUrl(),
         );
     }
 

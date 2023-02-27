@@ -88,7 +88,12 @@ class TypeAPI implements ParserInterface
                 $security = $this->parseSecurity($data->security);
             }
 
-            return new Specification($operations, $definitions, $security);
+            $baseUrl = null;
+            if (isset($data->baseUrl) && is_string($data->baseUrl)) {
+                $baseUrl = $data->baseUrl;
+            }
+
+            return new Specification($operations, $definitions, $security, $baseUrl);
         } catch (\Throwable $e) {
             throw new ParserException('An error occurred while parsing: ' . $e->getMessage(), 0, $e);
         }

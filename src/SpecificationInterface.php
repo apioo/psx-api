@@ -47,6 +47,11 @@ interface SpecificationInterface
     public function getSecurity(): ?SecurityInterface;
 
     /**
+     * Returns the configured base url
+     */
+    public function getBaseUrl(): ?string;
+
+    /**
      * Merges all operations and definitions into the specification
      */
     public function merge(SpecificationInterface $specification): void;

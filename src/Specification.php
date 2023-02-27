@@ -35,12 +35,14 @@ class Specification implements SpecificationInterface, \JsonSerializable
     private OperationsInterface $operations;
     private DefinitionsInterface $definitions;
     private ?SecurityInterface $security;
+    private ?string $baseUrl;
 
-    public function __construct(?OperationsInterface $operations = null, ?DefinitionsInterface $definitions = null, ?SecurityInterface $security = null)
+    public function __construct(?OperationsInterface $operations = null, ?DefinitionsInterface $definitions = null, ?SecurityInterface $security = null, ?string $baseUrl = null)
     {
         $this->operations = $operations ?? new Operations();
         $this->definitions = $definitions ?? new Definitions();
         $this->security = $security;
+        $this->baseUrl = $baseUrl;
     }
 
     public function getOperations(): OperationsInterface
@@ -63,6 +65,16 @@ class Specification implements SpecificationInterface, \JsonSerializable
         $this->security = $security;
     }
 
+    public function getBaseUrl(): ?string
+    {
+        return $this->baseUrl;
+    }
+
+    public function setBaseUrl(?string $baseUrl): void
+    {
+        $this->baseUrl = $baseUrl;
+    }
+
     public function merge(SpecificationInterface $specification): void
     {
         $this->operations->merge($specification->getOperations());
@@ -72,6 +84,7 @@ class Specification implements SpecificationInterface, \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
+            'baseUrl' => $this->baseUrl,
             'security' => $this->security,
             'operations' => $this->operations,
             'definitions' => $this->definitions,

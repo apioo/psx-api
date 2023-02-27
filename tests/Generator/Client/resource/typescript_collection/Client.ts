@@ -36,8 +36,8 @@ export default class Client extends ClientAbstract {
 
 
 
-    public static build(baseUrl: string, token: string): Client
+    public static build(token: string): Client
     {
-        return new Client(baseUrl, new HttpBearer(token));
+        return new Client('http://api.foo.com', new HttpBearer(token));
     }
 }
