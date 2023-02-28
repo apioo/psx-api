@@ -10,35 +10,34 @@ type {{ className }} struct {
     internal *sdkgen.Client
 }
 
-{% for class, resource in resources %}
-// Endpoint: {{ resource.path|raw }} - {{ resource.description|raw }}
-func (client {{ className }}) {{ resource.methodName }}({% for name, arg in resource.properties %}{{ name }} {{ arg.type }}{% if not loop.last %}, {% endif %}{% endfor %}) *{{ class }} {
-    return New{{ class }}({% for name, arg in resource.properties %}{{ name }}, {% endfor %}client.internal.GetResource())
+{% for tag in tags %}
+func (client *{{ className }}) {{ tag.methodName }}() *{{ tag.className }} {
+    return New{{ class }}(client.internal.HttpClient, client.internal.Parser)
 }
 
 {% endfor %}
 
-func New{{ className }}(baseUrl string, {% if security.type == 'httpBasic' %}userName string, password string{% elseif security.type in ['httpBearer', 'apiKey'] %}token string{% elseif security.type in ['clientCredentials', 'authorizationCode'] %}clientId string, clientSecret string{% else %}credentials sdkgen.CredentialsInterface{% endif %}, tokenStore sdkgen.TokenStoreInterface, scopes []string) *{{ className }} {
+{{ operations|raw }}
+
+
 {% if security.type == 'httpBasic' %}
+func Build({% if not baseUrl %}baseUrl string, {% endif %}userName string, password string) *{{ className }} {
     var credentials := sdkgen.HttpBasic{UserName: userName, Password: password}
 {% elseif security.type == 'httpBearer' %}
+func Build({% if not baseUrl %}baseUrl string, {% endif %}token string) *{{ className }} {
     var credentials := sdkgen.HttpBearer{Token: token}
 {% elseif security.type == 'apiKey' %}
+func Build({% if not baseUrl %}baseUrl string, {% endif %}token string) *{{ className }} {
     var credentials := sdkgen.ApiKey{Token: token, Name: "{{ security.name }}", In: "{{ security.in }}"}
-{% elseif security.type == 'clientCredentials' %}
+{% elseif security.type == 'oauth2' %}
+func Build({% if not baseUrl %}baseUrl string, {% endif %}clientId string, clientSecret string, tokenStore sdkgen.TokenStoreInterface, scopes []string) *{{ className }} {
     var credentials := sdkgen.ClientCredentials{
         ClientId: clientId,
         ClientSecret, clientSecret,
         TokenUrl: "{{ security.tokenUrl }}",
-        RefreshUrl: "{{ security.refreshUrl }}"
-    }
-{% elseif security.type == 'authorizationCode' %}
-    var credentials := sdkgen.AuthorizationCode{
-        ClientId: clientId,
-        ClientSecret, clientSecret,
-        TokenUrl: "{{ security.tokenUrl }}",
         AuthorizationUrl: "{{ security.authorizationUrl }}",
-        RefreshUrl: "{{ security.refreshUrl }}"
+        TokenStore: tokenStore,
+        Scopes: scopes,
     }
 {% endif %}
 

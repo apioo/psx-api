@@ -21,7 +21,7 @@
             this.parser.query(builder, queryParams);
 
             Http{{ operation.method|lower|capitalize }} request = new Http{{ operation.method|lower|capitalize }}(builder.build());
-{% if operation.bodyName is not null %}
+{% if operation.bodyName %}
             request.addHeader("Content-Type", "application/json");
             request.setEntity(new StringEntity(this.objectMapper.writeValueAsString({{ operation.bodyName }}), ContentType.APPLICATION_JSON));
 {% endif %}

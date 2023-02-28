@@ -1,90 +1,85 @@
-{% if namespace %}
-package {{ namespace|lower }}
-{% endif %}
 
-import (
-    "bytes"
-    "encoding/json"
-    "errors"
-    "github.com/apioo/sdkgen-go"
-    "io"
-    "net/http"
-    "net/url"
-)
+{% for operation in operations %}
+// {{ operation.methodName }} {{ operation.description }}
+func (client *{{ className }}) {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ name }} {{ arg.schema.type }}{% if not loop.last %}, {% endif %}{% endfor %}) ({% if operation.return %}{{ method.return.schema.type }}, {% endif %}error) {
+    pathParams := make(map[string]interface{})
+{% for name, realName in operation.pathNames %}
+    pathParams["{{ realName }}"] = {{ name }};
+{% endfor %}
 
-type {{ className }} struct {
-    url string
-    client *http.Client
-}
+    queryParams := url.Values{}
+{% for name, realName in operation.queryNames %}
+    queryParams.Add("{{ realName }}", {{ name }});
+{% endfor %}
 
-{% for methodName, method in methods %}
-// {{ methodName }} {{ method.description }}
-func (resource {{ className }}) {{ methodName }}({% for name, arg in method.args %}{{ name }} {{ arg.type }}{% if not loop.last %}, {% endif %}{% endfor %}) ({% if method.return.type %}{{ method.return.type }}, {% endif %}error) {
-    url, err := url.Parse(resource.url)
+    url, err := url.Parse(client.Parser.Url('{{ operation.path }}', pathParams))
     if err != nil {
-        return {% if method.return.type %}{{ method.return.type }}{}, {% endif %}errors.New("could not parse url")
+        return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not parse url")
     }
 
-{% if method.args.query %}
-    rawJson, err := json.Marshal(query)
-    if err != nil {
-        return {% if method.return.type %}{{ method.return.type }}{}, {% endif %}errors.New("could not marshall query")
-    }
+    url.RawQuery = values.Encode()
 
-    parameters := url.Query()
-    err = json.Unmarshal(rawJson, &parameters)
-    url.RawQuery = parameters.Encode()
-{% endif %}
-
-{% if method.args.data %}
-    raw, err := json.Marshal(data)
+{% if operation.bodyName %}
+    raw, err := json.Marshal({{ operation.bodyName }})
     if err != nil {
-        return {% if method.return.type %}{{ method.return.type }}{}, {% endif %}errors.New("could not marshal provided JSON data")
+        return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not marshal provided JSON data")
     }
 
     var reqBody = bytes.NewReader(raw)
 {% endif %}
 
-    req, err := http.NewRequest("{{ method.httpMethod }}", url.String(), {% if method.args.data %}reqBody{% else %}nil{% endif %})
+    req, err := http.NewRequest("{{ method.httpMethod }}", url.String(), {% if operation.bodyName %}reqBody{% else %}nil{% endif %})
     if err != nil {
-        return {% if method.return.type %}{{ method.return.type }}{}, {% endif %}errors.New("could not create request")
+        return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not create request")
     }
 
-{% if method.httpMethod != "GET" and method.httpMethod != "DELETE" %}
+{% if operation.bodyName %}
     req.Header.Set("Content-Type", "application/json")
 {% endif %}
 
     resp, err := resource.client.Do(req)
     if err != nil {
-        return {% if method.return.type %}{{ method.return.type }}{}, {% endif %}errors.New("could not send request")
+        return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not send request")
     }
 
     defer resp.Body.Close()
 
-{% if method.return.type %}
-    respBody, err := io.ReadAll(resp.Body)
-    if err != nil {
-        return {% if method.return.type %}{{ method.return.type }}{}, {% endif %}errors.New("could not read response body")
-    }
+    if (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+{% if operation.return %}
+        respBody, err := io.ReadAll(resp.Body)
+        if err != nil {
+            return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not read response body")
+        }
 
-    var response {{ method.return.type }}
+        var response {{ operation.return.schema.type }}
+        err = json.Unmarshal(respBody, &response)
+        if err != nil {
+            return {% if operation.return.schema.type %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not unmarshal JSON response")
+        }
 
-    err = json.Unmarshal(respBody, &response)
-    if err != nil {
-        return {% if method.return.type %}{{ method.return.type }}{}, {% endif %}errors.New("could not unmarshal JSON response")
-    }
-
-    return response, nil
+        return response, nil
 {% else %}
-    return nil
+        return nil
 {% endif %}
+    }
+
+    switch resp.StatusCode {
+{% for code, return in operation.throws %}
+        case {{ code }}:
+            var response {{ operation.return.schema.type }}
+            err = json.Unmarshal(respBody, &response)
+            if err != nil {
+                return {% if operation.return.schema.type %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not unmarshal JSON response")
+            }
+
+            return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}, &{{ return.schema.type }}Exception{
+                Response: response,
+                Err:      errors.New("unavailable"),
+            }
+{% endfor %}
+        default:
+            return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}, errors.New("the server returned an unknown status code")
+    }
 }
 
 {% endfor %}
-
-func New{{ className }}({% for name, arg in properties %}{{ name }} {{ arg.type }}, {% endfor %}resource *sdkgen.Resource) *{{ className }} {
-    return &{{ className }} {
-        url: resource.BaseUrl + "{% for part in urlParts %}/{% if part.type == 'variable' %}"+{{ part.value }}+"{% else %}{{ part.value }}{% endif %}{{ url|raw }}{% endfor %}",
-        client: resource.HttpClient,
-    }
-}

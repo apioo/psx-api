@@ -35,6 +35,7 @@ class Client
         public array $tags,
         /** @var array<Exception> */ public array $exceptions,
         public ?array $security,
+        public ?string $baseUrl,
     )
     {
     }

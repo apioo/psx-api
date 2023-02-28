@@ -26,7 +26,7 @@
                 '{{ realName }}' => ${{ name }},
 {% endfor %}
             ]),
-{% if operation.bodyName is not null %}
+{% if operation.bodyName %}
             'json' => ${{ operation.bodyName }}
 {% endif %}
         ];
