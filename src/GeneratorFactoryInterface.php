@@ -20,7 +20,7 @@
 
 namespace PSX\Api;
 
-use PSX\Api\Listing\FilterInterface;
+use PSX\Api\Scanner\FilterInterface;
 
 /**
  * GeneratorFactoryInterface

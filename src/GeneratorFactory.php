@@ -20,7 +20,7 @@
 
 namespace PSX\Api;
 
-use PSX\Api\Listing\FilterInterface;
+use PSX\Api\Scanner\FilterInterface;
 
 /**
  * GeneratorFactory
@@ -92,58 +92,34 @@ class GeneratorFactory implements GeneratorFactoryInterface
 
     public function getFileExtension(string $format, ?string $config = null): string
     {
-        switch ($format) {
-            case GeneratorFactoryInterface::CLIENT_GO:
-                return 'go';
-            case GeneratorFactoryInterface::CLIENT_JAVA:
-                return 'java';
-            case GeneratorFactoryInterface::CLIENT_PHP:
-                return 'php';
-            case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
-                return 'ts';
-
-            case GeneratorFactoryInterface::MARKUP_CLIENT:
-                return 'md';
-            case GeneratorFactoryInterface::MARKUP_HTML:
-                return 'html';
-            case GeneratorFactoryInterface::MARKUP_MARKDOWN:
-                return 'md';
-
-            case GeneratorFactoryInterface::SPEC_TYPEAPI:
-            case GeneratorFactoryInterface::SPEC_OPENAPI:
-                return 'json';
-
-            default:
-                return 'txt';
-        }
+        return match ($format) {
+            GeneratorFactoryInterface::CLIENT_GO => 'go',
+            GeneratorFactoryInterface::CLIENT_JAVA => 'java',
+            GeneratorFactoryInterface::CLIENT_PHP => 'php',
+            GeneratorFactoryInterface::CLIENT_TYPESCRIPT => 'ts',
+            GeneratorFactoryInterface::MARKUP_CLIENT => 'md',
+            GeneratorFactoryInterface::MARKUP_HTML => 'html',
+            GeneratorFactoryInterface::MARKUP_MARKDOWN => 'md',
+            GeneratorFactoryInterface::SPEC_TYPEAPI => 'json',
+            GeneratorFactoryInterface::SPEC_OPENAPI => 'json',
+            default => 'txt',
+        };
     }
 
     public function getMime(string $format, ?string $config = null): string
     {
-        switch ($format) {
-            case GeneratorFactoryInterface::CLIENT_GO:
-                return 'application/go';
-            case GeneratorFactoryInterface::CLIENT_JAVA:
-                return 'application/java';
-            case GeneratorFactoryInterface::CLIENT_PHP:
-                return 'application/php';
-            case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
-                return 'application/typescript';
-
-            case GeneratorFactoryInterface::MARKUP_CLIENT:
-                return 'text/markdown';
-            case GeneratorFactoryInterface::MARKUP_HTML:
-                return 'text/html';
-            case GeneratorFactoryInterface::MARKUP_MARKDOWN:
-                return 'text/markdown';
-
-            case GeneratorFactoryInterface::SPEC_TYPEAPI:
-            case GeneratorFactoryInterface::SPEC_OPENAPI:
-                return 'application/json';
-
-            default:
-                return 'text/plain';
-        }
+        return match ($format) {
+            GeneratorFactoryInterface::CLIENT_GO => 'application/go',
+            GeneratorFactoryInterface::CLIENT_JAVA => 'application/java',
+            GeneratorFactoryInterface::CLIENT_PHP => 'application/php',
+            GeneratorFactoryInterface::CLIENT_TYPESCRIPT => 'application/typescript',
+            GeneratorFactoryInterface::MARKUP_CLIENT => 'text/markdown',
+            GeneratorFactoryInterface::MARKUP_HTML => 'text/html',
+            GeneratorFactoryInterface::MARKUP_MARKDOWN => 'text/markdown',
+            GeneratorFactoryInterface::SPEC_TYPEAPI => 'application/json',
+            GeneratorFactoryInterface::SPEC_OPENAPI => 'application/json',
+            default => 'text/plain',
+        };
     }
 
     /**
