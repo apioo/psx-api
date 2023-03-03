@@ -34,6 +34,7 @@ use PSX\Api\Security\AuthorizationCode;
 use PSX\Api\Security\ClientCredentials;
 use PSX\Api\Security\HttpBasic;
 use PSX\Api\Security\HttpBearer;
+use PSX\Api\Security\OAuth2;
 use PSX\Api\SecurityInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
@@ -238,9 +239,9 @@ class OpenAPI implements ParserInterface
                 $clientCredentials = $flows->getClientCredentials();
                 $authorizationCode = $flows->getAuthorizationCode();
                 if ($clientCredentials instanceof OAuthFlow) {
-                    return new ClientCredentials($clientCredentials->getTokenUrl(), $clientCredentials->getAuthorizationUrl(), $clientCredentials->getRefreshUrl());
+                    return new OAuth2($clientCredentials->getTokenUrl(), $clientCredentials->getAuthorizationUrl());
                 } elseif ($authorizationCode instanceof OAuthFlow) {
-                    return new AuthorizationCode($authorizationCode->getTokenUrl(), $authorizationCode->getAuthorizationUrl(), $authorizationCode->getRefreshUrl());
+                    return new OAuth2($authorizationCode->getTokenUrl(), $authorizationCode->getAuthorizationUrl());
                 }
             }
         }
