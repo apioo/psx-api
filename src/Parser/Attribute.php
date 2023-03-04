@@ -454,13 +454,16 @@ class Attribute implements ParserInterface
             default => null,
         };
 
+        /*
         if ($return === null && function_exists('enum_exists') && enum_exists($type->getName())) {
             $return = $this->getTypeFromEnum(new \ReflectionEnum($type->getName()), $required);
         }
+        */
 
         return $return;
     }
 
+    /*
     private function getTypeFromEnum(\ReflectionEnum $enum, bool $required): ?array
     {
         if (!$enum->isBacked()) {
@@ -478,6 +481,7 @@ class Attribute implements ParserInterface
 
         return $this->getParamArgsFromType($enum->getBackingType(), $required, $values);
     }
+    */
 
     private function buildOperationId(string $controllerName, string $methodName): string
     {
