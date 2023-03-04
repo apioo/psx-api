@@ -31,13 +31,11 @@ use PSX\Api\Scanner\FilterInterface;
  */
 class GeneratorFactory implements GeneratorFactoryInterface
 {
-    protected string $namespace;
-    protected string $url;
-    protected string $dispatch;
+    private string $url;
+    private string $dispatch;
 
-    public function __construct(string $namespace, string $url, string $dispatch)
+    public function __construct(string $url, string $dispatch)
     {
-        $this->namespace = $namespace;
         $this->url       = $url;
         $this->dispatch  = $dispatch;
     }

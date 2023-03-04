@@ -40,12 +40,14 @@ if (!empty($autoloadFile)) {
     $apiManager    = new \PSX\Api\ApiManager($schemaManager);
 
     $scanner = new \PSX\Api\Scanner\Memory();
-    $factory = new \PSX\Api\GeneratorFactory('urn:schema.phpsx.org#', 'http://localhost', '');
+    $factory = new \PSX\Api\GeneratorFactory('http://localhost', '');
+    $filterFactory = new \PSX\Api\Scanner\FilterFactory();
 
     $application = new Symfony\Component\Console\Application('PSX API');
     $application->add(new \PSX\Schema\Console\ParseCommand($schemaManager));
     $application->add(new \PSX\Api\Console\GenerateCommand($scanner, $factory));
     $application->add(new \PSX\Api\Console\ParseCommand($apiManager, $factory));
+    $application->add(new \PSX\Api\Console\PushCommand($scanner, $filterFactory));
     $application->run();
 } else {
     die('You need to set up the project dependencies through composer');

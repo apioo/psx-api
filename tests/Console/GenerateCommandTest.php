@@ -73,7 +73,7 @@ class GenerateCommandTest extends TestCase
         $scanner = new Memory();
         $scanner->merge($apiManager->getApi(TestController::class));
 
-        $factory = new GeneratorFactory('urn:phpsx.org:2016#', 'http://foo.com', '');
+        $factory = new GeneratorFactory('http://foo.com', '');
 
         return new GenerateCommand($scanner, $factory);
     }

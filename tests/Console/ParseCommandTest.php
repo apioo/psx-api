@@ -58,7 +58,7 @@ class ParseCommandTest extends TestCase
     protected function getParseCommand()
     {
         $apiManager = new ApiManager(new SchemaManager());
-        $factory    = new GeneratorFactory('urn:phpsx.org:2016#', 'http://foo.com', '');
+        $factory    = new GeneratorFactory('http://foo.com', '');
 
         return new ParseCommand($apiManager, $factory);
     }
