@@ -8,8 +8,9 @@ possible to generate i.e. client SDKs.
 
 ## Usage
 
-The root model object is called a `Specification` which then contains `Operations` and `Definitions`. The operations
-contain all available metadata of your endpoints and the definitions represent the available schemas.
+The root model object is called a `Specification` which contains `Operations` and `Definitions`. Each operation
+maps to a specific REST API endpoint and the definitions represent the schemas to describe the JSON request or response
+payload.
 
 ### Framework
 
@@ -23,14 +24,14 @@ class MyController
 {
     #[Get]
     #[Path('/my/endpoint/:id')]
-    public function getModel(int $id, int $foo): \My\Response\Model
+    public function getModel(int $id, int $year): \My\Response\Model
     {
         // @TODO implement
     }
     
     #[Post]
     #[Path('/my/endpoint')]
-    public function insertModel(#[Body] \My\Request\Model $model): \My\Response\Model
+    public function insertModel(\My\Request\Model $model): \My\Response\Model
     {
         // @TODO implement
     }
@@ -98,5 +99,5 @@ $source = $generator->generate($resource);
 
 ### Spec
 
-- [OpenAPI 3.0](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md)
+- [OpenAPI 3.1](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md)
 - [TypeAPI](https://typeapi.org/)
