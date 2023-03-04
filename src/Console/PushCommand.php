@@ -128,6 +128,11 @@ class PushCommand extends Command
             throw new \RuntimeException('Could not import document, the server returned a wrong status code: ' . $response->getStatusCode());
         }
 
+        $data = \json_encode((string) $response->getBody());
+        if (!$data instanceof \stdClass) {
+            throw new \RuntimeException('Could not import document, the server returned invalid JSON data');
+        }
+
         $success = $data->success ?? false;
         if ($success) {
             throw new \RuntimeException('Could not import document, the server returned a wrong response: ' . \json_encode($data, \JSON_PRETTY_PRINT));
