@@ -43,4 +43,16 @@ class ClientTest extends GeneratorTestCase
 
         $this->assertEquals($expect, $actual, $actual);
     }
+
+    public function testGenerateCollection()
+    {
+        $generator = new Client();
+
+        $actual = $generator->generate($this->getSpecificationCollection());
+
+        $expect = file_get_contents(__DIR__ . '/resource/client_collection.md');
+        $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
+
+        $this->assertEquals($expect, $actual, $actual);
+    }
 }
