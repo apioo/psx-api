@@ -64,7 +64,7 @@ abstract class MarkupAbstract implements GeneratorInterface
 
         foreach ($client->tags as $tag) {
             /** @var Dto\Tag $tag */
-            foreach ($client->operations as $operation) {
+            foreach ($tag->operations as $operation) {
                 $lines[] = $this->generateOperation($operation, $tag->methodName);
             }
         }
