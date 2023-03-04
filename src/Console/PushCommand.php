@@ -161,7 +161,7 @@ class PushCommand extends Command
         }
 
         $accessToken = $data->access_token ?? '';
-        if (empty($acccessToken)) {
+        if (empty($accessToken)) {
             throw new \RuntimeException('Could not obtain access token');
         }
 
