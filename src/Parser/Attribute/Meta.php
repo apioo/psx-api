@@ -174,9 +174,19 @@ class Meta
         return $this->pathParams;
     }
 
+    public function setPathParams(array $pathParams): void
+    {
+        $this->pathParams = $pathParams;
+    }
+
     public function getQueryParams(): array
     {
         return $this->queryParams;
+    }
+
+    public function setQueryParams(array $queryParams): void
+    {
+        $this->queryParams = $queryParams;
     }
 
     public function getIncoming(): ?Incoming

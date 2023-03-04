@@ -34,14 +34,12 @@ use PSX\Api\Tests\Parser\Model\Outgoing;
  * @link    https://phpsx.org
  */
 #[Description('Bar endpoint')]
-#[Path('/foo')]
+#[Path('/foo/:id')]
 class BarController
 {
     #[Post]
-    protected function myMethod(Incoming $incoming): Outgoing
+    protected function myMethod(int $id, string $year, Incoming $incoming): Outgoing
     {
-        $foo = $incoming->foo;
-
         return new Outgoing('foo');
     }
 }

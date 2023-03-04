@@ -27,6 +27,11 @@ use PSX\Api\Parser\Attribute\Meta;
 use PSX\Api\ParserInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
+use PSX\Api\Util\Inflection;
+use PSX\DateTime\Date;
+use PSX\DateTime\DateTime;
+use PSX\DateTime\Duration;
+use PSX\DateTime\Time;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\SchemaManager;
@@ -37,6 +42,7 @@ use PSX\Schema\Type\StringType;
 use PSX\Schema\Type\TypeAbstract;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
+use PSX\Uri\Uri;
 use ReflectionClass;
 
 /**
@@ -57,10 +63,12 @@ class Attribute implements ParserInterface
         'doDelete' => 'DELETE',
         'doPatch' => 'PATCH',
     ];
+    private bool $inspectTypeHints;
 
-    public function __construct(SchemaManagerInterface $schemaManager)
+    public function __construct(SchemaManagerInterface $schemaManager, bool $inspectTypeHints = true)
     {
         $this->schemaManager = $schemaManager;
+        $this->inspectTypeHints = $inspectTypeHints;
     }
 
     /**
@@ -126,26 +134,8 @@ class Attribute implements ParserInterface
                 continue;
             }
 
-            // if we have no incoming attribute we parse it from the type hint of the first parameter
-            if (!$meta->hasIncoming()) {
-                // @TODO use all arguments
-                /*
-                $firstParameter = $method->getParameters()[0] ?? null;
-                if ($firstParameter instanceof \ReflectionParameter) {
-                    $schema = $this->getSchemaFromTypeHint($firstParameter->getType());
-                    if (!empty($schema) && class_exists($schema)) {
-                        $meta->setIncoming(new Attr\Incoming($schema));
-                    }
-                }
-                */
-            }
-
-            // if we have no outgoing attribute we parse it from the return type hint
-            if (!$meta->hasOutgoing()) {
-                $schema = $this->getSchemaFromTypeHint($method->getReturnType());
-                if (!empty($schema) && class_exists($schema)) {
-                    $meta->addOutgoing(new Attr\Outgoing(200, $schema));
-                }
+            if ($this->inspectTypeHints) {
+                $this->inspectTypeHints($method, $meta);
             }
 
             $return = $this->getReturn($meta, $specification->getDefinitions(), $basePath, $typePrefix);
@@ -276,7 +266,6 @@ class Attribute implements ParserInterface
 
         // if we have a file append base path
         if (str_contains($schema, '.')) {
-            $type = SchemaManager::TYPE_TYPESCHEMA;
             if (!is_file($schema)) {
                 $schema = $basePath . '/' . $schema;
             }
@@ -381,63 +370,102 @@ class Attribute implements ParserInterface
         return null;
     }
 
-    /*
-    private function getArgumentAttributeForProperty(\ReflectionParameter $parameter): ?Attr\Argument
+    private function inspectTypeHints(\ReflectionMethod $method, Meta $meta): void
     {
-        $attributes = $parameter->getAttributes();
-        foreach ($attributes as $attribute) {
-            $instance = $attribute->newInstance();
-            if ($instance instanceof Attr\Argument) {
-                return $instance;
+        $missingPathNames = $this->getMissingPathNames($meta);
+
+        $pathParams = [];
+        $queryParams = [];
+        $incoming = null;
+        foreach ($method->getParameters() as $parameter) {
+            if (in_array($parameter->getName(), $missingPathNames)) {
+                $args = $this->getParamArgsFromType($parameter, true);
+                if (!empty($args)) {
+                    $pathParams[] = new Attr\PathParam(...$args);
+                }
+            } else {
+                $args = $this->getParamArgsFromType($parameter, false);
+                if (!empty($args)) {
+                    $queryParams[] = new Attr\QueryParam(...$args);
+                } else {
+                    $schema = $this->getSchemaFromTypeHint($parameter->getType());
+                    if (!empty($schema) && class_exists($schema)) {
+                        $incoming = new Attr\Incoming($schema);
+                    }
+                }
             }
         }
 
-        return null;
+        $meta->setPathParams(array_merge($pathParams, $meta->getPathParams()));
+        $meta->setQueryParams(array_merge($queryParams, $meta->getQueryParams()));
+
+        if ($incoming !== null && !$meta->hasIncoming() && in_array($meta->getMethod()->method, ['POST', 'PUT', 'PATCH'])) {
+            $meta->setIncoming($incoming);
+        }
+
+        // if we have no outgoing attribute we parse it from the return type hint
+        if (!$meta->hasOutgoing()) {
+            $schema = $this->getSchemaFromTypeHint($method->getReturnType());
+            if (!empty($schema) && class_exists($schema)) {
+                $meta->addOutgoing(new Attr\Outgoing(200, $schema));
+            }
+        }
     }
 
-    private function getTypeFromType(\ReflectionType $type, DefinitionsInterface $definitions, string &$in): ?TypeInterface
+    private function getMissingPathNames(Meta $meta): array
     {
+        $pathNames = Inflection::extractPlaceholderNames($meta->getPath()->path);
+
+        $availableNames = [];
+        foreach ($meta->getPathParams() as $param) {
+            $availableNames[] = $param->name;
+        }
+
+        $missingNames = [];
+        foreach ($pathNames as $pathName) {
+            if (!in_array($pathName, $availableNames)) {
+                $missingNames[] = $pathName;
+            }
+        }
+
+        return $missingNames;
+    }
+
+    private function getParamArgsFromType(?\ReflectionParameter $parameter, bool $required, ?array $enum = null): ?array
+    {
+        $name = $parameter->getName();
+        $type = $parameter->getType();
         if (!$type instanceof \ReflectionNamedType) {
             return null;
         }
 
         $return = match ($type->getName()) {
-            'string' => TypeFactory::getString(),
-            'int' => TypeFactory::getInteger(),
-            'float' => TypeFactory::getNumber(),
-            'bool' => TypeFactory::getBoolean(),
-            'mixed' => TypeFactory::getAny(),
-            'resource' => TypeFactory::getBinary(),
-            DateTime::class, \DateTimeInterface::class, \DateTimeImmutable::class, \DateTime::class => TypeFactory::getDateTime(),
-            Date::class => TypeFactory::getDate(),
-            Time::class => TypeFactory::getTime(),
-            Duration::class, \DateInterval::class => TypeFactory::getDuration(),
-            Uri::class => TypeFactory::getUri(),
+            'string' => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum],
+            'int' => [$name, TypeAbstract::TYPE_INTEGER, '', $required, $enum],
+            'float' => [$name, TypeAbstract::TYPE_NUMBER, '', $required, $enum],
+            'bool' => [$name, TypeAbstract::TYPE_BOOLEAN, '', $required, $enum],
+            'mixed' => [$name, TypeAbstract::TYPE_ANY, '', $required, $enum],
+            'resource' => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_BINARY],
+            DateTime::class, \DateTimeInterface::class, \DateTimeImmutable::class, \DateTime::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_DATETIME],
+            Date::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_DATE],
+            Time::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_TIME],
+            Duration::class, \DateInterval::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_DURATION],
+            Uri::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_URI],
             default => null,
         };
 
-        if ($return === null) {
-            if (enum_exists($type->getName())) {
-                $type = $this->getTypeFromEnum(new \ReflectionEnum($type->getName()), $definitions);
-            } elseif (class_exists($type->getName())) {
-                $in = 'body';
-                $type = $this->getTypeFromClass(new ReflectionClass($type->getName()), $definitions);
-            }
-        }
-
-        if ($return !== null) {
-            $return->setNullable($type->allowsNull());
+        if ($return === null && function_exists('enum_exists') && enum_exists($type->getName())) {
+            $return = $this->getTypeFromEnum(new \ReflectionEnum($type->getName()), $required);
         }
 
         return $return;
     }
 
-    private function getTypeFromEnum(\ReflectionEnum $enum, DefinitionsInterface $definitions): TypeInterface
+    private function getTypeFromEnum(\ReflectionEnum $enum, bool $required): ?array
     {
-        if ($enum->isBacked()) {
-            $type = $this->getTypeFromType($enum->getBackingType(), $definitions, $in);
-        } else {
-            $type = TypeFactory::getString();
+        if (!$enum->isBacked()) {
+            // we handle only backed enums since we have only in this case a stable value
+            return null;
         }
 
         $values = [];
@@ -445,14 +473,11 @@ class Attribute implements ParserInterface
         foreach ($cases as $case) {
             if ($case instanceof \ReflectionEnumBackedCase) {
                 $values[] = $case->getBackingValue();
-            } elseif ($case instanceof \ReflectionEnumUnitCase) {
-                $values[] = $case->getName();
             }
         }
 
-        return $type->setEnum($values);
+        return $this->getParamArgsFromType($enum->getBackingType(), $required, $values);
     }
-    */
 
     private function buildOperationId(string $controllerName, string $methodName): string
     {

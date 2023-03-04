@@ -28,6 +28,7 @@ use PSX\Api\Parser\Attribute as AttributeParser;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Attribute\BarController;
 use PSX\Api\Tests\Parser\Attribute\TestController;
+use PSX\Schema\TypeFactory;
 
 /**
  * AttributeTest
@@ -62,9 +63,14 @@ class AttributeTest extends ParserTestCase
         $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.BarController.myMethod');
 
         $this->assertInstanceOf(OperationInterface::class, $operation);
-        $this->assertTrue($operation->getArguments()->isEmpty());
+        $this->assertEquals('path', $operation->getArguments()->get('id')->getIn());
+        $this->assertEquals(TypeFactory::getInteger(), $operation->getArguments()->get('id')->getSchema());
+        $this->assertEquals('query', $operation->getArguments()->get('year')->getIn());
+        $this->assertEquals(TypeFactory::getString(), $operation->getArguments()->get('year')->getSchema());
+        $this->assertEquals('body', $operation->getArguments()->get('payload')->getIn());
+        $this->assertEquals(TypeFactory::getReference('Incoming'), $operation->getArguments()->get('payload')->getSchema());
         $this->assertEquals(200, $operation->getReturn()->getCode());
-        $this->assertEquals(['$ref' => 'Outgoing'], $operation->getReturn()->getSchema()->toArray());
+        $this->assertEquals(TypeFactory::getReference('Outgoing'), $operation->getReturn()->getSchema());
     }
 
     public function testParseInvalid()
