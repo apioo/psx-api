@@ -143,11 +143,10 @@ class Client extends ClientAbstract
     /**
      * @param string $name
      * @param string $type
-     * @param EntryDelete $payload
      * @return EntryMessage
      * @throws ClientException
      */
-    public function delete(string $name, string $type, EntryDelete $payload): EntryMessage
+    public function delete(string $name, string $type): EntryMessage
     {
         $url = $this->parser->url('/foo/:name/:type', [
             'name' => $name,

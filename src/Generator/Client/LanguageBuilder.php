@@ -158,7 +158,7 @@ class LanguageBuilder
             }
 
             if (!in_array($operation->getMethod(), ['POST', 'PUT', 'PATCH'])) {
-                $bodyName = null;
+                $body = null;
             }
 
             $arguments = array_merge($path, $body !== null ? [$bodyName => $body] : [], $query);

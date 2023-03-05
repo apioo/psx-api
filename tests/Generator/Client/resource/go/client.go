@@ -206,7 +206,7 @@ func (client *) Update(name string, _type string, payload EntryUpdate) (, error)
 }
 
 // Delete 
-func (client *) Delete(name string, _type string, payload EntryDelete) (, error) {
+func (client *) Delete(name string, _type string) (, error) {
     pathParams := make(map[string]interface{})
     pathParams["name"] = name;
     pathParams["type"] = _type;

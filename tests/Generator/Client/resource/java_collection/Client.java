@@ -6,6 +6,8 @@
 
 import app.sdkgen.client.ClientAbstract;
 import app.sdkgen.client.Credentials.*;
+import app.sdkgen.client.CredentialsInterface;
+import app.sdkgen.client.Exception.Authenticator.InvalidCredentialsException;
 import app.sdkgen.client.Exception.ClientException;
 import app.sdkgen.client.Exception.UnknownStatusCodeException;
 import org.apache.http.HttpResponse;

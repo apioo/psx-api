@@ -131,7 +131,7 @@ export default class Client extends ClientAbstract {
      * @returns {Promise<EntryMessage>}
      * @throws {ClientException}
      */
-    public async delete(name: string, type: string, payload: EntryDelete): Promise<EntryMessage> {
+    public async delete(name: string, type: string): Promise<EntryMessage> {
         const url = this.parser.url('/foo/:name/:type', {
             'name': name,
             'type': type,

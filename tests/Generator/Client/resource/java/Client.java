@@ -6,6 +6,8 @@
 
 import app.sdkgen.client.ClientAbstract;
 import app.sdkgen.client.Credentials.*;
+import app.sdkgen.client.CredentialsInterface;
+import app.sdkgen.client.Exception.Authenticator.InvalidCredentialsException;
 import app.sdkgen.client.Exception.ClientException;
 import app.sdkgen.client.Exception.UnknownStatusCodeException;
 import org.apache.http.HttpResponse;
@@ -131,7 +133,7 @@ public class Client extends ClientAbstract {
         }
     }
 
-    public EntryMessage delete(String name, String type, EntryDelete ) throws ClientException {
+    public EntryMessage delete(String name, String type) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -143,6 +145,8 @@ public class Client extends ClientAbstract {
             this.parser.query(builder, queryParams);
 
             HttpDelete request = new HttpDelete(builder.build());
+            request.addHeader("Content-Type", "application/json");
+            request.setEntity(new StringEntity(this.objectMapper.writeValueAsString(payload), ContentType.APPLICATION_JSON));
 
             HttpResponse response = this.httpClient.execute(request);
             int statusCode = response.getStatusLine().getStatusCode();
