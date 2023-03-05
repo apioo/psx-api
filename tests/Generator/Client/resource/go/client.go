@@ -220,19 +220,12 @@ func (client *) Delete(name string, _type string) (, error) {
 
     url.RawQuery = values.Encode()
 
-    raw, err := json.Marshal(payload)
-    if err != nil {
-        return EntryMessage{}, errors.New("could not marshal provided JSON data")
-    }
 
-    var reqBody = bytes.NewReader(raw)
-
-    req, err := http.NewRequest("", url.String(), reqBody)
+    req, err := http.NewRequest("", url.String(), nil)
     if err != nil {
         return EntryMessage{}, errors.New("could not create request")
     }
 
-    req.Header.Set("Content-Type", "application/json")
 
     resp, err := resource.client.Do(req)
     if err != nil {

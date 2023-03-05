@@ -142,7 +142,6 @@ export default class Client extends ClientAbstract {
             method: 'DELETE',
             params: this.parser.query({
             }),
-            data: payload
         };
 
         try {

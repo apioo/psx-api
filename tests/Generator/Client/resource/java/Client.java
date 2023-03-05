@@ -145,8 +145,6 @@ public class Client extends ClientAbstract {
             this.parser.query(builder, queryParams);
 
             HttpDelete request = new HttpDelete(builder.build());
-            request.addHeader("Content-Type", "application/json");
-            request.setEntity(new StringEntity(this.objectMapper.writeValueAsString(payload), ContentType.APPLICATION_JSON));
 
             HttpResponse response = this.httpClient.execute(request);
             int statusCode = response.getStatusLine().getStatusCode();

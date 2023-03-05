@@ -156,7 +156,6 @@ class Client extends ClientAbstract
         $options = [
             'query' => $this->parser->query([
             ]),
-            'json' => $payload
         ];
 
         try {
