@@ -5,22 +5,30 @@
 
 
 import app.sdkgen.client.Exception.ClientException;
-import app.sdkgen.client.Exception.UnkownStatusCodeException;
+import app.sdkgen.client.Exception.UnknownStatusCodeException;
+import app.sdkgen.client.Parser;
 import app.sdkgen.client.TagAbstract;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 public class FooTag extends TagAbstract {
+    public FooTag(HttpClient httpClient, ObjectMapper objectMapper, Parser parser) {
+        super(httpClient, objectMapper, parser);
+    }
+
 
     /**
      * Returns a collection
@@ -45,10 +53,10 @@ public class FooTag extends TagAbstract {
 
             switch (statusCode) {
                 default:
-                    throw new UnkownStatusCodeException("The server returned an unknown status code");
+                    throw new UnknownStatusCodeException("The server returned an unknown status code");
             }
-        } catch (Exception e) {
-            throw new ClientException("An unknown error occurred: " + e.getMessage());
+        } catch (URISyntaxException | IOException e) {
+            throw new ClientException("An unknown error occurred: " + e.getMessage(), e);
         }
     }
 
@@ -74,10 +82,10 @@ public class FooTag extends TagAbstract {
 
             switch (statusCode) {
                 default:
-                    throw new UnkownStatusCodeException("The server returned an unknown status code");
+                    throw new UnknownStatusCodeException("The server returned an unknown status code");
             }
-        } catch (Exception e) {
-            throw new ClientException("An unknown error occurred: " + e.getMessage());
+        } catch (URISyntaxException | IOException e) {
+            throw new ClientException("An unknown error occurred: " + e.getMessage(), e);
         }
     }
 

@@ -4,9 +4,9 @@
  */
 
 
-import app.sdkgen.client.Exception.KnownErrorException;
+import app.sdkgen.client.Exception.KnownStatusCodeException;
 
-public class EntryMessageException extends KnownErrorException {
+public class EntryMessageException extends KnownStatusCodeException {
 
     private EntryMessage payload;
 

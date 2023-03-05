@@ -7,49 +7,57 @@
 import app.sdkgen.client.ClientAbstract;
 import app.sdkgen.client.Credentials.*;
 import app.sdkgen.client.Exception.ClientException;
-import app.sdkgen.client.Exception.UnkownStatusCodeException;
+import app.sdkgen.client.Exception.UnknownStatusCodeException;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Client extends ClientAbstract {
-    public function FooTag foo()
+    public Client(String baseUrl, CredentialsInterface credentials) throws InvalidCredentialsException {
+        super(baseUrl, credentials);
+    }
+
+    public FooTag foo()
     {
         return new FooTag(
-            $this->httpClient,
-            $this->parser
+            this.httpClient,
+            this.objectMapper,
+            this.parser
         );
     }
 
-    public function BarTag bar()
+    public BarTag bar()
     {
         return new BarTag(
-            $this->httpClient,
-            $this->parser
+            this.httpClient,
+            this.objectMapper,
+            this.parser
         );
     }
 
-    public function BazTag baz()
+    public BazTag baz()
     {
         return new BazTag(
-            $this->httpClient,
-            $this->parser
+            this.httpClient,
+            this.objectMapper,
+            this.parser
         );
     }
 
 
 
-    public static Client build(String token): Client
+    public static Client build(String token) throws InvalidCredentialsException
     {
-        return new Client('http://api.foo.com', new HttpBearer(token));
+        return new Client("http://api.foo.com", new HttpBearer(token));
     }
 }

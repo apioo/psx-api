@@ -7,21 +7,26 @@
 import app.sdkgen.client.ClientAbstract;
 import app.sdkgen.client.Credentials.*;
 import app.sdkgen.client.Exception.ClientException;
-import app.sdkgen.client.Exception.UnkownStatusCodeException;
+import app.sdkgen.client.Exception.UnknownStatusCodeException;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Client extends ClientAbstract {
+    public Client(String baseUrl, CredentialsInterface credentials) throws InvalidCredentialsException {
+        super(baseUrl, credentials);
+    }
+
 
     /**
      * Returns a collection
@@ -53,14 +58,14 @@ public class Client extends ClientAbstract {
 
             switch (statusCode) {
                 default:
-                    throw new UnkownStatusCodeException("The server returned an unknown status code");
+                    throw new UnknownStatusCodeException("The server returned an unknown status code");
             }
-        } catch (Exception e) {
-            throw new ClientException("An unknown error occurred: " + e.getMessage());
+        } catch (URISyntaxException | IOException e) {
+            throw new ClientException("An unknown error occurred: " + e.getMessage(), e);
         }
     }
 
-    public EntryMessage create(String name, String type, EntryCreate payload) throws EntryMessageException, EntryMessageException, ClientException {
+    public EntryMessage create(String name, String type, EntryCreate payload) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -88,10 +93,10 @@ public class Client extends ClientAbstract {
                 case 500:
                     throw new EntryMessageException(this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), EntryMessage.class));
                 default:
-                    throw new UnkownStatusCodeException("The server returned an unknown status code");
+                    throw new UnknownStatusCodeException("The server returned an unknown status code");
             }
-        } catch (Exception e) {
-            throw new ClientException("An unknown error occurred: " + e.getMessage());
+        } catch (URISyntaxException | IOException e) {
+            throw new ClientException("An unknown error occurred: " + e.getMessage(), e);
         }
     }
 
@@ -119,14 +124,14 @@ public class Client extends ClientAbstract {
 
             switch (statusCode) {
                 default:
-                    throw new UnkownStatusCodeException("The server returned an unknown status code");
+                    throw new UnknownStatusCodeException("The server returned an unknown status code");
             }
-        } catch (Exception e) {
-            throw new ClientException("An unknown error occurred: " + e.getMessage());
+        } catch (URISyntaxException | IOException e) {
+            throw new ClientException("An unknown error occurred: " + e.getMessage(), e);
         }
     }
 
-    public EntryMessage delete(String name, String type, EntryDelete payload) throws ClientException {
+    public EntryMessage delete(String name, String type, EntryDelete ) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);
@@ -138,8 +143,6 @@ public class Client extends ClientAbstract {
             this.parser.query(builder, queryParams);
 
             HttpDelete request = new HttpDelete(builder.build());
-            request.addHeader("Content-Type", "application/json");
-            request.setEntity(new StringEntity(this.objectMapper.writeValueAsString(payload), ContentType.APPLICATION_JSON));
 
             HttpResponse response = this.httpClient.execute(request);
             int statusCode = response.getStatusLine().getStatusCode();
@@ -150,10 +153,10 @@ public class Client extends ClientAbstract {
 
             switch (statusCode) {
                 default:
-                    throw new UnkownStatusCodeException("The server returned an unknown status code");
+                    throw new UnknownStatusCodeException("The server returned an unknown status code");
             }
-        } catch (Exception e) {
-            throw new ClientException("An unknown error occurred: " + e.getMessage());
+        } catch (URISyntaxException | IOException e) {
+            throw new ClientException("An unknown error occurred: " + e.getMessage(), e);
         }
     }
 
@@ -181,17 +184,17 @@ public class Client extends ClientAbstract {
 
             switch (statusCode) {
                 default:
-                    throw new UnkownStatusCodeException("The server returned an unknown status code");
+                    throw new UnknownStatusCodeException("The server returned an unknown status code");
             }
-        } catch (Exception e) {
-            throw new ClientException("An unknown error occurred: " + e.getMessage());
+        } catch (URISyntaxException | IOException e) {
+            throw new ClientException("An unknown error occurred: " + e.getMessage(), e);
         }
     }
 
 
 
-    public static Client build(String token): Client
+    public static Client build(String token) throws InvalidCredentialsException
     {
-        return new Client('http://api.foo.com', new HttpBearer(token));
+        return new Client("http://api.foo.com", new HttpBearer(token));
     }
 }
