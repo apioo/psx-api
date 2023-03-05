@@ -4,8 +4,10 @@ package {{ namespace }};
 
 import app.sdkgen.client.ClientAbstract;
 import app.sdkgen.client.Credentials.*;
+import app.sdkgen.client.CredentialsInterface;
+import app.sdkgen.client.Exception.Authenticator.InvalidCredentialsException;
 import app.sdkgen.client.Exception.ClientException;
-import app.sdkgen.client.Exception.UnkownStatusCodeException;
+import app.sdkgen.client.Exception.UnknownStatusCodeException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
@@ -26,11 +28,12 @@ public class {{ className }} extends ClientAbstract {
     }
 
 {% for tag in tags %}
-    public function {{ tag.className }} {{ tag.methodName }}()
+    public {{ tag.className }} {{ tag.methodName }}()
     {
         return new {{ tag.className }}(
-            $this->httpClient,
-            $this->parser
+            this.httpClient,
+            this.objectMapper,
+            this.parser
         );
     }
 

@@ -45,7 +45,7 @@
                 default:
                     throw new UnknownStatusCodeException("The server returned an unknown status code");
             }
-        %} catch (URISyntaxException | IOException e) {
+        } catch (URISyntaxException | IOException e) {
             throw new ClientException("An unknown error occurred: " + e.getMessage(), e);
         }
     }
