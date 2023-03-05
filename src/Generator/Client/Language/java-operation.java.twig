@@ -5,7 +5,7 @@
      * {{ operation.description }}
      */
 {% endif %}
-    public {% if operation.return %}{{ operation.return.schema.type|raw }}{% else %}void{% endif %} {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ arg.schema.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws {% for return in operation.throws %}{{ return.schema.type }}Exception, {% endfor %}ClientException {
+    public {% if operation.return %}{{ operation.return.schema.type|raw }}{% else %}void{% endif %} {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ arg.schema.type|raw }} {{ name }}{% if not loop.last %}, {% endif %}{% endfor %}) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
 {% for name, realName in operation.pathNames %}
@@ -43,10 +43,10 @@
                     throw new {{ return.schema.type }}Exception(this.parser.parse(EntityUtils.toString(response.getEntity(), "UTF-8"), {{ return.schema.type }}.class));
 {% endfor %}
                 default:
-                    throw new UnkownStatusCodeException("The server returned an unknown status code");
+                    throw new UnknownStatusCodeException("The server returned an unknown status code");
             }
-        } catch (Exception e) {
-            throw new ClientException("An unknown error occurred: " + e.getMessage());
+        %} catch (URISyntaxException | IOException e) {
+            throw new ClientException("An unknown error occurred: " + e.getMessage(), e);
         }
     }
 

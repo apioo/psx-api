@@ -7,19 +7,24 @@ import app.sdkgen.client.Credentials.*;
 import app.sdkgen.client.Exception.ClientException;
 import app.sdkgen.client.Exception.UnkownStatusCodeException;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 public class {{ className }} extends ClientAbstract {
+    public Client(String baseUrl, CredentialsInterface credentials) throws InvalidCredentialsException {
+        super(baseUrl, credentials);
+    }
+
 {% for tag in tags %}
     public function {{ tag.className }} {{ tag.methodName }}()
     {
@@ -33,39 +38,39 @@ public class {{ className }} extends ClientAbstract {
 {{ operations|raw }}
 
 {% if security.type == 'httpBasic' %}
-    public static {{ className }} build({% if not baseUrl %}String baseUrl, {% endif %}String userName, String password): {{ className }}
+    public static {{ className }} build({% if not baseUrl %}String baseUrl, {% endif %}String userName, String password) throws InvalidCredentialsException
     {
 {% if not baseUrl %}
         return new {{ className }}(baseUrl, new HttpBasic(userName, password));
 {% else %}
-        return new {{ className }}('{{ baseUrl }}', new HttpBasic(userName, password));
+        return new {{ className }}("{{ baseUrl }}", new HttpBasic(userName, password));
 {% endif %}
     }
 {% elseif security.type == 'httpBearer' %}
-    public static {{ className }} build({% if not baseUrl %}String baseUrl, {% endif %}String token): {{ className }}
+    public static {{ className }} build({% if not baseUrl %}String baseUrl, {% endif %}String token) throws InvalidCredentialsException
     {
 {% if not baseUrl %}
         return new {{ className }}(baseUrl, new HttpBearer(token));
 {% else %}
-        return new {{ className }}('{{ baseUrl }}', new HttpBearer(token));
+        return new {{ className }}("{{ baseUrl }}", new HttpBearer(token));
 {% endif %}
     }
 {% elseif security.type == 'apiKey' %}
-    public static {{ className }} build({% if not baseUrl %}String baseUrl, {% endif %}String token): {{ className }}
+    public static {{ className }} build({% if not baseUrl %}String baseUrl, {% endif %}String token) throws InvalidCredentialsException
     {
 {% if not baseUrl %}
-        return new {{ className }}(baseUrl, new ApiKey(token, '{{ security.name }}', '{{ security.in }}'));
+        return new {{ className }}(baseUrl, new ApiKey(token, "{{ security.name }}", "{{ security.in }}"));
 {% else %}
-        return new {{ className }}('{{ baseUrl }}', new ApiKey(token, '{{ security.name }}', '{{ security.in }}'));
+        return new {{ className }}("{{ baseUrl }}", new ApiKey(token, "{{ security.name }}", "{{ security.in }}"));
 {% endif %}
     }
 {% elseif security.type == 'oauth2' %}
-    public static {{ className }} build({% if not baseUrl %}String baseUrl, {% endif %}String clientId, String clientSecret, TokenStoreInterface tokenStore, List<String> scopes): {{ className }}
+    public static {{ className }} build({% if not baseUrl %}String baseUrl, {% endif %}String clientId, String clientSecret, TokenStoreInterface tokenStore, List<String> scopes) throws InvalidCredentialsException
     {
 {% if not baseUrl %}
-        return new {{ className }}(baseUrl, new OAuth2(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
+        return new {{ className }}(baseUrl, new OAuth2(clientId, clientSecret, "{{ security.tokenUrl }}", "{{ security.authorizationUrl }}", tokenStore, scopes));
 {% else %}
-        return new {{ className }}('{{ baseUrl }}', new OAuth2(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
+        return new {{ className }}("{{ baseUrl }}", new OAuth2(clientId, clientSecret, "{{ security.tokenUrl }}", "{{ security.authorizationUrl }}", tokenStore, scopes));
 {% endif %}
     }
 {% endif %}

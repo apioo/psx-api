@@ -2,9 +2,9 @@
 package {{ namespace }};
 {% endif %}
 
-import app.sdkgen.client.Exception.KnownErrorException;
+import app.sdkgen.client.Exception.KnownStatusCodeException;
 
-public class {{ className }} extends KnownErrorException {
+public class {{ className }} extends KnownStatusCodeException {
 
     private {{ type }} payload;
 

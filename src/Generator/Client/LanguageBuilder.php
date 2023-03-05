@@ -157,6 +157,10 @@ class LanguageBuilder
                 $this->resolveImport($argument->getSchema(), $imports);
             }
 
+            if (!in_array($operation->getMethod(), ['POST', 'PUT', 'PATCH'])) {
+                $bodyName = null;
+            }
+
             $arguments = array_merge($path, $body !== null ? [$bodyName => $body] : [], $query);
 
             $return = null;
