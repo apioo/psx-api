@@ -79,4 +79,16 @@ class PhpTest extends GeneratorTestCase
         $generator = new Php('http://api.foo.com', 'Foo\Bar');
         $generator->generate($this->getSpecificationComplex());
     }
+
+    public function testGenerateTest()
+    {
+        $generator = new Php('http://127.0.0.1:8081', 'Sdkgen\Client\Tests\Generated');
+
+        $result = $generator->generate($this->getSpecificationTest());
+        $target = __DIR__ . '/resource/php_test';
+
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/Client.php');
+    }
 }

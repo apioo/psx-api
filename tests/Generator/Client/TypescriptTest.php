@@ -72,4 +72,17 @@ class TypescriptTest extends GeneratorTestCase
         $generator = new Typescript('http://api.foo.com');
         $generator->generate($this->getSpecificationComplex());
     }
+
+    public function testGenerateTest()
+    {
+        $generator = new Typescript('http://127.0.0.1:8081');
+
+        $result = $generator->generate($this->getSpecificationTest());
+        $target = __DIR__ . '/resource/typescript_test';
+
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/Client.ts');
+    }
+
 }
