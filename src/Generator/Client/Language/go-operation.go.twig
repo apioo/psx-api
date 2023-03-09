@@ -1,23 +1,23 @@
 
 {% for operation in operations %}
 // {{ operation.methodName }} {{ operation.description }}
-func (client *{{ className }}) {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ name }} {{ arg.schema.type }}{% if not loop.last %}, {% endif %}{% endfor %}) ({% if operation.return %}{{ method.return.schema.type }}, {% endif %}error) {
+func (client *Client) {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ name }} {{ arg.schema.type }}{% if not loop.last %}, {% endif %}{% endfor %}) ({% if operation.return %}{{ operation.return.schema.type }}, {% endif %}error) {
     pathParams := make(map[string]interface{})
 {% for name, realName in operation.pathNames %}
-    pathParams["{{ realName }}"] = {{ name }};
+    pathParams["{{ realName }}"] = {{ name }}
 {% endfor %}
 
-    queryParams := url.Values{}
+    queryParams := make(map[string]interface{})
 {% for name, realName in operation.queryNames %}
-    queryParams.Add("{{ realName }}", {{ name }});
+    queryParams["{{ realName }}"] = {{ name }}
 {% endfor %}
 
-    url, err := url.Parse(client.Parser.Url('{{ operation.path }}', pathParams))
+    u, err := url.Parse(client.internal.Parser.Url("{{ operation.path }}", pathParams))
     if err != nil {
         return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not parse url")
     }
 
-    url.RawQuery = values.Encode()
+    u.RawQuery = client.internal.Parser.Query(queryParams).Encode()
 
 {% if operation.bodyName %}
     raw, err := json.Marshal({{ operation.bodyName }})
@@ -28,7 +28,7 @@ func (client *{{ className }}) {{ operation.methodName }}({% for name, arg in op
     var reqBody = bytes.NewReader(raw)
 {% endif %}
 
-    req, err := http.NewRequest("{{ method.httpMethod }}", url.String(), {% if operation.bodyName %}reqBody{% else %}nil{% endif %})
+    req, err := http.NewRequest("{{ operation.method }}", u.String(), {% if operation.bodyName %}reqBody{% else %}nil{% endif %})
     if err != nil {
         return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not create request")
     }
@@ -37,14 +37,14 @@ func (client *{{ className }}) {{ operation.methodName }}({% for name, arg in op
     req.Header.Set("Content-Type", "application/json")
 {% endif %}
 
-    resp, err := resource.client.Do(req)
+    resp, err := client.internal.HttpClient.Do(req)
     if err != nil {
         return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not send request")
     }
 
     defer resp.Body.Close()
 
-    if (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+    if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 {% if operation.return %}
         respBody, err := io.ReadAll(resp.Body)
         if err != nil {
@@ -54,7 +54,7 @@ func (client *{{ className }}) {{ operation.methodName }}({% for name, arg in op
         var response {{ operation.return.schema.type }}
         err = json.Unmarshal(respBody, &response)
         if err != nil {
-            return {% if operation.return.schema.type %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not unmarshal JSON response")
+            return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not unmarshal JSON response")
         }
 
         return response, nil
@@ -66,19 +66,19 @@ func (client *{{ className }}) {{ operation.methodName }}({% for name, arg in op
     switch resp.StatusCode {
 {% for code, return in operation.throws %}
         case {{ code }}:
-            var response {{ operation.return.schema.type }}
+            var response {{ return.schema.type }}
             err = json.Unmarshal(respBody, &response)
             if err != nil {
-                return {% if operation.return.schema.type %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not unmarshal JSON response")
+                return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("could not unmarshal JSON response")
             }
 
-            return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}, &{{ return.schema.type }}Exception{
+            return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}&{{ return.schema.type }}Exception{
                 Response: response,
                 Err:      errors.New("unavailable"),
             }
 {% endfor %}
         default:
-            return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}, errors.New("the server returned an unknown status code")
+            return {% if operation.return %}{{ operation.return.schema.type }}{}, {% endif %}errors.New("the server returned an unknown status code")
     }
 }
 

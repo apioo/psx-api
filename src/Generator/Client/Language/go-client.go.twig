@@ -21,17 +21,17 @@ func (client *{{ className }}) {{ tag.methodName }}() *{{ tag.className }} {
 
 
 {% if security.type == 'httpBasic' %}
-func Build({% if not baseUrl %}baseUrl string, {% endif %}userName string, password string) *{{ className }} {
-    var credentials := sdkgen.HttpBasic{UserName: userName, Password: password}
+func Build({% if not baseUrl %}baseUrl string, {% endif %}userName string, password string) (*{{ className }}, error) {
+    var credentials = sdkgen.HttpBasic{UserName: userName, Password: password}
 {% elseif security.type == 'httpBearer' %}
-func Build({% if not baseUrl %}baseUrl string, {% endif %}token string) *{{ className }} {
-    var credentials := sdkgen.HttpBearer{Token: token}
+func Build({% if not baseUrl %}baseUrl string, {% endif %}token string) (*{{ className }}, error) {
+    var credentials = sdkgen.HttpBearer{Token: token}
 {% elseif security.type == 'apiKey' %}
-func Build({% if not baseUrl %}baseUrl string, {% endif %}token string) *{{ className }} {
-    var credentials := sdkgen.ApiKey{Token: token, Name: "{{ security.name }}", In: "{{ security.in }}"}
+func Build({% if not baseUrl %}baseUrl string, {% endif %}token string) (*{{ className }}, error) {
+    var credentials = sdkgen.ApiKey{Token: token, Name: "{{ security.name }}", In: "{{ security.in }}"}
 {% elseif security.type == 'oauth2' %}
-func Build({% if not baseUrl %}baseUrl string, {% endif %}clientId string, clientSecret string, tokenStore sdkgen.TokenStoreInterface, scopes []string) *{{ className }} {
-    var credentials := sdkgen.ClientCredentials{
+func Build({% if not baseUrl %}baseUrl string, {% endif %}clientId string, clientSecret string, tokenStore sdkgen.TokenStoreInterface, scopes []string) (*{{ className }}, error) {
+    var credentials = sdkgen.ClientCredentials{
         ClientId: clientId,
         ClientSecret, clientSecret,
         TokenUrl: "{{ security.tokenUrl }}",
@@ -41,7 +41,12 @@ func Build({% if not baseUrl %}baseUrl string, {% endif %}clientId string, clien
     }
 {% endif %}
 
-    return &{{ className }} {
-        internal: sdkgen.NewClient(baseUrl, credentials, tokenStore, scopes),
+    client, err := sdkgen.NewClient({% if baseUrl %}"{{ baseUrl }}"{% else %}baseUrl{% endif %}, credentials)
+    if err != nil {
+        return &{{ className }}{}, err
     }
+
+    return &{{ className }} {
+        internal: client,
+    }, nil
 }

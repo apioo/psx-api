@@ -73,4 +73,17 @@ class GoTest extends GeneratorTestCase
         $generator = new Go('http://api.foo.com');
         $generator->generate($this->getSpecificationComplex());
     }
+
+    public function testGenerateTest()
+    {
+        $generator = new Go('http://127.0.0.1:8081');
+
+        $result = $generator->generate($this->getSpecificationTest());
+        $target = __DIR__ . '/resource/go_test';
+
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/client.go');
+    }
+
 }

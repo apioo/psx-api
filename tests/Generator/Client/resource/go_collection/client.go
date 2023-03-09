@@ -28,10 +28,15 @@ func (client *Client) Baz() *BazTag {
 
 
 
-func Build(token string) *Client {
-    var credentials := sdkgen.HttpBearer{Token: token}
+func Build(token string) (*Client, error) {
+    var credentials = sdkgen.HttpBearer{Token: token}
+
+    client, err := sdkgen.NewClient("http://api.foo.com", credentials)
+    if err != nil {
+        return &Client{}, err
+    }
 
     return &Client {
-        internal: sdkgen.NewClient(baseUrl, credentials, tokenStore, scopes),
-    }
+        internal: client,
+    }, nil
 }

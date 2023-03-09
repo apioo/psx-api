@@ -15,40 +15,40 @@ type Client struct {
 
 
 // Get Returns a collection
-func (client *) Get(name string, _type string, startIndex int, float float64, boolean bool, date time.Time, datetime time.Time) (, error) {
+func (client *Client) Get(name string, _type string, startIndex int, float float64, boolean bool, date time.Time, datetime time.Time) (EntryCollection, error) {
     pathParams := make(map[string]interface{})
-    pathParams["name"] = name;
-    pathParams["type"] = _type;
+    pathParams["name"] = name
+    pathParams["type"] = _type
 
-    queryParams := url.Values{}
-    queryParams.Add("startIndex", startIndex);
-    queryParams.Add("float", float);
-    queryParams.Add("boolean", boolean);
-    queryParams.Add("date", date);
-    queryParams.Add("datetime", datetime);
+    queryParams := make(map[string]interface{})
+    queryParams["startIndex"] = startIndex
+    queryParams["float"] = float
+    queryParams["boolean"] = boolean
+    queryParams["date"] = date
+    queryParams["datetime"] = datetime
 
-    url, err := url.Parse(client.Parser.Url('/foo/:name/:type', pathParams))
+    u, err := url.Parse(client.internal.Parser.Url("/foo/:name/:type", pathParams))
     if err != nil {
         return EntryCollection{}, errors.New("could not parse url")
     }
 
-    url.RawQuery = values.Encode()
+    u.RawQuery = client.internal.Parser.Query(queryParams).Encode()
 
 
-    req, err := http.NewRequest("", url.String(), nil)
+    req, err := http.NewRequest("GET", u.String(), nil)
     if err != nil {
         return EntryCollection{}, errors.New("could not create request")
     }
 
 
-    resp, err := resource.client.Do(req)
+    resp, err := client.internal.HttpClient.Do(req)
     if err != nil {
         return EntryCollection{}, errors.New("could not send request")
     }
 
     defer resp.Body.Close()
 
-    if (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+    if resp.StatusCode >= 200 && resp.StatusCode < 300 {
         respBody, err := io.ReadAll(resp.Body)
         if err != nil {
             return EntryCollection{}, errors.New("could not read response body")
@@ -65,24 +65,24 @@ func (client *) Get(name string, _type string, startIndex int, float float64, bo
 
     switch resp.StatusCode {
         default:
-            return EntryCollection{}, , errors.New("the server returned an unknown status code")
+            return EntryCollection{}, errors.New("the server returned an unknown status code")
     }
 }
 
 // Create 
-func (client *) Create(name string, _type string, payload EntryCreate) (, error) {
+func (client *Client) Create(name string, _type string, payload EntryCreate) (EntryMessage, error) {
     pathParams := make(map[string]interface{})
-    pathParams["name"] = name;
-    pathParams["type"] = _type;
+    pathParams["name"] = name
+    pathParams["type"] = _type
 
-    queryParams := url.Values{}
+    queryParams := make(map[string]interface{})
 
-    url, err := url.Parse(client.Parser.Url('/foo/:name/:type', pathParams))
+    u, err := url.Parse(client.internal.Parser.Url("/foo/:name/:type", pathParams))
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
     }
 
-    url.RawQuery = values.Encode()
+    u.RawQuery = client.internal.Parser.Query(queryParams).Encode()
 
     raw, err := json.Marshal(payload)
     if err != nil {
@@ -91,21 +91,21 @@ func (client *) Create(name string, _type string, payload EntryCreate) (, error)
 
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("", url.String(), reqBody)
+    req, err := http.NewRequest("POST", u.String(), reqBody)
     if err != nil {
         return EntryMessage{}, errors.New("could not create request")
     }
 
     req.Header.Set("Content-Type", "application/json")
 
-    resp, err := resource.client.Do(req)
+    resp, err := client.internal.HttpClient.Do(req)
     if err != nil {
         return EntryMessage{}, errors.New("could not send request")
     }
 
     defer resp.Body.Close()
 
-    if (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+    if resp.StatusCode >= 200 && resp.StatusCode < 300 {
         respBody, err := io.ReadAll(resp.Body)
         if err != nil {
             return EntryMessage{}, errors.New("could not read response body")
@@ -128,7 +128,7 @@ func (client *) Create(name string, _type string, payload EntryCreate) (, error)
                 return EntryMessage{}, errors.New("could not unmarshal JSON response")
             }
 
-            return EntryMessage{}, , &EntryMessageException{
+            return EntryMessage{}, &EntryMessageException{
                 Response: response,
                 Err:      errors.New("unavailable"),
             }
@@ -139,29 +139,29 @@ func (client *) Create(name string, _type string, payload EntryCreate) (, error)
                 return EntryMessage{}, errors.New("could not unmarshal JSON response")
             }
 
-            return EntryMessage{}, , &EntryMessageException{
+            return EntryMessage{}, &EntryMessageException{
                 Response: response,
                 Err:      errors.New("unavailable"),
             }
         default:
-            return EntryMessage{}, , errors.New("the server returned an unknown status code")
+            return EntryMessage{}, errors.New("the server returned an unknown status code")
     }
 }
 
 // Update 
-func (client *) Update(name string, _type string, payload EntryUpdate) (, error) {
+func (client *Client) Update(name string, _type string, payload EntryUpdate) (EntryMessage, error) {
     pathParams := make(map[string]interface{})
-    pathParams["name"] = name;
-    pathParams["type"] = _type;
+    pathParams["name"] = name
+    pathParams["type"] = _type
 
-    queryParams := url.Values{}
+    queryParams := make(map[string]interface{})
 
-    url, err := url.Parse(client.Parser.Url('/foo/:name/:type', pathParams))
+    u, err := url.Parse(client.internal.Parser.Url("/foo/:name/:type", pathParams))
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
     }
 
-    url.RawQuery = values.Encode()
+    u.RawQuery = client.internal.Parser.Query(queryParams).Encode()
 
     raw, err := json.Marshal(payload)
     if err != nil {
@@ -170,21 +170,21 @@ func (client *) Update(name string, _type string, payload EntryUpdate) (, error)
 
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("", url.String(), reqBody)
+    req, err := http.NewRequest("PUT", u.String(), reqBody)
     if err != nil {
         return EntryMessage{}, errors.New("could not create request")
     }
 
     req.Header.Set("Content-Type", "application/json")
 
-    resp, err := resource.client.Do(req)
+    resp, err := client.internal.HttpClient.Do(req)
     if err != nil {
         return EntryMessage{}, errors.New("could not send request")
     }
 
     defer resp.Body.Close()
 
-    if (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+    if resp.StatusCode >= 200 && resp.StatusCode < 300 {
         respBody, err := io.ReadAll(resp.Body)
         if err != nil {
             return EntryMessage{}, errors.New("could not read response body")
@@ -201,40 +201,40 @@ func (client *) Update(name string, _type string, payload EntryUpdate) (, error)
 
     switch resp.StatusCode {
         default:
-            return EntryMessage{}, , errors.New("the server returned an unknown status code")
+            return EntryMessage{}, errors.New("the server returned an unknown status code")
     }
 }
 
 // Delete 
-func (client *) Delete(name string, _type string) (, error) {
+func (client *Client) Delete(name string, _type string) (EntryMessage, error) {
     pathParams := make(map[string]interface{})
-    pathParams["name"] = name;
-    pathParams["type"] = _type;
+    pathParams["name"] = name
+    pathParams["type"] = _type
 
-    queryParams := url.Values{}
+    queryParams := make(map[string]interface{})
 
-    url, err := url.Parse(client.Parser.Url('/foo/:name/:type', pathParams))
+    u, err := url.Parse(client.internal.Parser.Url("/foo/:name/:type", pathParams))
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
     }
 
-    url.RawQuery = values.Encode()
+    u.RawQuery = client.internal.Parser.Query(queryParams).Encode()
 
 
-    req, err := http.NewRequest("", url.String(), nil)
+    req, err := http.NewRequest("DELETE", u.String(), nil)
     if err != nil {
         return EntryMessage{}, errors.New("could not create request")
     }
 
 
-    resp, err := resource.client.Do(req)
+    resp, err := client.internal.HttpClient.Do(req)
     if err != nil {
         return EntryMessage{}, errors.New("could not send request")
     }
 
     defer resp.Body.Close()
 
-    if (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+    if resp.StatusCode >= 200 && resp.StatusCode < 300 {
         respBody, err := io.ReadAll(resp.Body)
         if err != nil {
             return EntryMessage{}, errors.New("could not read response body")
@@ -251,24 +251,24 @@ func (client *) Delete(name string, _type string) (, error) {
 
     switch resp.StatusCode {
         default:
-            return EntryMessage{}, , errors.New("the server returned an unknown status code")
+            return EntryMessage{}, errors.New("the server returned an unknown status code")
     }
 }
 
 // Patch 
-func (client *) Patch(name string, _type string, payload EntryPatch) (, error) {
+func (client *Client) Patch(name string, _type string, payload EntryPatch) (EntryMessage, error) {
     pathParams := make(map[string]interface{})
-    pathParams["name"] = name;
-    pathParams["type"] = _type;
+    pathParams["name"] = name
+    pathParams["type"] = _type
 
-    queryParams := url.Values{}
+    queryParams := make(map[string]interface{})
 
-    url, err := url.Parse(client.Parser.Url('/foo/:name/:type', pathParams))
+    u, err := url.Parse(client.internal.Parser.Url("/foo/:name/:type", pathParams))
     if err != nil {
         return EntryMessage{}, errors.New("could not parse url")
     }
 
-    url.RawQuery = values.Encode()
+    u.RawQuery = client.internal.Parser.Query(queryParams).Encode()
 
     raw, err := json.Marshal(payload)
     if err != nil {
@@ -277,21 +277,21 @@ func (client *) Patch(name string, _type string, payload EntryPatch) (, error) {
 
     var reqBody = bytes.NewReader(raw)
 
-    req, err := http.NewRequest("", url.String(), reqBody)
+    req, err := http.NewRequest("PATCH", u.String(), reqBody)
     if err != nil {
         return EntryMessage{}, errors.New("could not create request")
     }
 
     req.Header.Set("Content-Type", "application/json")
 
-    resp, err := resource.client.Do(req)
+    resp, err := client.internal.HttpClient.Do(req)
     if err != nil {
         return EntryMessage{}, errors.New("could not send request")
     }
 
     defer resp.Body.Close()
 
-    if (resp.StatusCode >= 200 && resp.StatusCode < 300) {
+    if resp.StatusCode >= 200 && resp.StatusCode < 300 {
         respBody, err := io.ReadAll(resp.Body)
         if err != nil {
             return EntryMessage{}, errors.New("could not read response body")
@@ -308,17 +308,22 @@ func (client *) Patch(name string, _type string, payload EntryPatch) (, error) {
 
     switch resp.StatusCode {
         default:
-            return EntryMessage{}, , errors.New("the server returned an unknown status code")
+            return EntryMessage{}, errors.New("the server returned an unknown status code")
     }
 }
 
 
 
 
-func Build(token string) *Client {
-    var credentials := sdkgen.HttpBearer{Token: token}
+func Build(token string) (*Client, error) {
+    var credentials = sdkgen.HttpBearer{Token: token}
+
+    client, err := sdkgen.NewClient("http://api.foo.com", credentials)
+    if err != nil {
+        return &Client{}, err
+    }
 
     return &Client {
-        internal: sdkgen.NewClient(baseUrl, credentials, tokenStore, scopes),
-    }
+        internal: client,
+    }, nil
 }
