@@ -41,7 +41,7 @@
 
 ## Request
 
-<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr><tr><td>payload</td><td>EntryDelete</td><td>body</td></tr></tbody></table>
+<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr></tbody></table>
 
 ## Response
 

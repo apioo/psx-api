@@ -2,7 +2,7 @@ const client = new Client()
 client.get(name: string, type: string, startIndex: number, float: number, boolean: boolean, date: string, datetime: string): EntryCollection
 client.create(name: string, type: string, payload: EntryCreate): EntryMessage
 client.update(name: string, type: string, payload: EntryUpdate): EntryMessage
-client.delete(name: string, type: string, payload: EntryDelete): EntryMessage
+client.delete(name: string, type: string): EntryMessage
 client.patch(name: string, type: string, payload: EntryPatch): EntryMessage
 
 
