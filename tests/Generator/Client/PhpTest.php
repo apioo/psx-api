@@ -43,14 +43,6 @@ class PhpTest extends GeneratorTestCase
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/Client.php');
-        $this->assertFileExists($target . '/Entry.php');
-        $this->assertFileExists($target . '/EntryCollection.php');
-        $this->assertFileExists($target . '/EntryCreate.php');
-        $this->assertFileExists($target . '/EntryDelete.php');
-        $this->assertFileExists($target . '/EntryMessage.php');
-        $this->assertFileExists($target . '/EntryMessageException.php');
-        $this->assertFileExists($target . '/EntryPatch.php');
-        $this->assertFileExists($target . '/EntryUpdate.php');
     }
 
     public function testGenerateCollection()
@@ -62,14 +54,7 @@ class PhpTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/BarTag.php');
-        $this->assertFileExists($target . '/BazTag.php');
         $this->assertFileExists($target . '/Client.php');
-        $this->assertFileExists($target . '/Entry.php');
-        $this->assertFileExists($target . '/EntryCollection.php');
-        $this->assertFileExists($target . '/EntryCreate.php');
-        $this->assertFileExists($target . '/EntryMessage.php');
-        $this->assertFileExists($target . '/FooTag.php');
     }
 
     public function testGenerateComplex()

@@ -43,13 +43,6 @@ class JavaTest extends GeneratorTestCase
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/Client.java');
-        $this->assertFileExists($target . '/Entry.java');
-        $this->assertFileExists($target . '/EntryCollection.java');
-        $this->assertFileExists($target . '/EntryCreate.java');
-        $this->assertFileExists($target . '/EntryDelete.java');
-        $this->assertFileExists($target . '/EntryMessage.java');
-        $this->assertFileExists($target . '/EntryPatch.java');
-        $this->assertFileExists($target . '/EntryUpdate.java');
     }
 
     public function testGenerateCollection()

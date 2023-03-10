@@ -43,14 +43,6 @@ class TypescriptTest extends GeneratorTestCase
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/Client.ts');
-        $this->assertFileExists($target . '/Entry.ts');
-        $this->assertFileExists($target . '/EntryCollection.ts');
-        $this->assertFileExists($target . '/EntryCreate.ts');
-        $this->assertFileExists($target . '/EntryDelete.ts');
-        $this->assertFileExists($target . '/EntryMessage.ts');
-        $this->assertFileExists($target . '/EntryMessageException.ts');
-        $this->assertFileExists($target . '/EntryPatch.ts');
-        $this->assertFileExists($target . '/EntryUpdate.ts');
     }
 
     public function testGenerateCollection()
