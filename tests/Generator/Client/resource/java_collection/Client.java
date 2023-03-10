@@ -7,53 +7,59 @@
 import app.sdkgen.client.ClientAbstract;
 import app.sdkgen.client.Credentials.*;
 import app.sdkgen.client.CredentialsInterface;
-import app.sdkgen.client.TokenStoreInterface;
-import java.util.List;
+import app.sdkgen.client.Exception.Authenticator.InvalidCredentialsException;
+import app.sdkgen.client.Exception.ClientException;
+import app.sdkgen.client.Exception.UnknownStatusCodeException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.*;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Client extends ClientAbstract {
-    public Client(String baseUrl, String token, TokenStoreInterface tokenStore, List<String> scopes) {
-        super(baseUrl, new HttpBearer(token), tokenStore, scopes);
+    public Client(String baseUrl, CredentialsInterface credentials) throws InvalidCredentialsException {
+        super(baseUrl, credentials);
     }
 
-    /**
-     * Endpoint: /foo
-     *
-     * foo
-     */
-    public FooResource getFoo() {
-        return new FooResource(
-            this.baseUrl,
-            this.newHttpClient(),
-            this.objectMapper
+    public FooTag foo()
+    {
+        return new FooTag(
+            this.httpClient,
+            this.objectMapper,
+            this.parser
         );
     }
 
-    /**
-     * Endpoint: /bar/:foo
-     *
-     * bar
-     */
-    public BarByFooResource getBarByFoo(String foo) {
-        return new BarByFooResource(
-            foo,
-            this.baseUrl,
-            this.newHttpClient(),
-            this.objectMapper
+    public BarTag bar()
+    {
+        return new BarTag(
+            this.httpClient,
+            this.objectMapper,
+            this.parser
         );
     }
 
-    /**
-     * Endpoint: /bar/$year<[0-9]+>
-     *
-     * bar
-     */
-    public BarByYearResource getBarByYear(String year) {
-        return new BarByYearResource(
-            year,
-            this.baseUrl,
-            this.newHttpClient(),
-            this.objectMapper
+    public BazTag baz()
+    {
+        return new BazTag(
+            this.httpClient,
+            this.objectMapper,
+            this.parser
         );
     }
 
+
+
+    public static Client build(String token) throws InvalidCredentialsException
+    {
+        return new Client("http://api.foo.com", new HttpBearer(token));
+    }
 }

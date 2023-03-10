@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,19 @@ use PSX\Schema\GeneratorInterface;
  */
 class Java extends LanguageAbstract
 {
-    protected function getTemplate(): string
+    protected function getOperationTemplate(): string
     {
-        return 'java.java.twig';
+        return 'java-operation.java.twig';
     }
 
-    protected function getGroupTemplate(): string
+    protected function getTagTemplate(): string
     {
-        return 'java-group.java.twig';
+        return 'java-tag.java.twig';
+    }
+
+    protected function getExceptionTemplate(): string
+    {
+        return 'java-exception.java.twig';
     }
 
     protected function getClientTemplate(): string

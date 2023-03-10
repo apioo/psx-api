@@ -1,0 +1,57 @@
+{% for operation in operations %}
+    /**
+{% if operation.description %}     * {{ operation.description }}
+     *
+{% endif %}
+{% for name, arg in operation.arguments %}     * @param {{ arg.schema.docType }}{% if arg.schema.optional %}|null{% endif %} ${{ name }}
+{% endfor %}
+     * @return {% if operation.return %}{{ operation.return.schema.docType }}{% else %}void{% endif %}
+
+{% for throw in operation.throws %}     * @throws {{ throw.schema.docType }}Exception
+{% endfor %}
+     * @throws ClientException
+     */
+    public function {{ operation.methodName }}({% for name, arg in operation.arguments %}{% if arg.schema.optional %}?{% endif %}{{ arg.schema.type }} ${{ name }}{% if arg.schema.optional %} = null{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): {% if operation.return %}{{ operation.return.schema.type }}{% else %}void{% endif %}
+
+    {
+        $url = $this->parser->url('{{ operation.path|raw }}', [
+{% for name, realName in operation.pathNames %}
+            '{{ realName }}' => ${{ name }},
+{% endfor %}
+        ]);
+
+        $options = [
+            'query' => $this->parser->query([
+{% for name, realName in operation.queryNames %}
+                '{{ realName }}' => ${{ name }},
+{% endfor %}
+            ]),
+{% if operation.bodyName %}
+            'json' => ${{ operation.bodyName }}
+{% endif %}
+        ];
+
+        try {
+            $response = $this->httpClient->request('{{ operation.method }}', $url, $options);
+            $data = (string) $response->getBody();
+
+{% if operation.return %}
+            return $this->parser->parse($data, {{ operation.return.schema.type }}::class);
+{% endif %}
+        } catch (BadResponseException $e) {
+            $data = (string) $e->getResponse()->getBody();
+
+            switch ($e->getResponse()->getStatusCode()) {
+{% for code, return in operation.throws %}
+                case {{ code }}:
+                    throw new {{ return.schema.type }}Exception($this->parser->parse($data, {{ return.schema.type }}::class));
+{% endfor %}
+                default:
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+            }
+        } catch (\Throwable $e) {
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
+        }
+    }
+
+{% endfor %}

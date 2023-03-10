@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 namespace PSX\Api;
 
-use PSX\Api\Listing\FilterInterface;
+use PSX\Api\Scanner\FilterInterface;
 
 /**
  * GeneratorFactory
@@ -31,13 +31,11 @@ use PSX\Api\Listing\FilterInterface;
  */
 class GeneratorFactory implements GeneratorFactoryInterface
 {
-    protected string $namespace;
-    protected string $url;
-    protected string $dispatch;
+    private string $url;
+    private string $dispatch;
 
-    public function __construct(string $namespace, string $url, string $dispatch)
+    public function __construct(string $url, string $dispatch)
     {
-        $this->namespace = $namespace;
         $this->url       = $url;
         $this->dispatch  = $dispatch;
     }
@@ -75,12 +73,8 @@ class GeneratorFactory implements GeneratorFactoryInterface
                 $generator = new Generator\Markup\Markdown();
                 break;
 
-            case GeneratorFactoryInterface::SPEC_RAML:
-                $generator = new Generator\Spec\Raml(1, $baseUri);
-                break;
-
-            case GeneratorFactoryInterface::SPEC_TYPESCHEMA:
-                $generator = new Generator\Spec\TypeSchema();
+            case GeneratorFactoryInterface::SPEC_TYPEAPI:
+                $generator = new Generator\Spec\TypeAPI();
                 break;
 
             default:
@@ -96,63 +90,34 @@ class GeneratorFactory implements GeneratorFactoryInterface
 
     public function getFileExtension(string $format, ?string $config = null): string
     {
-        switch ($format) {
-            case GeneratorFactoryInterface::CLIENT_GO:
-                return 'go';
-            case GeneratorFactoryInterface::CLIENT_JAVA:
-                return 'java';
-            case GeneratorFactoryInterface::CLIENT_PHP:
-                return 'php';
-            case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
-                return 'ts';
-
-            case GeneratorFactoryInterface::MARKUP_CLIENT:
-                return 'md';
-            case GeneratorFactoryInterface::MARKUP_HTML:
-                return 'html';
-            case GeneratorFactoryInterface::MARKUP_MARKDOWN:
-                return 'md';
-
-            case GeneratorFactoryInterface::SPEC_TYPESCHEMA:
-            case GeneratorFactoryInterface::SPEC_OPENAPI:
-                return 'json';
-
-            case GeneratorFactoryInterface::SPEC_RAML:
-                return 'raml';
-
-            default:
-                return 'txt';
-        }
+        return match ($format) {
+            GeneratorFactoryInterface::CLIENT_GO => 'go',
+            GeneratorFactoryInterface::CLIENT_JAVA => 'java',
+            GeneratorFactoryInterface::CLIENT_PHP => 'php',
+            GeneratorFactoryInterface::CLIENT_TYPESCRIPT => 'ts',
+            GeneratorFactoryInterface::MARKUP_CLIENT => 'md',
+            GeneratorFactoryInterface::MARKUP_HTML => 'html',
+            GeneratorFactoryInterface::MARKUP_MARKDOWN => 'md',
+            GeneratorFactoryInterface::SPEC_TYPEAPI => 'json',
+            GeneratorFactoryInterface::SPEC_OPENAPI => 'json',
+            default => 'txt',
+        };
     }
 
     public function getMime(string $format, ?string $config = null): string
     {
-        switch ($format) {
-            case GeneratorFactoryInterface::CLIENT_GO:
-                return 'application/go';
-            case GeneratorFactoryInterface::CLIENT_JAVA:
-                return 'application/java';
-            case GeneratorFactoryInterface::CLIENT_PHP:
-                return 'application/php';
-            case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
-                return 'application/typescript';
-
-            case GeneratorFactoryInterface::MARKUP_CLIENT:
-                return 'text/markdown';
-            case GeneratorFactoryInterface::MARKUP_HTML:
-                return 'text/html';
-            case GeneratorFactoryInterface::MARKUP_MARKDOWN:
-                return 'text/markdown';
-
-            case GeneratorFactoryInterface::SPEC_TYPESCHEMA:
-            case GeneratorFactoryInterface::SPEC_OPENAPI:
-                return 'application/json';
-            case GeneratorFactoryInterface::SPEC_RAML:
-                return 'application/raml+yaml';
-
-            default:
-                return 'text/plain';
-        }
+        return match ($format) {
+            GeneratorFactoryInterface::CLIENT_GO => 'application/go',
+            GeneratorFactoryInterface::CLIENT_JAVA => 'application/java',
+            GeneratorFactoryInterface::CLIENT_PHP => 'application/php',
+            GeneratorFactoryInterface::CLIENT_TYPESCRIPT => 'application/typescript',
+            GeneratorFactoryInterface::MARKUP_CLIENT => 'text/markdown',
+            GeneratorFactoryInterface::MARKUP_HTML => 'text/html',
+            GeneratorFactoryInterface::MARKUP_MARKDOWN => 'text/markdown',
+            GeneratorFactoryInterface::SPEC_TYPEAPI => 'application/json',
+            GeneratorFactoryInterface::SPEC_OPENAPI => 'application/json',
+            default => 'text/plain',
+        };
     }
 
     /**
@@ -174,9 +139,8 @@ class GeneratorFactory implements GeneratorFactoryInterface
             GeneratorFactoryInterface::MARKUP_HTML,
             GeneratorFactoryInterface::MARKUP_MARKDOWN,
 
-            GeneratorFactoryInterface::SPEC_TYPESCHEMA,
+            GeneratorFactoryInterface::SPEC_TYPEAPI,
             GeneratorFactoryInterface::SPEC_OPENAPI,
-            GeneratorFactoryInterface::SPEC_RAML,
         ];
     }
 }

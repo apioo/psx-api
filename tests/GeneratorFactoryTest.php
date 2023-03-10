@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class GeneratorFactoryTest extends TestCase
      */
     public function testGetGenerator($type)
     {
-        $factory   = new GeneratorFactory('urn:phpsx.org:2016#', 'http://foo.com', '');
+        $factory   = new GeneratorFactory('http://foo.com', '');
         $generator = $factory->getGenerator($type);
 
         $this->assertInstanceOf(GeneratorInterface::class, $generator);
@@ -57,9 +57,8 @@ class GeneratorFactoryTest extends TestCase
             [GeneratorFactoryInterface::MARKUP_HTML],
             [GeneratorFactoryInterface::MARKUP_MARKDOWN],
 
-            [GeneratorFactoryInterface::SPEC_TYPESCHEMA],
+            [GeneratorFactoryInterface::SPEC_TYPEAPI],
             [GeneratorFactoryInterface::SPEC_OPENAPI],
-            [GeneratorFactoryInterface::SPEC_RAML],
         ];
     }
 }

@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Generator\Client;
 
+use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Go;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 
@@ -41,16 +42,7 @@ class GoTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/entry.go');
-        $this->assertFileExists($target . '/entry_collection.go');
-        $this->assertFileExists($target . '/entry_create.go');
-        $this->assertFileExists($target . '/entry_delete.go');
-        $this->assertFileExists($target . '/entry_message.go');
-        $this->assertFileExists($target . '/entry_patch.go');
-        $this->assertFileExists($target . '/entry_update.go');
-        $this->assertFileExists($target . '/foo_by_name_and_type_resource.go');
-        $this->assertFileExists($target . '/get_query.go');
-        $this->assertFileExists($target . '/path.go');
+        $this->assertFileExists($target . '/client.go');
     }
 
     public function testGenerateCollection()
@@ -62,29 +54,27 @@ class GoTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/bar_by_foo_resource.go');
-        $this->assertFileExists($target . '/bar_by_year_resource.go');
-        $this->assertFileExists($target . '/entry.go');
-        $this->assertFileExists($target . '/entry_collection.go');
-        $this->assertFileExists($target . '/entry_create.go');
-        $this->assertFileExists($target . '/entry_message.go');
-        $this->assertFileExists($target . '/foo_resource.go');
-        $this->assertFileExists($target . '/path_foo.go');
-        $this->assertFileExists($target . '/path_year.go');
+        $this->assertFileExists($target . '/client.go');
     }
 
     public function testGenerateComplex()
     {
-        $generator = new Go('http://api.foo.com');
+        $this->expectException(InvalidTypeException::class);
 
-        $result = $generator->generate($this->getSpecificationComplex());
-        $target = __DIR__ . '/resource/go_complex';
+        $generator = new Go('http://api.foo.com');
+        $generator->generate($this->getSpecificationComplex());
+    }
+
+    public function testGenerateTest()
+    {
+        $generator = new Go('http://127.0.0.1:8081');
+
+        $result = $generator->generate($this->getSpecificationTest());
+        $target = __DIR__ . '/resource/go_test';
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/entry.go');
-        $this->assertFileExists($target . '/entry_message.go');
-        $this->assertFileExists($target . '/foo_by_name_and_type_resource.go');
-        $this->assertFileExists($target . '/path.go');
+        $this->assertFileExists($target . '/client.go');
     }
+
 }

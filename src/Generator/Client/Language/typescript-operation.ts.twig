@@ -1,0 +1,54 @@
+{% for operation in operations %}
+    /**
+{% if operation.description %}     * {{ operation.description }}
+     *
+{% endif %}
+{% for name, arg in operation.args %}     * @param {{ '{' }}{{ arg.schema.docType }}{{ '}' }} {{ name }}
+{% endfor %}
+     * @returns {{ '{' }}Promise<{% if operation.return %}{{ operation.return.schema.docType|raw }}{% else %}void{% endif %}>{{ '}' }}
+{% for throw in operation.throws %}     * @throws {{ '{' }}{{ throw.schema.docType }}Exception{{ '}' }}
+{% endfor %}
+     * @throws {{ '{' }}ClientException{{ '}' }}
+     */
+    public async {{ operation.methodName }}({% for name, arg in operation.arguments %}{{ name }}{% if arg.schema.optional %}?{% endif %}: {{ arg.schema.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{% if operation.return %}{{ operation.return.schema.type|raw }}{% else %}void{% endif %}> {
+        const url = this.parser.url('{{ operation.path|raw }}', {
+{% for name, realName in operation.pathNames %}
+            '{{ realName }}': {{ name }},
+{% endfor %}
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: '{{ operation.method }}',
+            params: this.parser.query({
+{% for name, realName in operation.queryNames %}
+                '{{ realName }}': {{ name }},
+{% endfor %}
+            }),
+{% if operation.bodyName %}
+            data: {{ operation.bodyName }}
+{% endif %}
+        };
+
+        try {
+            const response = await this.httpClient.request{% if operation.return %}<{{ operation.return.schema.type }}>{% endif %}(params);
+{% if operation.return %}
+            return response.data;
+{% endif %}
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                switch (error.response.status) {
+{% for code, return in operation.throws %}
+                    case {{ code }}:
+                        throw new {{ return.schema.type }}Exception(error.response.data);
+{% endfor %}
+                    default:
+                        throw new UnknownStatusCodeException('The server returned an unknown status code');
+                }
+            }
+
+            throw new ClientException('An unknown error occurred: ' + String(error));
+        }
+    }
+
+{% endfor %}

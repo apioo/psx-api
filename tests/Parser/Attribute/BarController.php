@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 namespace PSX\Api\Tests\Parser\Attribute;
 
 use PSX\Api\Attribute\Description;
+use PSX\Api\Attribute\Path;
 use PSX\Api\Attribute\Post;
 use PSX\Api\Tests\Parser\Model\Incoming;
 use PSX\Api\Tests\Parser\Model\Outgoing;
@@ -33,13 +34,12 @@ use PSX\Api\Tests\Parser\Model\Outgoing;
  * @link    https://phpsx.org
  */
 #[Description('Bar endpoint')]
+#[Path('/foo/:id')]
 class BarController
 {
     #[Post]
-    protected function myMethod(Incoming $incoming): Outgoing
+    protected function myMethod(int $id, string $year, Incoming $incoming): Outgoing
     {
-        $foo = $incoming->foo;
-
         return new Outgoing('foo');
     }
 }

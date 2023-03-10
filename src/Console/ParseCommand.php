@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,6 @@ class ParseCommand extends Command
             ->setName('api:parse')
             ->setDescription('Parses an arbitrary source and outputs the schema in a specific format')
             ->addArgument('source', InputArgument::REQUIRED, 'The schema source this is either a absolute class name or schema file')
-            ->addArgument('path', InputArgument::OPTIONAL, 'The path of the resource')
             ->addOption('dir', 'd', InputOption::VALUE_REQUIRED, 'The target directory')
             ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Optional the output format possible values are: ' . implode(', ', GeneratorFactory::getPossibleTypes()))
             ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Optional a config value which gets passed to the generator');
@@ -75,7 +74,7 @@ class ParseCommand extends Command
         }
 
         $config = $input->getOption('config');
-        $specification = $this->apiManager->getApi($input->getArgument('source'), $input->getArgument('path'));
+        $specification = $this->apiManager->getApi($input->getArgument('source'));
 
         $generator = $this->factory->getGenerator($format, $config);
         $extension = $this->factory->getFileExtension($format, $config);

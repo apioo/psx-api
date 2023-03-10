@@ -2,34 +2,61 @@
 namespace {{ namespace }};
 {% endif %}
 
+use GuzzleHttp\Exception\BadResponseException;
 use Sdkgen\Client\ClientAbstract;
 use Sdkgen\Client\Credentials;
-use Sdkgen\Client\CredentialsInterface;
-use Sdkgen\Client\TokenStoreInterface;
+use Sdkgen\Client\Exception\ClientException;
+use Sdkgen\Client\Exception\UnknownStatusCodeException;
 
 class Client extends ClientAbstract
 {
-    public function __construct(string $baseUrl, {% if security.type == 'httpBasic' %}string $userName, string $password, {% elseif security.type in ['httpBearer', 'apiKey'] %}string $token, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}string $clientId, string $clientSecret, {% else %}?CredentialsInterface $credentials = null, {% endif %}?TokenStoreInterface $tokenStore = null, ?array $scopes = null)
+{% for tag in tags %}
+    public function {{ tag.methodName }}(): {{ tag.className }}
     {
-        parent::__construct($baseUrl, {% if security.type == 'httpBasic' %}new Credentials\HttpBasic($userName, $password){% elseif security.type == 'httpBearer' %}new Credentials\HttpBearer($token){% elseif security.type == 'apiKey' %}new Credentials\ApiKey($token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new Credentials\ClientCredentials($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new Credentials\AuthorizationCode($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}$credentials{% endif %}, $tokenStore, $scopes);
-    }
-
-{% for className, resource in resources %}
-    /**
-     * Endpoint: {{ resource.path|raw }}
-     *
-     * {{ resource.description|raw }}
-     */
-    public function {{ resource.methodName }}({% for name, arg in resource.properties %}{{ arg.type }} ${{ name }}{% if not loop.last %}, {% endif %}{% endfor %}): {{ className }}
-    {
-        return new {{ className }}(
-            {% for name, arg in resource.properties %}${{ name }},
-            {% endfor %}
-$this->baseUrl,
-            $this->newHttpClient(),
-            $this->schemaManager
+        return new {{ tag.className }}(
+            $this->httpClient,
+            $this->parser
         );
     }
 
 {% endfor %}
+{{ operations|raw }}
+
+{% if security.type == 'httpBasic' %}
+    public static function build({% if not baseUrl %}string $baseUrl, {% endif %}string $userName, string $password): self
+    {
+{% if not baseUrl %}
+        return new self($baseUrl, new Credentials\HttpBasic($userName, $password));
+{% else %}
+        return new self('{{ baseUrl }}', new Credentials\HttpBasic($userName, $password));
+{% endif %}
+    }}
+{% elseif security.type == 'httpBearer' %}
+    public static function build({% if not baseUrl %}string $baseUrl, {% endif %}string $token): self
+    {
+{% if not baseUrl %}
+        return new self($baseUrl, new Credentials\HttpBearer($token));
+{% else %}
+        return new self('{{ baseUrl }}', new Credentials\HttpBearer($token));
+{% endif %}
+    }
+{% elseif security.type == 'apiKey' %}
+    public static function build({% if not baseUrl %}string $baseUrl, {% endif %}string $token): self
+    {
+{% if not baseUrl %}
+        return new self($baseUrl, new Credentials\ApiKey($token, '{{ security.name }}', '{{ security.in }}'));
+{% else %}
+        return new self('{{ baseUrl }}', new Credentials\ApiKey($token, '{{ security.name }}', '{{ security.in }}'));
+{% endif %}
+    }
+{% elseif security.type == 'oauth2' %}
+    public static function build({% if not baseUrl %}string $baseUrl, {% endif %}string $clientId, string $clientSecret, ?TokenStoreInterface $tokenStore = null, ?array $scopes = null): self
+    {
+{% if not baseUrl %}
+        return new self($baseUrl, new Credentials\OAuth2($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', $tokenStore, $scopes));
+{% else %}
+        return new self('{{ baseUrl }}', new Credentials\OAuth2($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', $tokenStore, $scopes));
+{% endif %}
+    }
+{% endif %}
 }

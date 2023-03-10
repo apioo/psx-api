@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,38 +32,27 @@ use PSX\Schema\DefinitionsInterface;
  */
 class Specification implements SpecificationInterface, \JsonSerializable
 {
-    private ResourceCollection $resourceCollection;
+    private OperationsInterface $operations;
     private DefinitionsInterface $definitions;
     private ?SecurityInterface $security;
+    private ?string $baseUrl;
 
-    public function __construct(?ResourceCollection $resourceCollection = null, ?DefinitionsInterface $definitions = null, ?SecurityInterface $security = null)
+    public function __construct(?OperationsInterface $operations = null, ?DefinitionsInterface $definitions = null, ?SecurityInterface $security = null, ?string $baseUrl = null)
     {
-        $this->resourceCollection = $resourceCollection ?? new ResourceCollection();
+        $this->operations = $operations ?? new Operations();
         $this->definitions = $definitions ?? new Definitions();
         $this->security = $security;
+        $this->baseUrl = $baseUrl;
     }
 
-    public function getResourceCollection(): ResourceCollection
+    public function getOperations(): OperationsInterface
     {
-        return $this->resourceCollection;
+        return $this->operations;
     }
 
     public function getDefinitions(): DefinitionsInterface
     {
         return $this->definitions;
-    }
-
-    public function get(string $path): ?SpecificationInterface
-    {
-        $resource = $this->getResourceCollection()->get($path);
-        if (!$resource instanceof Resource) {
-            return null;
-        }
-
-        return new Specification(
-            new ResourceCollection([$resource]),
-            $this->definitions
-        );
     }
 
     public function getSecurity(): ?SecurityInterface
@@ -76,35 +65,29 @@ class Specification implements SpecificationInterface, \JsonSerializable
         $this->security = $security;
     }
 
+    public function getBaseUrl(): ?string
+    {
+        return $this->baseUrl;
+    }
+
+    public function setBaseUrl(?string $baseUrl): void
+    {
+        $this->baseUrl = $baseUrl;
+    }
+
     public function merge(SpecificationInterface $specification): void
     {
-        foreach ($specification->getResourceCollection() as $path => $resource) {
-            if ($this->resourceCollection->has($path)) {
-                foreach ($resource->getMethods() as $method) {
-                    $this->resourceCollection->get($path)->addMethod($method);
-                }
-            } else {
-                $this->resourceCollection->set($resource);
-            }
-        }
-
+        $this->operations->merge($specification->getOperations());
         $this->definitions->merge($specification->getDefinitions());
     }
 
     public function jsonSerialize(): array
     {
         return [
+            'baseUrl' => $this->baseUrl,
             'security' => $this->security,
-            'resources' => $this->resourceCollection,
+            'operations' => $this->operations,
             'definitions' => $this->definitions,
         ];
-    }
-
-    public static function fromResource(Resource $resource, DefinitionsInterface $definitions): self
-    {
-        $collection = new ResourceCollection();
-        $collection->set($resource);
-
-        return new static($collection, $definitions);
     }
 }

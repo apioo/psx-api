@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Generator\Client;
 
+use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Typescript;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 
@@ -42,16 +43,6 @@ class TypescriptTest extends GeneratorTestCase
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/Client.ts');
-        $this->assertFileExists($target . '/Entry.ts');
-        $this->assertFileExists($target . '/EntryCollection.ts');
-        $this->assertFileExists($target . '/EntryCreate.ts');
-        $this->assertFileExists($target . '/EntryDelete.ts');
-        $this->assertFileExists($target . '/EntryMessage.ts');
-        $this->assertFileExists($target . '/EntryPatch.ts');
-        $this->assertFileExists($target . '/EntryUpdate.ts');
-        $this->assertFileExists($target . '/FooByNameAndTypeResource.ts');
-        $this->assertFileExists($target . '/GetQuery.ts');
-        $this->assertFileExists($target . '/Path.ts');
     }
 
     public function testGenerateCollection()
@@ -63,32 +54,27 @@ class TypescriptTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/BarByFooResource.ts');
-        $this->assertFileExists($target . '/BarByYearResource.ts');
         $this->assertFileExists($target . '/Client.ts');
-        $this->assertFileExists($target . '/Entry.ts');
-        $this->assertFileExists($target . '/EntryCollection.ts');
-        $this->assertFileExists($target . '/EntryCreate.ts');
-        $this->assertFileExists($target . '/EntryMessage.ts');
-        $this->assertFileExists($target . '/FooResource.ts');
-        $this->assertFileExists($target . '/PathFoo.ts');
-        $this->assertFileExists($target . '/PathYear.ts');
     }
 
     public function testGenerateComplex()
     {
-        $generator = new Typescript('http://api.foo.com');
+        $this->expectException(InvalidTypeException::class);
 
-        $result = $generator->generate($this->getSpecificationComplex());
-        $target = __DIR__ . '/resource/typescript_complex';
+        $generator = new Typescript('http://api.foo.com');
+        $generator->generate($this->getSpecificationComplex());
+    }
+
+    public function testGenerateTest()
+    {
+        $generator = new Typescript('http://127.0.0.1:8081');
+
+        $result = $generator->generate($this->getSpecificationTest());
+        $target = __DIR__ . '/resource/typescript_test';
 
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/Client.ts');
-        $this->assertFileExists($target . '/Entry.ts');
-        $this->assertFileExists($target . '/EntryMessage.ts');
-        $this->assertFileExists($target . '/EntryOrMessage.ts');
-        $this->assertFileExists($target . '/FooByNameAndTypeResource.ts');
-        $this->assertFileExists($target . '/Path.ts');
     }
+
 }

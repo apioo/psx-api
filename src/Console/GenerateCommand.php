@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ namespace PSX\Api\Console;
 
 use PSX\Api\GeneratorFactory;
 use PSX\Api\GeneratorFactoryInterface;
-use PSX\Api\Listing\FilterFactoryInterface;
-use PSX\Api\ListingInterface;
+use PSX\Api\Scanner\FilterFactoryInterface;
+use PSX\Api\ScannerInterface;
 use PSX\Schema\Generator\Code\Chunks;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -40,15 +40,15 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateCommand extends Command
 {
-    private ListingInterface $listing;
+    private ScannerInterface $scanner;
     private GeneratorFactoryInterface $factory;
     private ?FilterFactoryInterface $filterFactory;
 
-    public function __construct(ListingInterface $listing, GeneratorFactoryInterface $factory, ?FilterFactoryInterface $filterFactory = null)
+    public function __construct(ScannerInterface $scanner, GeneratorFactoryInterface $factory, ?FilterFactoryInterface $filterFactory = null)
     {
         parent::__construct();
 
-        $this->listing = $listing;
+        $this->scanner = $scanner;
         $this->factory = $factory;
         $this->filterFactory = $filterFactory;
     }
@@ -90,7 +90,7 @@ class GenerateCommand extends Command
 
         $output->writeln('Generating ...');
 
-        $content = $generator->generate($this->listing->findAll(null, $filter));
+        $content = $generator->generate($this->scanner->generate($filter));
 
         if ($content instanceof Chunks) {
             if (!empty($filterName)) {

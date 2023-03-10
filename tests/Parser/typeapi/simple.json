@@ -1,0 +1,151 @@
+{
+  "operations": {
+    "PSX.Api.Tests.Parser.Attribute.TestController.doGet": {
+      "description": "A long **Test** description",
+      "method": "GET",
+      "path": "/foo/:fooId",
+      "tags": ["foo"],
+      "return": {
+        "code": 200,
+        "schema": {
+          "$ref": "Song"
+        }
+      },
+      "arguments": {
+        "fooId": {
+          "in": "path",
+          "schema": {
+            "type": "string"
+          }
+        },
+        "foo": {
+          "in": "query",
+          "schema": {
+            "description": "Test",
+            "type": "string"
+          }
+        },
+        "bar": {
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        "baz": {
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "foo",
+              "bar"
+            ]
+          }
+        },
+        "boz": {
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "pattern": "[A-z]+"
+          }
+        },
+        "integer": {
+          "in": "query",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        "number": {
+          "in": "query",
+          "schema": {
+            "type": "number"
+          }
+        },
+        "date": {
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "boolean": {
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        "string": {
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        "payload": {
+          "in": "body",
+          "schema": {
+            "$ref": "Song"
+          }
+        }
+      },
+      "throws": [{
+        "code": 500,
+        "schema": {
+          "$ref": "Error"
+        }
+      }]
+    }
+  },
+  "definitions": {
+    "Song": {
+      "description": "A canonical song",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "artist": {
+          "type": "string"
+        },
+        "length": {
+          "type": "integer"
+        },
+        "ratings": {
+          "type": "array",
+          "items": {
+            "$ref": "Rating"
+          }
+        }
+      },
+      "required": [
+        "title",
+        "artist"
+      ]
+    },
+    "Rating": {
+      "title": "Rating",
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

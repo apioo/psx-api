@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,19 +32,14 @@ use PSX\Schema\DefinitionsInterface;
 interface SpecificationInterface
 {
     /**
-     * Returns all resources assigned to this specification
+     * Returns all operations assigned to this specification
      */
-    public function getResourceCollection(): ResourceCollection;
+    public function getOperations(): OperationsInterface;
 
     /**
-     * Returns all type definitions assigned to this specification
+     * Returns all definitions assigned to this specification
      */
     public function getDefinitions(): DefinitionsInterface;
-
-    /**
-     * Returns a specification for the specific path
-     */
-    public function get(string $path): ?SpecificationInterface;
 
     /**
      * Returns the configured security definition
@@ -52,7 +47,12 @@ interface SpecificationInterface
     public function getSecurity(): ?SecurityInterface;
 
     /**
-     * Merges all resource and type definitions into the specification
+     * Returns the configured base url
+     */
+    public function getBaseUrl(): ?string;
+
+    /**
+     * Merges all operations and definitions into the specification
      */
     public function merge(SpecificationInterface $specification): void;
 }

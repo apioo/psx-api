@@ -1,0 +1,22 @@
+{% if namespace %}
+package {{ namespace|lower }}
+{% endif %}
+
+import (
+    "errors"
+    "fmt"
+    "os"
+)
+
+type {{ className }} struct {
+    Payload {{ type }}
+}
+
+func (e *{{ className }}) Error() string {
+    raw, err := json.Marshal(e.Payload)
+    if err != nil {
+        return "could not marshal provided JSON data"
+    }
+
+    return fmt.Sprintf("The server returned an error: %s", raw)
+}

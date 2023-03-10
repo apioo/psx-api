@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Generator\Client\Util;
 
+use PSX\Api\OperationInterface;
 use PSX\Api\Resource;
 use PSX\Schema\Generator\Normalizer\NormalizerInterface;
 
@@ -39,55 +40,26 @@ class Naming
         $this->normalizer = $normalizer;
     }
 
-    public function buildClassNameByResource(Resource $resource): string
+    public function buildClassNameByTag(string $tagName): string
     {
-        $name = $resource->getName();
-        if (!empty($name)) {
-            $result = [$name];
-        } else {
-            $result = $this->buildNameByPath($resource->getPath());
-        }
-
-        $result[] = 'Resource';
-
-        return $this->normalizer->class(...$result);
+        return $this->normalizer->class($tagName, 'Tag');
     }
 
-    public function buildMethodNameByMethod(Resource\MethodAbstract $method): string
+    public function buildMethodNameByTag(string $tagName): string
     {
-        $operationId = $method->getOperationId();
-        if (empty($operationId)) {
-            $operationId = strtolower($method->getName());
-        }
-
-        return $this->normalizer->method($operationId);
+        return $this->normalizer->method($tagName);
     }
 
-    public function buildResourceGetter(string $className): string
+    public function buildClassNameByException(string $ref): string
     {
-        $methodName = substr($className, 0, -8);
-
-        return $this->normalizer->method('get', $methodName);
+        return $this->normalizer->class($ref, 'Exception');
     }
 
-    private function buildNameByPath(string $path): array
+    public function buildMethodNameByOperationId(string $operationId): string
     {
-        $result = [];
-        $parts = explode('/', $path);
+        $parts = explode('.', $operationId);
+        $methodName = end($parts);
 
-        $i = 0;
-        foreach ($parts as $part) {
-            if (str_starts_with($part, ':')) {
-                $part = ($i === 0 ? 'By' : 'And') . ucfirst(substr($part, 1));
-                $i++;
-            } elseif (str_starts_with($part, '$')) {
-                $part = ($i === 0 ? 'By' : 'And') . ucfirst(substr($part, 1, strpos($part, '<')));
-                $i++;
-            }
-
-            $result[] = $part;
-        }
-
-        return $result;
+        return $this->normalizer->method($methodName);
     }
 }

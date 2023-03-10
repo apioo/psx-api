@@ -1,0 +1,22 @@
+{% if namespace %}
+namespace {{ namespace }};
+{% endif %}
+
+use Sdkgen\Client\Exception\KnownStatusCodeException;
+
+class {{ className }} extends KnownStatusCodeException
+{
+    private {{ type }} $payload;
+
+    public function __construct({{ type }} $payload)
+    {
+        parent::__construct('{{ message }}');
+
+        $this->payload = $payload;
+    }
+
+    public function getPayload(): {{ type }}
+    {
+        return $this->payload;
+    }
+}

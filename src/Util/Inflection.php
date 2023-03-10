@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,17 +56,35 @@ class Inflection
     }
 
     /**
-     * Generates an title "BarFoo" based on an PSX route "/bar/:foo"
-     *
-     * @param string $path
-     * @return string
+     * Returns an array containing the names of all variable path fragments
      */
-    public static function generateTitleFromRoute(string $path): string
+    public static function extractPlaceholderNames(string $path): array
     {
-        $path = str_replace([':', '*', '$'], '', $path);
-        $path = preg_replace('/\<(.*)\>/iU', '', $path);
-        $path = str_replace(' ', '', ucwords(str_replace('/', ' ', $path)));
+        $parts = explode('/', $path);
+        $result = [];
 
-        return $path;
+        foreach ($parts as $part) {
+            if ($part === '') {
+                continue;
+            }
+
+            $name = null;
+            if (str_starts_with($part, ':')) {
+                $name = substr($part, 1);
+            } elseif (str_starts_with($part, '$')) {
+                $pos  = strpos($part, '<');
+                $name = substr($part, 1, $pos - 1);
+            } elseif (str_starts_with($part, '{') && str_ends_with($part, '}')) {
+                $name = substr($part, 1, -1);
+            } elseif (str_starts_with($part, '*')) {
+                $name = substr($part, 1);
+            }
+
+            if ($name !== null) {
+                $result[] = $name;
+            }
+        }
+
+        return $result;
     }
 }

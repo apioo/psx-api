@@ -1,0 +1,91 @@
+{
+  "security": {
+    "type": "httpBearer"
+  },
+  "operations": {
+    "get": {
+      "path": "\/foo\/:name\/:type",
+      "method": "GET",
+      "return": {
+        "code": 200,
+        "schema": {
+          "$ref": "EntryOrMessage"
+        }
+      },
+      "arguments": {
+        "name": {
+          "in": "path",
+          "schema": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "in": "path",
+          "schema": {
+            "type": "string"
+          }
+        },
+        "payload": {
+          "in": "body",
+          "schema": {
+            "$ref": "EntryOrMessage"
+          }
+        }
+      },
+      "throws": [],
+      "description": "Returns a collection",
+      "stability": 1,
+      "security": [
+        "foo"
+      ],
+      "authorization": true,
+      "tags": [
+        "foo"
+      ]
+    }
+  },
+  "definitions": {
+    "Entry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "userId": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string",
+          "pattern": "[A-z]+",
+          "minLength": 3,
+          "maxLength": 16
+        },
+        "date": {
+          "format": "date-time",
+          "type": "string"
+        }
+      }
+    },
+    "EntryMessage": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "EntryOrMessage": {
+      "oneOf": [
+        {
+          "$ref": "Entry"
+        },
+        {
+          "$ref": "EntryMessage"
+        }
+      ]
+    }
+  }
+}

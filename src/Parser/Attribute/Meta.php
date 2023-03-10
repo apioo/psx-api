@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,11 @@
 
 namespace PSX\Api\Parser\Attribute;
 
+use PSX\Api\Attribute\Authorization;
+use PSX\Api\Attribute\Deprecated;
 use PSX\Api\Attribute\Description;
 use PSX\Api\Attribute\Exclude;
 use PSX\Api\Attribute\Incoming;
-use PSX\Api\Attribute\Method;
 use PSX\Api\Attribute\MethodAbstract;
 use PSX\Api\Attribute\OperationId;
 use PSX\Api\Attribute\Outgoing;
@@ -62,6 +63,8 @@ class Meta
     private ?OperationId $operationId = null;
     private ?Tags $tags = null;
     private ?Security $security = null;
+    private ?Deprecated $deprecated = null;
+    private ?Authorization $authorization = null;
 
     public function __construct(array $attributes)
     {
@@ -88,6 +91,10 @@ class Meta
                 $this->tags = $attribute;
             } elseif ($attribute instanceof Security) {
                 $this->security = $attribute;
+            } elseif ($attribute instanceof Deprecated) {
+                $this->deprecated = $attribute;
+            } elseif ($attribute instanceof Authorization) {
+                $this->authorization = $attribute;
             }
         }
     }
@@ -167,9 +174,19 @@ class Meta
         return $this->pathParams;
     }
 
+    public function setPathParams(array $pathParams): void
+    {
+        $this->pathParams = $pathParams;
+    }
+
     public function getQueryParams(): array
     {
         return $this->queryParams;
+    }
+
+    public function setQueryParams(array $queryParams): void
+    {
+        $this->queryParams = $queryParams;
     }
 
     public function getIncoming(): ?Incoming
@@ -215,6 +232,16 @@ class Meta
     public function getSecurity(): ?Security
     {
         return $this->security;
+    }
+
+    public function getDeprecated(): ?Deprecated
+    {
+        return $this->deprecated;
+    }
+
+    public function getAuthorization(): ?Authorization
+    {
+        return $this->authorization;
     }
 
     public function isExcluded(): bool

@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Generator\Client;
 
+use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Java;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 
@@ -42,16 +43,6 @@ class JavaTest extends GeneratorTestCase
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/Client.java');
-        $this->assertFileExists($target . '/Entry.java');
-        $this->assertFileExists($target . '/EntryCollection.java');
-        $this->assertFileExists($target . '/EntryCreate.java');
-        $this->assertFileExists($target . '/EntryDelete.java');
-        $this->assertFileExists($target . '/EntryMessage.java');
-        $this->assertFileExists($target . '/EntryPatch.java');
-        $this->assertFileExists($target . '/EntryUpdate.java');
-        $this->assertFileExists($target . '/FooByNameAndTypeResource.java');
-        $this->assertFileExists($target . '/GetQuery.java');
-        $this->assertFileExists($target . '/Path.java');
     }
 
     public function testGenerateCollection()
@@ -63,31 +54,27 @@ class JavaTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/BarByFooResource.java');
-        $this->assertFileExists($target . '/BarByYearResource.java');
         $this->assertFileExists($target . '/Client.java');
-        $this->assertFileExists($target . '/Entry.java');
-        $this->assertFileExists($target . '/EntryCollection.java');
-        $this->assertFileExists($target . '/EntryCreate.java');
-        $this->assertFileExists($target . '/EntryMessage.java');
-        $this->assertFileExists($target . '/FooResource.java');
-        $this->assertFileExists($target . '/PathFoo.java');
-        $this->assertFileExists($target . '/PathYear.java');
     }
 
     public function testGenerateComplex()
     {
-        $generator = new Java('http://api.foo.com');
+        $this->expectException(InvalidTypeException::class);
 
-        $result = $generator->generate($this->getSpecificationComplex());
-        $target = __DIR__ . '/resource/java_complex';
+        $generator = new Java('http://api.foo.com');
+        $generator->generate($this->getSpecificationComplex());
+    }
+
+    public function testGenerateTest()
+    {
+        $generator = new Java('http://127.0.0.1:8081', 'app.sdkgen.client.generated');
+
+        $result = $generator->generate($this->getSpecificationTest());
+        $target = __DIR__ . '/resource/java_test';
 
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/Client.java');
-        $this->assertFileExists($target . '/Entry.java');
-        $this->assertFileExists($target . '/EntryMessage.java');
-        $this->assertFileExists($target . '/FooByNameAndTypeResource.java');
-        $this->assertFileExists($target . '/Path.java');
     }
+
 }

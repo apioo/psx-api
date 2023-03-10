@@ -9,29 +9,34 @@ import (
 )
 
 type Client struct {
-    internal *sdkgen.Client
+    internal *sdkgen.ClientAbstract
 }
 
-// Endpoint: /foo - foo
-func (client Client) GetFoo() *FooResource {
-    return NewFooResource(client.internal.GetResource())
+func (client *Client) Foo() *FooTag {
+    return New(client.internal.HttpClient, client.internal.Parser)
 }
 
-// Endpoint: /bar/:foo - bar
-func (client Client) GetBarByFoo(foo string) *BarByFooResource {
-    return NewBarByFooResource(foo, client.internal.GetResource())
+func (client *Client) Bar() *BarTag {
+    return New(client.internal.HttpClient, client.internal.Parser)
 }
 
-// Endpoint: /bar/$year<[0-9]+> - bar
-func (client Client) GetBarByYear(year string) *BarByYearResource {
-    return NewBarByYearResource(year, client.internal.GetResource())
+func (client *Client) Baz() *BazTag {
+    return New(client.internal.HttpClient, client.internal.Parser)
 }
 
 
-func NewClient(baseUrl string, token string, tokenStore sdkgen.TokenStoreInterface, scopes []string) *Client {
-    var credentials := sdkgen.HttpBearer{Token: token}
+
+
+
+func Build(token string) (*Client, error) {
+    var credentials = sdkgen.HttpBearer{Token: token}
+
+    client, err := sdkgen.NewClient("http://api.foo.com", credentials)
+    if err != nil {
+        return &Client{}, err
+    }
 
     return &Client {
-        internal: sdkgen.NewClient(baseUrl, credentials, tokenStore, scopes),
-    }
+        internal: client,
+    }, nil
 }

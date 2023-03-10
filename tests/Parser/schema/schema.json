@@ -1,7 +1,4 @@
 {
-  "$import": {
-    "rating": "file:///rating.json"
-  },
   "definitions": {
     "Song": {
       "description": "A canonical song",
@@ -19,7 +16,7 @@
         "ratings": {
           "type": "array",
           "items": {
-            "$ref": "rating:Rating"
+            "$ref": "Rating"
           }
         }
       },
@@ -27,6 +24,21 @@
         "title",
         "artist"
       ]
+    },
+    "Rating": {
+      "title": "Rating",
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
     }
   },
   "$ref": "Song"

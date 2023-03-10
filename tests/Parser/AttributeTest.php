@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,14 @@
 namespace PSX\Api\Tests\Parser;
 
 use PSX\Api\ApiManager;
+use PSX\Api\Exception\ParserException;
+use PSX\Api\Operation;
+use PSX\Api\OperationInterface;
 use PSX\Api\Parser\Attribute as AttributeParser;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Attribute\BarController;
 use PSX\Api\Tests\Parser\Attribute\TestController;
+use PSX\Schema\TypeFactory;
 
 /**
  * AttributeTest
@@ -40,32 +44,40 @@ class AttributeTest extends ParserTestCase
      */
     protected function getSpecification(): SpecificationInterface
     {
-        return $this->apiManager->getApi(TestController::class, '/foo', ApiManager::TYPE_ATTRIBUTE);
+        return $this->apiManager->getApi(TestController::class, ApiManager::TYPE_ATTRIBUTE);
     }
 
     public function testOperationId()
     {
-        $specification = $this->apiManager->getApi(TestController::class, '/foo');
-        $resource = $specification->getResourceCollection()->get('/foo');
+        $specification = $this->apiManager->getApi(TestController::class);
+        $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.TestController.doGet');
 
-        $this->assertEquals('PSX_Api_Tests_Parser_Attribute_TestController_doGet', $resource->getMethod('GET')->getOperationId());
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals('A long **Test** description', $operation->getDescription());
     }
 
     public function testParseTypeHint()
     {
         $annotation = new AttributeParser($this->schemaManager);
-        $specification = $annotation->parse(BarController::class, '/foo');
-        $resource = $specification->getResourceCollection()->get('/foo');
+        $specification = $annotation->parse(BarController::class);
+        $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.BarController.myMethod');
 
-        $this->assertEquals('PSX_Api_Tests_Parser_Attribute_BarController_myMethod_POST_Request', $resource->getMethod('POST')->getRequest());
-        $this->assertEquals('PSX_Api_Tests_Parser_Attribute_BarController_myMethod_POST_200_Response', $resource->getMethod('POST')->getResponse(200));
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals('path', $operation->getArguments()->get('id')->getIn());
+        $this->assertEquals(TypeFactory::getInteger(), $operation->getArguments()->get('id')->getSchema());
+        $this->assertEquals('query', $operation->getArguments()->get('year')->getIn());
+        $this->assertEquals(TypeFactory::getString(), $operation->getArguments()->get('year')->getSchema());
+        $this->assertEquals('body', $operation->getArguments()->get('payload')->getIn());
+        $this->assertEquals(TypeFactory::getReference('Incoming'), $operation->getArguments()->get('payload')->getSchema());
+        $this->assertEquals(200, $operation->getReturn()->getCode());
+        $this->assertEquals(TypeFactory::getReference('Outgoing'), $operation->getReturn()->getSchema());
     }
 
     public function testParseInvalid()
     {
-        $this->expectException(\ReflectionException::class);
+        $this->expectException(ParserException::class);
 
         $annotation = new AttributeParser($this->schemaManager);
-        $annotation->parse('foo', '/foo');
+        $annotation->parse('foo');
     }
 }

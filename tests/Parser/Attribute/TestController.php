@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ namespace PSX\Api\Tests\Parser\Attribute;
 use PSX\Api\Attribute\Description;
 use PSX\Api\Attribute\Incoming;
 use PSX\Api\Attribute\Outgoing;
+use PSX\Api\Attribute\Path;
 use PSX\Api\Attribute\PathParam;
 use PSX\Api\Attribute\QueryParam;
-use PSX\Api\DocumentedInterface;
-use PSX\Api\SpecificationInterface;
+use PSX\Api\Attribute\Tags;
 
 /**
  * TestController
@@ -36,6 +36,7 @@ use PSX\Api\SpecificationInterface;
  * @link    https://phpsx.org
  */
 #[Description('Test description')]
+#[Path('/foo/:fooId')]
 #[PathParam(name: 'fooId', type: 'string', required: true)]
 class TestController
 {
@@ -46,11 +47,13 @@ class TestController
     #[QueryParam(name: "boz", type: "string", pattern: "[A-z]+")]
     #[QueryParam(name: "integer", type: "integer")]
     #[QueryParam(name: "number", type: "number")]
-    #[QueryParam(name: "date", type: "date")]
+    #[QueryParam(name: "date", type: "date", format: 'date-time')]
     #[QueryParam(name: "boolean", type: "boolean")]
     #[QueryParam(name: "string", type: "string")]
     #[Incoming(schema: __DIR__ . "/../schema/schema.json")]
     #[Outgoing(code: 200, schema: __DIR__ . "/../schema/schema.json")]
+    #[Outgoing(code: 500, schema: __DIR__ . "/../schema/error.json")]
+    #[Tags(['foo'])]
     protected function doGet()
     {
     }

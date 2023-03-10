@@ -4,7 +4,7 @@
  * PSX is a open source PHP framework to develop RESTful APIs.
  * For the current version and informations visit <http://phpsx.org>
  *
- * Copyright 2010-2019 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,15 @@ if (!empty($autoloadFile)) {
     $schemaManager = new \PSX\Schema\SchemaManager();
     $apiManager    = new \PSX\Api\ApiManager($schemaManager);
 
-    $listing = new \PSX\Api\Listing\MemoryListing();
-    $factory = new \PSX\Api\GeneratorFactory('urn:schema.phpsx.org#', 'http://localhost', '');
+    $scanner = new \PSX\Api\Scanner\Memory();
+    $factory = new \PSX\Api\GeneratorFactory('http://localhost', '');
+    $filterFactory = new \PSX\Api\Scanner\FilterFactory();
 
     $application = new Symfony\Component\Console\Application('PSX API');
     $application->add(new \PSX\Schema\Console\ParseCommand($schemaManager));
-    $application->add(new \PSX\Api\Console\GenerateCommand($listing, $factory));
+    $application->add(new \PSX\Api\Console\GenerateCommand($scanner, $factory));
     $application->add(new \PSX\Api\Console\ParseCommand($apiManager, $factory));
+    $application->add(new \PSX\Api\Console\PushCommand($scanner, $filterFactory));
     $application->run();
 } else {
     die('You need to set up the project dependencies through composer');

@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,15 @@
 
 namespace PSX\Api\Generator\Client;
 
+use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Util\Naming;
-use PSX\Api\Resource;
+use PSX\Api\Operation\ArgumentInterface;
+use PSX\Api\OperationInterface;
+use PSX\Api\OperationsInterface;
 use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\Exception\TypeNotFoundException;
 use PSX\Schema\Generator\Normalizer\NormalizerInterface;
 use PSX\Schema\Generator\NormalizerAwareInterface;
 use PSX\Schema\Generator\Type\GeneratorInterface as TypeGeneratorInterface;
@@ -72,6 +76,10 @@ class LanguageBuilder
         }
     }
 
+    /**
+     * @throws InvalidTypeException
+     * @throws TypeNotFoundException
+     */
     public function getClient(SpecificationInterface $specification): Dto\Client
     {
         $security = null;
@@ -79,76 +87,127 @@ class LanguageBuilder
             $security = $specification->getSecurity()->toArray();
         }
 
-        $collection  = $specification->getResourceCollection();
-        $definitions = $specification->getDefinitions();
+        $operations = [];
+        $tags = [];
+        $exceptions = [];
 
-        $resources = [];
-        foreach ($collection as $resource) {
-            $class = $this->getResource($resource, $definitions);
-            if ($class === null) {
-                continue;
+        $grouped = $this->groupOperationsByTag($specification->getOperations());
+        if (count($grouped) > 1) {
+            foreach ($grouped as $tagName => $tagOperations) {
+                $exceptions = array_merge($exceptions, $this->getExceptions($tagOperations));
+                $operations = $this->getOperations($tagOperations, $specification->getDefinitions());
+
+                $tags[] = new Dto\Tag(
+                    $this->naming->buildClassNameByTag($tagName),
+                    $this->naming->buildMethodNameByTag($tagName),
+                    $operations
+                );
             }
 
-            $resources[$class->className] = $class;
+            $operations = [];
+        } else {
+            $tagOperations = reset($grouped);
+            if (!empty($tagOperations)) {
+                $exceptions = array_merge($exceptions, $this->getExceptions($tagOperations));
+                $operations = $this->getOperations($tagOperations, $specification->getDefinitions());
+            }
         }
 
         return new Dto\Client(
             'Client',
-            $resources,
+            $operations,
+            $tags,
+            $exceptions,
             $security,
-        );
-    }
-
-    private function getResource(Resource $resource, DefinitionsInterface $definitions): ?Dto\Resource
-    {
-        $className = $this->naming->buildClassNameByResource($resource);
-        if (empty($className)) {
-            return null;
-        }
-
-
-        $methodName = $this->naming->buildResourceGetter($className);
-        $properties = $this->getPathParameters($resource, $definitions);
-        $urlParts   = $this->getUrlParts($resource, $properties ?? []);
-        $imports    = [];
-
-        $methods = [];
-        foreach ($resource->getMethods() as $method) {
-            $methods[$this->naming->buildMethodNameByMethod($method)] = $this->getMethod($method, $definitions, $imports);
-        }
-
-        return new Dto\Resource(
-            $className,
-            $methodName,
-            $resource->getPath(),
-            $resource->getDescription(),
-            $urlParts,
-            $properties,
-            $methods,
-            $imports
+            $specification->getBaseUrl(),
         );
     }
 
     /**
-     * @return Dto\UrlPart[]
+     * @param array<string, OperationInterface> $operations
+     * @throws TypeNotFoundException
+     * @throws InvalidTypeException
      */
-    private function getUrlParts(Resource $resource, array $args): array
+    private function getOperations(array $operations, DefinitionsInterface $definitions): array
     {
         $result = [];
-        reset($args);
-        $parts = explode('/', $resource->getPath());
-        foreach ($parts as $part) {
-            if (isset($part[0]) && ($part[0] == ':' || $part[0] == '$')) {
-                $pathName = key($args);
-                if ($pathName === null) {
-                    throw new \RuntimeException('Missing ' . $part . ' as path parameter');
+        foreach ($operations as $operationId => $operation) {
+            $methodName = $this->naming->buildMethodNameByOperationId($operationId);
+            if (empty($methodName)) {
+                continue;
+            }
+
+            $imports = [];
+            $path = $pathNames = [];
+            $query = $queryNames = [];
+            $body = $bodyName = null;
+            foreach ($operation->getArguments()->getAll() as $name => $argument) {
+                $normalized = $this->normalizer->argument($name);
+                if ($argument->getIn() === ArgumentInterface::IN_PATH) {
+                    $path[$normalized] = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions));
+                    $pathNames[$normalized] = $name;
+                } elseif ($argument->getIn() === ArgumentInterface::IN_QUERY) {
+                    $query[$normalized] = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), true, $definitions));
+                    $queryNames[$normalized] = $name;
+                } elseif ($argument->getIn() === ArgumentInterface::IN_BODY) {
+                    $body = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions));
+                    $bodyName = $normalized;
                 }
 
-                $result[] = new Dto\UrlPart('variable', $pathName);
+                $this->resolveImport($argument->getSchema(), $imports);
+            }
 
-                next($args);
-            } elseif (!empty($part)) {
-                $result[] = new Dto\UrlPart('string', $part);
+            if (!in_array($operation->getMethod(), ['POST', 'PUT', 'PATCH'])) {
+                $body = null;
+                $bodyName = null;
+            }
+
+            $arguments = array_merge($path, $body !== null ? [$bodyName => $body] : [], $query);
+
+            $return = null;
+            if (in_array($operation->getReturn()->getCode(), [200, 201])) {
+                $return = new Dto\Response($operation->getReturn()->getCode(), $this->newType($operation->getReturn()->getSchema(), false, $definitions));
+
+                $this->resolveImport($operation->getReturn()->getSchema(), $imports);
+            }
+
+            $throws = [];
+            foreach ($operation->getThrows() as $throw) {
+                $throws[$throw->getCode()] = new Dto\Response($throw->getCode(), $this->newType($throw->getSchema(), false, $definitions));
+
+                $this->resolveImport($throw->getSchema(), $imports);
+            }
+
+            $result[] = new Dto\Operation(
+                $methodName,
+                $operation->getMethod(),
+                $operation->getPath(),
+                $operation->getDescription(),
+                $arguments,
+                $return,
+                $throws,
+                $pathNames,
+                $queryNames,
+                $bodyName,
+                $imports
+            );
+        }
+
+        return $result;
+    }
+
+    private function getExceptions(array $operations): array
+    {
+        $result = [];
+
+        foreach ($operations as $operation) {
+            $throws = $operation->getThrows();
+            foreach ($throws as $throw) {
+                $type = $throw->getSchema();
+                if ($type instanceof ReferenceType) {
+                    $className = $this->naming->buildClassNameByException($type->getRef());
+                    $result[$className] = new Dto\Exception($className, $type->getRef(), 'The server returned an error');
+                }
             }
         }
 
@@ -156,105 +215,25 @@ class LanguageBuilder
     }
 
     /**
-     * @return array<string, Dto\Type>|null
+     * @throws InvalidTypeException
+     * @throws TypeNotFoundException
      */
-    private function getPathParameters(Resource $resource, DefinitionsInterface $definitions): ?array
+    private function newType(TypeInterface $type, bool $optional, DefinitionsInterface $definitions): Dto\Type
     {
-        if (!$resource->hasPathParameters()) {
-            return null;
-        }
-
-        if (!$definitions->hasType($resource->getPathParameters())) {
-            return null;
-        }
-
-        $type = $definitions->getType($resource->getPathParameters());
-        if (!$type instanceof StructType) {
-            return null;
-        }
-
-        $args = [];
-        $properties = $type->getProperties();
-        foreach ($properties as $name => $property) {
-            $name = $this->normalizer->argument($name);
-
-            $args[$name] = new Dto\Type(
-                $this->typeGenerator->getType($property),
-                $this->typeGenerator->getDocType($property),
-                false
-            );
-        }
-
-        return $args;
-    }
-
-    private function getMethod(Resource\MethodAbstract $method, DefinitionsInterface $definitions, array &$imports): Dto\Method
-    {
-        $args = new Dto\Arguments();
-
-        // query parameters
-        if ($method->hasQueryParameters()) {
-            $query = TypeFactory::getReference($method->getQueryParameters());
-
-            $args->query = new Dto\Type(
-                $this->typeGenerator->getType($query),
-                $this->typeGenerator->getDocType($query),
-                true
-            );
-
-            $this->resolveImport($query, $imports);
-        }
-
-        // request
-        $request = $method->getRequest();
-        if (!empty($request) && !in_array($method->getName(), ['GET', 'DELETE'])) {
-            $type = $this->resolveType($request, $definitions);
-
-            $args->data = new Dto\Type(
-                $this->typeGenerator->getType($type),
-                $this->typeGenerator->getDocType($type),
-                false
-            );
-
-            $this->resolveImport($type, $imports);
-        }
-
-        // response
-        $response = $this->getSuccessfulResponse($method);
-        if (!empty($response)) {
-            $type = $this->resolveType($response, $definitions);
-
-            $return = new Dto\Type(
-                $this->typeGenerator->getType($type),
-                $this->typeGenerator->getDocType($type),
-            );
-
-            $this->resolveImport($type, $imports);
-        } else {
-            $return = null;
-        }
-
-        return new Dto\Method(
-            $method->getName(),
-            $method->getDescription(),
-            $method->hasSecurity(),
-            $args,
-            $return,
-        );
-    }
-
-    private function getSuccessfulResponse(Resource\MethodAbstract $method): ?string
-    {
-        $responses = $method->getResponses();
-        $codes = [200, 201];
-
-        foreach ($codes as $code) {
-            if (isset($responses[$code])) {
-                return $responses[$code];
+        if ($type instanceof ReferenceType) {
+            // in case we have a reference type we take a look at the reference, normally this is a struct type but in
+            // some special cases we need to extract the type
+            $refType = $definitions->getType($type->getRef());
+            if (!$refType instanceof StructType) {
+                throw new InvalidTypeException('A reference can only point to a struct type, got: ' . get_class($refType));
             }
         }
 
-        return null;
+        return new Dto\Type(
+            $this->typeGenerator->getType($type),
+            $this->typeGenerator->getDocType($type),
+            $optional
+        );
     }
 
     /**
@@ -292,5 +271,26 @@ class LanguageBuilder
                 $this->resolveImport($item, $imports);
             }
         }
+    }
+
+    private function groupOperationsByTag(OperationsInterface $operations): array
+    {
+        $result = [];
+        foreach ($operations->getAll() as $operationId => $operation) {
+            $tags = $operation->getTags();
+            if (empty($tags)) {
+                $tags = ['default'];
+            }
+
+            foreach ($tags as $tagName) {
+                if (!isset($result[$tagName])) {
+                    $result[$tagName] = [];
+                }
+
+                $result[$tagName][$operationId] = $operation;
+            }
+        }
+
+        return $result;
     }
 }

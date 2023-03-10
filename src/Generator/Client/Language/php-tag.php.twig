@@ -1,0 +1,13 @@
+{% if namespace %}
+namespace {{ namespace }};
+{% endif %}
+
+use GuzzleHttp\Exception\BadResponseException;
+use Sdkgen\Client\Exception\ClientException;
+use Sdkgen\Client\Exception\UnknownStatusCodeException;
+use Sdkgen\Client\TagAbstract;
+
+class {{ className }} extends TagAbstract
+{
+{{ operations|raw }}
+}

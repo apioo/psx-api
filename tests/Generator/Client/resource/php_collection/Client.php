@@ -6,60 +6,42 @@
 
 namespace Foo\Bar;
 
+use GuzzleHttp\Exception\BadResponseException;
 use Sdkgen\Client\ClientAbstract;
 use Sdkgen\Client\Credentials;
-use Sdkgen\Client\CredentialsInterface;
-use Sdkgen\Client\TokenStoreInterface;
+use Sdkgen\Client\Exception\ClientException;
+use Sdkgen\Client\Exception\UnknownStatusCodeException;
 
 class Client extends ClientAbstract
 {
-    public function __construct(string $baseUrl, string $token, ?TokenStoreInterface $tokenStore = null, ?array $scopes = null)
+    public function foo(): FooTag
     {
-        parent::__construct($baseUrl, new Credentials\HttpBearer($token), $tokenStore, $scopes);
-    }
-
-    /**
-     * Endpoint: /foo
-     *
-     * foo
-     */
-    public function getFoo(): FooResource
-    {
-        return new FooResource(
-            $this->baseUrl,
-            $this->newHttpClient(),
-            $this->schemaManager
+        return new FooTag(
+            $this->httpClient,
+            $this->parser
         );
     }
 
-    /**
-     * Endpoint: /bar/:foo
-     *
-     * bar
-     */
-    public function getBarByFoo(string $foo): BarByFooResource
+    public function bar(): BarTag
     {
-        return new BarByFooResource(
-            $foo,
-            $this->baseUrl,
-            $this->newHttpClient(),
-            $this->schemaManager
+        return new BarTag(
+            $this->httpClient,
+            $this->parser
         );
     }
 
-    /**
-     * Endpoint: /bar/$year<[0-9]+>
-     *
-     * bar
-     */
-    public function getBarByYear(string $year): BarByYearResource
+    public function baz(): BazTag
     {
-        return new BarByYearResource(
-            $year,
-            $this->baseUrl,
-            $this->newHttpClient(),
-            $this->schemaManager
+        return new BazTag(
+            $this->httpClient,
+            $this->parser
         );
     }
 
+
+
+    public static function build(string $token): self
+    {
+        return new self('http://api.foo.com', new Credentials\HttpBearer($token));
+    }
 }

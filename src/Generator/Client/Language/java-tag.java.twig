@@ -1,0 +1,31 @@
+{% if namespace %}
+package {{ namespace }};
+{% endif %}
+
+import app.sdkgen.client.Exception.ClientException;
+import app.sdkgen.client.Exception.UnknownStatusCodeException;
+import app.sdkgen.client.Parser;
+import app.sdkgen.client.TagAbstract;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.*;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+public class {{ className }} extends TagAbstract {
+    public {{ className }}(HttpClient httpClient, ObjectMapper objectMapper, Parser parser) {
+        super(httpClient, objectMapper, parser);
+    }
+
+{{ operations|raw }}
+}

@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,6 @@ class ParseCommandTest extends TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'source'   => TestController::class,
-            'path'     => '/foo',
             '--dir'    => __DIR__ . '/output',
             '--format' => GeneratorFactoryInterface::SPEC_OPENAPI,
         ));
@@ -59,7 +58,7 @@ class ParseCommandTest extends TestCase
     protected function getParseCommand()
     {
         $apiManager = new ApiManager(new SchemaManager());
-        $factory    = new GeneratorFactory('urn:phpsx.org:2016#', 'http://foo.com', '');
+        $factory    = new GeneratorFactory('http://foo.com', '');
 
         return new ParseCommand($apiManager, $factory);
     }

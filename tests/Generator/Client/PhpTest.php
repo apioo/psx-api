@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Generator\Client;
 
+use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Php;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 
@@ -42,16 +43,6 @@ class PhpTest extends GeneratorTestCase
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/Client.php');
-        $this->assertFileExists($target . '/Entry.php');
-        $this->assertFileExists($target . '/EntryCollection.php');
-        $this->assertFileExists($target . '/EntryCreate.php');
-        $this->assertFileExists($target . '/EntryDelete.php');
-        $this->assertFileExists($target . '/EntryMessage.php');
-        $this->assertFileExists($target . '/EntryPatch.php');
-        $this->assertFileExists($target . '/EntryUpdate.php');
-        $this->assertFileExists($target . '/FooByNameAndTypeResource.php');
-        $this->assertFileExists($target . '/GetQuery.php');
-        $this->assertFileExists($target . '/Path.php');
     }
 
     public function testGenerateCollection()
@@ -63,31 +54,26 @@ class PhpTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/BarByFooResource.php');
-        $this->assertFileExists($target . '/BarByYearResource.php');
         $this->assertFileExists($target . '/Client.php');
-        $this->assertFileExists($target . '/Entry.php');
-        $this->assertFileExists($target . '/EntryCollection.php');
-        $this->assertFileExists($target . '/EntryCreate.php');
-        $this->assertFileExists($target . '/EntryMessage.php');
-        $this->assertFileExists($target . '/FooResource.php');
-        $this->assertFileExists($target . '/PathFoo.php');
-        $this->assertFileExists($target . '/PathYear.php');
     }
 
     public function testGenerateComplex()
     {
-        $generator = new Php('http://api.foo.com', 'Foo\Bar');
+        $this->expectException(InvalidTypeException::class);
 
-        $result = $generator->generate($this->getSpecificationComplex());
-        $target = __DIR__ . '/resource/php_complex';
+        $generator = new Php('http://api.foo.com', 'Foo\Bar');
+        $generator->generate($this->getSpecificationComplex());
+    }
+
+    public function testGenerateTest()
+    {
+        $generator = new Php('http://127.0.0.1:8081', 'Sdkgen\Client\Tests\Generated');
+
+        $result = $generator->generate($this->getSpecificationTest());
+        $target = __DIR__ . '/resource/php_test';
 
         $this->writeChunksToFolder($result, $target);
 
         $this->assertFileExists($target . '/Client.php');
-        $this->assertFileExists($target . '/Entry.php');
-        $this->assertFileExists($target . '/EntryMessage.php');
-        $this->assertFileExists($target . '/FooByNameAndTypeResource.php');
-        $this->assertFileExists($target . '/Path.php');
     }
 }

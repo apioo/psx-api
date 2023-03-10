@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,26 +31,12 @@ class Client
 {
     public function __construct(
         public string $className,
-        public array $resources,
+        /** @var array<Operation> */ public array $operations,
+        public array $tags,
+        /** @var array<Exception> */ public array $exceptions,
         public ?array $security,
+        public ?string $baseUrl,
     )
     {
-    }
-
-    public function getResources(): array
-    {
-        $resources = [];
-        foreach ($this->resources as $resource) {
-            /** @var Resource $resource */
-
-            $resources[$resource->className] = [
-                'description' => $resource->description,
-                'methodName' => $resource->methodName,
-                'path' => $resource->path,
-                'properties' => $resource->properties,
-            ];
-        }
-
-        return $resources;
     }
 }

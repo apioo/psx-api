@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,16 +33,14 @@ use PSX\Api\Util\Inflection;
 class InflectionTest extends TestCase
 {
     /**
-     * @param string $expect
-     * @param string $route
      * @dataProvider convertPlaceholderToCurlyProvider
      */
-    public function testConvertPlaceholderToCurly($expect, $route)
+    public function testConvertPlaceholderToCurly(string $expect, string $route)
     {
         $this->assertEquals($expect, Inflection::convertPlaceholderToCurly($route));
     }
 
-    public function convertPlaceholderToCurlyProvider()
+    public function convertPlaceholderToCurlyProvider(): array
     {
         return [
             ['/foo', '/foo'],
@@ -62,16 +60,14 @@ class InflectionTest extends TestCase
     }
 
     /**
-     * @param string $expect
-     * @param string $route
      * @dataProvider convertPlaceholderToColonProvider
      */
-    public function testConvertPlaceholderToColon($expect, $route)
+    public function testConvertPlaceholderToColon(string $expect, string $route)
     {
         $this->assertEquals($expect, Inflection::convertPlaceholderToColon($route));
     }
 
-    public function convertPlaceholderToColonProvider()
+    public function convertPlaceholderToColonProvider(): array
     {
         return [
             ['/foo', '/foo'],
@@ -82,31 +78,33 @@ class InflectionTest extends TestCase
     }
 
     /**
-     * @param string $expect
-     * @param string $route
-     * @dataProvider generateTitleFromRouteProvider
+     * @dataProvider extractPlaceholderNamesProvider
      */
-    public function testGenerateTitleFromRoute($expect, $route)
+    public function testExtractPlaceholderNames(string $path, array $names)
     {
-        $this->assertEquals($expect, Inflection::generateTitleFromRoute($route));
+        $this->assertEquals($names, Inflection::extractPlaceholderNames($path));
     }
 
-    public function generateTitleFromRouteProvider()
+    public function extractPlaceholderNamesProvider(): array
     {
         return [
-            ['Foo', '/foo'],
-            ['FooBar', '/foo/:bar'],
-            ['FooBar', '/foo/*bar'],
-            ['FooBar', '/foo/$bar<[0-9]+>'],
-            ['FooBarFoo', '/foo/:bar/foo'],
-            ['FooBarFoo', '/foo/*bar/foo'],
-            ['FooBarFoo', '/foo/$bar<[0-9]+>/foo'],
-            ['FooBarFooBaz', '/foo/:bar/foo/:baz'],
-            ['FooBarFooBaz', '/foo/*bar/foo/*baz'],
-            ['FooBarFooBaz', '/foo/$bar<[0-9]+>/foo/$baz<[0-9]+>'],
-            ['FooBarFooBazFoo', '/foo/:bar/foo/:baz/foo'],
-            ['FooBarFooBazFoo', '/foo/*bar/foo/*baz/foo'],
-            ['FooBarFooBazFoo', '/foo/$bar<[0-9]+>/foo/$baz<[0-9]+>/foo'],
+            ['/foo', []],
+            ['/foo/:bar', ['bar']],
+            ['/foo/*bar', ['bar']],
+            ['/foo/$bar<[0-9]+>', ['bar']],
+            ['/foo/{bar}', ['bar']],
+            ['/foo/:bar/foo', ['bar']],
+            ['/foo/*bar/foo', ['bar']],
+            ['/foo/$bar<[0-9]+>/foo', ['bar']],
+            ['/foo/{bar}/foo', ['bar']],
+            ['/foo/:bar/foo/:baz', ['bar', 'baz']],
+            ['/foo/*bar/foo/*baz', ['bar', 'baz']],
+            ['/foo/$bar<[0-9]+>/foo/$baz<[0-9]+>', ['bar', 'baz']],
+            ['/foo/{bar}/foo/{baz}', ['bar', 'baz']],
+            ['/foo/:bar/foo/:baz/foo', ['bar', 'baz']],
+            ['/foo/*bar/foo/*baz/foo', ['bar', 'baz']],
+            ['/foo/$bar<[0-9]+>/foo/$baz<[0-9]+>/foo', ['bar', 'baz']],
+            ['/foo/{bar}/foo/{baz}/foo', ['bar', 'baz']],
         ];
     }
 }

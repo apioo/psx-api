@@ -1,4 +1,5 @@
-import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
+import axios, {AxiosRequestConfig} from "axios";
+import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
 {% if security.type == 'httpBasic' %}
 import {HttpBasic} from "sdkgen-client"
 {% elseif security.type == 'httpBearer' %}
@@ -10,31 +11,60 @@ import {ClientCredentials} from "sdkgen-client"
 {% elseif security.type == 'authorizationCode' %}
 import {AuthorizationCode} from "sdkgen-client"
 {% endif %}
+import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
-{% for className, resource in resources %}
-import {{ className }} from "./{{ className }}";
+{% for ref, className in imports %}
+import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
 {% endfor %}
 
 export default class {{ className }} extends ClientAbstract {
-    public constructor(baseUrl: string, {% if security.type == 'httpBasic' %}userName: string, password: string, {% elseif security.type in ['httpBearer', 'apiKey'] %}token: string, {% elseif security.type in ['clientCredentials', 'authorizationCode'] %}clientId: string, clientSecret: string, {% else %}credentials: CredentialsInterface|null = null, {% endif %}tokenStore: TokenStoreInterface|null = null, scopes: Array<string>|null = []) {
-        super(baseUrl, {% if security.type == 'httpBasic' %}new HttpBasic(userName, password){% elseif security.type == 'httpBearer' %}new HttpBearer(token){% elseif security.type == 'apiKey' %}new ApiKey(token, '{{ security.name }}', '{{ security.in }}'){% elseif security.type == 'clientCredentials' %}new ClientCredentials(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% elseif security.type == 'authorizationCode' %}new AuthorizationCode(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', '{{ security.refreshUrl }}'){% else %}credentials{% endif %}, tokenStore, scopes);
-    }
-
-{% for className, resource in resources %}
-    /**
-     * Endpoint: {{ resource.path|raw }}
-     *
-     * {{ resource.description|raw }}
-     */
-    public async {{ resource.methodName }}({% for name, arg in resource.properties %}{{ name }}: {{ arg.type|raw }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ className }}>
+{% for tag in tags %}
+    public {{ tag.methodName }}(): {{ tag.className }}
     {
-        return new {{ className }}(
-            {% for name, arg in resource.properties %}{{ name }},
-            {% endfor %}
-this.baseUrl,
-            await this.newHttpClient()
+        return new {{ tag.className }}(
+            this.httpClient,
+            this.parser
         );
     }
 
 {% endfor %}
+{{ operations|raw }}
+
+{% if security.type == 'httpBasic' %}
+    public static build({% if not baseUrl %}baseUrl: string, {% endif %}userName: string, password: string): {{ className }}
+    {
+{% if not baseUrl %}
+        return new {{ className }}(baseUrl, new HttpBasic(userName, password));
+{% else %}
+        return new {{ className }}('{{ baseUrl }}', new HttpBasic(userName, password));
+{% endif %}
+    }
+{% elseif security.type == 'httpBearer' %}
+    public static build({% if not baseUrl %}baseUrl: string, {% endif %}token: string): {{ className }}
+    {
+{% if not baseUrl %}
+        return new {{ className }}(baseUrl, new HttpBearer(token));
+{% else %}
+        return new {{ className }}('{{ baseUrl }}', new HttpBearer(token));
+{% endif %}
+    }
+{% elseif security.type == 'apiKey' %}
+    public static build({% if not baseUrl %}baseUrl: string, {% endif %}token: string): {{ className }}
+    {
+{% if not baseUrl %}
+        return new {{ className }}($baseUrl, new ApiKey($token, '{{ security.name }}', '{{ security.in }}'));
+{% else %}
+        return new {{ className }}('{{ baseUrl }}', new ApiKey($token, '{{ security.name }}', '{{ security.in }}'));
+{% endif %}
+    }
+{% elseif security.type == 'oauth2' %}
+    public static build({% if not baseUrl %}baseUrl: string, {% endif %}clientId: string, clientSecret: string, tokenStore: TokenStoreInterface|null, scopes: Array<string>|null): {{ className }}
+    {
+{% if not baseUrl %}
+        return new {{ className }}(baseUrl, new OAuth2(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
+{% else %}
+        return new {{ className }}('{{ baseUrl }}', new OAuth2(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
+{% endif %}
+    }
+{% endif %}
 }

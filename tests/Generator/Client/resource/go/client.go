@@ -9,19 +9,321 @@ import (
 )
 
 type Client struct {
-    internal *sdkgen.Client
-}
-
-// Endpoint: /foo/:name/:type - lorem ipsum
-func (client Client) GetFooByNameAndType(name string, _type string) *FooByNameAndTypeResource {
-    return NewFooByNameAndTypeResource(name, _type, client.internal.GetResource())
+    internal *sdkgen.ClientAbstract
 }
 
 
-func NewClient(baseUrl string, token string, tokenStore sdkgen.TokenStoreInterface, scopes []string) *Client {
-    var credentials := sdkgen.HttpBearer{Token: token}
+
+// Get Returns a collection
+func (client *Client) Get(name string, _type string, startIndex int, float float64, boolean bool, date time.Time, datetime time.Time) (EntryCollection, error) {
+    pathParams := make(map[string]interface{})
+    pathParams["name"] = name
+    pathParams["type"] = _type
+
+    queryParams := make(map[string]interface{})
+    queryParams["startIndex"] = startIndex
+    queryParams["float"] = float
+    queryParams["boolean"] = boolean
+    queryParams["date"] = date
+    queryParams["datetime"] = datetime
+
+    u, err := url.Parse(client.internal.Parser.Url("/foo/:name/:type", pathParams))
+    if err != nil {
+        return EntryCollection{}, errors.New("could not parse url")
+    }
+
+    u.RawQuery = client.internal.Parser.Query(queryParams).Encode()
+
+
+    req, err := http.NewRequest("GET", u.String(), nil)
+    if err != nil {
+        return EntryCollection{}, errors.New("could not create request")
+    }
+
+
+    resp, err := client.internal.HttpClient.Do(req)
+    if err != nil {
+        return EntryCollection{}, errors.New("could not send request")
+    }
+
+    defer resp.Body.Close()
+
+    if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+        respBody, err := io.ReadAll(resp.Body)
+        if err != nil {
+            return EntryCollection{}, errors.New("could not read response body")
+        }
+
+        var response EntryCollection
+        err = json.Unmarshal(respBody, &response)
+        if err != nil {
+            return EntryCollection{}, errors.New("could not unmarshal JSON response")
+        }
+
+        return response, nil
+    }
+
+    switch resp.StatusCode {
+        default:
+            return EntryCollection{}, errors.New("the server returned an unknown status code")
+    }
+}
+
+// Create 
+func (client *Client) Create(name string, _type string, payload EntryCreate) (EntryMessage, error) {
+    pathParams := make(map[string]interface{})
+    pathParams["name"] = name
+    pathParams["type"] = _type
+
+    queryParams := make(map[string]interface{})
+
+    u, err := url.Parse(client.internal.Parser.Url("/foo/:name/:type", pathParams))
+    if err != nil {
+        return EntryMessage{}, errors.New("could not parse url")
+    }
+
+    u.RawQuery = client.internal.Parser.Query(queryParams).Encode()
+
+    raw, err := json.Marshal(payload)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not marshal provided JSON data")
+    }
+
+    var reqBody = bytes.NewReader(raw)
+
+    req, err := http.NewRequest("POST", u.String(), reqBody)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not create request")
+    }
+
+    req.Header.Set("Content-Type", "application/json")
+
+    resp, err := client.internal.HttpClient.Do(req)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not send request")
+    }
+
+    defer resp.Body.Close()
+
+    if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+        respBody, err := io.ReadAll(resp.Body)
+        if err != nil {
+            return EntryMessage{}, errors.New("could not read response body")
+        }
+
+        var response EntryMessage
+        err = json.Unmarshal(respBody, &response)
+        if err != nil {
+            return EntryMessage{}, errors.New("could not unmarshal JSON response")
+        }
+
+        return response, nil
+    }
+
+    switch resp.StatusCode {
+        case 400:
+            var response EntryMessage
+            err = json.Unmarshal(respBody, &response)
+            if err != nil {
+                return EntryMessage{}, errors.New("could not unmarshal JSON response")
+            }
+
+            return EntryMessage{}, &EntryMessageException{
+                Response: response,
+                Err:      errors.New("unavailable"),
+            }
+        case 500:
+            var response EntryMessage
+            err = json.Unmarshal(respBody, &response)
+            if err != nil {
+                return EntryMessage{}, errors.New("could not unmarshal JSON response")
+            }
+
+            return EntryMessage{}, &EntryMessageException{
+                Response: response,
+                Err:      errors.New("unavailable"),
+            }
+        default:
+            return EntryMessage{}, errors.New("the server returned an unknown status code")
+    }
+}
+
+// Update 
+func (client *Client) Update(name string, _type string, payload EntryUpdate) (EntryMessage, error) {
+    pathParams := make(map[string]interface{})
+    pathParams["name"] = name
+    pathParams["type"] = _type
+
+    queryParams := make(map[string]interface{})
+
+    u, err := url.Parse(client.internal.Parser.Url("/foo/:name/:type", pathParams))
+    if err != nil {
+        return EntryMessage{}, errors.New("could not parse url")
+    }
+
+    u.RawQuery = client.internal.Parser.Query(queryParams).Encode()
+
+    raw, err := json.Marshal(payload)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not marshal provided JSON data")
+    }
+
+    var reqBody = bytes.NewReader(raw)
+
+    req, err := http.NewRequest("PUT", u.String(), reqBody)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not create request")
+    }
+
+    req.Header.Set("Content-Type", "application/json")
+
+    resp, err := client.internal.HttpClient.Do(req)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not send request")
+    }
+
+    defer resp.Body.Close()
+
+    if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+        respBody, err := io.ReadAll(resp.Body)
+        if err != nil {
+            return EntryMessage{}, errors.New("could not read response body")
+        }
+
+        var response EntryMessage
+        err = json.Unmarshal(respBody, &response)
+        if err != nil {
+            return EntryMessage{}, errors.New("could not unmarshal JSON response")
+        }
+
+        return response, nil
+    }
+
+    switch resp.StatusCode {
+        default:
+            return EntryMessage{}, errors.New("the server returned an unknown status code")
+    }
+}
+
+// Delete 
+func (client *Client) Delete(name string, _type string) (EntryMessage, error) {
+    pathParams := make(map[string]interface{})
+    pathParams["name"] = name
+    pathParams["type"] = _type
+
+    queryParams := make(map[string]interface{})
+
+    u, err := url.Parse(client.internal.Parser.Url("/foo/:name/:type", pathParams))
+    if err != nil {
+        return EntryMessage{}, errors.New("could not parse url")
+    }
+
+    u.RawQuery = client.internal.Parser.Query(queryParams).Encode()
+
+
+    req, err := http.NewRequest("DELETE", u.String(), nil)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not create request")
+    }
+
+
+    resp, err := client.internal.HttpClient.Do(req)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not send request")
+    }
+
+    defer resp.Body.Close()
+
+    if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+        respBody, err := io.ReadAll(resp.Body)
+        if err != nil {
+            return EntryMessage{}, errors.New("could not read response body")
+        }
+
+        var response EntryMessage
+        err = json.Unmarshal(respBody, &response)
+        if err != nil {
+            return EntryMessage{}, errors.New("could not unmarshal JSON response")
+        }
+
+        return response, nil
+    }
+
+    switch resp.StatusCode {
+        default:
+            return EntryMessage{}, errors.New("the server returned an unknown status code")
+    }
+}
+
+// Patch 
+func (client *Client) Patch(name string, _type string, payload EntryPatch) (EntryMessage, error) {
+    pathParams := make(map[string]interface{})
+    pathParams["name"] = name
+    pathParams["type"] = _type
+
+    queryParams := make(map[string]interface{})
+
+    u, err := url.Parse(client.internal.Parser.Url("/foo/:name/:type", pathParams))
+    if err != nil {
+        return EntryMessage{}, errors.New("could not parse url")
+    }
+
+    u.RawQuery = client.internal.Parser.Query(queryParams).Encode()
+
+    raw, err := json.Marshal(payload)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not marshal provided JSON data")
+    }
+
+    var reqBody = bytes.NewReader(raw)
+
+    req, err := http.NewRequest("PATCH", u.String(), reqBody)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not create request")
+    }
+
+    req.Header.Set("Content-Type", "application/json")
+
+    resp, err := client.internal.HttpClient.Do(req)
+    if err != nil {
+        return EntryMessage{}, errors.New("could not send request")
+    }
+
+    defer resp.Body.Close()
+
+    if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+        respBody, err := io.ReadAll(resp.Body)
+        if err != nil {
+            return EntryMessage{}, errors.New("could not read response body")
+        }
+
+        var response EntryMessage
+        err = json.Unmarshal(respBody, &response)
+        if err != nil {
+            return EntryMessage{}, errors.New("could not unmarshal JSON response")
+        }
+
+        return response, nil
+    }
+
+    switch resp.StatusCode {
+        default:
+            return EntryMessage{}, errors.New("the server returned an unknown status code")
+    }
+}
+
+
+
+
+func Build(token string) (*Client, error) {
+    var credentials = sdkgen.HttpBearer{Token: token}
+
+    client, err := sdkgen.NewClient("http://api.foo.com", credentials)
+    if err != nil {
+        return &Client{}, err
+    }
 
     return &Client {
-        internal: sdkgen.NewClient(baseUrl, credentials, tokenStore, scopes),
-    }
+        internal: client,
+    }, nil
 }

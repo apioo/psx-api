@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ use PSX\Api\ApiManager;
 use PSX\Api\Console\GenerateCommand;
 use PSX\Api\GeneratorFactory;
 use PSX\Api\GeneratorFactoryInterface;
-use PSX\Api\Listing\MemoryListing;
-use PSX\Api\Listing\Route;
+use PSX\Api\Scanner\Memory;
 use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -71,12 +70,11 @@ class GenerateCommandTest extends TestCase
     {
         $apiManager = new ApiManager(new SchemaManager());
 
-        $listing = new MemoryListing();
-        $listing->addRoute(new Route('/foo', ['GET'], '*'));
-        $listing->addSpecification($apiManager->getApi(TestController::class, '/foo'));
+        $scanner = new Memory();
+        $scanner->merge($apiManager->getApi(TestController::class));
 
-        $factory = new GeneratorFactory('urn:phpsx.org:2016#', 'http://foo.com', '');
+        $factory = new GeneratorFactory('http://foo.com', '');
 
-        return new GenerateCommand($listing, $factory);
+        return new GenerateCommand($scanner, $factory);
     }
 }

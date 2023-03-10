@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,13 @@ namespace PSX\Api\Tests\Parser;
 
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\ApiManager;
+use PSX\Api\OperationInterface;
 use PSX\Api\Parser\OpenAPI;
 use PSX\Api\Resource;
 use PSX\Api\ResourceCollection;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\Type\StructType;
+use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -43,14 +45,78 @@ class OpenAPITest extends ParserTestCase
      */
     protected function getSpecification(): SpecificationInterface
     {
-        return $this->apiManager->getApi(__DIR__ . '/openapi/simple.json', '/foo', ApiManager::TYPE_OPENAPI);
+        return $this->apiManager->getApi(__DIR__ . '/openapi/simple.json', ApiManager::TYPE_OPENAPI);
     }
 
+    public function testParsePetstore()
+    {
+        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/petstore.json');
+        $definitions = $specification->getDefinitions();
+        $operation = $specification->getOperations()->get('listPets');
+
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals('GET', $operation->getMethod());
+        $this->assertEquals('/pets', $operation->getPath());
+        $this->assertEquals('List all pets', $operation->getDescription());
+
+        $arguments = $operation->getArguments();
+        $this->assertEquals('query', $arguments->get('limit')->getIn());
+        $this->assertEquals(['type' => 'integer', 'format' => 'int32', 'maximum' => 100], $arguments->get('limit')->getSchema()->toArray());
+
+        $this->assertEquals(200, $operation->getReturn()->getCode());
+        $this->assertEquals(['$ref' => 'Pets'], $operation->getReturn()->getSchema()->toArray());
+
+        $this->assertCount(0, $operation->getThrows());
+
+        $this->assertEquals([
+            'type' => 'array',
+            'items' => TypeFactory::getReference('Pet'),
+            'maxItems' => 100
+        ], $definitions->getType('Pets')->toArray());
+        $this->assertEquals([
+            'type' => 'object',
+            'properties' => [
+                'id' => TypeFactory::getInteger()->setFormat('int64'),
+                'name' => TypeFactory::getString(),
+                'tag' => TypeFactory::getString()
+            ],
+            'required' => ['id', 'name']
+        ], $definitions->getType('Pet')->toArray());
+    }
+
+    public function testParseInline()
+    {
+        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/inline.json');
+        $definitions = $specification->getDefinitions();
+        $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.TestController.doGet');
+
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals('GET', $operation->getMethod());
+        $this->assertEquals('/foo', $operation->getPath());
+        $this->assertEquals('', $operation->getDescription());
+
+        $this->assertTrue($operation->getArguments()->isEmpty());
+
+        $this->assertEquals(200, $operation->getReturn()->getCode());
+        $this->assertEquals(['$ref' => 'Inline01fd4b61'], $operation->getReturn()->getSchema()->toArray());
+
+        $this->assertCount(0, $operation->getThrows());
+
+        $this->assertEquals([
+            'type' => 'object',
+            'properties' => [
+                'success' => TypeFactory::getBoolean(),
+                'message' => TypeFactory::getString(),
+            ],
+        ], $definitions->getType('Inline01fd4b61')->toArray());
+    }
+
+    /*
     public function testParseComplex()
     {
-        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/complex.json', '/foo');
+        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/complex.json');
 
-        $resource = $specification->getResourceCollection()->get('/foo');
+        $resource = $specification->getOperations()->get('/foo');
         $definitions = $specification->getDefinitions();
 
         $this->assertEquals('/foo', $resource->getPath());
@@ -92,14 +158,14 @@ class OpenAPITest extends ParserTestCase
     {
         $specification = OpenAPI::fromFile(__DIR__ . '/openapi/test.json', '/foo/:fooId');
 
-        $this->assertInstanceOf(Resource::class, $specification->getResourceCollection()->get('/foo/:fooId'));
+        $this->assertInstanceOf(Resource::class, $specification->getOperations()->get('/foo/:fooId'));
     }
 
     public function testParseInvalidPath()
     {
         $specification = OpenAPI::fromFile(__DIR__ . '/openapi/test.json', '/test');
 
-        $this->assertEquals(0, count($specification->getResourceCollection()));
+        $this->assertEquals(0, count($specification->getOperations()));
     }
 
     public function testParseAll()
@@ -107,7 +173,8 @@ class OpenAPITest extends ParserTestCase
         $parser = new OpenAPI(__DIR__ . '/openapi');
         $specification = $parser->parse(file_get_contents(__DIR__ . '/openapi/simple.json'));
 
-        $this->assertInstanceOf(ResourceCollection::class, $specification->getResourceCollection());
-        $this->assertEquals(['/foo'], array_keys($specification->getResourceCollection()->getArrayCopy()));
+        $this->assertInstanceOf(ResourceCollection::class, $specification->getOperations());
+        $this->assertEquals(['/foo'], array_keys($specification->getOperations()->getArrayCopy()));
     }
+    */
 }

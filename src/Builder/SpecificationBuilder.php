@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,12 @@
 
 namespace PSX\Api\Builder;
 
+use PSX\Api\Exception\OperationAlreadyExistsException;
 use PSX\Api\SecurityInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
-use PSX\Schema\SchemaManagerInterface;
+use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\TypeInterface;
 
 /**
  * SpecificationBuilder
@@ -34,12 +36,10 @@ use PSX\Schema\SchemaManagerInterface;
  */
 class SpecificationBuilder implements SpecificationBuilderInterface
 {
-    private SchemaManagerInterface $schemaManager;
     private SpecificationInterface $specification;
 
-    public function __construct(SchemaManagerInterface $schemaManager)
+    public function __construct()
     {
-        $this->schemaManager = $schemaManager;
         $this->specification = new Specification();
     }
 
@@ -48,11 +48,33 @@ class SpecificationBuilder implements SpecificationBuilderInterface
         $this->specification->setSecurity($security);
     }
 
-    public function addResource(int $status, string $path): ResourceBuilderInterface
+    public function addOperation(string $operationId, string $method, string $path, int $statusCode, TypeInterface $schema): OperationBuilderInterface
     {
-        $builder = new ResourceBuilder($this->schemaManager, $status, $path, $this->specification->getDefinitions());
-        $this->specification->getResourceCollection()->set($builder->getResource());
+        if ($this->specification->getOperations()->has($operationId)) {
+            throw new OperationAlreadyExistsException('Operation "' . $operationId . '" already exists');
+        }
+
+        $builder = new OperationBuilder($method, $path, $statusCode, $schema);
+        $this->specification->getOperations()->add($operationId, $builder->getOperation());
         return $builder;
+    }
+
+    public function addDefinitions(DefinitionsInterface $definitions): self
+    {
+        $this->specification->getDefinitions()->merge($definitions);
+        return $this;
+    }
+
+    public function addType(string $name, TypeInterface $schema): self
+    {
+        $this->specification->getDefinitions()->addType($name, $schema);
+        return $this;
+    }
+
+    public function merge(SpecificationInterface $specification): self
+    {
+        $this->specification->merge($specification);
+        return $this;
     }
 
     public function getSpecification(): SpecificationInterface

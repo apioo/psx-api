@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,18 @@ class ClientTest extends GeneratorTestCase
         $actual = $generator->generate($this->getSpecification());
 
         $expect = file_get_contents(__DIR__ . '/resource/client.md');
+        $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
+
+        $this->assertEquals($expect, $actual, $actual);
+    }
+
+    public function testGenerateCollection()
+    {
+        $generator = new Client();
+
+        $actual = $generator->generate($this->getSpecificationCollection());
+
+        $expect = file_get_contents(__DIR__ . '/resource/client_collection.md');
         $expect = str_replace(array("\r\n", "\r"), "\n", $expect);
 
         $this->assertEquals($expect, $actual, $actual);
