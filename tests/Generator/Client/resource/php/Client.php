@@ -21,12 +21,12 @@ class Client extends ClientAbstract
      * @param int|null $startIndex
      * @param float|null $float
      * @param bool|null $boolean
-     * @param \PSX\DateTime\Date|null $date
+     * @param \PSX\DateTime\LocalDate|null $date
      * @param \DateTime|null $datetime
      * @return EntryCollection
      * @throws ClientException
      */
-    public function get(string $name, string $type, ?int $startIndex = null, ?float $float = null, ?bool $boolean = null, ?\PSX\DateTime\Date $date = null, ?\DateTime $datetime = null): EntryCollection
+    public function get(string $name, string $type, ?int $startIndex = null, ?float $float = null, ?bool $boolean = null, ?\PSX\DateTime\LocalDate $date = null, ?\DateTime $datetime = null): EntryCollection
     {
         $url = $this->parser->url('/foo/:name/:type', [
             'name' => $name,

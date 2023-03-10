@@ -9,7 +9,7 @@ import (
 )
 
 type Client struct {
-    internal *sdkgen.Client
+    internal *sdkgen.ClientAbstract
 }
 
 
