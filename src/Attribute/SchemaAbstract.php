@@ -29,7 +29,8 @@ abstract class SchemaAbstract
 {
     public function __construct(
         public string $schema,
-        public ?string $type = null
+        public ?string $type = null,
+        public ?string $name = null,
     )
     {
     }
