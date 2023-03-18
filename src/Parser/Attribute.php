@@ -33,7 +33,6 @@ use PSX\DateTime\Date;
 use PSX\DateTime\DateTime;
 use PSX\DateTime\Duration;
 use PSX\DateTime\Time;
-use PSX\Framework\Model\Passthru;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\SchemaManager;
@@ -45,8 +44,6 @@ use PSX\Schema\Type\TypeAbstract;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 use PSX\Uri\Uri;
-use PSX\Uri\Url;
-use PSX\Uri\Urn;
 use ReflectionClass;
 
 /**
@@ -347,8 +344,6 @@ class Attribute implements ParserInterface
         if ($type instanceof \ReflectionNamedType) {
             if (class_exists($type->getName())) {
                 return $type->getName();
-            } elseif ($type->getName() === 'mixed') {
-                return Passthru::class;
             }
         } elseif ($type instanceof \ReflectionUnionType) {
             // @TODO
