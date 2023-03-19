@@ -171,6 +171,14 @@ class Attribute implements ParserInterface
             $arguments->add($attribute->name, new Operation\Argument('path', $this->getParameter($attribute)));
         }
 
+        foreach ($meta->getHeaderParams() as $attribute) {
+            if (!$attribute instanceof Attr\ParamAbstract) {
+                continue;
+            }
+
+            $arguments->add($attribute->name, new Operation\Argument('header', $this->getParameter($attribute)));
+        }
+
         foreach ($meta->getQueryParams() as $attribute) {
             if (!$attribute instanceof Attr\ParamAbstract) {
                 continue;

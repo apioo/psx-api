@@ -24,6 +24,7 @@ use PSX\Api\Attribute\Authorization;
 use PSX\Api\Attribute\Deprecated;
 use PSX\Api\Attribute\Description;
 use PSX\Api\Attribute\Exclude;
+use PSX\Api\Attribute\HeaderParam;
 use PSX\Api\Attribute\Incoming;
 use PSX\Api\Attribute\MethodAbstract;
 use PSX\Api\Attribute\OperationId;
@@ -51,6 +52,10 @@ class Meta
      * @var PathParam[]
      */
     private array $pathParams = [];
+    /**
+     * @var HeaderParam[]
+     */
+    private array $headerParams = [];
     /**
      * @var QueryParam[]
      */
@@ -177,6 +182,16 @@ class Meta
     public function setPathParams(array $pathParams): void
     {
         $this->pathParams = $pathParams;
+    }
+
+    public function getHeaderParams(): array
+    {
+        return $this->headerParams;
+    }
+
+    public function setHeaderParams(array $headerParams): void
+    {
+        $this->headerParams = $headerParams;
     }
 
     public function getQueryParams(): array
