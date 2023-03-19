@@ -125,6 +125,7 @@ class Meta
         }
 
         $this->pathParams = array_merge($this->pathParams, $meta->getPathParams());
+        $this->headerParams = array_merge($this->headerParams, $meta->getHeaderParams());
         $this->queryParams = array_merge($this->queryParams, $meta->getQueryParams());
 
         if ($this->incoming == null) {
