@@ -21,6 +21,7 @@
 namespace PSX\Api\Tests\Parser\Attribute;
 
 use PSX\Api\Attribute\Description;
+use PSX\Api\Attribute\Get;
 use PSX\Api\Attribute\Incoming;
 use PSX\Api\Attribute\Outgoing;
 use PSX\Api\Attribute\Path;
@@ -40,6 +41,7 @@ use PSX\Api\Attribute\Tags;
 #[PathParam(name: 'fooId', type: 'string', required: true)]
 class TestController
 {
+    #[Get]
     #[Description('file://' . __DIR__ . '/description.md')]
     #[QueryParam(name: "foo", type: "string", description: "Test")]
     #[QueryParam(name: "bar", type: "string", required: true)]

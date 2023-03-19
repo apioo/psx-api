@@ -67,8 +67,8 @@ class AttributeTest extends ParserTestCase
         $this->assertEquals(TypeFactory::getInteger(), $operation->getArguments()->get('id')->getSchema());
         $this->assertEquals('query', $operation->getArguments()->get('year')->getIn());
         $this->assertEquals(TypeFactory::getString(), $operation->getArguments()->get('year')->getSchema());
-        $this->assertEquals('body', $operation->getArguments()->get('payload')->getIn());
-        $this->assertEquals(TypeFactory::getReference('Incoming'), $operation->getArguments()->get('payload')->getSchema());
+        $this->assertEquals('body', $operation->getArguments()->get('incoming')->getIn());
+        $this->assertEquals(TypeFactory::getReference('Incoming'), $operation->getArguments()->get('incoming')->getSchema());
         $this->assertEquals(200, $operation->getReturn()->getCode());
         $this->assertEquals(TypeFactory::getReference('Outgoing'), $operation->getReturn()->getSchema());
     }

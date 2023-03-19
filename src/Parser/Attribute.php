@@ -382,7 +382,7 @@ class Attribute implements ParserInterface
                 } else {
                     $schema = $this->getSchemaFromTypeHint($parameter->getType());
                     if (!empty($schema) && class_exists($schema)) {
-                        $incoming = new Attr\Incoming($schema, SchemaManager::TYPE_CLASS, $parameter->getName());
+                        $incoming = new Attr\Incoming($schema, SchemaManager::TYPE_ANNOTATION, $parameter->getName());
                     }
                 }
             }

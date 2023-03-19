@@ -21,10 +21,10 @@
 namespace PSX\Api\Tests\Parser\Attribute;
 
 use PSX\Api\Attribute\Description;
+use PSX\Api\Attribute\Get;
 use PSX\Api\Attribute\Incoming;
 use PSX\Api\Attribute\Outgoing;
-use PSX\Api\DocumentedInterface;
-use PSX\Api\SpecificationInterface;
+use PSX\Api\Attribute\Path;
 
 /**
  * FooController
@@ -34,8 +34,10 @@ use PSX\Api\SpecificationInterface;
  * @link    https://phpsx.org
  */
 #[Description('Foo endpoint')]
+#[Path('/foo')]
 class FooController
 {
+    #[Get]
     #[Incoming(schema: '../schema/schema.json')]
     #[Outgoing(code: 200, schema: '../schema/schema.json')]
     protected function doGet()

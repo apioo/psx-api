@@ -154,15 +154,6 @@
           }
         }
       },
-      "PSX_Api_Tests_Parser_Attribute_TestController_doGet_200_Response": {
-        "$ref": "#\/components\/schemas\/Song"
-      },
-      "PSX_Api_Tests_Parser_Attribute_TestController_doGet_500_Response": {
-        "$ref": "#\/components\/schemas\/Error"
-      },
-      "PSX_Api_Tests_Parser_Attribute_TestController_doGet_Request": {
-        "$ref": "#\/components\/schemas\/Song"
-      },
       "Rating": {
         "title": "Rating",
         "type": "object",
