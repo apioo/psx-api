@@ -23,6 +23,7 @@ namespace PSX\Api\Parser;
 use PSX\Api\Attribute as Attr;
 use PSX\Api\Attribute\ParamAbstract;
 use PSX\Api\Exception\ParserException;
+use PSX\Api\Model\Passthru;
 use PSX\Api\Operation;
 use PSX\Api\Parser\Attribute\Meta;
 use PSX\Api\ParserInterface;
@@ -350,7 +351,9 @@ class Attribute implements ParserInterface
     private function getSchemaFromTypeHint(?\ReflectionType $type): ?string
     {
         if ($type instanceof \ReflectionNamedType) {
-            if (class_exists($type->getName())) {
+            if ($type->getName() === 'mixed') {
+                return Passthru::class;
+            } elseif (class_exists($type->getName())) {
                 return $type->getName();
             }
         } elseif ($type instanceof \ReflectionUnionType) {
