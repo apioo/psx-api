@@ -32,6 +32,7 @@ use PSX\Schema\TypeInterface;
 interface ArgumentInterface
 {
     public const IN_PATH = 'path';
+    public const IN_HEADER = 'header';
     public const IN_QUERY = 'query';
     public const IN_BODY = 'body';
 

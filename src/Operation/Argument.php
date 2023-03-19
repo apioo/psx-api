@@ -36,8 +36,8 @@ class Argument implements ArgumentInterface, \JsonSerializable
 
     public function __construct(string $in, TypeInterface $schema)
     {
-        if (!in_array($in, [self::IN_PATH, self::IN_QUERY, self::IN_BODY])) {
-            throw new \InvalidArgumentException('Provided an invalid "in" value, must be one of: ' . implode(', ', [self::IN_PATH, self::IN_QUERY, self::IN_BODY]));
+        if (!in_array($in, [self::IN_PATH, self::IN_HEADER, self::IN_QUERY, self::IN_BODY])) {
+            throw new \InvalidArgumentException('Provided an invalid "in" value, must be one of: ' . implode(', ', [self::IN_PATH, self::IN_HEADER, self::IN_QUERY, self::IN_BODY]));
         }
 
         $this->in = $in;
