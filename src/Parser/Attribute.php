@@ -365,33 +365,49 @@ class Attribute implements ParserInterface
     {
         $missingPathNames = $this->getMissingPathNames($meta);
         $pathNames = $this->getParamNames($meta->getPathParams());
+        $headerNames = $this->getParamNames($meta->getHeaderParams());
+        $queryNames = $this->getParamNames($meta->getQueryParams());
 
         $pathParams = [];
+        $headerParams = [];
         $queryParams = [];
         $incoming = null;
         foreach ($method->getParameters() as $parameter) {
-            if (in_array($parameter->getName(), $pathNames) || in_array($parameter->getName(), $missingPathNames)) {
+            if (isset($pathNames[$parameter->getName()])) {
+                $pathParams[] = $meta->getPathParams()[$pathNames[$parameter->getName()]];
+            } elseif (isset($headerNames[$parameter->getName()])) {
+                $headerParams[] = $meta->getHeaderParams()[$headerNames[$parameter->getName()]];
+            } elseif (isset($queryNames[$parameter->getName()])) {
+                $queryParams[] = $meta->getQueryParams()[$queryNames[$parameter->getName()]];
+            } elseif (in_array($parameter->getName(), $missingPathNames)) {
+                // in case the path contains a variable path fragment which is no yet mapped through a path param
                 $args = $this->getParamArgsFromType($parameter, true);
                 if (!empty($args)) {
                     $pathParams[] = new Attr\PathParam(...$args);
                 }
             } else {
+                // in all other cases the parameter is either a query parameter in case it is a scalar value or a body
+                // parameter in case it is a class
                 $args = $this->getParamArgsFromType($parameter, false);
                 if (!empty($args)) {
                     $queryParams[] = new Attr\QueryParam(...$args);
-                } else {
+                } elseif (!$meta->hasIncoming() && in_array($meta->getMethod()->method, ['POST', 'PUT', 'PATCH'])) {
                     $schema = $this->getSchemaFromTypeHint($parameter->getType());
                     if (!empty($schema) && class_exists($schema)) {
+                        if ($incoming !== null) {
+                            throw new ParserException('The method ' . $method->getName() . ' must contains already the argument "' . $incoming->name . '" which represents the request body, we can not also set "' . $parameter->getName() . '" as request body');
+                        }
                         $incoming = new Attr\Incoming($schema, SchemaManager::TYPE_ANNOTATION, $parameter->getName());
                     }
                 }
             }
         }
 
-        $meta->setPathParams(array_merge($pathParams, $meta->getPathParams()));
-        $meta->setQueryParams(array_merge($queryParams, $meta->getQueryParams()));
+        $meta->setPathParams($pathParams);
+        $meta->setHeaderParams($headerParams);
+        $meta->setQueryParams($queryParams);
 
-        if ($incoming !== null && !$meta->hasIncoming() && in_array($meta->getMethod()->method, ['POST', 'PUT', 'PATCH'])) {
+        if ($incoming !== null) {
             $meta->setIncoming($incoming);
         }
 
@@ -408,14 +424,10 @@ class Attribute implements ParserInterface
     {
         $pathNames = Inflection::extractPlaceholderNames($meta->getPath()->path);
 
-        $availableNames = [];
-        foreach ($meta->getPathParams() as $param) {
-            $availableNames[] = $param->name;
-        }
-
+        $availableNames = $this->getParamNames($meta->getPathParams());
         $missingNames = [];
         foreach ($pathNames as $pathName) {
-            if (!in_array($pathName, $availableNames)) {
+            if (!isset($availableNames[$pathName])) {
                 $missingNames[] = $pathName;
             }
         }
@@ -429,8 +441,8 @@ class Attribute implements ParserInterface
     private function getParamNames(array $params): array
     {
         $result = [];
-        foreach ($params as $param) {
-            $result[] = $param->name;
+        foreach ($params as $index => $param) {
+            $result[$param->name] = $index;
         }
         return $result;
     }
