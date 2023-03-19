@@ -28,6 +28,7 @@ use PSX\Api\Attribute\Path;
 use PSX\Api\Attribute\PathParam;
 use PSX\Api\Attribute\QueryParam;
 use PSX\Api\Attribute\Tags;
+use PSX\DateTime\DateTime;
 
 /**
  * TestController
@@ -56,7 +57,7 @@ class TestController
     #[Outgoing(code: 200, schema: __DIR__ . "/../schema/schema.json")]
     #[Outgoing(code: 500, schema: __DIR__ . "/../schema/error.json")]
     #[Tags(['foo'])]
-    protected function doGet()
+    protected function doGet(string $fooId, string $foo, string $bar, string $baz, string $boz, int $integer, float $number, DateTime $date, bool $boolean, string $string)
     {
     }
 }
