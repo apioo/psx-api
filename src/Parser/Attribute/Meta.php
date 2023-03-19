@@ -84,6 +84,8 @@ class Meta
                 $this->path = $attribute;
             } elseif ($attribute instanceof PathParam) {
                 $this->pathParams[] = $attribute;
+            } elseif ($attribute instanceof HeaderParam) {
+                $this->headerParams[] = $attribute;
             } elseif ($attribute instanceof QueryParam) {
                 $this->queryParams[] = $attribute;
             } elseif ($attribute instanceof Incoming) {
