@@ -30,10 +30,11 @@ use PSX\Api\ParserInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
-use PSX\DateTime\Date;
-use PSX\DateTime\DateTime;
 use PSX\DateTime\Duration;
-use PSX\DateTime\Time;
+use PSX\DateTime\LocalDate;
+use PSX\DateTime\LocalDateTime;
+use PSX\DateTime\LocalTime;
+use PSX\DateTime\Period;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\SchemaManager;
@@ -465,10 +466,11 @@ class Attribute implements ParserInterface
             'bool' => [$name, TypeAbstract::TYPE_BOOLEAN, '', $required, $enum],
             'mixed' => [$name, TypeAbstract::TYPE_ANY, '', $required, $enum],
             'resource' => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_BINARY],
-            DateTime::class, \DateTimeInterface::class, \DateTimeImmutable::class, \DateTime::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_DATETIME],
-            Date::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_DATE],
-            Time::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_TIME],
-            Duration::class, \DateInterval::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_DURATION],
+            LocalDateTime::class, \DateTimeInterface::class, \DateTimeImmutable::class, \DateTime::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_DATETIME],
+            LocalDate::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_DATE],
+            LocalTime::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_TIME],
+            Period::class, \DateInterval::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_PERIOD],
+            Duration::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_DURATION],
             Uri::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_URI],
             default => null,
         };

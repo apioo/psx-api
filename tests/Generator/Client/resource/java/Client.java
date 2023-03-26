@@ -33,7 +33,7 @@ public class Client extends ClientAbstract {
     /**
      * Returns a collection
      */
-    public EntryCollection get(String name, String type, int startIndex, float _float, boolean _boolean, LocalDate date, LocalDateTime datetime) throws ClientException {
+    public EntryCollection get(String name, String type, int startIndex, double _float, boolean _boolean, LocalDate date, LocalDateTime datetime) throws ClientException {
         try {
             Map<String, Object> pathParams = new HashMap<>();
             pathParams.put("name", name);

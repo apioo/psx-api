@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 public class TestRequest {
     private int _int;
-    private float _float;
+    private double _float;
     private String string;
     private boolean bool;
     private String[] arrayScalar;
@@ -26,11 +26,11 @@ public class TestRequest {
         return this._int;
     }
     @JsonSetter("float")
-    public void setFloat(float _float) {
+    public void setFloat(double _float) {
         this._float = _float;
     }
     @JsonGetter("float")
-    public float getFloat() {
+    public double getFloat() {
         return this._float;
     }
     @JsonSetter("string")

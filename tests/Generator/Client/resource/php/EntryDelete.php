@@ -18,7 +18,7 @@ class EntryDelete implements \JsonSerializable
     #[MinLength(3)]
     #[MaxLength(16)]
     protected ?string $title = null;
-    protected ?\DateTime $date = null;
+    protected ?\PSX\DateTime\LocalDateTime $date = null;
     public function setId(?int $id) : void
     {
         $this->id = $id;
@@ -43,11 +43,11 @@ class EntryDelete implements \JsonSerializable
     {
         return $this->title;
     }
-    public function setDate(?\DateTime $date) : void
+    public function setDate(?\PSX\DateTime\LocalDateTime $date) : void
     {
         $this->date = $date;
     }
-    public function getDate() : ?\DateTime
+    public function getDate() : ?\PSX\DateTime\LocalDateTime
     {
         return $this->date;
     }
