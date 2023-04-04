@@ -228,7 +228,6 @@ class LanguageBuilder
                 $refType = $definitions->getType($refType->getRef());
             }
 
-            $refType = $definitions->getType($type->getRef());
             if (!$refType instanceof StructType) {
                 throw new InvalidTypeException('A reference can only point to a struct type, got: ' . get_class($refType));
             }
