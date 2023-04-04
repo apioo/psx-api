@@ -224,6 +224,11 @@ class LanguageBuilder
             // in case we have a reference type we take a look at the reference, normally this is a struct type but in
             // some special cases we need to extract the type
             $refType = $definitions->getType($type->getRef());
+            if ($refType instanceof ReferenceType) {
+                $refType = $definitions->getType($refType->getRef());
+            }
+
+            $refType = $definitions->getType($type->getRef());
             if (!$refType instanceof StructType) {
                 throw new InvalidTypeException('A reference can only point to a struct type, got: ' . get_class($refType));
             }
