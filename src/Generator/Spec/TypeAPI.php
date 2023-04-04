@@ -46,7 +46,7 @@ class TypeAPI implements GeneratorInterface
         $data['operations'] = $operations;
         $data['definitions'] = $this->generateDefinitions($definitions);
 
-        return Parser::encode($data, \JSON_PRETTY_PRINT);
+        return Parser::encode($data);
     }
 
     private function generateDefinitions(DefinitionsInterface $definitions): ?array

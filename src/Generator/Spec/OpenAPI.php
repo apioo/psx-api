@@ -149,7 +149,7 @@ class OpenAPI extends ApiAbstract
         }
 
         $data = $this->dumper->dump($declaration);
-        $data = Parser::encode($data, JSON_PRETTY_PRINT);
+        $data = Parser::encode($data);
 
         return $data;
     }
