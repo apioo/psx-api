@@ -356,7 +356,7 @@ class OpenAPI extends ApiAbstract
     private function getResponse(\PSX\Api\Operation\Response $response, DefinitionsInterface $definitions): Response
     {
         $result = new Response();
-        //$result->setDescription('');
+        $result->setDescription('');
         $result->setContent($this->getMediaTypes($response->getSchema(), $definitions));
 
         return $result;
