@@ -1,5 +1,5 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.3",
   "info": {
     "description": "### EOSIO Contract API\n*Made with \u2665\ufe0f by [pink.gg](https:\/\/pink.gg\/)*\n#### Current Chain: wax-mainnet\n#### Provided by: [Zeptagram](https:\/\/zeptagram.com)",
     "version": "1.2.12",

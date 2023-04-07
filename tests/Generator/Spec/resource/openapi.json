@@ -1,16 +1,16 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.3",
   "info": {
     "title": "PSX",
     "version": "1"
   },
   "servers": [
     {
-      "url": "http:\/\/api.phpsx.org"
+      "url": "http://api.phpsx.org"
     }
   ],
   "paths": {
-    "\/foo\/{name}\/{type}": {
+    "/foo/{name}/{type}": {
       "get": {
         "description": "Returns a collection",
         "operationId": "get",
@@ -64,10 +64,11 @@
         ],
         "responses": {
           "200": {
+            "description": "",
             "content": {
-              "application\/json": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/EntryCollection"
+                  "$ref": "#/components/schemas/EntryCollection"
                 }
               }
             }
@@ -78,19 +79,20 @@
         "operationId": "update",
         "requestBody": {
           "content": {
-            "application\/json": {
+            "application/json": {
               "schema": {
-                "$ref": "#\/components\/schemas\/EntryUpdate"
+                "$ref": "#/components/schemas/EntryUpdate"
               }
             }
           }
         },
         "responses": {
           "200": {
+            "description": "",
             "content": {
-              "application\/json": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/EntryMessage"
+                  "$ref": "#/components/schemas/EntryMessage"
                 }
               }
             }
@@ -101,37 +103,40 @@
         "operationId": "create",
         "requestBody": {
           "content": {
-            "application\/json": {
+            "application/json": {
               "schema": {
-                "$ref": "#\/components\/schemas\/EntryCreate"
+                "$ref": "#/components/schemas/EntryCreate"
               }
             }
           }
         },
         "responses": {
           "201": {
+            "description": "",
             "content": {
-              "application\/json": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/EntryMessage"
+                  "$ref": "#/components/schemas/EntryMessage"
                 }
               }
             }
           },
           "400": {
+            "description": "",
             "content": {
-              "application\/json": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/EntryMessage"
+                  "$ref": "#/components/schemas/EntryMessage"
                 }
               }
             }
           },
           "500": {
+            "description": "",
             "content": {
-              "application\/json": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/EntryMessage"
+                  "$ref": "#/components/schemas/EntryMessage"
                 }
               }
             }
@@ -142,19 +147,20 @@
         "operationId": "delete",
         "requestBody": {
           "content": {
-            "application\/json": {
+            "application/json": {
               "schema": {
-                "$ref": "#\/components\/schemas\/EntryDelete"
+                "$ref": "#/components/schemas/EntryDelete"
               }
             }
           }
         },
         "responses": {
           "200": {
+            "description": "",
             "content": {
-              "application\/json": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/EntryMessage"
+                  "$ref": "#/components/schemas/EntryMessage"
                 }
               }
             }
@@ -165,19 +171,20 @@
         "operationId": "patch",
         "requestBody": {
           "content": {
-            "application\/json": {
+            "application/json": {
               "schema": {
-                "$ref": "#\/components\/schemas\/EntryPatch"
+                "$ref": "#/components/schemas/EntryPatch"
               }
             }
           }
         },
         "responses": {
           "200": {
+            "description": "",
             "content": {
-              "application\/json": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#\/components\/schemas\/EntryMessage"
+                  "$ref": "#/components/schemas/EntryMessage"
                 }
               }
             }
@@ -233,7 +240,7 @@
           "entry": {
             "type": "array",
             "items": {
-              "$ref": "#\/components\/schemas\/Entry"
+              "$ref": "#/components/schemas/Entry"
             }
           }
         }

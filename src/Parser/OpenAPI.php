@@ -30,8 +30,6 @@ use PSX\Api\Operations;
 use PSX\Api\OperationsInterface;
 use PSX\Api\ParserInterface;
 use PSX\Api\Security\ApiKey;
-use PSX\Api\Security\AuthorizationCode;
-use PSX\Api\Security\ClientCredentials;
 use PSX\Api\Security\HttpBasic;
 use PSX\Api\Security\HttpBearer;
 use PSX\Api\Security\OAuth2;
@@ -40,19 +38,19 @@ use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
-use PSX\Model\OpenAPI\Components;
-use PSX\Model\OpenAPI\MediaType;
-use PSX\Model\OpenAPI\MediaTypes;
-use PSX\Model\OpenAPI\OAuthFlow;
-use PSX\Model\OpenAPI\OpenAPI as OpenAPIModel;
-use PSX\Model\OpenAPI\Operation as OpenAPIOperation;
-use PSX\Model\OpenAPI\Parameter;
-use PSX\Model\OpenAPI\PathItem;
-use PSX\Model\OpenAPI\Reference;
-use PSX\Model\OpenAPI\RequestBody;
-use PSX\Model\OpenAPI\Responses;
-use PSX\Model\OpenAPI\SecurityScheme;
-use PSX\Model\OpenAPI\SecuritySchemes;
+use PSX\OpenAPI\Components;
+use PSX\OpenAPI\MediaType;
+use PSX\OpenAPI\MediaTypes;
+use PSX\OpenAPI\OAuthFlow;
+use PSX\OpenAPI\OpenAPI as OpenAPIModel;
+use PSX\OpenAPI\Operation as OpenAPIOperation;
+use PSX\OpenAPI\Parameter;
+use PSX\OpenAPI\PathItem;
+use PSX\OpenAPI\Reference;
+use PSX\OpenAPI\RequestBody;
+use PSX\OpenAPI\Responses;
+use PSX\OpenAPI\SecurityScheme;
+use PSX\OpenAPI\SecuritySchemes;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Exception\TypeNotFoundException;
@@ -356,7 +354,7 @@ class OpenAPI implements ParserInterface
         }
 
         foreach ($responses as $statusCode => $response) {
-            /** @var \PSX\Model\OpenAPI\Response $response */
+            /** @var \PSX\OpenAPI\Response $response */
             $statusCode = (int) $statusCode;
             if ($statusCode >= $start && $statusCode < $end) {
                 $mediaTypes = $response->getContent();
