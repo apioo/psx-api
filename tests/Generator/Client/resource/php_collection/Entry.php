@@ -10,7 +10,7 @@ use PSX\Schema\Attribute\MaxLength;
 use PSX\Schema\Attribute\MinLength;
 use PSX\Schema\Attribute\Pattern;
 
-class Entry implements \JsonSerializable
+class Entry implements \JsonSerializable, \PSX\Record\RecordableInterface
 {
     protected ?int $id = null;
     protected ?int $userId = null;
@@ -51,10 +51,18 @@ class Entry implements \JsonSerializable
     {
         return $this->date;
     }
+    public function toRecord() : \PSX\Record\RecordInterface
+    {
+        /** @var \PSX\Record\Record<mixed> $record */
+        $record = new \PSX\Record\Record();
+        $record->put('id', $this->id);
+        $record->put('userId', $this->userId);
+        $record->put('title', $this->title);
+        $record->put('date', $this->date);
+        return $record;
+    }
     public function jsonSerialize() : object
     {
-        return (object) array_filter(array('id' => $this->id, 'userId' => $this->userId, 'title' => $this->title, 'date' => $this->date), static function ($value) : bool {
-            return $value !== null;
-        });
+        return (object) $this->toRecord()->getAll();
     }
 }

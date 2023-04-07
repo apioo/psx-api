@@ -7,7 +7,7 @@
 namespace Sdkgen\Client\Tests\Generated;
 
 
-class TestObject implements \JsonSerializable
+class TestObject implements \JsonSerializable, \PSX\Record\RecordableInterface
 {
     protected ?int $id = null;
     protected ?string $name = null;
@@ -27,10 +27,16 @@ class TestObject implements \JsonSerializable
     {
         return $this->name;
     }
+    public function toRecord() : \PSX\Record\RecordInterface
+    {
+        /** @var \PSX\Record\Record<mixed> $record */
+        $record = new \PSX\Record\Record();
+        $record->put('id', $this->id);
+        $record->put('name', $this->name);
+        return $record;
+    }
     public function jsonSerialize() : object
     {
-        return (object) array_filter(array('id' => $this->id, 'name' => $this->name), static function ($value) : bool {
-            return $value !== null;
-        });
+        return (object) $this->toRecord()->getAll();
     }
 }

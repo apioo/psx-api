@@ -20,16 +20,12 @@
 
 namespace PSX\Api\Tests\Parser;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\ApiManager;
 use PSX\Api\OperationInterface;
 use PSX\Api\Parser\OpenAPI;
-use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
 use PSX\Api\SpecificationInterface;
-use PSX\Schema\Type\StructType;
+use PSX\Schema\Format;
 use PSX\Schema\TypeFactory;
-use PSX\Schema\TypeInterface;
 
 /**
  * OpenAPITest
@@ -61,7 +57,7 @@ class OpenAPITest extends ParserTestCase
 
         $arguments = $operation->getArguments();
         $this->assertEquals('query', $arguments->get('limit')->getIn());
-        $this->assertEquals(['type' => 'integer', 'format' => 'int32', 'maximum' => 100], $arguments->get('limit')->getSchema()->toArray());
+        $this->assertEquals(['type' => 'integer', 'format' => Format::INT32, 'maximum' => 100], $arguments->get('limit')->getSchema()->toArray());
 
         $this->assertEquals(200, $operation->getReturn()->getCode());
         $this->assertEquals(['$ref' => 'Pets'], $operation->getReturn()->getSchema()->toArray());
@@ -76,7 +72,7 @@ class OpenAPITest extends ParserTestCase
         $this->assertEquals([
             'type' => 'object',
             'properties' => [
-                'id' => TypeFactory::getInteger()->setFormat('int64'),
+                'id' => TypeFactory::getInteger()->setFormat(Format::INT64),
                 'name' => TypeFactory::getString(),
                 'tag' => TypeFactory::getString()
             ],

@@ -26,6 +26,7 @@ use PSX\Api\Resource;
 use PSX\Api\Security\HttpBearer;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
+use PSX\Schema\Format;
 use PSX\Schema\Generator\Code\Chunks;
 use PSX\Schema\SchemaManager;
 use PSX\Schema\TypeFactory;
@@ -68,9 +69,9 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $operation->addArgument('float', Argument::IN_QUERY, TypeFactory::getNumber());
         $operation->addArgument('boolean', Argument::IN_QUERY, TypeFactory::getBoolean());
         $operation->addArgument('date', Argument::IN_QUERY, TypeFactory::getString()
-            ->setFormat('date'));
+            ->setFormat(Format::DATE));
         $operation->addArgument('datetime', Argument::IN_QUERY, TypeFactory::getString()
-            ->setFormat('date-time'));
+            ->setFormat(Format::DATETIME));
 
         $operation = $builder->addOperation('create', 'POST', '/foo/:name/:type', 201, $message);
         $operation->addArgument('name', Argument::IN_PATH, TypeFactory::getString());

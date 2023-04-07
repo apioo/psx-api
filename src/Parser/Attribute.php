@@ -37,11 +37,13 @@ use PSX\DateTime\LocalTime;
 use PSX\DateTime\Period;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\InvalidSchemaException;
+use PSX\Schema\Format;
 use PSX\Schema\SchemaManager;
 use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\Type\NumberType;
 use PSX\Schema\Type\ScalarType;
 use PSX\Schema\Type\StringType;
+use PSX\Schema\Type;
 use PSX\Schema\Type\TypeAbstract;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
@@ -275,9 +277,9 @@ class Attribute implements ParserInterface
     private function getParameter(Attr\ParamAbstract $param): TypeInterface
     {
         $type = match ($param->type) {
-            TypeAbstract::TYPE_INTEGER => TypeFactory::getInteger(),
-            TypeAbstract::TYPE_NUMBER => TypeFactory::getNumber(),
-            TypeAbstract::TYPE_BOOLEAN => TypeFactory::getBoolean(),
+            Type::INTEGER => TypeFactory::getInteger(),
+            Type::NUMBER => TypeFactory::getNumber(),
+            Type::BOOLEAN => TypeFactory::getBoolean(),
             default => TypeFactory::getString(),
         };
 
@@ -460,18 +462,18 @@ class Attribute implements ParserInterface
         }
 
         $return = match ($type->getName()) {
-            'string' => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum],
-            'int' => [$name, TypeAbstract::TYPE_INTEGER, '', $required, $enum],
-            'float' => [$name, TypeAbstract::TYPE_NUMBER, '', $required, $enum],
-            'bool' => [$name, TypeAbstract::TYPE_BOOLEAN, '', $required, $enum],
-            'mixed' => [$name, TypeAbstract::TYPE_ANY, '', $required, $enum],
-            'resource' => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_BINARY],
-            LocalDateTime::class, \DateTimeInterface::class, \DateTimeImmutable::class, \DateTime::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_DATETIME],
-            LocalDate::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_DATE],
-            LocalTime::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_TIME],
-            Period::class, \DateInterval::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_PERIOD],
-            Duration::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_DURATION],
-            Uri::class => [$name, TypeAbstract::TYPE_STRING, '', $required, $enum, null, null, null, TypeAbstract::FORMAT_URI],
+            'string' => [$name, Type::STRING, '', $required, $enum],
+            'int' => [$name, Type::INTEGER, '', $required, $enum],
+            'float' => [$name, Type::NUMBER, '', $required, $enum],
+            'bool' => [$name, Type::BOOLEAN, '', $required, $enum],
+            'mixed' => [$name, Type::ANY, '', $required, $enum],
+            'resource' => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::BINARY],
+            LocalDateTime::class, \DateTimeInterface::class, \DateTimeImmutable::class, \DateTime::class => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::DATETIME],
+            LocalDate::class => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::DATE],
+            LocalTime::class => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::TIME],
+            Period::class, \DateInterval::class => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::PERIOD],
+            Duration::class => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::DURATION],
+            Uri::class => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::URI],
             default => null,
         };
 

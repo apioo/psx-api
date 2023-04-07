@@ -20,14 +20,8 @@
 
 namespace PSX\Api\Tests\Parser;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\ApiManager;
-use PSX\Api\Parser\OpenAPI;
-use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
 use PSX\Api\SpecificationInterface;
-use PSX\Schema\Type\StructType;
-use PSX\Schema\TypeInterface;
 
 /**
  * TypeAPITest

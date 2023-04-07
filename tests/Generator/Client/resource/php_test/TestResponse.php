@@ -7,7 +7,7 @@
 namespace Sdkgen\Client\Tests\Generated;
 
 
-class TestResponse implements \JsonSerializable
+class TestResponse implements \JsonSerializable, \PSX\Record\RecordableInterface
 {
     protected ?TestMapScalar $args = null;
     protected ?TestMapScalar $headers = null;
@@ -45,10 +45,18 @@ class TestResponse implements \JsonSerializable
     {
         return $this->method;
     }
+    public function toRecord() : \PSX\Record\RecordInterface
+    {
+        /** @var \PSX\Record\Record<mixed> $record */
+        $record = new \PSX\Record\Record();
+        $record->put('args', $this->args);
+        $record->put('headers', $this->headers);
+        $record->put('json', $this->json);
+        $record->put('method', $this->method);
+        return $record;
+    }
     public function jsonSerialize() : object
     {
-        return (object) array_filter(array('args' => $this->args, 'headers' => $this->headers, 'json' => $this->json, 'method' => $this->method), static function ($value) : bool {
-            return $value !== null;
-        });
+        return (object) $this->toRecord()->getAll();
     }
 }

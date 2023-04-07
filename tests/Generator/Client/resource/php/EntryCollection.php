@@ -4,7 +4,7 @@
  * @see https://sdkgen.app
  */
 
-class EntryCollection implements \JsonSerializable
+class EntryCollection implements \JsonSerializable, \PSX\Record\RecordableInterface
 {
     /**
      * @var array<Entry>|null
@@ -21,10 +21,15 @@ class EntryCollection implements \JsonSerializable
     {
         return $this->entry;
     }
+    public function toRecord() : \PSX\Record\RecordInterface
+    {
+        /** @var \PSX\Record\Record<mixed> $record */
+        $record = new \PSX\Record\Record();
+        $record->put('entry', $this->entry);
+        return $record;
+    }
     public function jsonSerialize() : object
     {
-        return (object) array_filter(array('entry' => $this->entry), static function ($value) : bool {
-            return $value !== null;
-        });
+        return (object) $this->toRecord()->getAll();
     }
 }

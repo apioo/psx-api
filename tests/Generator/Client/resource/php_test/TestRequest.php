@@ -7,7 +7,7 @@
 namespace Sdkgen\Client\Tests\Generated;
 
 
-class TestRequest implements \JsonSerializable
+class TestRequest implements \JsonSerializable, \PSX\Record\RecordableInterface
 {
     protected ?int $int = null;
     protected ?float $float = null;
@@ -102,10 +102,23 @@ class TestRequest implements \JsonSerializable
     {
         return $this->object;
     }
+    public function toRecord() : \PSX\Record\RecordInterface
+    {
+        /** @var \PSX\Record\Record<mixed> $record */
+        $record = new \PSX\Record\Record();
+        $record->put('int', $this->int);
+        $record->put('float', $this->float);
+        $record->put('string', $this->string);
+        $record->put('bool', $this->bool);
+        $record->put('arrayScalar', $this->arrayScalar);
+        $record->put('arrayObject', $this->arrayObject);
+        $record->put('mapScalar', $this->mapScalar);
+        $record->put('mapObject', $this->mapObject);
+        $record->put('object', $this->object);
+        return $record;
+    }
     public function jsonSerialize() : object
     {
-        return (object) array_filter(array('int' => $this->int, 'float' => $this->float, 'string' => $this->string, 'bool' => $this->bool, 'arrayScalar' => $this->arrayScalar, 'arrayObject' => $this->arrayObject, 'mapScalar' => $this->mapScalar, 'mapObject' => $this->mapObject, 'object' => $this->object), static function ($value) : bool {
-            return $value !== null;
-        });
+        return (object) $this->toRecord()->getAll();
     }
 }

@@ -23,6 +23,7 @@ namespace PSX\Api\Tests\Parser;
 use PSX\Api\OperationInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
+use PSX\Schema\Format;
 use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\Type\StringType;
 use PSX\Schema\Type\StructType;
@@ -66,7 +67,7 @@ abstract class ParserTestCase extends ApiManagerTestCase
         $this->assertEquals('query', $arguments->get('number')->getIn());
         $this->assertEquals(['type' => 'number'], $arguments->get('number')->getSchema()->toArray());
         $this->assertEquals('query', $arguments->get('date')->getIn());
-        $this->assertEquals(['type' => 'string', 'format' => 'date-time'], $arguments->get('date')->getSchema()->toArray());
+        $this->assertEquals(['type' => 'string', 'format' => Format::DATETIME], $arguments->get('date')->getSchema()->toArray());
         $this->assertEquals('query', $arguments->get('boolean')->getIn());
         $this->assertEquals(['type' => 'boolean'], $arguments->get('boolean')->getSchema()->toArray());
         $this->assertEquals('query', $arguments->get('string')->getIn());

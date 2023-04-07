@@ -20,6 +20,9 @@
 
 namespace PSX\Api\Attribute;
 
+use PSX\Schema\Type;
+use PSX\Schema\Format;
+
 /**
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -29,14 +32,14 @@ abstract class ParamAbstract
 {
     public function __construct(
         public string $name,
-        public string $type,
+        public Type $type,
         public ?string $description = null,
         public ?bool $required = null,
         public ?array $enum = null,
         public ?int $minLength = null,
         public ?int $maxLength = null,
         public ?string $pattern = null,
-        public ?string $format = null,
+        public ?Format $format = null,
         public ?int $minimum = null,
         public ?int $maximum = null
     )

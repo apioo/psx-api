@@ -29,6 +29,8 @@ use PSX\Api\Attribute\PathParam;
 use PSX\Api\Attribute\QueryParam;
 use PSX\Api\Attribute\Tags;
 use PSX\DateTime\DateTime;
+use PSX\Schema\Format;
+use PSX\Schema\Type;
 
 /**
  * TestController
@@ -39,20 +41,20 @@ use PSX\DateTime\DateTime;
  */
 #[Description('Test description')]
 #[Path('/foo/:fooId')]
-#[PathParam(name: 'fooId', type: 'string', required: true)]
+#[PathParam(name: 'fooId', type: Type::STRING, required: true)]
 class TestController
 {
     #[Get]
     #[Description('file://' . __DIR__ . '/description.md')]
-    #[QueryParam(name: "foo", type: "string", description: "Test")]
-    #[QueryParam(name: "bar", type: "string", required: true)]
-    #[QueryParam(name: "baz", type: "string", enum: ["foo", "bar"])]
-    #[QueryParam(name: "boz", type: "string", pattern: "[A-z]+")]
-    #[QueryParam(name: "integer", type: "integer")]
-    #[QueryParam(name: "number", type: "number")]
-    #[QueryParam(name: "date", type: "date", format: 'date-time')]
-    #[QueryParam(name: "boolean", type: "boolean")]
-    #[QueryParam(name: "string", type: "string")]
+    #[QueryParam(name: "foo", type: Type::STRING, description: "Test")]
+    #[QueryParam(name: "bar", type: Type::STRING, required: true)]
+    #[QueryParam(name: "baz", type: Type::STRING, enum: ["foo", "bar"])]
+    #[QueryParam(name: "boz", type: Type::STRING, pattern: "[A-z]+")]
+    #[QueryParam(name: "integer", type: Type::INTEGER)]
+    #[QueryParam(name: "number", type: Type::NUMBER)]
+    #[QueryParam(name: "date", type: Type::STRING, format: Format::DATETIME)]
+    #[QueryParam(name: "boolean", type: Type::BOOLEAN)]
+    #[QueryParam(name: "string", type: Type::STRING)]
     #[Incoming(schema: __DIR__ . "/../schema/schema.json")]
     #[Outgoing(code: 200, schema: __DIR__ . "/../schema/schema.json")]
     #[Outgoing(code: 500, schema: __DIR__ . "/../schema/error.json")]
