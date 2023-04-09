@@ -42,11 +42,12 @@ class Client extends MarkupAbstract
         }
 
         $return = $operation->return?->schema->type ?? 'void';
+        $throws = $this->getThrows($operation);
 
         if ($tagMethod !== null) {
-            return 'client.' . $tagMethod . '().' . $operation->methodName . '(' . implode(', ', $args) . '): ' . $return;
+            return 'client.' . $tagMethod . '().' . $operation->methodName . '(' . implode(', ', $args) . '): ' . $return . $throws;
         } else {
-            return 'client.' . $operation->methodName . '(' . implode(', ', $args) . '): ' . $return;
+            return 'client.' . $operation->methodName . '(' . implode(', ', $args) . '): ' . $return . $throws;
         }
     }
 
@@ -71,5 +72,21 @@ class Client extends MarkupAbstract
     protected function newSchemaGenerator(): SchemaGeneratorInterface
     {
         return new TypeScript();
+    }
+
+    private function getThrows(Dto\Operation $operation): string
+    {
+        $throws = [];
+        foreach ($operation->throws as $throw) {
+            $throws[] = $throw->schema->type;
+        }
+
+        $throws = array_unique($throws);
+
+        if (count($throws) > 0) {
+            return ' throws ' . implode(', ', $throws);
+        } else {
+            return '';
+        }
     }
 }
