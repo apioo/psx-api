@@ -399,7 +399,10 @@ class Attribute implements ParserInterface
                     $queryParams[] = new Attr\QueryParam(...$args);
                 } elseif (!$meta->hasIncoming() && in_array($meta->getMethod()->method, ['POST', 'PUT', 'PATCH'])) {
                     $schema = $this->getSchemaFromTypeHint($parameter->getType());
-                    if (!empty($schema) && class_exists($schema)) {
+                    if (!empty($schema)) {
+                        if (!class_exists($schema)) {
+                            throw new ParserException('The method ' . $method->getName() . ' contains an argument "' . $parameter->getName() . '" which has as type-hint a non existing class "' . $schema . '"');
+                        }
                         if ($incoming !== null) {
                             throw new ParserException('The method ' . $method->getName() . ' must contains already the argument "' . $incoming->name . '" which represents the request body, we can not also set "' . $parameter->getName() . '" as request body');
                         }
