@@ -21,12 +21,10 @@
 namespace PSX\Api\Scanner;
 
 use PSX\Api\Exception\ParserException;
-use PSX\Api\Parser;
+use PSX\Api\ParserInterface;
 use PSX\Api\ScannerInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
-use PSX\Schema\SchemaManager;
-use PSX\Schema\SchemaManagerInterface;
 
 /**
  * The service container scanner can be used to read all annotations from service classes. It can be used i.e. with a DI
@@ -39,14 +37,12 @@ use PSX\Schema\SchemaManagerInterface;
 class ServiceContainer implements ScannerInterface
 {
     private iterable $services;
-    private SchemaManagerInterface $schemaManager;
-    private Parser\Attribute $parser;
+    private ParserInterface $parser;
 
-    public function __construct(iterable $services)
+    public function __construct(iterable $services, ParserInterface $parser)
     {
         $this->services = $services;
-        $this->schemaManager = new SchemaManager();
-        $this->parser = new Parser\Attribute($this->schemaManager);
+        $this->parser = $parser;
     }
 
     public function generate(?FilterInterface $filter = null): SpecificationInterface
