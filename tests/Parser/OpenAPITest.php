@@ -41,12 +41,12 @@ class OpenAPITest extends ParserTestCase
      */
     protected function getSpecification(): SpecificationInterface
     {
-        return $this->apiManager->getApi(__DIR__ . '/openapi/simple.json', ApiManager::TYPE_OPENAPI);
+        return $this->apiManager->getApi(__DIR__ . '/openapi/simple.json');
     }
 
     public function testParsePetstore()
     {
-        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/petstore.json');
+        $specification = $this->apiManager->getApi(__DIR__ . '/openapi/petstore.json');
         $definitions = $specification->getDefinitions();
         $operation = $specification->getOperations()->get('listPets');
 
@@ -82,7 +82,7 @@ class OpenAPITest extends ParserTestCase
 
     public function testParseInline()
     {
-        $specification = OpenAPI::fromFile(__DIR__ . '/openapi/inline.json');
+        $specification = $this->apiManager->getApi(__DIR__ . '/openapi/inline.json');
         $definitions = $specification->getDefinitions();
         $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.TestController.doGet');
 

@@ -21,8 +21,10 @@
 namespace PSX\Api\Tests\Transformer;
 
 use PHPUnit\Framework\TestCase;
+use PSX\Api\ApiManager;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Transformer\OpenAPI;
+use PSX\Schema\SchemaManager;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -53,7 +55,7 @@ class OpenAPITest extends TestCase
         $this->assertJsonStringEqualsJsonFile($expectFile, \json_encode($actual));
 
         // test whether we can parse the spec file
-        $spec = \PSX\Api\Parser\OpenAPI::fromFile($expectFile);
+        $spec = (new ApiManager(new SchemaManager()))->getApi($expectFile);
         $this->assertInstanceOf(SpecificationInterface::class, $spec);
     }
 

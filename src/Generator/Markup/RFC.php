@@ -18,19 +18,27 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Attribute;
+namespace PSX\Api\Generator\Markup;
+
+use PSX\Api\Generator\Client\Dto;
+use PSX\Api\GeneratorInterface;
+use PSX\Api\SpecificationInterface;
+use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\Generator\Code\Chunks;
+use PSX\Schema\Generator\TypeScript;
+use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 
 /**
+ * Generates RFC XML markup for the provided TypeAPI specification
+ *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-abstract class SchemaAbstract
+class RFC implements GeneratorInterface
 {
-    public function __construct(
-        public string $schema,
-        public ?string $name = null
-    )
+    public function generate(SpecificationInterface $specification): Chunks|string
     {
+        // TODO: Implement generate() method.
     }
 }

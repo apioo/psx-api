@@ -56,7 +56,9 @@ use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Exception\TypeNotFoundException;
 use PSX\Schema\Inspector\Hash;
 use PSX\Schema\Parser as SchemaParser;
+use PSX\Schema\Parser\ContextInterface;
 use PSX\Schema\SchemaInterface;
+use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Type\ArrayType;
 use PSX\Schema\Type\IntersectionType;
@@ -78,23 +80,21 @@ use Symfony\Component\Yaml\Yaml;
  */
 class OpenAPI implements ParserInterface
 {
-    private ?string $basePath;
     private SchemaParser\TypeSchema $schemaParser;
     private Hash $hashInspector;
     private ?DefinitionsInterface $definitions = null;
     private ?OpenAPIModel $document = null;
 
-    public function __construct(?string $basePath = null)
+    public function __construct(SchemaManagerInterface $schemaManager)
     {
-        $this->basePath = $basePath;
-        $this->schemaParser = new SchemaParser\TypeSchema(null, $basePath);
+        $this->schemaParser = new SchemaParser\TypeSchema($schemaManager);
         $this->hashInspector = new Hash();
     }
 
     /**
      * @throws ParserException
      */
-    public function parse(string $schema): SpecificationInterface
+    public function parse(string $schema, ?ContextInterface $context = null): SpecificationInterface
     {
         try {
             $data = Parser::decode($schema);
@@ -102,7 +102,7 @@ class OpenAPI implements ParserInterface
                 throw new ParserException('Provided schema must be an object');
             }
 
-            return $this->parseObject($data);
+            return $this->parseObject($data, $context);
         } catch (\JsonException $e) {
             throw new ParserException('Could not parse JSON: ' . $e->getMessage(), 0, $e);
         }
@@ -111,10 +111,10 @@ class OpenAPI implements ParserInterface
     /**
      * @throws ParserException
      */
-    public function parseObject(\stdClass $data): SpecificationInterface
+    public function parseObject(\stdClass $data, ?ContextInterface $context = null): SpecificationInterface
     {
         try {
-            $this->definitions = $this->schemaParser->parseSchema($data)->getDefinitions();
+            $this->definitions = $this->schemaParser->parseSchema($data, $context)->getDefinitions();
             $this->document    = (new SchemaTraverser())->traverse($data, $this->getSchema(), new TypeVisitor());
 
             $operations = new Operations();
@@ -482,24 +482,5 @@ class OpenAPI implements ParserInterface
     private function getSchema(): SchemaInterface
     {
         return (new SchemaParser\Popo())->parse(OpenAPIModel::class);
-    }
-
-    public static function fromFile(string $file): SpecificationInterface
-    {
-        if (empty($file) || !is_file($file)) {
-            throw new ParserException('Could not load OpenAPI schema ' . $file);
-        }
-
-        $extension = pathinfo($file, PATHINFO_EXTENSION);
-        if (in_array($extension, ['yaml', 'yml'])) {
-            $data = json_encode(Yaml::parse(file_get_contents($file)));
-        } else {
-            $data = file_get_contents($file);
-        }
-
-        $basePath = pathinfo($file, PATHINFO_DIRNAME);
-        $parser   = new OpenAPI($basePath);
-
-        return $parser->parse($data);
     }
 }

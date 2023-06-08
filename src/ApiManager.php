@@ -20,19 +20,13 @@
 
 namespace PSX\Api;
 
-use Doctrine\Common\Annotations\Reader;
 use Psr\Cache\CacheItemPoolInterface;
-use Psr\Cache\InvalidArgumentException;
 use PSX\Api\Builder\SpecificationBuilder;
 use PSX\Api\Builder\SpecificationBuilderInterface;
-use PSX\Api\Exception\InvalidMethodException;
-use PSX\Api\Exception\ParserException;
-use PSX\Api\Parser\OpenAPI;
-use PSX\Api\Parser\TypeAPI;
-use PSX\Schema\Exception\InvalidSchemaException;
+use PSX\Api\Exception\InvalidApiException;
+use PSX\Schema\Parser\ContextInterface;
 use PSX\Schema\SchemaManagerInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * ApiManager
@@ -43,27 +37,28 @@ use Symfony\Component\Yaml\Yaml;
  */
 class ApiManager implements ApiManagerInterface
 {
-    public const TYPE_ATTRIBUTE = 1;
-    public const TYPE_OPENAPI = 2;
-    public const TYPE_TYPEAPI = 3;
-
-    private SchemaManagerInterface $schemaManager;
-    private Parser\Attribute $attributeParser;
     private CacheItemPoolInterface $cache;
     private bool $debug;
 
+    private array $parsers = [];
+
     public function __construct(SchemaManagerInterface $schemaManager, CacheItemPoolInterface $cache = null, bool $debug = false)
     {
-        $this->schemaManager = $schemaManager;
-        $this->attributeParser = new Parser\Attribute($schemaManager);
         $this->cache = $cache === null ? new ArrayAdapter() : $cache;
         $this->debug = $debug;
+
+        $this->register('php', new Parser\Attribute($schemaManager));
+        $this->register('file', new Parser\File($schemaManager));
+        $this->register('openapi', new Parser\OpenAPI($schemaManager));
+        $this->register('typeapi', new Parser\TypeAPI($schemaManager));
     }
 
-    /**
-     * @throws ParserException
-     */
-    public function getApi(string $source, ?int $type = null): SpecificationInterface
+    public function register(string $scheme, ParserInterface $parser): void
+    {
+        $this->parsers[$scheme] = $parser;
+    }
+
+    public function getApi(string $source, ?ContextInterface $context = null): SpecificationInterface
     {
         $item = null;
         if (!$this->debug) {
@@ -73,42 +68,22 @@ class ApiManager implements ApiManagerInterface
             }
         }
 
-        $basePath = null;
-        $data = null;
-        if (class_exists($source)) {
-            $type = self::TYPE_ATTRIBUTE;
-        } elseif (is_file($source)) {
-            $basePath  = pathinfo($source, PATHINFO_DIRNAME);
-            $extension = pathinfo($source, PATHINFO_EXTENSION);
-            if (in_array($extension, ['yaml', 'yml'])) {
-                $data = json_decode(json_encode(Yaml::parse(file_get_contents($source))));
-            } else {
-                $data = json_decode(file_get_contents($source));
-            }
-
-            if (!$data instanceof \stdClass) {
-                throw new ParserException('Provided source must be an JSON or YAML file containing an object');
-            }
-
-            if (isset($data->paths)) {
-                $type = self::TYPE_OPENAPI;
-            } elseif (isset($data->operations)) {
-                $type = self::TYPE_TYPEAPI;
-            } else {
-                throw new ParserException('Could not detect schema format of the provided source ' . $source);
-            }
-        } else {
-            throw new ParserException('Provided source must be either a class or a file');
+        $pos = strpos($source, '://');
+        if ($pos === false) {
+            $source = $this->guessSchemeFromSchemaName($source);
+            $pos = strpos($source, '://');
         }
 
-        if ($type === self::TYPE_OPENAPI) {
-            $api = (new OpenAPI($basePath))->parseObject($data);
-        } elseif ($type === self::TYPE_TYPEAPI) {
-            $api = (new TypeAPI($basePath))->parseObject($data);
-        } elseif ($type === self::TYPE_ATTRIBUTE) {
-            $api = $this->attributeParser->parse($source);
+        if ($pos === false) {
+            throw new InvalidApiException('Could not resolve api uri');
+        }
+
+        $scheme = substr($source, 0, $pos);
+        $value = substr($source, $pos + 3);
+        if (isset($this->parsers[$scheme])) {
+            $api = $this->parsers[$scheme]->parse($value, $context);
         } else {
-            throw new ParserException('Schema ' . $source . ' does not exist');
+            throw new InvalidApiException('API ' . $source . ' does not exist');
         }
 
         if (!$this->debug && $item !== null) {
@@ -122,5 +97,16 @@ class ApiManager implements ApiManagerInterface
     public function getBuilder(): SpecificationBuilderInterface
     {
         return new SpecificationBuilder();
+    }
+
+    private function guessSchemeFromSchemaName(string $schemaName): ?string
+    {
+        if (class_exists($schemaName)) {
+            return 'php://' . str_replace('\\', '.', $schemaName);
+        } elseif (is_file($schemaName)) {
+            return 'file://' . $schemaName;
+        } else {
+            return $schemaName;
+        }
     }
 }

@@ -43,7 +43,7 @@ class AttributeTest extends ParserTestCase
      */
     protected function getSpecification(): SpecificationInterface
     {
-        return $this->apiManager->getApi(TestController::class, ApiManager::TYPE_ATTRIBUTE);
+        return $this->apiManager->getApi(TestController::class);
     }
 
     public function testOperationId()

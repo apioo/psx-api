@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Parser;
 
+use PSX\Api\Exception\InvalidArgumentException;
 use PSX\Api\Exception\ParserException;
 use PSX\Api\Operation;
 use PSX\Api\Operations;
@@ -32,8 +33,9 @@ use PSX\Api\SpecificationInterface;
 use PSX\Json\Parser;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Parser as SchemaParser;
+use PSX\Schema\Parser\ContextInterface;
+use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\TypeFactory;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * TypeAPI
@@ -46,15 +48,15 @@ class TypeAPI implements ParserInterface
 {
     private SchemaParser\TypeSchema $schemaParser;
 
-    public function __construct(?string $basePath = null)
+    public function __construct(SchemaManagerInterface $schemaManager)
     {
-        $this->schemaParser = new SchemaParser\TypeSchema(null, $basePath);
+        $this->schemaParser = new SchemaParser\TypeSchema($schemaManager);
     }
 
     /**
      * @throws ParserException
      */
-    public function parse(string $schema): SpecificationInterface
+    public function parse(string $schema, ?ContextInterface $context = null): SpecificationInterface
     {
         try {
             $data = Parser::decode($schema);
@@ -62,7 +64,7 @@ class TypeAPI implements ParserInterface
                 throw new ParserException('Provided schema must be an object');
             }
 
-            return $this->parseObject($data);
+            return $this->parseObject($data, $context);
         } catch (\JsonException $e) {
             throw new ParserException('Could not parse JSON: ' . $e->getMessage(), 0, $e);
         }
@@ -71,10 +73,10 @@ class TypeAPI implements ParserInterface
     /**
      * @throws ParserException
      */
-    public function parseObject(\stdClass $data): SpecificationInterface
+    public function parseObject(\stdClass $data, ?ContextInterface $context = null): SpecificationInterface
     {
         try {
-            $schema = $this->schemaParser->parseSchema($data);
+            $schema = $this->schemaParser->parseSchema($data, $context);
 
             $definitions = $schema->getDefinitions();
 
@@ -102,6 +104,7 @@ class TypeAPI implements ParserInterface
     /**
      * @throws ParserException
      * @throws InvalidSchemaException
+     * @throws InvalidArgumentException
      */
     private function parseOperations(\stdClass $operations): OperationsInterface
     {
@@ -117,6 +120,7 @@ class TypeAPI implements ParserInterface
     /**
      * @throws ParserException
      * @throws InvalidSchemaException
+     * @throws InvalidArgumentException
      */
     private function parseOperation(\stdClass $operation): Operation
     {
@@ -185,6 +189,7 @@ class TypeAPI implements ParserInterface
     /**
      * @throws ParserException
      * @throws InvalidSchemaException
+     * @throws InvalidArgumentException
      */
     private function parseArguments(\stdClass $data): Operation\Arguments
     {
@@ -281,27 +286,5 @@ class TypeAPI implements ParserInterface
         }
 
         return null;
-    }
-
-    /**
-     * @throws ParserException
-     */
-    public static function fromFile(string $file): SpecificationInterface
-    {
-        if (empty($file) || !is_file($file)) {
-            throw new ParserException('Could not load TypeAPI schema ' . $file);
-        }
-
-        $extension = pathinfo($file, PATHINFO_EXTENSION);
-        if (in_array($extension, ['yaml', 'yml'])) {
-            $data = json_encode(Yaml::parse(file_get_contents($file)));
-        } else {
-            $data = file_get_contents($file);
-        }
-
-        $basePath = pathinfo($file, PATHINFO_DIRNAME);
-        $parser   = new TypeAPI($basePath);
-
-        return $parser->parse($data);
     }
 }

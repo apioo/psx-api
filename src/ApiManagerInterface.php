@@ -21,6 +21,8 @@
 namespace PSX\Api;
 
 use PSX\Api\Builder\SpecificationBuilderInterface;
+use PSX\Api\Exception\InvalidApiException;
+use PSX\Schema\Parser\ContextInterface;
 
 /**
  * ApiManagerInterface
@@ -33,8 +35,10 @@ interface ApiManagerInterface
 {
     /**
      * Returns the specification for the provided source
+     *
+     * @throws InvalidApiException
      */
-    public function getApi(string $source, ?int $type = null): SpecificationInterface;
+    public function getApi(string $source, ?ContextInterface $context = null): SpecificationInterface;
 
     /**
      * Returns a builder which helps to create a specification

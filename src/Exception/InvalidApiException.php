@@ -18,19 +18,15 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Attribute;
+namespace PSX\Api\Exception;
 
 /**
+ * InvalidApiException
+ *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-abstract class SchemaAbstract
+class InvalidApiException extends \Exception
 {
-    public function __construct(
-        public string $schema,
-        public ?string $name = null
-    )
-    {
-    }
 }

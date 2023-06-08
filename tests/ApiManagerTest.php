@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests;
 
+use PSX\Api\Exception\InvalidApiException;
 use PSX\Api\Exception\ParserException;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Attribute\TestController;
@@ -57,18 +58,11 @@ class ApiManagerTest extends ApiManagerTestCase
 
     public function testGetApiFileDoesNotExist()
     {
-        $this->expectException(ParserException::class);
+        $this->expectException(InvalidApiException::class);
 
         $this->apiManager->getApi(__DIR__ . '/Parser/openapi/unknown.json');
     }
 
-    public function testGetApiInvalidType()
-    {
-        $this->expectException(ParserException::class);
-
-        $this->apiManager->getApi('', 12);
-    }
-    
     public function testGetBuilder()
     {
         $builder = $this->apiManager->getBuilder();

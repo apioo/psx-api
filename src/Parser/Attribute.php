@@ -22,6 +22,7 @@ namespace PSX\Api\Parser;
 
 use PSX\Api\Attribute as Attr;
 use PSX\Api\Attribute\ParamAbstract;
+use PSX\Api\Exception\InvalidArgumentException;
 use PSX\Api\Exception\ParserException;
 use PSX\Api\Model\Passthru;
 use PSX\Api\Operation;
@@ -38,12 +39,13 @@ use PSX\DateTime\Period;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Format;
-use PSX\Schema\SchemaManager;
+use PSX\Schema\Parser\Context\FilesystemContext;
+use PSX\Schema\Parser\ContextInterface;
 use PSX\Schema\SchemaManagerInterface;
+use PSX\Schema\Type;
 use PSX\Schema\Type\NumberType;
 use PSX\Schema\Type\ScalarType;
 use PSX\Schema\Type\StringType;
-use PSX\Schema\Type;
 use PSX\Schema\Type\TypeAbstract;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
@@ -71,10 +73,10 @@ class Attribute implements ParserInterface
     /**
      * @throws ParserException
      */
-    public function parse(string $schema): SpecificationInterface
+    public function parse(string $schema, ?ContextInterface $context = null): SpecificationInterface
     {
         try {
-            $controller = new ReflectionClass($schema);
+            $controller = new ReflectionClass(str_replace('.', '\\', $schema));
             $basePath   = dirname($controller->getFileName());
 
             $rootMeta = Meta::fromAttributes($controller->getAttributes());
@@ -93,8 +95,9 @@ class Attribute implements ParserInterface
     /**
      * @throws ParserException
      * @throws InvalidSchemaException
+     * @throws InvalidArgumentException
      */
-    private function parseMethods(ReflectionClass $controller, SpecificationInterface $specification, string $basePath, Meta $rootMeta)
+    private function parseMethods(ReflectionClass $controller, SpecificationInterface $specification, string $basePath, Meta $rootMeta): void
     {
         foreach ($controller->getMethods() as $method) {
             $meta = Meta::fromAttributes($method->getAttributes());
@@ -162,6 +165,7 @@ class Attribute implements ParserInterface
 
     /**
      * @throws InvalidSchemaException
+     * @throws InvalidArgumentException
      */
     private function getArguments(Meta $meta, DefinitionsInterface $definitions, string $basePath): Operation\Arguments
     {
@@ -254,17 +258,7 @@ class Attribute implements ParserInterface
      */
     private function getBodySchema(Attr\SchemaAbstract $annotation, DefinitionsInterface $definitions, string $basePath): TypeInterface
     {
-        $schema = $annotation->schema;
-        $type   = $annotation->type;
-
-        // if we have a file append base path
-        if (str_contains($schema, '.')) {
-            if (!is_file($schema)) {
-                $schema = $basePath . '/' . $schema;
-            }
-        }
-
-        $schema = $this->schemaManager->getSchema($schema, $type);
+        $schema = $this->schemaManager->getSchema($annotation->schema, new FilesystemContext($basePath));
 
         $definitions->merge($schema->getDefinitions());
 
@@ -406,7 +400,7 @@ class Attribute implements ParserInterface
                         if ($incoming !== null) {
                             throw new ParserException('The method ' . $method->getName() . ' must contains already the argument "' . $incoming->name . '" which represents the request body, we can not also set "' . $parameter->getName() . '" as request body');
                         }
-                        $incoming = new Attr\Incoming($schema, SchemaManager::TYPE_ANNOTATION, $parameter->getName());
+                        $incoming = new Attr\Incoming($schema, $parameter->getName());
                     }
                 }
             }
