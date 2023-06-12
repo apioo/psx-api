@@ -228,8 +228,8 @@ class LanguageBuilder
                 $refType = $definitions->getType($refType->getRef());
             }
 
-            if (!$refType instanceof StructType) {
-                throw new InvalidTypeException('A reference can only point to a struct type, got: ' . get_class($refType));
+            if (!$refType instanceof StructType && !$refType instanceof MapType) {
+                throw new InvalidTypeException('A reference can only point to a struct or map type, got: ' . get_class($refType));
             }
         }
 
@@ -238,19 +238,6 @@ class LanguageBuilder
             $this->typeGenerator->getDocType($type),
             $optional
         );
-    }
-
-    /**
-     * Resolves a reference type in case it points to a non struct or map type
-     */
-    private function resolveType(string $name, DefinitionsInterface $definitions): TypeInterface
-    {
-        $resolved = $definitions->getType($name);
-        if (!$resolved instanceof StructType && !$resolved instanceof MapType) {
-            return $resolved;
-        }
-
-        return TypeFactory::getReference($name);
     }
 
     private function resolveImport(TypeInterface $type, array &$imports): void
