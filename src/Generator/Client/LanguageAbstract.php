@@ -86,6 +86,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         $chunks = new Generator\Code\Chunks();
 
         $client = $this->converter->getClient($specification);
+        $tagImports = [];
 
         foreach ($client->tags as $tag) {
             $imports = [];
@@ -107,6 +108,8 @@ abstract class LanguageAbstract implements GeneratorInterface
             ]);
 
             $chunks->append($this->getFileName($tag->className), $this->getFileContent($code, $tag->className));
+
+            $tagImports[] = $tag->className;
         }
 
         foreach ($client->exceptions as $exception) {
@@ -121,8 +124,8 @@ abstract class LanguageAbstract implements GeneratorInterface
             $chunks->append($this->getFileName($exception->className), $this->getFileContent($code, $exception->className));
         }
 
+        $imports = $tagImports;
         $operations = '';
-        $imports = [];
         if (count($client->operations) > 0) {
             foreach ($client->operations as $operation) {
                 $imports = array_merge($imports, $operation->imports);

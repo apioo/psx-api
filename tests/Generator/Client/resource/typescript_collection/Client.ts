@@ -8,6 +8,9 @@ import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
 import {HttpBearer} from "sdkgen-client"
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
+import {FooTag} from "./FooTag";
+import {BarTag} from "./BarTag";
+import {BazTag} from "./BazTag";
 
 export default class Client extends ClientAbstract {
     public foo(): FooTag
