@@ -17,7 +17,7 @@ import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
 {% endfor %}
 
-export default class {{ className }} extends ClientAbstract {
+export class {{ className }} extends ClientAbstract {
 {% for tag in tags %}
     public {{ tag.methodName }}(): {{ tag.className }}
     {

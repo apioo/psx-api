@@ -2,7 +2,7 @@ import {KnownErrorException} from "sdkgen-client"
 
 import {{ '{' }}{{ type }}{{ '}' }} from "./{{ type }}";
 
-export default class {{ className }} extends KnownErrorException {
+export class {{ className }} extends KnownErrorException {
 
     public constructor(private payload: {{ type }}) {
         super();

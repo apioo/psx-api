@@ -6,6 +6,6 @@ import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
 {% endfor %}
 
-export default class {{ className }} extends TagAbstract {
+export class {{ className }} extends TagAbstract {
 {{ operations|raw }}
 }
