@@ -46,9 +46,9 @@ class ParseCommandTest extends TestCase
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
-            'source'   => TestController::class,
-            '--dir'    => __DIR__ . '/output',
-            '--format' => LocalRepository::SPEC_OPENAPI,
+            'source' => TestController::class,
+            'type'   => LocalRepository::SPEC_OPENAPI,
+            'dir'    => __DIR__ . '/output',
         ));
 
         $actual = file_get_contents(__DIR__ . '/output/output-spec-openapi.json');

@@ -54,24 +54,24 @@ class GenerateCommand extends Command
         $this->filterFactory = $filterFactory;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('api:generate')
             ->setDescription('Generates for each API resource a file in a specific format')
+            ->addArgument('type', InputArgument::REQUIRED, 'The generator type')
             ->addArgument('dir', InputArgument::OPTIONAL, 'The target directory')
-            ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Optional the output format')
             ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Optional a config value which gets passed to the generator')
             ->addOption('filter', 'i', InputOption::VALUE_REQUIRED, 'Optional a specific filter');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $registry = $this->factory->factory();
 
-        $format = $input->getOption('format');
+        $format = $input->getArgument('type');
         if (!in_array($format, $registry->getPossibleTypes())) {
-            throw new \InvalidArgumentException('Provided an invalid format');
+            throw new \InvalidArgumentException('Provided an invalid format, possible types are: ' . implode(', ', $registry->getPossibleTypes()));
         }
 
         $dir = $input->getArgument('dir') ?? getcwd();
@@ -89,7 +89,7 @@ class GenerateCommand extends Command
         }
 
         $generator = $registry->getGenerator($format, $config);
-        $extension = $registry->getFileExtension($format, $config);
+        $extension = $registry->getFileExtension($format);
 
         $output->writeln('Generating ...');
 

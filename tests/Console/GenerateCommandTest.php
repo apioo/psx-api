@@ -45,8 +45,8 @@ class GenerateCommandTest extends TestCase
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
+            'type'     => LocalRepository::CLIENT_PHP,
             'dir'      => __DIR__ . '/output',
-            '--format' => LocalRepository::CLIENT_PHP,
             '--config' => 'Acme\\Sdk\\Generated',
         ));
 
@@ -59,8 +59,8 @@ class GenerateCommandTest extends TestCase
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
+            'type'     => LocalRepository::SPEC_OPENAPI,
             'dir'      => __DIR__ . '/output',
-            '--format' => LocalRepository::SPEC_OPENAPI,
         ));
 
         $this->assertFileExists(__DIR__ . '/output/output-spec-openapi.json');

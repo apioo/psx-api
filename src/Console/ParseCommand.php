@@ -56,9 +56,9 @@ class ParseCommand extends Command
         $this
             ->setName('api:parse')
             ->setDescription('Parses an arbitrary source and outputs the schema in a specific format')
-            ->addArgument('source', InputArgument::REQUIRED, 'The schema source this is either a absolute class name or schema file')
-            ->addOption('dir', 'd', InputOption::VALUE_REQUIRED, 'The target directory')
-            ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Optional the output format')
+            ->addArgument('source', InputArgument::REQUIRED, 'The schema source this is i.e. a schema file or class name')
+            ->addArgument('type', InputArgument::REQUIRED, 'The generator type')
+            ->addArgument('dir', InputArgument::OPTIONAL, 'The target directory')
             ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Optional a config value which gets passed to the generator');
     }
 
@@ -66,12 +66,12 @@ class ParseCommand extends Command
     {
         $registry = $this->factory->factory();
 
-        $format = $input->getOption('format');
+        $format = $input->getArgument('type');
         if (!in_array($format, $registry->getPossibleTypes())) {
-            throw new \InvalidArgumentException('Provided an invalid format');
+            throw new \InvalidArgumentException('Provided an invalid format, possible types are: ' . implode(', ', $registry->getPossibleTypes()));
         }
 
-        $dir = $input->getOption('dir') ?? getcwd();
+        $dir = $input->getArgument('dir') ?? getcwd();
         if (!is_dir($dir)) {
             throw new \InvalidArgumentException('Directory does not exist');
         }
@@ -80,7 +80,7 @@ class ParseCommand extends Command
         $specification = $this->apiManager->getApi($input->getArgument('source'));
 
         $generator = $registry->getGenerator($format, $config);
-        $extension = $registry->getFileExtension($format, $config);
+        $extension = $registry->getFileExtension($format);
 
         $output->writeln('Generating ...');
 
