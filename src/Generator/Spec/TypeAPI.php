@@ -37,10 +37,23 @@ use PSX\Schema\TypeFactory;
  */
 class TypeAPI implements GeneratorInterface
 {
+    private ?string $baseUrl;
+
+    public function __construct(?string $baseUrl = null)
+    {
+        $this->baseUrl = $baseUrl;
+    }
+
     public function generate(SpecificationInterface $specification): Generator\Code\Chunks|string
     {
         $operations = $specification->getOperations();
         $definitions = $specification->getDefinitions();
+
+        $data = [];
+
+        if (!empty($this->baseUrl)) {
+            $data['baseUrl'] = $this->baseUrl;
+        }
 
         $data['security'] = $specification->getSecurity();
         $data['operations'] = $operations;
