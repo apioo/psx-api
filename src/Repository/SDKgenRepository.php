@@ -36,9 +36,6 @@ use PSX\Http\Client\GetRequest;
  */
 class SDKgenRepository implements RepositoryInterface
 {
-    public const CLIENT_GO = 'client-go';
-    public const CLIENT_JAVA = 'client-java';
-
     private ConfigInterface $config;
     private ClientInterface $httpClient;
     private ?CacheItemPoolInterface $cache;
@@ -52,13 +49,18 @@ class SDKgenRepository implements RepositoryInterface
 
     public function getAll(): array
     {
+        $accessToken = $this->config->getAccessToken();
+        if (empty($accessToken)) {
+            return [];
+        }
+
         $return = [];
         $types = $this->getTypes();
         foreach ($types as $type) {
             [$name, $fileExtension, $mime] = $type;
 
             $return[$name] = new GeneratorConfig(
-                fn(string $baseUrl, string $config) => new Generator\Proxy\SDKgen($this->httpClient, $this->config->getAccessToken(), $name, $baseUrl, $config),
+                fn(string $baseUrl, string $config) => new Generator\Proxy\SDKgen($this->httpClient, $accessToken, $name, $baseUrl, $config),
                 $fileExtension,
                 $mime
             );
