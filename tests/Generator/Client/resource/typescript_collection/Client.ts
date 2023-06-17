@@ -12,7 +12,7 @@ import {FooTag} from "./FooTag";
 import {BarTag} from "./BarTag";
 import {BazTag} from "./BazTag";
 
-export default class Client extends ClientAbstract {
+export class Client extends ClientAbstract {
     public foo(): FooTag
     {
         return new FooTag(

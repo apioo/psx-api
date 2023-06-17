@@ -11,7 +11,7 @@ import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
 import {EntryMessage} from "./EntryMessage";
 
-export default class FooTag extends TagAbstract {
+export class FooTag extends TagAbstract {
     /**
      * Returns a collection
      *

@@ -7,7 +7,7 @@ import {KnownErrorException} from "sdkgen-client"
 
 import {EntryMessage} from "./EntryMessage";
 
-export default class EntryMessageException extends KnownErrorException {
+export class EntryMessageException extends KnownErrorException {
 
     public constructor(private payload: EntryMessage) {
         super();

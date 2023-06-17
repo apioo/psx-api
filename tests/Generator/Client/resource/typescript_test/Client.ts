@@ -11,7 +11,7 @@ import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 import {TestRequest} from "./TestRequest";
 import {TestResponse} from "./TestResponse";
 
-export default class Client extends ClientAbstract {
+export class Client extends ClientAbstract {
     /**
      * Returns a collection
      *

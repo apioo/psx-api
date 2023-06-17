@@ -15,7 +15,7 @@ import {EntryMessage} from "./EntryMessage";
 import {EntryPatch} from "./EntryPatch";
 import {EntryUpdate} from "./EntryUpdate";
 
-export default class Client extends ClientAbstract {
+export class Client extends ClientAbstract {
     /**
      * Returns a collection
      *

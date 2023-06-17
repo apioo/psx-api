@@ -11,7 +11,7 @@ import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
 import {EntryMessage} from "./EntryMessage";
 
-export default class BarTag extends TagAbstract {
+export class BarTag extends TagAbstract {
     /**
      * Returns a collection
      *

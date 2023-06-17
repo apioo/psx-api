@@ -11,7 +11,7 @@ import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
 import {EntryMessage} from "./EntryMessage";
 
-export default class BazTag extends TagAbstract {
+export class BazTag extends TagAbstract {
     /**
      * Returns a collection
      *
