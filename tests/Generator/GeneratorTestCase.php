@@ -22,13 +22,11 @@ namespace PSX\Api\Tests\Generator;
 
 use PSX\Api\Builder\SpecificationBuilderInterface;
 use PSX\Api\Operation\Argument;
-use PSX\Api\Resource;
 use PSX\Api\Security\HttpBearer;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
 use PSX\Schema\Format;
 use PSX\Schema\Generator\Code\Chunks;
-use PSX\Schema\SchemaManager;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 

@@ -21,12 +21,7 @@
 namespace PSX\Api\Builder;
 
 use PSX\Api\Exception\InvalidArgumentException;
-use PSX\Api\Exception\InvalidMethodException;
 use PSX\Api\OperationInterface;
-use PSX\Api\Resource;
-use PSX\Api\SpecificationInterface;
-use PSX\Schema\Builder;
-use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\TypeInterface;
 
 /**

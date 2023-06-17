@@ -20,16 +20,9 @@
 
 namespace PSX\Api\Generator\Markup;
 
-use PSX\Api\Generator\Client\LanguageBuilder;
-use PSX\Api\Generator\Client\Util\Naming;
 use PSX\Api\Generator\Client\Dto;
-use PSX\Api\GeneratorInterface;
-use PSX\Api\SpecificationInterface;
-use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
-use PSX\Schema\Schema;
-use PSX\Schema\TypeFactory;
 
 /**
  * Markdown

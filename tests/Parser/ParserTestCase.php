@@ -24,11 +24,7 @@ use PSX\Api\OperationInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
 use PSX\Schema\Format;
-use PSX\Schema\Type\ReferenceType;
-use PSX\Schema\Type\StringType;
-use PSX\Schema\Type\StructType;
 use PSX\Schema\TypeFactory;
-use PSX\Schema\TypeInterface;
 
 /**
  * ParserTestCase

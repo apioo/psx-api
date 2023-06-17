@@ -69,7 +69,6 @@ use PSX\Schema\Type\UnionType;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 use PSX\Schema\Visitor\TypeVisitor;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * OpenAPI

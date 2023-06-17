@@ -20,7 +20,6 @@
 
 namespace PSX\Api;
 
-use PSX\Api\Operation\Argument;
 use PSX\Api\Operation\Arguments;
 use PSX\Api\Operation\Response;
 

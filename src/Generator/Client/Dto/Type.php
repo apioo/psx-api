@@ -20,9 +20,6 @@
 
 namespace PSX\Api\Generator\Client\Dto;
 
-use PSX\Schema;
-use PSX\Schema\GeneratorInterface;
-
 /**
  * Type
  *

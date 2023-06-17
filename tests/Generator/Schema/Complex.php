@@ -20,7 +20,6 @@
 
 namespace PSX\Api\Tests\Generator\Schema;
 
-use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\SchemaAbstract;
 use PSX\Schema\TypeFactory;
 

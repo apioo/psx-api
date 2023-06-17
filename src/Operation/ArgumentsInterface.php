@@ -20,14 +20,6 @@
 
 namespace PSX\Api\Operation;
 
-use PSX\Api\Exception\ArgumentNotFoundException;
-use PSX\Api\Exception\InvalidArgumentException;
-use PSX\Api\Exception\OperationNotFoundException;
-use PSX\Api\OperationInterface;
-use PSX\Api\OperationsInterface;
-use PSX\Schema\Type\StructType;
-use PSX\Schema\TypeInterface;
-
 /**
  * ArgumentsInterface
  *

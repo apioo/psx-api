@@ -20,7 +20,6 @@
 
 namespace PSX\Api\Tests\Parser;
 
-use PSX\Api\ApiManager;
 use PSX\Api\SpecificationInterface;
 
 /**

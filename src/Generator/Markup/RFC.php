@@ -20,13 +20,9 @@
 
 namespace PSX\Api\Generator\Markup;
 
-use PSX\Api\Generator\Client\Dto;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\SpecificationInterface;
-use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator\Code\Chunks;
-use PSX\Schema\Generator\TypeScript;
-use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 
 /**
  * Generates RFC XML markup for the provided TypeAPI specification

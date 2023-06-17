@@ -24,8 +24,6 @@ use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
 use PSX\Api\Console\ParseCommand;
 use PSX\Api\GeneratorFactory;
-use PSX\Api\GeneratorRegistry;
-use PSX\Api\GeneratorRegistryInterface;
 use PSX\Api\Repository\LocalRepository;
 use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;

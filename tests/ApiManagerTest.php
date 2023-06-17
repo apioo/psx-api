@@ -21,7 +21,6 @@
 namespace PSX\Api\Tests;
 
 use PSX\Api\Exception\InvalidApiException;
-use PSX\Api\Exception\ParserException;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;

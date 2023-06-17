@@ -20,10 +20,8 @@
 
 namespace PSX\Api\Builder;
 
-use PSX\Api\Resource;
 use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
-use PSX\Schema\Builder;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\TypeInterface;
 

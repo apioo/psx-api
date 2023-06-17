@@ -23,7 +23,6 @@ namespace PSX\Api\Inspector;
 use PSX\Api\Exception\OperationNotFoundException;
 use PSX\Api\Operation;
 use PSX\Api\OperationInterface;
-use PSX\Api\Operations;
 use PSX\Api\OperationsInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\Inspector\ChangelogGenerator as SchemaChangelogGenerator;

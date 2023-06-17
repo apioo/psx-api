@@ -20,9 +20,7 @@
 
 namespace PSX\Api\Console;
 
-use PSX\Api\GeneratorRegistry;
 use PSX\Api\GeneratorFactory;
-use PSX\Api\GeneratorRegistryInterface;
 use PSX\Api\Scanner\FilterFactoryInterface;
 use PSX\Api\ScannerInterface;
 use PSX\Schema\Generator\Code\Chunks;

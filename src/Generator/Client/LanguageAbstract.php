@@ -20,7 +20,6 @@
 
 namespace PSX\Api\Generator\Client;
 
-use PSX\Api\Generator\Client\Dto\Exception;
 use PSX\Api\Generator\Client\Dto\Tag;
 use PSX\Api\Generator\Client\Util\Naming;
 use PSX\Api\GeneratorInterface;

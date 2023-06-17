@@ -20,9 +20,7 @@
 
 namespace PSX\Api\Tests\Parser;
 
-use PSX\Api\ApiManager;
 use PSX\Api\OperationInterface;
-use PSX\Api\Parser\OpenAPI;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\Format;
 use PSX\Schema\TypeFactory;

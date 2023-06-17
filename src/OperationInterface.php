@@ -20,12 +20,8 @@
 
 namespace PSX\Api;
 
-use ArrayIterator;
-use IteratorAggregate;
-use PSX\Api\Operation\Argument;
 use PSX\Api\Operation\Arguments;
 use PSX\Api\Operation\Response;
-use PSX\Api\Resource\MethodAbstract;
 
 /**
  * OperationInterface

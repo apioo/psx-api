@@ -20,8 +20,6 @@
 
 namespace PSX\Api\Generator\Client\Util;
 
-use PSX\Api\OperationInterface;
-use PSX\Api\Resource;
 use PSX\Schema\Generator\Normalizer\NormalizerInterface;
 
 /**

@@ -22,8 +22,6 @@ namespace PSX\Api\Console;
 
 use PSX\Api\ApiManager;
 use PSX\Api\GeneratorFactory;
-use PSX\Api\GeneratorRegistry;
-use PSX\Api\GeneratorRegistryInterface;
 use PSX\Schema\Generator\Code\Chunks;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

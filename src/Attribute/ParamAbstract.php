@@ -20,8 +20,8 @@
 
 namespace PSX\Api\Attribute;
 
-use PSX\Schema\Type;
 use PSX\Schema\Format;
+use PSX\Schema\Type;
 
 /**
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
