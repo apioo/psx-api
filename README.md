@@ -79,7 +79,8 @@ $operation->getMethod();
 $operation->getPath();
 
 // creates a PHP client which consumes the defined operations
-$generator = new \PSX\Api\Generator\Client\Php();
+$registry = \PSX\Api\GeneratorFactory::fromLocal()->factory();
+$generator = $registry->getGenerator(\PSX\Api\Repository\LocalRepository::CLIENT_PHP)
 
 $source = $generator->generate($resource);
 
@@ -89,8 +90,6 @@ $source = $generator->generate($resource);
 
 ### Client
 
-- Go
-- Java
 - PHP
 - Typescript
 
@@ -102,5 +101,5 @@ $source = $generator->generate($resource);
 
 ### Spec
 
-- [OpenAPI 3.1](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md)
+- [OpenAPI](https://github.com/OAI/OpenAPI-Specification)
 - [TypeAPI](https://typeapi.org/)
