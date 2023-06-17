@@ -193,11 +193,13 @@ abstract class LanguageAbstract implements GeneratorInterface
         return $identifier . '.' . $this->getFileExtension();
     }
 
+    protected function getTemplateDir(): string
+    {
+        return __DIR__ . '/Language';
+    }
+
     private function newTemplateEngine(): Environment
     {
-        $loader = new FilesystemLoader([__DIR__ . '/Language']);
-        $engine = new Environment($loader);
-
-        return $engine;
+        return new Environment(new FilesystemLoader([$this->getTemplateDir()]));
     }
 }
