@@ -96,6 +96,7 @@ abstract class LanguageAbstract implements GeneratorInterface
 
             /** @var Tag $tag */
             $operations = $this->engine->render($this->getOperationTemplate(), [
+                'className' => $tag->className,
                 'operations' => $tag->operations,
             ]);
 
@@ -132,6 +133,7 @@ abstract class LanguageAbstract implements GeneratorInterface
             sort($imports);
 
             $operations = $this->engine->render($this->getOperationTemplate(), [
+                'className' => $client->className,
                 'operations' => $client->operations,
             ]);
         }

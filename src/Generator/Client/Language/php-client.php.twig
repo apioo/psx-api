@@ -8,7 +8,7 @@ use Sdkgen\Client\Credentials;
 use Sdkgen\Client\Exception\ClientException;
 use Sdkgen\Client\Exception\UnknownStatusCodeException;
 
-class Client extends ClientAbstract
+class {{ className }} extends ClientAbstract
 {
 {% for tag in tags %}
     public function {{ tag.methodName }}(): {{ tag.className }}
