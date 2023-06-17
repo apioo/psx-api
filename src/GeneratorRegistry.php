@@ -60,7 +60,7 @@ class GeneratorRegistry
 
         foreach ($this->configurators as $configurator) {
             if ($configurator->accept($generator)) {
-                $configurator->configure($generator);
+                $configurator->configure($generator, $filter);
             }
         }
 

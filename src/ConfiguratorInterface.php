@@ -20,6 +20,8 @@
 
 namespace PSX\Api;
 
+use PSX\Api\Scanner\FilterInterface;
+
 /**
  * A configurator provides a way to customize a specific generator instance
  *
@@ -38,5 +40,5 @@ interface ConfiguratorInterface
     /**
      * Configures the generator object
      */
-    public function configure(object $generator): void;
+    public function configure(object $generator, ?FilterInterface $filter = null): void;
 }
