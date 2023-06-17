@@ -66,12 +66,12 @@ use PSX\Schema\TypeInterface;
 class OpenAPI extends ApiAbstract
 {
     private int $apiVersion;
-    private string $baseUri;
+    private ?string $baseUri;
 
     private Dumper $dumper;
     private Generator\JsonSchema $generator;
 
-    public function __construct(int $apiVersion, string $baseUri)
+    public function __construct(int $apiVersion, ?string $baseUri)
     {
         $this->apiVersion = $apiVersion;
         $this->baseUri    = $baseUri;

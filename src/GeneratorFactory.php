@@ -20,127 +20,62 @@
 
 namespace PSX\Api;
 
-use PSX\Api\Scanner\FilterInterface;
+use PSX\Api\Repository\LocalRepository;
+use PSX\Api\Repository\RepositoryInterface;
 
 /**
- * GeneratorFactory
+ * This factory returns a GeneratorRegistry which contains all available generator types and which can be used to obtain
+ * an actual generator
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class GeneratorFactory implements GeneratorFactoryInterface
+class GeneratorFactory
 {
-    private string $url;
-    private string $dispatch;
+    /**
+     * @var iterable<RepositoryInterface>
+     */
+    private iterable $repositories;
 
-    public function __construct(string $url, string $dispatch)
+    /**
+     * @var iterable<ConfiguratorInterface>
+     */
+    private iterable $configurators;
+    private ?string $baseUrl;
+
+    private ?GeneratorRegistry $generatorRegistry = null;
+
+    public function __construct(iterable $repositories, iterable $configurators = [], ?string $baseUrl = null)
     {
-        $this->url       = $url;
-        $this->dispatch  = $dispatch;
+        $this->repositories = $repositories;
+        $this->configurators = $configurators;
+        $this->baseUrl = $baseUrl;
     }
 
-    public function getGenerator(string $format, ?string $config = null, ?FilterInterface $filter = null): GeneratorInterface
+    public function factory(?string $baseUrl = null): GeneratorRegistry
     {
-        $baseUri = $this->url . '/' . $this->dispatch;
-
-        switch ($format) {
-            case GeneratorFactoryInterface::CLIENT_GO:
-                $generator = new Generator\Client\Go($baseUri, $config);
-                break;
-
-            case GeneratorFactoryInterface::CLIENT_JAVA:
-                $generator = new Generator\Client\Java($baseUri, $config);
-                break;
-
-            case GeneratorFactoryInterface::CLIENT_PHP:
-                $generator = new Generator\Client\Php($baseUri, $config);
-                break;
-
-            case GeneratorFactoryInterface::CLIENT_TYPESCRIPT:
-                $generator = new Generator\Client\Typescript($baseUri, $config);
-                break;
-
-            case GeneratorFactoryInterface::MARKUP_CLIENT:
-                $generator = new Generator\Markup\Client();
-                break;
-
-            case GeneratorFactoryInterface::MARKUP_HTML:
-                $generator = new Generator\Markup\Html();
-                break;
-
-            case GeneratorFactoryInterface::MARKUP_MARKDOWN:
-                $generator = new Generator\Markup\Markdown();
-                break;
-
-            case GeneratorFactoryInterface::SPEC_TYPEAPI:
-                $generator = new Generator\Spec\TypeAPI();
-                break;
-
-            default:
-            case GeneratorFactoryInterface::SPEC_OPENAPI:
-                $generator = new Generator\Spec\OpenAPI(1, $baseUri);
-                break;
+        if (isset($this->generatorRegistry)) {
+            return $this->generatorRegistry;
         }
 
-        $this->configure($generator, $filter);
+        $this->generatorRegistry = new GeneratorRegistry($this->configurators, $baseUrl ?? $this->baseUrl);
 
-        return $generator;
-    }
+        foreach ($this->repositories as $repository) {
+            $generatorConfigs = $repository->getAll();
+            foreach ($generatorConfigs as $type => $generatorConfig) {
+                $this->generatorRegistry->register($type, $generatorConfig);
+            }
+        }
 
-    public function getFileExtension(string $format, ?string $config = null): string
-    {
-        return match ($format) {
-            GeneratorFactoryInterface::CLIENT_GO => 'go',
-            GeneratorFactoryInterface::CLIENT_JAVA => 'java',
-            GeneratorFactoryInterface::CLIENT_PHP => 'php',
-            GeneratorFactoryInterface::CLIENT_TYPESCRIPT => 'ts',
-            GeneratorFactoryInterface::MARKUP_CLIENT => 'md',
-            GeneratorFactoryInterface::MARKUP_HTML => 'html',
-            GeneratorFactoryInterface::MARKUP_MARKDOWN => 'md',
-            GeneratorFactoryInterface::SPEC_TYPEAPI => 'json',
-            GeneratorFactoryInterface::SPEC_OPENAPI => 'json',
-            default => 'txt',
-        };
-    }
-
-    public function getMime(string $format, ?string $config = null): string
-    {
-        return match ($format) {
-            GeneratorFactoryInterface::CLIENT_GO => 'application/go',
-            GeneratorFactoryInterface::CLIENT_JAVA => 'application/java',
-            GeneratorFactoryInterface::CLIENT_PHP => 'application/php',
-            GeneratorFactoryInterface::CLIENT_TYPESCRIPT => 'application/typescript',
-            GeneratorFactoryInterface::MARKUP_CLIENT => 'text/markdown',
-            GeneratorFactoryInterface::MARKUP_HTML => 'text/html',
-            GeneratorFactoryInterface::MARKUP_MARKDOWN => 'text/markdown',
-            GeneratorFactoryInterface::SPEC_TYPEAPI => 'application/json',
-            GeneratorFactoryInterface::SPEC_OPENAPI => 'application/json',
-            default => 'text/plain',
-        };
+        return $this->generatorRegistry;
     }
 
     /**
-     * Callback method to optional configure the created generator
+     * Returns a new generator factory which contains only the local generators
      */
-    protected function configure(GeneratorInterface $generator, ?FilterInterface $filter = null): void
+    public static function fromLocal(?string $baseUrl = null): self
     {
-    }
-
-    public static function getPossibleTypes(): array
-    {
-        return [
-            GeneratorFactoryInterface::CLIENT_GO,
-            GeneratorFactoryInterface::CLIENT_JAVA,
-            GeneratorFactoryInterface::CLIENT_PHP,
-            GeneratorFactoryInterface::CLIENT_TYPESCRIPT,
-
-            GeneratorFactoryInterface::MARKUP_CLIENT,
-            GeneratorFactoryInterface::MARKUP_HTML,
-            GeneratorFactoryInterface::MARKUP_MARKDOWN,
-
-            GeneratorFactoryInterface::SPEC_TYPEAPI,
-            GeneratorFactoryInterface::SPEC_OPENAPI,
-        ];
+        return new self([new LocalRepository()], [], $baseUrl);
     }
 }

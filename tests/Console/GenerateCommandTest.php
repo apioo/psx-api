@@ -24,7 +24,7 @@ use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
 use PSX\Api\Console\GenerateCommand;
 use PSX\Api\GeneratorFactory;
-use PSX\Api\GeneratorFactoryInterface;
+use PSX\Api\Repository\LocalRepository;
 use PSX\Api\Scanner\Memory;
 use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
@@ -46,7 +46,7 @@ class GenerateCommandTest extends TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'dir'      => __DIR__ . '/output',
-            '--format' => GeneratorFactoryInterface::CLIENT_PHP,
+            '--format' => LocalRepository::CLIENT_PHP,
             '--config' => 'Acme\\Sdk\\Generated',
         ));
 
@@ -60,7 +60,7 @@ class GenerateCommandTest extends TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'dir'      => __DIR__ . '/output',
-            '--format' => GeneratorFactoryInterface::SPEC_OPENAPI,
+            '--format' => LocalRepository::SPEC_OPENAPI,
         ));
 
         $this->assertFileExists(__DIR__ . '/output/output-spec-openapi.json');
@@ -73,7 +73,7 @@ class GenerateCommandTest extends TestCase
         $scanner = new Memory();
         $scanner->merge($apiManager->getApi(TestController::class));
 
-        $factory = new GeneratorFactory('http://foo.com', '');
+        $factory = GeneratorFactory::fromLocal();
 
         return new GenerateCommand($scanner, $factory);
     }

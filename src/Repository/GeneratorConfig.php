@@ -18,24 +18,42 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
+namespace PSX\Api\Repository;
 
-use PSX\Api\Exception\GeneratorException;
-use PSX\Schema\Generator\Code\Chunks;
+use PSX\Api\GeneratorInterface;
 
 /**
- * Generates a response format based ion an API specification
+ * The GeneratorConfig contains all information about a specific generator and is returned by a repository
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-interface GeneratorInterface
+class GeneratorConfig
 {
-    /**
-     * Generates a representation of the specification in a specific format
-     *
-     * @throws GeneratorException
-     */
-    public function generate(SpecificationInterface $specification): Chunks|string;
+    private \Closure $factory;
+    private string $fileExtension;
+    private string $mime;
+
+    public function __construct(\Closure $factory, string $fileExtension, string $mime)
+    {
+        $this->factory = $factory;
+        $this->fileExtension = $fileExtension;
+        $this->mime = $mime;
+    }
+
+    public function newInstance(?string $baseUrl, ?string $config): GeneratorInterface
+    {
+        return call_user_func_array($this->factory, [$baseUrl, $config]);
+    }
+
+    public function getFileExtension(): string
+    {
+        return $this->fileExtension;
+    }
+
+    public function getMime(): string
+    {
+        return $this->mime;
+    }
 }

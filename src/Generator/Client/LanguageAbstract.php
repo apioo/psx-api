@@ -45,7 +45,7 @@ use Twig\Loader\FilesystemLoader;
  */
 abstract class LanguageAbstract implements GeneratorInterface
 {
-    protected string $baseUrl;
+    protected ?string $baseUrl;
     protected ?string $namespace;
     protected Environment $engine;
 
@@ -57,7 +57,7 @@ abstract class LanguageAbstract implements GeneratorInterface
     private Naming $naming;
     private LanguageBuilder $converter;
 
-    public function __construct(string $baseUrl, ?string $namespace = null)
+    public function __construct(?string $baseUrl = null, ?string $namespace = null)
     {
         $this->baseUrl   = $baseUrl;
         $this->namespace = $namespace;

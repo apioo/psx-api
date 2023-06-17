@@ -1,0 +1,105 @@
+<?php
+/*
+ * PSX is an open source PHP framework to develop RESTful APIs.
+ * For the current version and information visit <https://phpsx.org>
+ *
+ * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+namespace PSX\Api\Generator\Proxy;
+
+use PSX\Api\Exception\GeneratorException;
+use PSX\Api\Generator\Spec\TypeAPI;
+use PSX\Api\GeneratorInterface;
+use PSX\Api\SpecificationInterface;
+use PSX\Http\Client\ClientInterface;
+use PSX\Http\Client\PostRequest;
+use PSX\Schema\Generator;
+use PSX\Uri\Uri;
+
+/**
+ * SDKgen
+ *
+ * @see     https://sdkgen.app/
+ * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
+ * @license http://www.apache.org/licenses/LICENSE-2.0
+ * @link    https://phpsx.org
+ */
+class SDKgen implements GeneratorInterface
+{
+    private ClientInterface $httpClient;
+    private string $accessToken;
+    private string $type;
+    private ?string $baseUrl;
+    private ?string $config;
+
+    public function __construct(ClientInterface $httpClient, string $accessToken, string $type, ?string $baseUrl = null, ?string $config = null)
+    {
+        $this->httpClient = $httpClient;
+        $this->accessToken = $accessToken;
+        $this->type = $type;
+        $this->baseUrl = $baseUrl;
+        $this->config = $config;
+    }
+
+    public function generate(SpecificationInterface $specification): Generator\Code\Chunks|string
+    {
+        // transform to TypeAPI spec
+        $body = (new TypeAPI($this->baseUrl))->generate($specification);
+
+        $uri = Uri::parse('https://api.sdkgen.app/generator/generate/' . $this->type);
+        $uri = $uri->withParameters([
+            'base_url' => $this->baseUrl,
+            'config' => $this->config,
+        ]);
+
+        $response = $this->httpClient->request(new PostRequest($uri, [
+            'Authorization' => 'Bearer ' . $this->accessToken,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ], $body));
+
+        if ($response->getStatusCode() !== 200) {
+            throw new GeneratorException('Could not generate SDK, got an HTTP response: ' . $response->getStatusCode());
+        }
+
+        $data = json_decode((string) $response->getBody());
+        if (!$data instanceof \stdClass) {
+            throw new GeneratorException('Could not generate SDK, received an invalid JSON payload');
+        }
+
+        if (isset($data->chunks) && is_array($data->chunks)) {
+            $chunks = new Generator\Code\Chunks();
+            foreach ($data->chunks as $chunk) {
+                if (!$chunk instanceof \stdClass) {
+                    continue;
+                }
+
+                $identifier = $chunk->identifier ?? null;
+                $code = $chunk->code ?? null;
+
+                if (!empty($identifier) && !empty($code)) {
+                    $chunks->append($identifier, $code);
+                }
+            }
+
+            return $chunks;
+        } elseif (isset($data->payload) && is_string($data->payload)) {
+            return $data->payload;
+        } else {
+            throw new GeneratorException('Could not generate SDK, received an invalid response');
+        }
+    }
+}

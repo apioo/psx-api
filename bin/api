@@ -40,7 +40,7 @@ if (!empty($autoloadFile)) {
     $apiManager    = new \PSX\Api\ApiManager($schemaManager);
 
     $scanner = new \PSX\Api\Scanner\Memory();
-    $factory = new \PSX\Api\GeneratorFactory('http://localhost', '');
+    $factory = \PSX\Api\GeneratorFactory::fromLocal('http://localhost/');
     $filterFactory = new \PSX\Api\Scanner\FilterFactory();
 
     $application = new Symfony\Component\Console\Application('PSX API');

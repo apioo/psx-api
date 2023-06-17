@@ -20,8 +20,9 @@
 
 namespace PSX\Api\Console;
 
+use PSX\Api\GeneratorRegistry;
 use PSX\Api\GeneratorFactory;
-use PSX\Api\GeneratorFactoryInterface;
+use PSX\Api\GeneratorRegistryInterface;
 use PSX\Api\Scanner\FilterFactoryInterface;
 use PSX\Api\ScannerInterface;
 use PSX\Schema\Generator\Code\Chunks;
@@ -41,10 +42,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GenerateCommand extends Command
 {
     private ScannerInterface $scanner;
-    private GeneratorFactoryInterface $factory;
+    private GeneratorFactory $factory;
     private ?FilterFactoryInterface $filterFactory;
 
-    public function __construct(ScannerInterface $scanner, GeneratorFactoryInterface $factory, ?FilterFactoryInterface $filterFactory = null)
+    public function __construct(ScannerInterface $scanner, GeneratorFactory $factory, ?FilterFactoryInterface $filterFactory = null)
     {
         parent::__construct();
 
@@ -59,15 +60,17 @@ class GenerateCommand extends Command
             ->setName('api:generate')
             ->setDescription('Generates for each API resource a file in a specific format')
             ->addArgument('dir', InputArgument::OPTIONAL, 'The target directory')
-            ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Optional the output format possible values are: ' . implode(', ', GeneratorFactory::getPossibleTypes()))
+            ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Optional the output format')
             ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Optional a config value which gets passed to the generator')
             ->addOption('filter', 'i', InputOption::VALUE_REQUIRED, 'Optional a specific filter');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $format = $input->getOption('format') ?? GeneratorFactoryInterface::SPEC_OPENAPI;
-        if (!in_array($format, GeneratorFactory::getPossibleTypes())) {
+        $registry = $this->factory->factory();
+
+        $format = $input->getOption('format');
+        if (!in_array($format, $registry->getPossibleTypes())) {
             throw new \InvalidArgumentException('Provided an invalid format');
         }
 
@@ -85,8 +88,8 @@ class GenerateCommand extends Command
             $filter = null;
         }
 
-        $generator = $this->factory->getGenerator($format, $config);
-        $extension = $this->factory->getFileExtension($format, $config);
+        $generator = $registry->getGenerator($format, $config);
+        $extension = $registry->getFileExtension($format, $config);
 
         $output->writeln('Generating ...');
 

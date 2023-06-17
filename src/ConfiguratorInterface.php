@@ -20,22 +20,23 @@
 
 namespace PSX\Api;
 
-use PSX\Api\Exception\GeneratorException;
-use PSX\Schema\Generator\Code\Chunks;
-
 /**
- * Generates a response format based ion an API specification
+ * A configurator provides a way to customize a specific generator instance
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-interface GeneratorInterface
+interface ConfiguratorInterface
 {
     /**
-     * Generates a representation of the specification in a specific format
-     *
-     * @throws GeneratorException
+     * Checks whether the generator instance is accepted by this configurator, normally a configurator configures a
+     * specific generator instance like i.e. the OpenAPI generator
      */
-    public function generate(SpecificationInterface $specification): Chunks|string;
+    public function accept(object $generator): bool;
+
+    /**
+     * Configures the generator object
+     */
+    public function configure(object $generator): void;
 }

@@ -24,7 +24,9 @@ use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
 use PSX\Api\Console\ParseCommand;
 use PSX\Api\GeneratorFactory;
-use PSX\Api\GeneratorFactoryInterface;
+use PSX\Api\GeneratorRegistry;
+use PSX\Api\GeneratorRegistryInterface;
+use PSX\Api\Repository\LocalRepository;
 use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -46,7 +48,7 @@ class ParseCommandTest extends TestCase
         $commandTester->execute(array(
             'source'   => TestController::class,
             '--dir'    => __DIR__ . '/output',
-            '--format' => GeneratorFactoryInterface::SPEC_OPENAPI,
+            '--format' => LocalRepository::SPEC_OPENAPI,
         ));
 
         $actual = file_get_contents(__DIR__ . '/output/output-spec-openapi.json');
@@ -58,7 +60,7 @@ class ParseCommandTest extends TestCase
     protected function getParseCommand()
     {
         $apiManager = new ApiManager(new SchemaManager());
-        $factory    = new GeneratorFactory('http://foo.com', '');
+        $factory    = GeneratorFactory::fromLocal('http://foo.com/');
 
         return new ParseCommand($apiManager, $factory);
     }

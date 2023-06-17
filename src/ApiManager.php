@@ -42,7 +42,7 @@ class ApiManager implements ApiManagerInterface
 
     private array $parsers = [];
 
-    public function __construct(SchemaManagerInterface $schemaManager, CacheItemPoolInterface $cache = null, bool $debug = false)
+    public function __construct(SchemaManagerInterface $schemaManager, ?CacheItemPoolInterface $cache = null, bool $debug = false)
     {
         $this->cache = $cache === null ? new ArrayAdapter() : $cache;
         $this->debug = $debug;

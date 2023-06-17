@@ -22,43 +22,42 @@ namespace PSX\Api\Tests;
 
 use PHPUnit\Framework\TestCase;
 use PSX\Api\GeneratorFactory;
-use PSX\Api\GeneratorFactoryInterface;
 use PSX\Api\GeneratorInterface;
+use PSX\Api\GeneratorRegistryInterface;
+use PSX\Api\Repository\LocalRepository;
 
 /**
- * GeneratorFactoryTest
+ * GeneratorRegistryTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class GeneratorFactoryTest extends TestCase
+class GeneratorRegistryTest extends TestCase
 {
     /**
      * @dataProvider typeProvider
      */
     public function testGetGenerator($type)
     {
-        $factory   = new GeneratorFactory('http://foo.com', '');
+        $factory = GeneratorFactory::fromLocal('http://foo.com')->factory();
         $generator = $factory->getGenerator($type);
 
         $this->assertInstanceOf(GeneratorInterface::class, $generator);
     }
 
-    public function typeProvider()
+    public function typeProvider(): array
     {
         return [
-            [GeneratorFactoryInterface::CLIENT_GO],
-            [GeneratorFactoryInterface::CLIENT_JAVA],
-            [GeneratorFactoryInterface::CLIENT_PHP],
-            [GeneratorFactoryInterface::CLIENT_TYPESCRIPT],
+            [LocalRepository::CLIENT_PHP],
+            [LocalRepository::CLIENT_TYPESCRIPT],
 
-            [GeneratorFactoryInterface::MARKUP_CLIENT],
-            [GeneratorFactoryInterface::MARKUP_HTML],
-            [GeneratorFactoryInterface::MARKUP_MARKDOWN],
+            [LocalRepository::MARKUP_CLIENT],
+            [LocalRepository::MARKUP_HTML],
+            [LocalRepository::MARKUP_MARKDOWN],
 
-            [GeneratorFactoryInterface::SPEC_TYPEAPI],
-            [GeneratorFactoryInterface::SPEC_OPENAPI],
+            [LocalRepository::SPEC_TYPEAPI],
+            [LocalRepository::SPEC_OPENAPI],
         ];
     }
 }

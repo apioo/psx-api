@@ -22,7 +22,8 @@ namespace PSX\Api\Console;
 
 use PSX\Api\ApiManager;
 use PSX\Api\GeneratorFactory;
-use PSX\Api\GeneratorFactoryInterface;
+use PSX\Api\GeneratorRegistry;
+use PSX\Api\GeneratorRegistryInterface;
 use PSX\Schema\Generator\Code\Chunks;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -40,9 +41,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ParseCommand extends Command
 {
     private ApiManager $apiManager;
-    private GeneratorFactoryInterface $factory;
+    private GeneratorFactory $factory;
 
-    public function __construct(ApiManager $apiManager, GeneratorFactoryInterface $factory)
+    public function __construct(ApiManager $apiManager, GeneratorFactory $factory)
     {
         parent::__construct();
 
@@ -50,21 +51,23 @@ class ParseCommand extends Command
         $this->factory = $factory;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('api:parse')
             ->setDescription('Parses an arbitrary source and outputs the schema in a specific format')
             ->addArgument('source', InputArgument::REQUIRED, 'The schema source this is either a absolute class name or schema file')
             ->addOption('dir', 'd', InputOption::VALUE_REQUIRED, 'The target directory')
-            ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Optional the output format possible values are: ' . implode(', ', GeneratorFactory::getPossibleTypes()))
+            ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Optional the output format')
             ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Optional a config value which gets passed to the generator');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $format = $input->getOption('format') ?? GeneratorFactoryInterface::CLIENT_PHP;
-        if (!in_array($format, GeneratorFactory::getPossibleTypes())) {
+        $registry = $this->factory->factory();
+
+        $format = $input->getOption('format');
+        if (!in_array($format, $registry->getPossibleTypes())) {
             throw new \InvalidArgumentException('Provided an invalid format');
         }
 
@@ -76,8 +79,8 @@ class ParseCommand extends Command
         $config = $input->getOption('config');
         $specification = $this->apiManager->getApi($input->getArgument('source'));
 
-        $generator = $this->factory->getGenerator($format, $config);
-        $extension = $this->factory->getFileExtension($format, $config);
+        $generator = $registry->getGenerator($format, $config);
+        $extension = $registry->getFileExtension($format, $config);
 
         $output->writeln('Generating ...');
 
@@ -91,6 +94,6 @@ class ParseCommand extends Command
 
         $output->writeln('Successful!');
 
-        return 0;
+        return self::SUCCESS;
     }
 }

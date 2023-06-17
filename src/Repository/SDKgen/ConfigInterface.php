@@ -18,24 +18,16 @@
  * limitations under the License.
  */
 
-namespace PSX\Api;
-
-use PSX\Api\Exception\GeneratorException;
-use PSX\Schema\Generator\Code\Chunks;
+namespace PSX\Api\Repository\SDKgen;
 
 /**
- * Generates a response format based ion an API specification
+ * ConfigInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-interface GeneratorInterface
+interface ConfigInterface
 {
-    /**
-     * Generates a representation of the specification in a specific format
-     *
-     * @throws GeneratorException
-     */
-    public function generate(SpecificationInterface $specification): Chunks|string;
+    public function getAccessToken(): string;
 }
