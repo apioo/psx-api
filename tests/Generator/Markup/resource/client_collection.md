@@ -1,6 +1,6 @@
 const client = new Client()
 client.foo().get(): EntryCollection
-client.foo().create(payload: EntryCreate): EntryMessage
+client.foo().create(payload: EntryCreate): EntryMessage throws EntryMessage
 client.bar().get(foo: string): EntryCollection
 client.bar().create(payload: EntryCreate): EntryMessage
 client.baz().get(year: string): EntryCollection

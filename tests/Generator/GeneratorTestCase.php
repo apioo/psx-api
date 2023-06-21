@@ -112,6 +112,8 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $operation = $builder->addOperation('foo.create', 'POST', '/foo', 201, $message);
         $operation->setTags(['foo']);
         $operation->addArgument('payload', 'body', $create);
+        $operation->addThrow(400, $message);
+        $operation->addThrow(500, $message);
 
         $operation = $builder->addOperation('bar.get', 'GET', '/bar/:foo', 200, $collection);
         $operation->setDescription('Returns a collection');

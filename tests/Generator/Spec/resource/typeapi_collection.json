@@ -4,7 +4,7 @@
   },
   "operations": {
     "foo.get": {
-      "path": "\/foo",
+      "path": "/foo",
       "method": "GET",
       "return": {
         "code": 200,
@@ -23,7 +23,7 @@
       ]
     },
     "foo.create": {
-      "path": "\/foo",
+      "path": "/foo",
       "method": "POST",
       "return": {
         "code": 201,
@@ -39,7 +39,20 @@
           }
         }
       },
-      "throws": [],
+      "throws": [
+        {
+          "code": 400,
+          "schema": {
+            "$ref": "EntryMessage"
+          }
+        },
+        {
+          "code": 500,
+          "schema": {
+            "$ref": "EntryMessage"
+          }
+        }
+      ],
       "description": "",
       "stability": 1,
       "security": [],
@@ -49,7 +62,7 @@
       ]
     },
     "bar.get": {
-      "path": "\/bar\/:foo",
+      "path": "/bar/:foo",
       "method": "GET",
       "return": {
         "code": 200,
@@ -75,7 +88,7 @@
       ]
     },
     "bar.create": {
-      "path": "\/bar\/:foo",
+      "path": "/bar/:foo",
       "method": "POST",
       "return": {
         "code": 201,
@@ -101,7 +114,7 @@
       ]
     },
     "baz.get": {
-      "path": "\/bar\/$year<[0-9]+>",
+      "path": "/bar/$year<[0-9]+>",
       "method": "GET",
       "return": {
         "code": 200,
@@ -127,7 +140,7 @@
       ]
     },
     "baz.create": {
-      "path": "\/bar\/$year<[0-9]+>",
+      "path": "/bar/$year<[0-9]+>",
       "method": "POST",
       "return": {
         "code": 201,

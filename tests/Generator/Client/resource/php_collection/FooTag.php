@@ -49,6 +49,7 @@ class FooTag extends TagAbstract
     /**
      * @param EntryCreate $payload
      * @return EntryMessage
+     * @throws EntryMessageException
      * @throws ClientException
      */
     public function create(EntryCreate $payload): EntryMessage
@@ -71,6 +72,10 @@ class FooTag extends TagAbstract
             $data = (string) $e->getResponse()->getBody();
 
             switch ($e->getResponse()->getStatusCode()) {
+                case 400:
+                    throw new EntryMessageException($this->parser->parse($data, EntryMessage::class));
+                case 500:
+                    throw new EntryMessageException($this->parser->parse($data, EntryMessage::class));
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');
             }

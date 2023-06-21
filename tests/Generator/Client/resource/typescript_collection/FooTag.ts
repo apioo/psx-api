@@ -10,6 +10,7 @@ import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
 import {EntryMessage} from "./EntryMessage";
+import {EntryMessageException} from "./EntryMessageException";
 
 export class FooTag extends TagAbstract {
     /**
@@ -46,6 +47,7 @@ export class FooTag extends TagAbstract {
 
     /**
      * @returns {Promise<EntryMessage>}
+     * @throws {EntryMessageException}
      * @throws {ClientException}
      */
     public async create(payload: EntryCreate): Promise<EntryMessage> {
@@ -66,6 +68,10 @@ export class FooTag extends TagAbstract {
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
+                    case 400:
+                        throw new EntryMessageException(error.response.data);
+                    case 500:
+                        throw new EntryMessageException(error.response.data);
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }

@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Generator\Client;
 
+use PSX\Api\Generator\Client\Dto\Response;
 use PSX\Api\Generator\Client\Dto\Tag;
 use PSX\Api\Generator\Client\Util\Naming;
 use PSX\Api\GeneratorInterface;
@@ -34,6 +35,7 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 use Twig\Loader\FilesystemLoader;
+use Twig\TwigFilter;
 
 /**
  * LanguageAbstract
@@ -202,6 +204,21 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     private function newTemplateEngine(): Environment
     {
-        return new Environment(new FilesystemLoader([$this->getTemplateDir()]));
+        $twig = new Environment(new FilesystemLoader([$this->getTemplateDir()]));
+        $twig->addFilter(new TwigFilter('throws_unique', function(array $values){
+            $map = [];
+            foreach ($values as $code => $response) {
+                if ($response instanceof Response) {
+                    $map[$code] = $response->schema->type;
+                }
+            }
+
+            $result = [];
+            foreach (array_unique($map) as $code => $type) {
+                $result[$code] = $values[$code];
+            }
+            return $result;
+        }));
+        return $twig;
     }
 }

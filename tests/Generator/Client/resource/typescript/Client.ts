@@ -12,6 +12,7 @@ import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
 import {EntryDelete} from "./EntryDelete";
 import {EntryMessage} from "./EntryMessage";
+import {EntryMessageException} from "./EntryMessageException";
 import {EntryPatch} from "./EntryPatch";
 import {EntryUpdate} from "./EntryUpdate";
 
@@ -57,7 +58,6 @@ export class Client extends ClientAbstract {
 
     /**
      * @returns {Promise<EntryMessage>}
-     * @throws {EntryMessageException}
      * @throws {EntryMessageException}
      * @throws {ClientException}
      */

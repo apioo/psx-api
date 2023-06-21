@@ -7,7 +7,7 @@
 {% endfor %}
      * @return {% if operation.return %}{{ operation.return.schema.docType }}{% else %}void{% endif %}
 
-{% for throw in operation.throws %}     * @throws {{ throw.schema.docType }}Exception
+{% for throw in operation.throws|throws_unique %}     * @throws {{ throw.schema.docType }}Exception
 {% endfor %}
      * @throws ClientException
      */
@@ -42,9 +42,9 @@
             $data = (string) $e->getResponse()->getBody();
 
             switch ($e->getResponse()->getStatusCode()) {
-{% for code, return in operation.throws %}
+{% for code, throw in operation.throws %}
                 case {{ code }}:
-                    throw new {{ return.schema.type }}Exception($this->parser->parse($data, {{ return.schema.type }}::class));
+                    throw new {{ throw.schema.type }}Exception($this->parser->parse($data, {{ throw.schema.type }}::class));
 {% endfor %}
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');

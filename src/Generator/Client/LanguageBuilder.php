@@ -93,8 +93,7 @@ class LanguageBuilder
         $grouped = $this->groupOperationsByTag($specification->getOperations());
         if (count($grouped) > 1) {
             foreach ($grouped as $tagName => $tagOperations) {
-                $exceptions = array_merge($exceptions, $this->getExceptions($tagOperations));
-                $operations = $this->getOperations($tagOperations, $specification->getDefinitions());
+                $operations = $this->getOperations($tagOperations, $specification->getDefinitions(), $exceptions);
 
                 $tags[] = new Dto\Tag(
                     $this->naming->buildClassNameByTag($tagName),
@@ -107,8 +106,7 @@ class LanguageBuilder
         } else {
             $tagOperations = reset($grouped);
             if (!empty($tagOperations)) {
-                $exceptions = array_merge($exceptions, $this->getExceptions($tagOperations));
-                $operations = $this->getOperations($tagOperations, $specification->getDefinitions());
+                $operations = $this->getOperations($tagOperations, $specification->getDefinitions(), $exceptions);
             }
         }
 
@@ -127,7 +125,7 @@ class LanguageBuilder
      * @throws TypeNotFoundException
      * @throws InvalidTypeException
      */
-    private function getOperations(array $operations, DefinitionsInterface $definitions): array
+    private function getOperations(array $operations, DefinitionsInterface $definitions, array &$exceptions): array
     {
         $result = [];
         foreach ($operations as $operationId => $operation) {
@@ -175,6 +173,14 @@ class LanguageBuilder
                 $throws[$throw->getCode()] = new Dto\Response($throw->getCode(), $this->newType($throw->getSchema(), false, $definitions));
 
                 $this->resolveImport($throw->getSchema(), $imports);
+
+                $throwSchema = $throw->getSchema();
+                if ($throwSchema instanceof ReferenceType) {
+                    $exceptionClassName = $this->naming->buildClassNameByException($throwSchema->getRef());
+                    $exceptions[$exceptionClassName] = new Dto\Exception($exceptionClassName, $throwSchema->getRef(), 'The server returned an error');
+
+                    $imports[$exceptionClassName] = $exceptionClassName;
+                }
             }
 
             $result[] = new Dto\Operation(
@@ -190,24 +196,6 @@ class LanguageBuilder
                 $bodyName,
                 $imports
             );
-        }
-
-        return $result;
-    }
-
-    private function getExceptions(array $operations): array
-    {
-        $result = [];
-
-        foreach ($operations as $operation) {
-            $throws = $operation->getThrows();
-            foreach ($throws as $throw) {
-                $type = $throw->getSchema();
-                if ($type instanceof ReferenceType) {
-                    $className = $this->naming->buildClassNameByException($type->getRef());
-                    $result[$className] = new Dto\Exception($className, $type->getRef(), 'The server returned an error');
-                }
-            }
         }
 
         return $result;

@@ -66,7 +66,6 @@ class Client extends ClientAbstract
      * @param EntryCreate $payload
      * @return EntryMessage
      * @throws EntryMessageException
-     * @throws EntryMessageException
      * @throws ClientException
      */
     public function create(string $name, string $type, EntryCreate $payload): EntryMessage
