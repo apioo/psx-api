@@ -1,8 +1,8 @@
-import {KnownErrorException} from "sdkgen-client"
+import {KnownStatusCodeException} from "sdkgen-client"
 
 import {{ '{' }}{{ type }}{{ '}' }} from "./{{ type }}";
 
-export class {{ className }} extends KnownErrorException {
+export class {{ className }} extends KnownStatusCodeException {
 
     public constructor(private payload: {{ type }}) {
         super();
