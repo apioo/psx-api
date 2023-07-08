@@ -41,6 +41,8 @@ class Client extends ClientAbstract
             $data = (string) $response->getBody();
 
             return $this->parser->parse($data, TestResponse::class);
+        } catch (ClientException $e) {
+            throw $e;
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
@@ -76,6 +78,8 @@ class Client extends ClientAbstract
             $data = (string) $response->getBody();
 
             return $this->parser->parse($data, TestResponse::class);
+        } catch (ClientException $e) {
+            throw $e;
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
@@ -113,6 +117,8 @@ class Client extends ClientAbstract
             $data = (string) $response->getBody();
 
             return $this->parser->parse($data, TestResponse::class);
+        } catch (ClientException $e) {
+            throw $e;
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
@@ -150,6 +156,8 @@ class Client extends ClientAbstract
             $data = (string) $response->getBody();
 
             return $this->parser->parse($data, TestResponse::class);
+        } catch (ClientException $e) {
+            throw $e;
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
@@ -185,6 +193,8 @@ class Client extends ClientAbstract
             $data = (string) $response->getBody();
 
             return $this->parser->parse($data, TestResponse::class);
+        } catch (ClientException $e) {
+            throw $e;
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 

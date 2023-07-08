@@ -36,7 +36,9 @@
             return response.data;
 {% endif %}
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
+            if (error instanceof ClientException) {
+                throw error;
+            } else if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
 {% for code, return in operation.throws %}
                     case {{ code }}:
@@ -45,9 +47,9 @@
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
+            } else {
+                throw new ClientException('An unknown error occurred: ' + String(error));
             }
-
-            throw new ClientException('An unknown error occurred: ' + String(error));
         }
     }
 
