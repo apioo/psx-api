@@ -34,6 +34,7 @@ use PSX\Schema\Generator\NormalizerAwareInterface;
 use PSX\Schema\Generator\Type\GeneratorInterface as TypeGeneratorInterface;
 use PSX\Schema\Generator\TypeAwareInterface;
 use PSX\Schema\GeneratorInterface;
+use PSX\Schema\Type\AnyType;
 use PSX\Schema\Type\ArrayType;
 use PSX\Schema\Type\IntersectionType;
 use PSX\Schema\Type\MapType;
@@ -215,8 +216,8 @@ class LanguageBuilder
                 $refType = $definitions->getType($refType->getRef());
             }
 
-            if (!$refType instanceof StructType && !$refType instanceof MapType) {
-                throw new InvalidTypeException('A reference can only point to a struct or map type, got: ' . get_class($refType));
+            if (!$refType instanceof StructType && !$refType instanceof MapType && !$refType instanceof AnyType) {
+                throw new InvalidTypeException('A reference can only point to a struct or map type, got: ' . get_class($refType) . ' for reference: ' . $type->getRef());
             }
         }
 
