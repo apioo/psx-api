@@ -94,6 +94,11 @@ class ApiManager implements ApiManagerInterface
         return $api;
     }
 
+    public function clear(string $source): void
+    {
+        $this->cache->deleteItem('psx-api-' . md5($source));
+    }
+
     public function getBuilder(): SpecificationBuilderInterface
     {
         return new SpecificationBuilder();

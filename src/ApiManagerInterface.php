@@ -34,11 +34,21 @@ use PSX\Schema\Parser\ContextInterface;
 interface ApiManagerInterface
 {
     /**
+     * Registers a new parser for the provided scheme
+     */
+    public function register(string $scheme, ParserInterface $parser): void;
+
+    /**
      * Returns the specification for the provided source
      *
      * @throws InvalidApiException
      */
     public function getApi(string $source, ?ContextInterface $context = null): SpecificationInterface;
+
+    /**
+     * Clears the cache for a specific source
+     */
+    public function clear(string $source): void;
 
     /**
      * Returns a builder which helps to create a specification
