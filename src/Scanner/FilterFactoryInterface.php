@@ -33,4 +33,9 @@ interface FilterFactoryInterface
      * Returns a specific filter by name
      */
     public function getFilter(string $name): ?FilterInterface;
+
+    /**
+     * Returns the default filter name if configured
+     */
+    public function getDefault(): ?string;
 }

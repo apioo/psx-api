@@ -58,4 +58,9 @@ class FilterFactory implements FilterFactoryInterface
             return null;
         }
     }
+
+    public function getDefault(): ?string
+    {
+        return $this->default;
+    }
 }
