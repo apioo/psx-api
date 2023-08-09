@@ -154,7 +154,7 @@ class LanguageBuilder
                     $queryNames[$normalized] = $realName;
                 } elseif ($argument->getIn() === ArgumentInterface::IN_BODY) {
                     $body = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions));
-                    $bodyName = $realName;
+                    $bodyName = $normalized;
                 }
 
                 $this->resolveImport($argument->getSchema(), $imports);
