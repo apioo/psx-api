@@ -140,16 +140,21 @@ class LanguageBuilder
             $query = $queryNames = [];
             $body = $bodyName = null;
             foreach ($operation->getArguments()->getAll() as $name => $argument) {
+                $realName = $argument->getName();
+                if (empty($realName)) {
+                    $realName = $name;
+                }
+
                 $normalized = $this->normalizer->argument($name);
                 if ($argument->getIn() === ArgumentInterface::IN_PATH) {
                     $path[$normalized] = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions));
-                    $pathNames[$normalized] = $name;
+                    $pathNames[$normalized] = $realName;
                 } elseif ($argument->getIn() === ArgumentInterface::IN_QUERY) {
                     $query[$normalized] = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), true, $definitions));
-                    $queryNames[$normalized] = $name;
+                    $queryNames[$normalized] = $realName;
                 } elseif ($argument->getIn() === ArgumentInterface::IN_BODY) {
                     $body = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions));
-                    $bodyName = $normalized;
+                    $bodyName = $realName;
                 }
 
                 $this->resolveImport($argument->getSchema(), $imports);

@@ -39,4 +39,6 @@ interface ArgumentInterface
     public function getIn(): string;
 
     public function getSchema(): TypeInterface;
+
+    public function getName(): ?string;
 }

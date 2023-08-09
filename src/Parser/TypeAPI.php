@@ -219,7 +219,12 @@ class TypeAPI implements ParserInterface
             throw new ParserException('Property "schema" must be an object');
         }
 
-        return new Operation\Argument($in, $this->schemaParser->parseType($schema));
+        $name = $data->name ?? null;
+        if ($name !== null && !is_string($name)) {
+            throw new ParserException('Property "name" must be a string');
+        }
+
+        return new Operation\Argument($in, $this->schemaParser->parseType($schema), $name);
     }
 
     /**

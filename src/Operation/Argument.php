@@ -33,8 +33,9 @@ class Argument implements ArgumentInterface, \JsonSerializable
 {
     private string $in;
     private TypeInterface $schema;
+    private ?string $name;
 
-    public function __construct(string $in, TypeInterface $schema)
+    public function __construct(string $in, TypeInterface $schema, ?string $name = null)
     {
         if (!in_array($in, [self::IN_PATH, self::IN_HEADER, self::IN_QUERY, self::IN_BODY])) {
             throw new \InvalidArgumentException('Provided an invalid "in" value, must be one of: ' . implode(', ', [self::IN_PATH, self::IN_HEADER, self::IN_QUERY, self::IN_BODY]));
@@ -42,6 +43,7 @@ class Argument implements ArgumentInterface, \JsonSerializable
 
         $this->in = $in;
         $this->schema = $schema;
+        $this->name = $name;
     }
 
     public function getIn(): string
@@ -54,11 +56,17 @@ class Argument implements ArgumentInterface, \JsonSerializable
         return $this->schema;
     }
 
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
     public function jsonSerialize(): array
     {
         return [
             'in' => $this->in,
             'schema' => $this->schema,
+            'name' => $this->name,
         ];
     }
 }

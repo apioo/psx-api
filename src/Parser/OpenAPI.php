@@ -276,7 +276,7 @@ class OpenAPI implements ParserInterface
 
             if ($name !== null) {
                 if ($property instanceof TypeInterface) {
-                    $return->add($name, new Argument($type, $property));
+                    $return->add($name, new Argument($type, $property, $name));
                 }
             }
         }
