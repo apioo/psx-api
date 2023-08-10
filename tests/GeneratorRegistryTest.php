@@ -23,7 +23,6 @@ namespace PSX\Api\Tests;
 use PHPUnit\Framework\TestCase;
 use PSX\Api\GeneratorFactory;
 use PSX\Api\GeneratorInterface;
-use PSX\Api\GeneratorRegistryInterface;
 use PSX\Api\Repository\LocalRepository;
 
 /**

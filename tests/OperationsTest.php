@@ -23,8 +23,6 @@ namespace PSX\Api\Tests;
 use PHPUnit\Framework\TestCase;
 use PSX\Api\Operation;
 use PSX\Api\Operations;
-use PSX\Api\Resource;
-use PSX\Api\ResourceCollection;
 use PSX\Schema\TypeFactory;
 
 /**

@@ -20,7 +20,6 @@
 
 namespace PSX\Api\Tests;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
 use PSX\Schema\SchemaManager;
