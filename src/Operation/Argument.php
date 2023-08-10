@@ -63,10 +63,12 @@ class Argument implements ArgumentInterface, \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return [
+        return array_filter([
             'in' => $this->in,
             'schema' => $this->schema,
             'name' => $this->name,
-        ];
+        ], function ($value) {
+            return $value !== null;
+        });
     }
 }
