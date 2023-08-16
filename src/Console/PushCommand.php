@@ -29,6 +29,7 @@ use PSX\Http\Client\GetRequest;
 use PSX\Http\Client\PostRequest;
 use PSX\Http\Client\PutRequest;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -57,16 +58,23 @@ class PushCommand extends Command
         $this->client = new Client();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('api:push')
             ->setDescription('Submits the specification to the typehub.cloud platform')
+            ->addArgument('name', InputArgument::REQUIRED, 'The target document name')
+            ->addOption('client_id', 'u', InputOption::VALUE_REQUIRED, 'Optional the client id')
+            ->addOption('client_secret', 's', InputOption::VALUE_REQUIRED, 'Optional the client secret')
             ->addOption('filter', 'i', InputOption::VALUE_REQUIRED, 'Optional a specific filter');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $name = $input->getArgument('name');
+        $clientId = $input->getOption('client_id');
+        $clientSecret = $input->getOption('client_secret');
+
         $filterName = $input->getOption('filter');
         if ($this->filterFactory instanceof FilterFactoryInterface && !empty($filterName)) {
             $filter = $this->filterFactory->getFilter($filterName);
@@ -74,35 +82,34 @@ class PushCommand extends Command
             $filter = null;
         }
 
-        $helper = $this->getHelper('question');
         $specification = $this->scanner->generate($filter);
 
-        $question = new Question('Please enter your typehub.cloud username');
-        $user = $helper->ask($input, $output, $question);
+        $helper = $this->getHelper('question');
 
-        $question = new Question('Password');
-        $question->setHidden(true);
-        $question->setHiddenFallback(false);
-        $password = $helper->ask($input, $output, $question);
-
-        $question = new Question('Document name');
-        $document = $helper->ask($input, $output, $question);
-
-        $question = new ConfirmationQuestion('Do you really want to import the document "' . $document . '"?', false);
-        if (!$helper->ask($input, $output, $question)) {
-            return Command::SUCCESS;
+        if (empty($clientId)) {
+            $question = new Question('Client-Id');
+            $clientId = $helper->ask($input, $output, $question);
         }
 
-        $this->importDocument($user, $password, $document, $specification);
+        if (empty($clientSecret)) {
+            $question = new Question('Client-Secret');
+            $question->setHidden(true);
+            $question->setHiddenFallback(false);
+            $clientSecret = $helper->ask($input, $output, $question);
+        }
+
+        $accessToken = $this->obtainAccessToken($clientId, $clientSecret);
+        $userName = $this->obtainUserName($accessToken);
+
+        $this->importDocument($accessToken, $userName, $name, $specification);
 
         $output->writeln('Document import Successful!');
 
         return Command::SUCCESS;
     }
 
-    private function importDocument(string $user, string $password, string $document, SpecificationInterface $specification)
+    private function importDocument(string $accessToken, string $user, string $document, SpecificationInterface $specification): void
     {
-        $accessToken = $this->obtainAccessToken($user, $password);
         $headers = [
             'Authorization' => 'Bearer ' . $accessToken,
             'Content-Type' => 'application/json',
@@ -152,7 +159,7 @@ class PushCommand extends Command
 
         $response = $this->client->request($request);
         if ($response->getStatusCode() !== 200) {
-            throw new \RuntimeException('Could not obtain access token, the server returned an invalid status code: ' . $response->getStatusCode());
+            throw new \RuntimeException('Could not obtain access token, the server returned an invalid status code: ' . $response->getStatusCode() . ', please register at typehub.cloud to obtain a fitting client id and secret');
         }
 
         $data = \json_encode((string) $response->getBody());
@@ -161,11 +168,36 @@ class PushCommand extends Command
         }
 
         $accessToken = $data->access_token ?? '';
-        if (empty($accessToken)) {
+        if (empty($accessToken) || !is_string($accessToken)) {
             throw new \RuntimeException('Could not obtain access token');
         }
 
         return $accessToken;
+    }
+
+    private function obtainUserName(string $accessToken): string
+    {
+        $request = new GetRequest('https://api.typehub.cloud/authorization/whoami', [
+            'Authorization' => 'Bearer ' . $accessToken,
+            'Accept' => 'application/json',
+        ]);
+
+        $response = $this->client->request($request);
+        if ($response->getStatusCode() !== 200) {
+            throw new \RuntimeException('Could not obtain user info: ' . $response->getStatusCode());
+        }
+
+        $data = \json_encode((string) $response->getBody());
+        if (!$data instanceof \stdClass) {
+            throw new \RuntimeException('Could not obtain user info, the server returned invalid JSON data');
+        }
+
+        $userName = $data->name ?? null;
+        if (empty($userName) || !is_string($userName)) {
+            throw new \RuntimeException('Could not obtain user info, the server returned no user name');
+        }
+
+        return $userName;
     }
 
     private function createDocument(string $user, string $document, array $headers): void
