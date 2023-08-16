@@ -83,9 +83,9 @@ class ChangelogGenerator
             yield SemVer::MINOR => $this->getMessageChanged([$name, 'path'], $left->getPath(), $right->getPath());
         }
 
-        $this->generateResponse($left->getReturn(), $right->getReturn(), [$name, 'return']);
+        yield from $this->generateResponse($left->getReturn(), $right->getReturn(), [$name, 'return']);
 
-        foreach ($left->getArguments() as $argumentName => $argument) {
+        foreach ($left->getArguments()->getAll() as $argumentName => $argument) {
             if ($right->getArguments()->has($argumentName)) {
                 yield from $this->generateArgument($argument, $right->getArguments()->get($argumentName), [$name, 'arguments', $argumentName]);
             } else {
@@ -93,7 +93,7 @@ class ChangelogGenerator
             }
         }
 
-        foreach ($right->getArguments() as $argumentName => $argument) {
+        foreach ($right->getArguments()->getAll() as $argumentName => $argument) {
             if (!$left->getArguments()->has($argumentName)) {
                 yield SemVer::PATCH => $this->getMessageAdded([$name, 'arguments', $argumentName]);
             }
@@ -101,15 +101,15 @@ class ChangelogGenerator
 
         foreach ($left->getThrows() as $index => $throw) {
             if (isset($right->getThrows()[$index])) {
-                yield from $this->generateResponse($throw, $right->getThrows()[$index], [$name, 'throws', $index]);
+                yield from $this->generateResponse($throw, $right->getThrows()[$index], [$name, 'throws', $throw->getCode()]);
             } else {
-                yield SemVer::MINOR => $this->getMessageRemoved([$name, 'throws', $index]);
+                yield SemVer::MINOR => $this->getMessageRemoved([$name, 'throws', $throw->getCode()]);
             }
         }
 
         foreach ($right->getThrows() as $index => $throw) {
             if (!isset($left->getThrows()[$index])) {
-                yield SemVer::PATCH => $this->getMessageAdded([$name, 'throws', $index]);
+                yield SemVer::PATCH => $this->getMessageAdded([$name, 'throws', $throw->getCode()]);
             }
         }
 
@@ -121,16 +121,20 @@ class ChangelogGenerator
             yield SemVer::PATCH => $this->getMessageChanged([$name, 'stability'], $left->getStability(), $right->getStability());
         }
 
-        if ($left->getSecurity() !== $right->getSecurity()) {
-            yield SemVer::MAJOR => $this->getMessageChanged([$name, 'security'], $left->getSecurity(), $right->getSecurity());
+        $leftSecurity = implode(', ', $left->getSecurity());
+        $rightSecurity = implode(', ', $right->getSecurity());
+        if ($leftSecurity !== $rightSecurity) {
+            yield SemVer::MAJOR => $this->getMessageChanged([$name, 'security'], $leftSecurity, $rightSecurity);
         }
 
         if ($left->hasAuthorization() !== $right->hasAuthorization()) {
             yield SemVer::MAJOR => $this->getMessageChanged([$name, 'authorization'], $left->hasAuthorization(), $right->hasAuthorization());
         }
 
-        if ($left->getTags() !== $right->getTags()) {
-            yield SemVer::PATCH => $this->getMessageChanged([$name, 'tags'], $left->getTags(), $right->getTags());
+        $leftTags = implode(', ', $left->getTags());
+        $rightTags = implode(', ', $right->getTags());
+        if ($leftTags !== $rightTags) {
+            yield SemVer::PATCH => $this->getMessageChanged([$name, 'tags'], $leftTags, $rightTags);
         }
     }
 
@@ -140,7 +144,7 @@ class ChangelogGenerator
             yield SemVer::MINOR => $this->getMessageChanged(array_merge($path, ['in']), $left->getIn(), $right->getIn());
         }
 
-        yield from $this->changelogGenerator->generateType($left->getSchema(), $right->getSchema(), '');
+        yield from $this->changelogGenerator->generateType($left->getSchema(), $right->getSchema(), implode('.', $path));
     }
 
     private function generateResponse(Operation\Response $left, Operation\Response $right, array $path): \Generator
@@ -149,7 +153,7 @@ class ChangelogGenerator
             yield SemVer::PATCH => $this->getMessageChanged(array_merge($path, ['code']), $left->getCode(), $right->getCode());
         }
 
-        yield from $this->changelogGenerator->generateType($left->getSchema(), $right->getSchema(), '');
+        yield from $this->changelogGenerator->generateType($left->getSchema(), $right->getSchema(), implode('.', $path));
     }
 
     private function getMessageAdded(array $path): string
@@ -162,11 +166,11 @@ class ChangelogGenerator
         return 'Operation "' . implode('.', $path) . '" was removed';
     }
 
-    private function getMessageChanged(array $path, $from, $to): string
+    private function getMessageChanged(array $path, mixed $from, mixed $to): string
     {
         $from = $from ?? 'NULL';
         $to = $to ?? 'NULL';
 
-        return 'Property "' . implode('.', $path) . '" has changed from "' . $from . '" to "' . $to . '"';
+        return 'Operation "' . implode('.', $path) . '" has changed from "' . $from . '" to "' . $to . '"';
     }
 }

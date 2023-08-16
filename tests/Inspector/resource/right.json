@@ -1,0 +1,92 @@
+{
+  "operations": {
+    "my.operation.get": {
+      "path": "/my/endpoint/foo",
+      "method": "PUT",
+      "return": {
+        "code": 201,
+        "schema": {
+          "$ref": "Message"
+        }
+      },
+      "arguments": {
+        "id": {
+          "in": "query",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        "payload": {
+          "in": "body",
+          "schema": {
+            "$ref": "Person"
+          }
+        }
+      },
+      "throws": [{
+        "code": 500,
+        "schema": {
+          "$ref": "Person"
+        }
+      }, {
+        "code": 400,
+        "schema": {
+          "$ref": "Message"
+        }
+      }],
+      "description": "And a great description foo",
+      "stability": 2,
+      "security": ["foo"],
+      "authorization": false,
+      "tags": ["bar"]
+    },
+    "my.operation.execute": {
+      "path": "/my/endpoint",
+      "method": "POST",
+      "return": {
+        "code": 200,
+        "schema": {
+          "$ref": "Message"
+        }
+      },
+      "arguments": {
+        "payload": {
+          "in": "body",
+          "schema": {
+            "$ref": "Person"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Person": {
+      "description": "",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "description": "foobar",
+          "type": "string"
+        },
+        "lastName": {
+          "description": "",
+          "type": "integer"
+        },
+        "age": {
+          "description": "",
+          "type": "integer"
+        }
+      }
+    },
+    "Message": {
+      "description": "",
+      "type": "object",
+      "properties": {
+        "success": {
+          "description": "",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

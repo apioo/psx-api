@@ -1,0 +1,67 @@
+{
+  "operations": {
+    "my.operation.get": {
+      "path": "/my/endpoint",
+      "method": "GET",
+      "return": {
+        "code": 200,
+        "schema": {
+          "$ref": "Person"
+        }
+      },
+      "arguments": {
+        "id": {
+          "in": "path",
+          "schema": {
+            "type": "string"
+          }
+        },
+        "search": {
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        }
+      },
+      "throws": [
+        {
+          "code": 500,
+          "schema": {
+            "$ref": "Message"
+          }
+        }
+      ],
+      "description": "And a great description",
+      "stability": 1,
+      "security": [],
+      "authorization": true,
+      "tags": []
+    },
+    "my.operation.delete": {
+      "path": "/my/endpoint",
+      "method": "DELETE",
+      "return": {
+        "code": 200,
+        "schema": {
+          "$ref": "Message"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Person": {
+      "description": "",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "description": "",
+          "type": "string"
+        },
+        "lastName": {
+          "description": "",
+          "type": "string"
+        }
+      }
+    }
+  }
+}
