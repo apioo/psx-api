@@ -20,20 +20,19 @@
 
 namespace PSX\Api\Console;
 
+use Composer\InstalledVersions;
+use PSX\Api\Generator\Spec\TypeAPI;
 use PSX\Api\Scanner\FilterFactoryInterface;
 use PSX\Api\ScannerInterface;
-use PSX\Api\SpecificationInterface;
 use PSX\Http\Client\Client;
 use PSX\Http\Client\ClientInterface;
 use PSX\Http\Client\GetRequest;
 use PSX\Http\Client\PostRequest;
-use PSX\Http\Client\PutRequest;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
 /**
@@ -45,11 +44,13 @@ use Symfony\Component\Console\Question\Question;
  */
 class PushCommand extends Command
 {
+    private const TYPEHUB_URL = 'https://api.typehub.cloud';
+
     private ScannerInterface $scanner;
-    private ?FilterFactoryInterface $filterFactory;
+    private FilterFactoryInterface $filterFactory;
     private ClientInterface $client;
 
-    public function __construct(ScannerInterface $scanner, ?FilterFactoryInterface $filterFactory = null)
+    public function __construct(ScannerInterface $scanner, FilterFactoryInterface $filterFactory)
     {
         parent::__construct();
 
@@ -76,23 +77,21 @@ class PushCommand extends Command
         $clientSecret = $input->getOption('client_secret');
 
         $filterName = $input->getOption('filter');
-        if ($this->filterFactory instanceof FilterFactoryInterface && !empty($filterName)) {
-            $filter = $this->filterFactory->getFilter($filterName);
-        } else {
-            $filter = null;
+        if (empty($filterName)) {
+            $filterName = $this->filterFactory->getDefault();
         }
 
-        $specification = $this->scanner->generate($filter);
-
+        $filter = $this->filterFactory->getFilter($filterName);
+        $spec   = (string) (new TypeAPI())->generate($this->scanner->generate($filter));
         $helper = $this->getHelper('question');
 
         if (empty($clientId)) {
-            $question = new Question('Client-Id');
+            $question = new Question('Client-Id: ');
             $clientId = $helper->ask($input, $output, $question);
         }
 
         if (empty($clientSecret)) {
-            $question = new Question('Client-Secret');
+            $question = new Question('Client-Secret: ');
             $question->setHidden(true);
             $question->setHiddenFallback(false);
             $clientSecret = $helper->ask($input, $output, $question);
@@ -101,41 +100,42 @@ class PushCommand extends Command
         $accessToken = $this->obtainAccessToken($clientId, $clientSecret);
         $userName = $this->obtainUserName($accessToken);
 
-        $this->importDocument($accessToken, $userName, $name, $specification);
+        $this->importDocument($accessToken, $userName, $name, $spec);
 
         $output->writeln('Document import Successful!');
 
         return Command::SUCCESS;
     }
 
-    private function importDocument(string $accessToken, string $user, string $document, SpecificationInterface $specification): void
+    private function importDocument(string $accessToken, string $user, string $document, string $spec): void
     {
         $headers = [
             'Authorization' => 'Bearer ' . $accessToken,
             'Content-Type' => 'application/json',
+            'User-Agent' => 'PSX API ' . InstalledVersions::getVersion('psx/api'),
         ];
 
-        $request  = new GetRequest('https://api.typehub.cloud/document/' . $user . '/' . $document, $headers);
+        $request  = new GetRequest(self::TYPEHUB_URL . '/document/' . $user . '/' . $document, $headers);
         $response = $this->client->request($request);
 
         if ($response->getStatusCode() >= 500) {
             throw new \RuntimeException('The server returned an error code: ' . $response->getStatusCode());
         } elseif ($response->getStatusCode() === 404) {
-            $this->createDocument($user, $document, $headers);
+            throw new \RuntimeException('The provided document does not exist, please create the document at typehub.cloud in order to use it');
         } elseif ($response->getStatusCode() === 200) {
             // the document already exists
         } else {
             throw new \RuntimeException('The server returned an invalid status code: ' . $response->getStatusCode());
         }
 
-        $request  = new PutRequest('https://api.typehub.cloud/document/' . $user . '/' . $document . '/import', $headers, \json_encode($specification));
+        $request  = new PostRequest(self::TYPEHUB_URL . '/document/' . $user . '/' . $document . '/import', $headers, $spec);
         $response = $this->client->request($request);
 
         if ($response->getStatusCode() !== 200) {
-            throw new \RuntimeException('Could not import document, the server returned a wrong status code: ' . $response->getStatusCode());
+            throw new \RuntimeException('Could not import document, the server returned a wrong status code: ' . $response->getStatusCode() . ' - ' . $response->getBody());
         }
 
-        $data = \json_encode((string) $response->getBody());
+        $data = \json_decode((string) $response->getBody());
         if (!$data instanceof \stdClass) {
             throw new \RuntimeException('Could not import document, the server returned invalid JSON data');
         }
@@ -151,9 +151,10 @@ class PushCommand extends Command
         $headers = [
             'Authorization' => 'Basic ' . base64_encode($user . ':' . $password),
             'Content-Type' => 'application/x-www-form-urlencoded',
+            'User-Agent' => 'PSX API ' . InstalledVersions::getVersion('psx/api'),
         ];
 
-        $request = new PostRequest('https://api.typehub.cloud/authorization/token', $headers, http_build_query([
+        $request = new PostRequest(self::TYPEHUB_URL . '/authorization/token', $headers, http_build_query([
             'grant_type' => 'client_credentials'
         ]));
 
@@ -162,7 +163,7 @@ class PushCommand extends Command
             throw new \RuntimeException('Could not obtain access token, the server returned an invalid status code: ' . $response->getStatusCode() . ', please register at typehub.cloud to obtain a fitting client id and secret');
         }
 
-        $data = \json_encode((string) $response->getBody());
+        $data = \json_decode((string) $response->getBody());
         if (!$data instanceof \stdClass) {
             throw new \RuntimeException('Could not obtain access token, the server returned invalid JSON data');
         }
@@ -177,9 +178,10 @@ class PushCommand extends Command
 
     private function obtainUserName(string $accessToken): string
     {
-        $request = new GetRequest('https://api.typehub.cloud/authorization/whoami', [
+        $request = new GetRequest(self::TYPEHUB_URL . '/authorization/whoami', [
             'Authorization' => 'Bearer ' . $accessToken,
             'Accept' => 'application/json',
+            'User-Agent' => 'PSX API ' . InstalledVersions::getVersion('psx/api'),
         ]);
 
         $response = $this->client->request($request);
@@ -187,7 +189,7 @@ class PushCommand extends Command
             throw new \RuntimeException('Could not obtain user info: ' . $response->getStatusCode());
         }
 
-        $data = \json_encode((string) $response->getBody());
+        $data = \json_decode((string) $response->getBody());
         if (!$data instanceof \stdClass) {
             throw new \RuntimeException('Could not obtain user info, the server returned invalid JSON data');
         }
@@ -198,28 +200,5 @@ class PushCommand extends Command
         }
 
         return $userName;
-    }
-
-    private function createDocument(string $user, string $document, array $headers): void
-    {
-        $request = new PostRequest('https://api.typehub.cloud/document/' . $user, $headers, \json_encode([
-            'name' => $document,
-            'description' => '',
-        ]));
-
-        $response = $this->client->request($request);
-        if ($response->getStatusCode() !== 201) {
-            throw new \RuntimeException('Could not create document, the server returned an invalid status code: ' . $response->getStatusCode());
-        }
-
-        $data = \json_encode((string) $response->getBody());
-        if (!$data instanceof \stdClass) {
-            throw new \RuntimeException('Could not create document, the server returned invalid JSON data');
-        }
-
-        $success = $data->success ?? false;
-        if ($success) {
-            throw new \RuntimeException('Could not create document, the server returned a wrong response: ' . \json_encode($data, \JSON_PRETTY_PRINT));
-        }
     }
 }
