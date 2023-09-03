@@ -64,7 +64,7 @@ class File implements ParserInterface
 
         if (isset($data->paths)) {
             $parser = new OpenAPI($this->schemaManager);
-        } elseif (isset($data->operations)) {
+        } elseif (isset($data->operations) || isset($data->definitions)) {
             $parser = new TypeAPI($this->schemaManager);
         } else {
             throw new ParserException('Could not detect schema format of the provided source ' . $schema);
