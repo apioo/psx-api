@@ -70,7 +70,7 @@ class ApiManager implements ApiManagerInterface
 
         $pos = strpos($source, '://');
         if ($pos === false) {
-            $source = $this->guessSchemeFromSchemaName($source);
+            $source = $this->guessSchemeFromSource($source);
             $pos = strpos($source, '://');
         }
 
@@ -104,14 +104,14 @@ class ApiManager implements ApiManagerInterface
         return new SpecificationBuilder();
     }
 
-    private function guessSchemeFromSchemaName(string $schemaName): ?string
+    private function guessSchemeFromSource(string $source): ?string
     {
-        if (class_exists($schemaName)) {
-            return 'php://' . str_replace('\\', '.', $schemaName);
-        } elseif (is_file($schemaName)) {
-            return 'file://' . $schemaName;
+        if (class_exists($source)) {
+            return 'php://' . str_replace('\\', '.', $source);
+        } elseif (is_file($source)) {
+            return 'file://' . $source;
         } else {
-            return $schemaName;
+            return $source;
         }
     }
 }
