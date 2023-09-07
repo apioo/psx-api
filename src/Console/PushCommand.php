@@ -141,7 +141,7 @@ class PushCommand extends Command
         }
 
         $success = $data->success ?? false;
-        if ($success) {
+        if ($success === false) {
             throw new \RuntimeException('Could not import document, the server returned a wrong response: ' . \json_encode($data, \JSON_PRETTY_PRINT));
         }
     }
