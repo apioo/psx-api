@@ -39,7 +39,16 @@ interface ApiManagerInterface
     public function register(string $scheme, ParserInterface $parser): void;
 
     /**
-     * Returns the specification for the provided source
+     * The api manager knows how to create a specification from the given schema name. Returns a specification interface
+     * or throws an exception.
+     *
+     * The source can be an uri format where you can specify a fitting parser i.e.
+     *  - php://My.Acme.Dto
+     *    Resolves the specification from a class containing attributes describing the specification
+     *  - file:///path/to/a/file.json
+     *    Resolves the specification by parsing an TypeAPI or OpenAPI file
+     *
+     * If the source is a simple string the manager tries to guess the fitting source uri format
      *
      * @throws InvalidApiException
      */
