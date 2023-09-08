@@ -50,7 +50,18 @@ class Schema implements GeneratorInterface
     public function generate(SpecificationInterface $specification): Generator\Code\Chunks|string
     {
         $schema = new \PSX\Schema\Schema(TypeFactory::getAny(), $specification->getDefinitions());
+        $generator = $this->factory->getGenerator($this->type, $this->config);
 
-        return $this->factory->getGenerator($this->type, $this->config)->generate($schema);
+        $result = $generator->generate($schema);
+        if ($result instanceof Generator\Code\Chunks && $generator instanceof Generator\FileAwareInterface) {
+            $chunks = new Generator\Code\Chunks();
+            foreach ($result->getChunks() as $identifier => $content) {
+                $chunks->append($generator->getFileName($identifier), $generator->getFileContent($content));
+            }
+
+            return $chunks;
+        } else {
+            return $result;
+        }
     }
 }
