@@ -7,5 +7,15 @@ import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
 {% endfor %}
 
 export class {{ className }} extends TagAbstract {
+{% for tag in tags %}
+    public {{ tag.methodName }}(): {{ tag.className }}
+    {
+        return new {{ tag.className }}(
+            this.httpClient,
+            this.parser
+        );
+    }
+
+{% endfor %}
 {{ operations|raw }}
 }

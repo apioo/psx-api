@@ -18,46 +18,38 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Generator\Client\Util;
+namespace PSX\Api\Scanner;
 
-use PSX\Schema\Generator\Normalizer\NormalizerInterface;
+use PSX\Api\ApiManagerInterface;
+use PSX\Api\ScannerInterface;
+use PSX\Api\SpecificationInterface;
 
 /**
- * Naming
+ * Scanner which loads the specification from a specific source through the API manager
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Naming
+class Source implements ScannerInterface
 {
-    private NormalizerInterface $normalizer;
+    private ApiManagerInterface $apiManager;
+    private string $source;
 
-    public function __construct(NormalizerInterface $normalizer)
+    public function __construct(ApiManagerInterface $apiManager, string $source)
     {
-        $this->normalizer = $normalizer;
+        $this->apiManager = $apiManager;
+        $this->source = $source;
     }
 
-    public function buildClassNameByTag(array $parts): string
+    public function generate(?FilterInterface $filter = null): SpecificationInterface
     {
-        return $this->normalizer->class(...array_merge($parts, ['Tag']));
-    }
+        $spec = $this->apiManager->getApi($this->source);
 
-    public function buildMethodNameByTag(string $tagName): string
-    {
-        return $this->normalizer->method($tagName);
-    }
+        if ($filter !== null) {
+            $spec->getOperations()->filter($filter);
+        }
 
-    public function buildClassNameByException(string $ref): string
-    {
-        return $this->normalizer->class($ref, 'Exception');
-    }
-
-    public function buildMethodNameByOperationId(string $operationId): string
-    {
-        $parts = explode('.', $operationId);
-        $methodName = end($parts);
-
-        return $this->normalizer->method($methodName);
+        return $spec;
     }
 }

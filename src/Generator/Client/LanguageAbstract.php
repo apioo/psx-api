@@ -90,26 +90,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         $tagImports = [];
 
         foreach ($client->tags as $tag) {
-            $imports = [];
-            foreach ($tag->operations as $operation) {
-                $imports = array_merge($imports, $operation->imports);
-            }
-            sort($imports);
-
-            /** @var Tag $tag */
-            $operations = $this->engine->render($this->getOperationTemplate(), [
-                'className' => $tag->className,
-                'operations' => $tag->operations,
-            ]);
-
-            $code = $this->engine->render($this->getTagTemplate(), [
-                'namespace' => $this->namespace,
-                'className' => $tag->className,
-                'operations' => $operations,
-                'imports' => $imports,
-            ]);
-
-            $chunks->append($this->getFileName($tag->className), $this->getFileContent($code, $tag->className));
+            $this->buildTag($tag, $chunks);
 
             $tagImports[] = $tag->className;
         }
@@ -200,6 +181,44 @@ abstract class LanguageAbstract implements GeneratorInterface
     protected function getTemplateDir(): string
     {
         return __DIR__ . '/Language';
+    }
+
+    private function buildTag(Tag $tag, Generator\Code\Chunks $chunks): void
+    {
+        $imports = [];
+        if (!empty($tag->tags)) {
+            foreach ($tag->tags as $subTag) {
+                $this->buildTag($subTag, $chunks);
+
+                $imports[] = $subTag->className;
+            }
+        }
+
+        if (!empty($tag->operations)) {
+            foreach ($tag->operations as $operation) {
+                $imports = array_merge($imports, $operation->imports);
+            }
+
+            /** @var Tag $tag */
+            $operations = $this->engine->render($this->getOperationTemplate(), [
+                'className' => $tag->className,
+                'operations' => $tag->operations,
+            ]);
+        } else {
+            $operations = '';
+        }
+
+        sort($imports);
+
+        $code = $this->engine->render($this->getTagTemplate(), [
+            'namespace' => $this->namespace,
+            'className' => $tag->className,
+            'tags' => $tag->tags,
+            'operations' => $operations,
+            'imports' => $imports,
+        ]);
+
+        $chunks->append($this->getFileName($tag->className), $this->getFileContent($code, $tag->className));
     }
 
     private function newTemplateEngine(): Environment

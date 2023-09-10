@@ -29,5 +29,6 @@ namespace PSX\Api\Repository\SDKgen;
  */
 interface ConfigInterface
 {
-    public function getAccessToken(): ?string;
+    public function getClientId(): ?string;
+    public function getClientSecret(): ?string;
 }

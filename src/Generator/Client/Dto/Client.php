@@ -32,7 +32,7 @@ class Client
     public function __construct(
         public string $className,
         /** @var array<Operation> */ public array $operations,
-        public array $tags,
+        /** @var array<Tag> */ public array $tags,
         /** @var array<Exception> */ public array $exceptions,
         public ?array $security,
         public ?string $baseUrl,

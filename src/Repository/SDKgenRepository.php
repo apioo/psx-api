@@ -49,13 +49,16 @@ class SDKgenRepository implements RepositoryInterface
 
     public function getAll(): array
     {
-        $accessToken = $this->config->getAccessToken();
-        if (empty($accessToken)) {
+        $clientId = $this->config->getClientId();
+        $clientSecret = $this->config->getClientSecret();
+        if (empty($clientId) || empty($clientSecret)) {
             return [];
         }
 
+        $accessToken = $this->obtainAccessToken($clientId, $clientSecret);
+
         $return = [];
-        $types = $this->getTypes();
+        $types = $this->getTypes($accessToken);
         foreach ($types as $type) {
             [$name, $fileExtension, $mime] = $type;
 
@@ -69,7 +72,7 @@ class SDKgenRepository implements RepositoryInterface
         return $return;
     }
 
-    private function getTypes(): array
+    private function getTypes(string $accessToken): array
     {
         $item = $this->cache->getItem('psx-api-generator-types');
         if ($item->isHit()) {
@@ -77,7 +80,7 @@ class SDKgenRepository implements RepositoryInterface
         }
 
         $response = $this->httpClient->request(new GetRequest('https://api.sdkgen.app/generator/types', [
-            'Authorization' => $this->config->getAccessToken(),
+            'Authorization' => 'Bearer ' . $accessToken,
             'Accept' => 'application/json',
         ]));
 
@@ -127,5 +130,38 @@ class SDKgenRepository implements RepositoryInterface
         }
 
         return $data;
+    }
+
+    private function obtainAccessToken(string $clientId, string $clientSecret): ?string
+    {
+        $item = $this->cache->getItem('psx-api-generator-token');
+        if ($item->isHit()) {
+            return $item->get();
+        }
+
+        $response = $this->httpClient->request(new GetRequest('https://api.sdkgen.app/authorization/token', [
+            'Authorization' => 'Basic ' . base64_encode($clientId . ':' . $clientSecret),
+            'Accept' => 'application/json',
+        ]));
+
+        if ($response->getStatusCode() !== 200) {
+            return null;
+        }
+
+        $data = json_decode((string) $response->getBody());
+        if (!$data instanceof \stdClass) {
+            return null;
+        }
+
+        $accessToken = $data->access_token ?? null;
+        if (empty($accessToken)) {
+            return null;
+        }
+
+        $item->set($accessToken);
+        $item->expiresAfter(new \DateInterval('P1D'));
+        $this->cache->save($item);
+
+        return $accessToken;
     }
 }

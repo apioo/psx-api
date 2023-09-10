@@ -7,82 +7,24 @@ import axios, {AxiosRequestConfig} from "axios";
 import {TagAbstract} from "sdkgen-client"
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
-import {EntryCollection} from "./EntryCollection";
-import {EntryCreate} from "./EntryCreate";
-import {EntryMessage} from "./EntryMessage";
-import {EntryMessageException} from "./EntryMessageException";
+import {FooBarTag} from "./FooBarTag";
+import {FooBazTag} from "./FooBazTag";
 
 export class FooTag extends TagAbstract {
-    /**
-     * Returns a collection
-     *
-     * @returns {Promise<EntryCollection>}
-     * @throws {ClientException}
-     */
-    public async get(): Promise<EntryCollection> {
-        const url = this.parser.url('/foo', {
-        });
-
-        let params: AxiosRequestConfig = {
-            url: url,
-            method: 'GET',
-            params: this.parser.query({
-            }),
-        };
-
-        try {
-            const response = await this.httpClient.request<EntryCollection>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                switch (error.response.status) {
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
-                }
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
-        }
+    public bar(): FooBarTag
+    {
+        return new FooBarTag(
+            this.httpClient,
+            this.parser
+        );
     }
 
-    /**
-     * @returns {Promise<EntryMessage>}
-     * @throws {EntryMessageException}
-     * @throws {ClientException}
-     */
-    public async create(payload: EntryCreate): Promise<EntryMessage> {
-        const url = this.parser.url('/foo', {
-        });
-
-        let params: AxiosRequestConfig = {
-            url: url,
-            method: 'POST',
-            params: this.parser.query({
-            }),
-            data: payload
-        };
-
-        try {
-            const response = await this.httpClient.request<EntryMessage>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                switch (error.response.status) {
-                    case 400:
-                        throw new EntryMessageException(error.response.data);
-                    case 500:
-                        throw new EntryMessageException(error.response.data);
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
-                }
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
-        }
+    public baz(): FooBazTag
+    {
+        return new FooBazTag(
+            this.httpClient,
+            this.parser
+        );
     }
 
 

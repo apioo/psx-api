@@ -10,7 +10,6 @@ import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
 import {FooTag} from "./FooTag";
 import {BarTag} from "./BarTag";
-import {BazTag} from "./BazTag";
 
 export class Client extends ClientAbstract {
     public foo(): FooTag
@@ -24,14 +23,6 @@ export class Client extends ClientAbstract {
     public bar(): BarTag
     {
         return new BarTag(
-            this.httpClient,
-            this.parser
-        );
-    }
-
-    public baz(): BazTag
-    {
-        return new BazTag(
             this.httpClient,
             this.parser
         );

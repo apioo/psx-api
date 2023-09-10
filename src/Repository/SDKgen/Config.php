@@ -29,15 +29,22 @@ namespace PSX\Api\Repository\SDKgen;
  */
 class Config implements ConfigInterface
 {
-    private string $accessToken;
+    private ?string $clientId;
+    private ?string $clientSecret;
 
-    public function __construct(?string $accessToken)
+    public function __construct(?string $clientId, ?string $clientSecret)
     {
-        $this->accessToken = $accessToken;
+        $this->clientId = $clientId;
+        $this->clientSecret = $clientSecret;
     }
 
-    public function getAccessToken(): ?string
+    public function getClientId(): ?string
     {
-        return $this->accessToken;
+        return $this->clientId;
+    }
+
+    public function getClientSecret(): ?string
+    {
+        return $this->clientSecret;
     }
 }

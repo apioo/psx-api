@@ -9,5 +9,15 @@ use Sdkgen\Client\TagAbstract;
 
 class {{ className }} extends TagAbstract
 {
+{% for tag in tags %}
+    public function {{ tag.methodName }}(): {{ tag.className }}
+    {
+        return new {{ tag.className }}(
+            $this->httpClient,
+            $this->parser
+        );
+    }
+
+{% endfor %}
 {{ operations|raw }}
 }

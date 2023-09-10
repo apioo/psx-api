@@ -32,7 +32,8 @@ class Tag
     public function __construct(
         public string $className,
         public string $methodName,
-        /** @var Operation */ public array $operations,
+        /** @var array<Operation> */ public array $operations,
+        /** @var array<Tag> */ public array $tags = [],
     )
     {
     }

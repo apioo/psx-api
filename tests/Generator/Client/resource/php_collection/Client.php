@@ -30,14 +30,6 @@ class Client extends ClientAbstract
         );
     }
 
-    public function baz(): BazTag
-    {
-        return new BazTag(
-            $this->httpClient,
-            $this->parser
-        );
-    }
-
 
 
     public static function build(string $token): self

@@ -1,10 +1,10 @@
 const client = new Client()
-client.foo().get(): EntryCollection
-client.foo().create(payload: EntryCreate): EntryMessage throws EntryMessage
-client.bar().get(foo: string): EntryCollection
-client.bar().create(payload: EntryCreate): EntryMessage
-client.baz().get(year: string): EntryCollection
-client.baz().create(payload: EntryCreate): EntryMessage
+client.foo.bar().get(): EntryCollection
+client.foo.bar().create(payload: EntryCreate): EntryMessage throws EntryMessage
+client.foo.baz().get(year: string): EntryCollection
+client.foo.baz().create(payload: EntryCreate): EntryMessage
+client.bar().find(foo: string): EntryCollection
+client.bar().put(payload: EntryCreate): EntryMessage
 
 
 interface EntryCollection {

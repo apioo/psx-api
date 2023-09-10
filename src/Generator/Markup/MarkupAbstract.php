@@ -63,10 +63,7 @@ abstract class MarkupAbstract implements GeneratorInterface
         $lines = $this->startLines($client);
 
         foreach ($client->tags as $tag) {
-            /** @var Dto\Tag $tag */
-            foreach ($tag->operations as $operation) {
-                $lines[] = $this->generateOperation($operation, $tag->methodName);
-            }
+            $lines = array_merge($lines, $this->buildTag($tag, [$tag->methodName]));
         }
 
         foreach ($client->operations as $operation) {
@@ -94,5 +91,20 @@ abstract class MarkupAbstract implements GeneratorInterface
         $return = $this->generator->generate($schema);
 
         return $return;
+    }
+
+    private function buildTag(Dto\Tag $tag, array $path): array
+    {
+        $lines = [];
+
+        foreach ($tag->tags as $subTag) {
+            $lines = array_merge($lines, $this->buildTag($subTag, array_merge($path, [$subTag->methodName])));
+        }
+
+        foreach ($tag->operations as $operation) {
+            $lines[] = $this->generateOperation($operation, implode('.', $path));
+        }
+
+        return $lines;
     }
 }

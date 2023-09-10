@@ -16,7 +16,7 @@
           "foo"
         ],
         "description": "Returns a collection",
-        "operationId": "foo.get",
+        "operationId": "foo.bar.get",
         "responses": {
           "200": {
             "description": "",
@@ -34,7 +34,7 @@
         "tags": [
           "foo"
         ],
-        "operationId": "foo.create",
+        "operationId": "foo.bar.create",
         "requestBody": {
           "content": {
             "application/json": {
@@ -85,7 +85,7 @@
           "bar"
         ],
         "description": "Returns a collection",
-        "operationId": "bar.get",
+        "operationId": "bar.find",
         "responses": {
           "200": {
             "description": "",
@@ -103,7 +103,7 @@
         "tags": [
           "bar"
         ],
-        "operationId": "bar.create",
+        "operationId": "bar.put",
         "requestBody": {
           "content": {
             "application/json": {
@@ -143,7 +143,7 @@
           "baz"
         ],
         "description": "Returns a collection",
-        "operationId": "baz.get",
+        "operationId": "foo.baz.get",
         "responses": {
           "200": {
             "description": "",
@@ -161,7 +161,7 @@
         "tags": [
           "baz"
         ],
-        "operationId": "baz.create",
+        "operationId": "foo.baz.create",
         "requestBody": {
           "content": {
             "application/json": {

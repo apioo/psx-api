@@ -3,7 +3,7 @@
     "type": "httpBearer"
   },
   "operations": {
-    "foo.get": {
+    "foo.bar.get": {
       "path": "/foo",
       "method": "GET",
       "return": {
@@ -22,7 +22,7 @@
         "foo"
       ]
     },
-    "foo.create": {
+    "foo.bar.create": {
       "path": "/foo",
       "method": "POST",
       "return": {
@@ -61,7 +61,7 @@
         "foo"
       ]
     },
-    "bar.get": {
+    "bar.find": {
       "path": "/bar/:foo",
       "method": "GET",
       "return": {
@@ -87,7 +87,7 @@
         "bar"
       ]
     },
-    "bar.create": {
+    "bar.put": {
       "path": "/bar/:foo",
       "method": "POST",
       "return": {
@@ -113,7 +113,7 @@
         "bar"
       ]
     },
-    "baz.get": {
+    "foo.baz.get": {
       "path": "/bar/$year<[0-9]+>",
       "method": "GET",
       "return": {
@@ -139,7 +139,7 @@
         "baz"
       ]
     },
-    "baz.create": {
+    "foo.baz.create": {
       "path": "/bar/$year<[0-9]+>",
       "method": "POST",
       "return": {

@@ -87,29 +87,11 @@ class LanguageBuilder
             $security = $specification->getSecurity()->toArray();
         }
 
-        $operations = [];
-        $tags = [];
         $exceptions = [];
 
-        $grouped = $this->groupOperationsByTag($specification->getOperations());
-        if (count($grouped) > 1) {
-            foreach ($grouped as $tagName => $tagOperations) {
-                $operations = $this->getOperations($tagOperations, $specification->getDefinitions(), $exceptions);
+        $grouped = $this->groupOperations($specification->getOperations());
 
-                $tags[] = new Dto\Tag(
-                    $this->naming->buildClassNameByTag($tagName),
-                    $this->naming->buildMethodNameByTag($tagName),
-                    $operations
-                );
-            }
-
-            $operations = [];
-        } else {
-            $tagOperations = reset($grouped);
-            if (!empty($tagOperations)) {
-                $operations = $this->getOperations($tagOperations, $specification->getDefinitions(), $exceptions);
-            }
-        }
+        [$tags, $operations] = $this->buildTags($grouped, $specification->getDefinitions(), $exceptions, []);
 
         return new Dto\Client(
             'Client',
@@ -119,6 +101,35 @@ class LanguageBuilder
             $security,
             $specification->getBaseUrl(),
         );
+    }
+
+    /**
+     * @throws InvalidTypeException
+     * @throws TypeNotFoundException
+     */
+    private function buildTags(array $grouped, DefinitionsInterface $definitions, array &$exceptions, array $path): array
+    {
+        $tags = [];
+        $operations = [];
+        foreach ($grouped as $key => $value) {
+            if ($value instanceof OperationInterface) {
+                $operations[$key] = $value;
+            } elseif (is_array($value)) {
+                $subExceptions = [];
+                [$subTags, $subOperations] = $this->buildTags($value, $definitions, $subExceptions, array_merge($path, [$key]));
+
+                $tags[] = new Dto\Tag(
+                    $this->naming->buildClassNameByTag(array_merge($path, [$key])),
+                    $this->naming->buildMethodNameByTag($key),
+                    $subOperations,
+                    $subTags
+                );
+            }
+        }
+
+        $operations = $this->getOperations($operations, $definitions, $exceptions);
+
+        return [$tags, $operations];
     }
 
     /**
@@ -257,22 +268,22 @@ class LanguageBuilder
         }
     }
 
-    private function groupOperationsByTag(OperationsInterface $operations): array
+    private function groupOperations(OperationsInterface $operations): array
     {
         $result = [];
         foreach ($operations->getAll() as $operationId => $operation) {
-            $tags = $operation->getTags();
-            if (empty($tags)) {
-                $tags = ['default'];
-            }
+            $parts = explode('.', $operationId);
 
-            foreach ($tags as $tagName) {
-                if (!isset($result[$tagName])) {
-                    $result[$tagName] = [];
+            $last = &$result;
+            foreach ($parts as $partName) {
+                if (!isset($last[$partName])) {
+                    $last[$partName] = [];
                 }
 
-                $result[$tagName][$operationId] = $operation;
+                $last = &$last[$partName];
             }
+
+            $last = $operation;
         }
 
         return $result;
