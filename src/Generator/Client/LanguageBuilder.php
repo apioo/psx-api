@@ -115,8 +115,7 @@ class LanguageBuilder
             if ($value instanceof OperationInterface) {
                 $operations[$key] = $value;
             } elseif (is_array($value)) {
-                $subExceptions = [];
-                [$subTags, $subOperations] = $this->buildTags($value, $definitions, $subExceptions, array_merge($path, [$key]));
+                [$subTags, $subOperations] = $this->buildTags($value, $definitions, $exceptions, array_merge($path, [$key]));
 
                 $tags[] = new Dto\Tag(
                     $this->naming->buildClassNameByTag(array_merge($path, [$key])),
@@ -194,7 +193,7 @@ class LanguageBuilder
                 $throwSchema = $throw->getSchema();
                 if ($throwSchema instanceof ReferenceType) {
                     $exceptionClassName = $this->naming->buildClassNameByException($throwSchema->getRef());
-                    $exceptions[$exceptionClassName] = new Dto\Exception($exceptionClassName, $throwSchema->getRef(), 'The server returned an error');
+                    $exceptions[$exceptionClassName] = new Dto\Exception($exceptionClassName, $this->normalizer->class($throwSchema->getRef()), 'The server returned an error');
 
                     $imports[$exceptionClassName] = $exceptionClassName;
                 }
