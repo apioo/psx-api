@@ -80,24 +80,17 @@ class SDKgen implements GeneratorInterface
             throw new GeneratorException('Could not generate SDK, received an invalid JSON payload');
         }
 
-        if (isset($data->chunks) && is_array($data->chunks)) {
+        if (isset($data->chunks) && $data->chunks instanceof \stdClass) {
             $chunks = new Generator\Code\Chunks();
-            foreach ($data->chunks as $chunk) {
-                if (!$chunk instanceof \stdClass) {
-                    continue;
-                }
-
-                $identifier = $chunk->identifier ?? null;
-                $code = $chunk->code ?? null;
-
+            foreach ($data->chunks as $identifier => $code) {
                 if (!empty($identifier) && !empty($code)) {
                     $chunks->append($identifier, $code);
                 }
             }
 
             return $chunks;
-        } elseif (isset($data->payload) && is_string($data->payload)) {
-            return $data->payload;
+        } elseif (isset($data->output) && is_string($data->output)) {
+            return $data->output;
         } else {
             throw new GeneratorException('Could not generate SDK, received an invalid response');
         }
