@@ -195,7 +195,7 @@ class LanguageBuilder
                     $exceptionClassName = $this->naming->buildClassNameByException($throwSchema->getRef());
                     $exceptions[$exceptionClassName] = new Dto\Exception($exceptionClassName, $this->normalizer->class($throwSchema->getRef()), 'The server returned an error');
 
-                    $imports[$exceptionClassName] = $exceptionClassName;
+                    $imports[$this->normalizer->file($exceptionClassName)] = $exceptionClassName;
                 }
             }
 
@@ -246,10 +246,10 @@ class LanguageBuilder
     private function resolveImport(TypeInterface $type, array &$imports): void
     {
         if ($type instanceof ReferenceType) {
-            $imports[$type->getRef()] = $this->normalizer->class($type->getRef());
+            $imports[$this->normalizer->file($type->getRef())] = $this->normalizer->class($type->getRef());
             if ($type->getTemplate()) {
-                foreach ($type->getTemplate() as $t) {
-                    $imports[$t] = $this->normalizer->class($type->getRef());
+                foreach ($type->getTemplate() as $typeRef) {
+                    $imports[$this->normalizer->file($typeRef)] = $this->normalizer->class($typeRef);
                 }
             }
         } elseif ($type instanceof MapType && $type->getAdditionalProperties() instanceof TypeInterface) {

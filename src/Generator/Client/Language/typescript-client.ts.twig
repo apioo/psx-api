@@ -13,7 +13,7 @@ import {AuthorizationCode} from "sdkgen-client"
 {% endif %}
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
-{% for ref, className in imports %}
+{% for className in imports %}
 import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
 {% endfor %}
 

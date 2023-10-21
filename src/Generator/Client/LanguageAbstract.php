@@ -92,7 +92,7 @@ abstract class LanguageAbstract implements GeneratorInterface
         foreach ($client->tags as $tag) {
             $this->buildTag($tag, $chunks);
 
-            $tagImports[] = $tag->className;
+            $tagImports[$this->generator->getNormalizer()->file($tag->className)] = $tag->className;
         }
 
         foreach ($client->exceptions as $exception) {
@@ -113,7 +113,8 @@ abstract class LanguageAbstract implements GeneratorInterface
             foreach ($client->operations as $operation) {
                 $imports = array_merge($imports, $operation->imports);
             }
-            sort($imports);
+
+            asort($imports);
 
             $operations = $this->engine->render($this->getOperationTemplate(), [
                 'className' => $client->className,
@@ -190,7 +191,7 @@ abstract class LanguageAbstract implements GeneratorInterface
             foreach ($tag->tags as $subTag) {
                 $this->buildTag($subTag, $chunks);
 
-                $imports[] = $subTag->className;
+                $imports[$this->generator->getNormalizer()->file($subTag->className)] = $subTag->className;
             }
         }
 
@@ -208,7 +209,7 @@ abstract class LanguageAbstract implements GeneratorInterface
             $operations = '';
         }
 
-        sort($imports);
+        asort($imports);
 
         $code = $this->engine->render($this->getTagTemplate(), [
             'namespace' => $this->namespace,
