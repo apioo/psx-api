@@ -26,6 +26,7 @@ use PSX\Api\Repository\SDKgen\ConfigInterface;
 use PSX\Http\Client\Client;
 use PSX\Http\Client\ClientInterface;
 use PSX\Http\Client\GetRequest;
+use PSX\Http\Client\PostRequest;
 
 /**
  * SDKgenRepository
@@ -56,6 +57,9 @@ class SDKgenRepository implements RepositoryInterface
         }
 
         $accessToken = $this->obtainAccessToken($clientId, $clientSecret);
+        if (empty($accessToken)) {
+            return [];
+        }
 
         $return = [];
         $types = $this->getTypes($accessToken);
@@ -63,7 +67,7 @@ class SDKgenRepository implements RepositoryInterface
             [$name, $fileExtension, $mime] = $type;
 
             $return[$name] = new GeneratorConfig(
-                fn(string $baseUrl, string $config) => new Generator\Proxy\SDKgen($this->httpClient, $accessToken, $name, $baseUrl, $config),
+                fn(?string $baseUrl, ?string $config) => new Generator\Proxy\SDKgen($this->httpClient, $accessToken, $name, $baseUrl, $config),
                 $fileExtension,
                 $mime
             );
@@ -79,7 +83,7 @@ class SDKgenRepository implements RepositoryInterface
             return $item->get();
         }
 
-        $response = $this->httpClient->request(new GetRequest('https://api.sdkgen.app/generator/types', [
+        $response = $this->httpClient->request(new GetRequest('https://api.sdkgen.app/types', [
             'Authorization' => 'Bearer ' . $accessToken,
             'Accept' => 'application/json',
         ]));
@@ -139,9 +143,11 @@ class SDKgenRepository implements RepositoryInterface
             return $item->get();
         }
 
-        $response = $this->httpClient->request(new GetRequest('https://api.sdkgen.app/authorization/token', [
+        $response = $this->httpClient->request(new PostRequest('https://api.sdkgen.app/authorization/token', [
             'Authorization' => 'Basic ' . base64_encode($clientId . ':' . $clientSecret),
             'Accept' => 'application/json',
+        ], [
+            'grant_type' => 'client_credentials'
         ]));
 
         if ($response->getStatusCode() !== 200) {
@@ -159,7 +165,7 @@ class SDKgenRepository implements RepositoryInterface
         }
 
         $item->set($accessToken);
-        $item->expiresAfter(new \DateInterval('P1D'));
+        $item->expiresAfter(60 * 60 * 24);
         $this->cache->save($item);
 
         return $accessToken;

@@ -59,7 +59,7 @@ class SDKgen implements GeneratorInterface
         // transform to TypeAPI spec
         $body = (new TypeAPI($this->baseUrl))->generate($specification);
 
-        $uri = Uri::parse('https://api.sdkgen.app/generator/generate/' . $this->type);
+        $uri = Uri::parse('https://api.sdkgen.app/generate/' . $this->type);
         $uri = $uri->withParameters([
             'base_url' => $this->baseUrl,
             'config' => $this->config,
