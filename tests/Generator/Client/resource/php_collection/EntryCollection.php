@@ -20,6 +20,9 @@ class EntryCollection implements \JsonSerializable, \PSX\Record\RecordableInterf
     {
         $this->entry = $entry;
     }
+    /**
+     * @return array<Entry>|null
+     */
     public function getEntry() : ?array
     {
         return $this->entry;

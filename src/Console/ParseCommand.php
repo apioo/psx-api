@@ -23,6 +23,7 @@ namespace PSX\Api\Console;
 use PSX\Api\ApiManager;
 use PSX\Api\GeneratorFactory;
 use PSX\Schema\Generator\Code\Chunks;
+use PSX\Schema\Generator\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -74,7 +75,7 @@ class ParseCommand extends Command
             throw new \InvalidArgumentException('Directory does not exist');
         }
 
-        $config = $input->getOption('config');
+        $config = Config::fromQueryString($input->getOption('config'));
         $specification = $this->apiManager->getApi($input->getArgument('source'));
 
         $generator = $registry->getGenerator($format, $config);

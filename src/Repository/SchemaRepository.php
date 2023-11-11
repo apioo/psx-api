@@ -21,6 +21,7 @@
 namespace PSX\Api\Repository;
 
 use PSX\Api\Generator;
+use PSX\Schema\Generator\Config;
 use PSX\Schema\GeneratorFactory;
 
 /**
@@ -39,7 +40,7 @@ class SchemaRepository implements RepositoryInterface
         $types = GeneratorFactory::getPossibleTypes();
         foreach ($types as $type) {
             $result['model-' . $type] = new GeneratorConfig(
-                fn(?string $baseUrl, ?string $config) => new Generator\Proxy\Schema($type, $config),
+                fn(?string $baseUrl, ?Config $config) => new Generator\Proxy\Schema($type, $config),
                 $this->getFileExtensionForType($type),
                 'text/plain'
             );

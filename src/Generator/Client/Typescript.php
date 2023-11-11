@@ -54,7 +54,7 @@ class Typescript extends LanguageAbstract
 
     protected function newGenerator(): GeneratorInterface
     {
-        return new Schema\Generator\TypeScript($this->namespace);
+        return new Schema\Generator\TypeScript($this->config);
     }
 
     protected function getFileExtension(): string

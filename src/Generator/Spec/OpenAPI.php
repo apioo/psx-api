@@ -76,7 +76,7 @@ class OpenAPI extends ApiAbstract
         $this->apiVersion = $apiVersion;
         $this->baseUri    = $baseUri;
         $this->dumper     = new Dumper();
-        $this->generator  = new Generator\JsonSchema('#/components/schemas/');
+        $this->generator  = new Generator\JsonSchema($this->newConfig());
     }
 
     public function generate(SpecificationInterface $specification): Generator\Code\Chunks|string
@@ -405,5 +405,13 @@ class OpenAPI extends ApiAbstract
         }
 
         return $result;
+    }
+
+    private function newConfig(): Generator\Config
+    {
+        $config = new Generator\Config();
+        $config->put('ref_base', '#/components/schemas/');
+
+        return $config;
     }
 }

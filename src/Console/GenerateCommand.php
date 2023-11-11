@@ -24,6 +24,7 @@ use PSX\Api\GeneratorFactory;
 use PSX\Api\Scanner\FilterFactoryInterface;
 use PSX\Api\ScannerInterface;
 use PSX\Schema\Generator\Code\Chunks;
+use PSX\Schema\Generator\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -77,7 +78,7 @@ class GenerateCommand extends Command
             throw new \InvalidArgumentException('Directory does not exist');
         }
 
-        $config = $input->getOption('config');
+        $config = Config::fromQueryString($input->getOption('config'));
         $filterName = $input->getOption('filter');
 
         if ($this->filterFactory instanceof FilterFactoryInterface && !empty($filterName)) {

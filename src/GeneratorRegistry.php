@@ -22,6 +22,7 @@ namespace PSX\Api;
 
 use PSX\Api\Repository\GeneratorConfig;
 use PSX\Api\Scanner\FilterInterface;
+use PSX\Schema\Generator\Config;
 
 /**
  * The generator registry contains all available generators
@@ -54,7 +55,7 @@ class GeneratorRegistry
         $this->generators[$type] = $generatorConfig;
     }
 
-    public function getGenerator(string $type, ?string $config = null, ?FilterInterface $filter = null): GeneratorInterface
+    public function getGenerator(string $type, ?Config $config = null, ?FilterInterface $filter = null): GeneratorInterface
     {
         $generator = $this->getGeneratorConfig($type)->newInstance($this->baseUrl, $config);
 

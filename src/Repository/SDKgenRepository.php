@@ -27,6 +27,7 @@ use PSX\Http\Client\Client;
 use PSX\Http\Client\ClientInterface;
 use PSX\Http\Client\GetRequest;
 use PSX\Http\Client\PostRequest;
+use PSX\Schema\Generator\Config;
 
 /**
  * SDKgenRepository
@@ -67,7 +68,7 @@ class SDKgenRepository implements RepositoryInterface
             [$name, $fileExtension, $mime] = $type;
 
             $return[$name] = new GeneratorConfig(
-                fn(?string $baseUrl, ?string $config) => new Generator\Proxy\SDKgen($this->httpClient, $accessToken, $name, $baseUrl, $config),
+                fn(?string $baseUrl, ?Config $config) => new Generator\Proxy\SDKgen($this->httpClient, $accessToken, $name, $baseUrl, $config),
                 $fileExtension,
                 $mime
             );

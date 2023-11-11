@@ -54,7 +54,7 @@ class Php extends LanguageAbstract
 
     protected function newGenerator(): GeneratorInterface
     {
-        return new Schema\Generator\Php($this->namespace);
+        return new Schema\Generator\Php($this->config);
     }
 
     protected function getFileExtension(): string

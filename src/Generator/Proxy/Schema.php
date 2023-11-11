@@ -37,10 +37,10 @@ use PSX\Schema\TypeFactory;
 class Schema implements GeneratorInterface
 {
     private string $type;
-    private ?string $config;
+    private ?Generator\Config $config;
     private GeneratorFactory $factory;
 
-    public function __construct(string $type, ?string $config = null)
+    public function __construct(string $type, ?Generator\Config $config = null)
     {
         $this->type = $type;
         $this->config = $config;

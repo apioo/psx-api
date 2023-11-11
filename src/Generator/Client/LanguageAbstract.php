@@ -48,6 +48,7 @@ abstract class LanguageAbstract implements GeneratorInterface
 {
     protected ?string $baseUrl;
     protected ?string $namespace;
+    protected ?Generator\Config $config;
     protected Environment $engine;
 
     /**
@@ -58,10 +59,11 @@ abstract class LanguageAbstract implements GeneratorInterface
     private Naming $naming;
     private LanguageBuilder $converter;
 
-    public function __construct(?string $baseUrl = null, ?string $namespace = null)
+    public function __construct(?string $baseUrl = null, ?Generator\Config $config = null)
     {
         $this->baseUrl   = $baseUrl;
-        $this->namespace = $namespace;
+        $this->namespace = $config?->get(Generator\Config::NAMESPACE);
+        $this->config    = $config;
         $this->engine    = $this->newTemplateEngine();
         $this->generator = $this->newGenerator();
 

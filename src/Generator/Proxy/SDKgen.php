@@ -43,9 +43,9 @@ class SDKgen implements GeneratorInterface
     private string $accessToken;
     private string $type;
     private ?string $baseUrl;
-    private ?string $config;
+    private ?Generator\Config $config;
 
-    public function __construct(ClientInterface $httpClient, string $accessToken, string $type, ?string $baseUrl = null, ?string $config = null)
+    public function __construct(ClientInterface $httpClient, string $accessToken, string $type, ?string $baseUrl = null, ?Generator\Config $config = null)
     {
         $this->httpClient = $httpClient;
         $this->accessToken = $accessToken;
@@ -62,7 +62,7 @@ class SDKgen implements GeneratorInterface
         $uri = Uri::parse('https://api.sdkgen.app/generate/' . $this->type);
         $uri = $uri->withParameters([
             'base_url' => $this->baseUrl,
-            'config' => $this->config,
+            'config' => $this->config?->toString(),
         ]);
 
         $response = $this->httpClient->request(new PostRequest($uri, [

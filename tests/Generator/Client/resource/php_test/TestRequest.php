@@ -63,6 +63,9 @@ class TestRequest implements \JsonSerializable, \PSX\Record\RecordableInterface
     {
         $this->arrayScalar = $arrayScalar;
     }
+    /**
+     * @return array<string>|null
+     */
     public function getArrayScalar() : ?array
     {
         return $this->arrayScalar;
@@ -74,6 +77,9 @@ class TestRequest implements \JsonSerializable, \PSX\Record\RecordableInterface
     {
         $this->arrayObject = $arrayObject;
     }
+    /**
+     * @return array<TestObject>|null
+     */
     public function getArrayObject() : ?array
     {
         return $this->arrayObject;

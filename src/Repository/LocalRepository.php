@@ -21,6 +21,7 @@
 namespace PSX\Api\Repository;
 
 use PSX\Api\Generator;
+use PSX\Schema\Generator\Config;
 
 /**
  * LocalRepository
@@ -46,43 +47,43 @@ class LocalRepository implements RepositoryInterface
         $result = [];
 
         $result[self::CLIENT_PHP] = new GeneratorConfig(
-            fn(?string $baseUrl, ?string $config) => new Generator\Client\Php($baseUrl, $config),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Client\Php($baseUrl, $config),
             'php',
             'application/php'
         );
 
         $result[self::CLIENT_TYPESCRIPT] = new GeneratorConfig(
-            fn(?string $baseUrl, ?string $config) => new Generator\Client\Typescript($baseUrl, $config),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Client\Typescript($baseUrl, $config),
             'ts',
             'application/typescript'
         );
 
         $result[self::MARKUP_CLIENT] = new GeneratorConfig(
-            fn(?string $baseUrl, ?string $config) => new Generator\Markup\Client(),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Markup\Client(),
             'md',
             'text/markdown'
         );
 
         $result[self::MARKUP_HTML] = new GeneratorConfig(
-            fn(?string $baseUrl, ?string $config) => new Generator\Markup\Html(),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Markup\Html(),
             'html',
             'text/html'
         );
 
         $result[self::MARKUP_MARKDOWN] = new GeneratorConfig(
-            fn(?string $baseUrl, ?string $config) => new Generator\Markup\Markdown(),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Markup\Markdown(),
             'md',
             'text/markdown'
         );
 
         $result[self::SPEC_TYPEAPI] = new GeneratorConfig(
-            fn(?string $baseUrl, ?string $config) => new Generator\Spec\TypeAPI($baseUrl),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Spec\TypeAPI($baseUrl),
             'json',
             'application/json'
         );
 
         $result[self::SPEC_OPENAPI] = new GeneratorConfig(
-            fn(?string $baseUrl, ?string $config) => new Generator\Spec\OpenAPI(1, $baseUrl),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Spec\OpenAPI(1, $baseUrl),
             'json',
             'application/json'
         );

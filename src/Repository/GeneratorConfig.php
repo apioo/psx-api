@@ -21,6 +21,7 @@
 namespace PSX\Api\Repository;
 
 use PSX\Api\GeneratorInterface;
+use PSX\Schema\Generator\Config;
 
 /**
  * The GeneratorConfig contains all information about a specific generator and is returned by a repository
@@ -42,7 +43,7 @@ class GeneratorConfig
         $this->mime = $mime;
     }
 
-    public function newInstance(?string $baseUrl, ?string $config): GeneratorInterface
+    public function newInstance(?string $baseUrl, ?Config $config): GeneratorInterface
     {
         return call_user_func_array($this->factory, [$baseUrl, $config]);
     }

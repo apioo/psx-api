@@ -23,6 +23,7 @@ namespace PSX\Api\Tests\Generator\Client;
 use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Php;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
+use PSX\Schema\Generator\Config;
 
 /**
  * PhpTest
@@ -47,7 +48,7 @@ class PhpTest extends GeneratorTestCase
 
     public function testGenerateCollection()
     {
-        $generator = new Php('http://api.foo.com', 'Foo\Bar');
+        $generator = new Php('http://api.foo.com', Config::of('Foo\\Bar'));
 
         $result = $generator->generate($this->getSpecificationCollection());
         $target = __DIR__ . '/resource/php_collection';
@@ -61,13 +62,13 @@ class PhpTest extends GeneratorTestCase
     {
         $this->expectException(InvalidTypeException::class);
 
-        $generator = new Php('http://api.foo.com', 'Foo\Bar');
+        $generator = new Php('http://api.foo.com', Config::of('Foo\\Bar'));
         $generator->generate($this->getSpecificationComplex());
     }
 
     public function testGenerateTest()
     {
-        $generator = new Php('http://127.0.0.1:8081', 'Sdkgen\Client\Tests\Generated');
+        $generator = new Php('http://127.0.0.1:8081', Config::of('Sdkgen\\Client\\Tests\\Generated'));
 
         $result = $generator->generate($this->getSpecificationTest());
         $target = __DIR__ . '/resource/php_test';

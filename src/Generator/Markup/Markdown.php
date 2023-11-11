@@ -114,6 +114,9 @@ class Markdown extends MarkupAbstract
 
     protected function newSchemaGenerator(): SchemaGeneratorInterface
     {
-        return new Generator\Html(4);
+        $config = new Generator\Config();
+        $config->put('heading', 4);
+
+        return new Generator\Html($config);
     }
 }
