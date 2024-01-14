@@ -21,6 +21,7 @@
 namespace PSX\Api\Generator\Spec;
 
 use PSX\Api\GeneratorInterface;
+use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Json\Parser;
 use PSX\Schema\DefinitionsInterface;
@@ -55,7 +56,11 @@ class TypeAPI implements GeneratorInterface
             $data['baseUrl'] = $this->baseUrl;
         }
 
-        $data['security'] = $specification->getSecurity();
+        $security = $specification->getSecurity();
+        if ($security instanceof SecurityInterface) {
+            $data['security'] = $security;
+        }
+
         $data['operations'] = $operations;
         $data['definitions'] = $this->generateDefinitions($definitions);
 
