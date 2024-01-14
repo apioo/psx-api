@@ -1,5 +1,5 @@
 import axios, {AxiosRequestConfig} from "axios";
-import {ClientAbstract, TokenStoreInterface} from "sdkgen-client"
+import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
 {% if security.type == 'httpBasic' %}
 import {HttpBasic} from "sdkgen-client"
 {% elseif security.type == 'httpBearer' %}
@@ -65,6 +65,11 @@ export class {{ className }} extends ClientAbstract {
 {% else %}
         return new {{ className }}('{{ baseUrl }}', new OAuth2(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
 {% endif %}
+    }
+{% elseif baseUrl %}
+    public static build(credentials: CredentialsInterface): {{ className }}
+    {
+        return new {{ className }}('{{ baseUrl }}', credentials);
     }
 {% endif %}
 }

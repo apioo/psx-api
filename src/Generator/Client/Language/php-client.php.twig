@@ -5,6 +5,7 @@ namespace {{ namespace }};
 use GuzzleHttp\Exception\BadResponseException;
 use Sdkgen\Client\ClientAbstract;
 use Sdkgen\Client\Credentials;
+use Sdkgen\Client\CredentialsInterface;
 use Sdkgen\Client\Exception\ClientException;
 use Sdkgen\Client\Exception\UnknownStatusCodeException;
 
@@ -57,6 +58,11 @@ class {{ className }} extends ClientAbstract
 {% else %}
         return new self('{{ baseUrl }}', new Credentials\OAuth2($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', $tokenStore, $scopes));
 {% endif %}
+    }
+{% elseif baseUrl %}
+    public static function build(CredentialsInterface $credentials): self
+    {
+        return new self('{{ baseUrl }}', $credentials);
     }
 {% endif %}
 }
