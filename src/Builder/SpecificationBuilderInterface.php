@@ -34,6 +34,8 @@ use PSX\Schema\TypeInterface;
  */
 interface SpecificationBuilderInterface
 {
+    public function setBaseUrl(string $baseUrl): void;
+
     public function setSecurity(SecurityInterface $security): void;
 
     public function addOperation(string $operationId, string $method, string $path, int $statusCode, TypeInterface $schema): OperationBuilderInterface;

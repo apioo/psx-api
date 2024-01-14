@@ -43,6 +43,11 @@ class SpecificationBuilder implements SpecificationBuilderInterface
         $this->specification = new Specification();
     }
 
+    public function setBaseUrl(string $baseUrl): void
+    {
+        $this->specification->setBaseUrl($baseUrl);
+    }
+
     public function setSecurity(SecurityInterface $security): void
     {
         $this->specification->setSecurity($security);
