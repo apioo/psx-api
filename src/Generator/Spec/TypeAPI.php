@@ -39,7 +39,7 @@ use PSX\Schema\TypeFactory;
 class TypeAPI implements GeneratorInterface
 {
     private ?string $baseUrl;
-    private ?SecurityInterface $security;
+    private ?SecurityInterface $security = null;
 
     public function __construct(?string $baseUrl = null)
     {
