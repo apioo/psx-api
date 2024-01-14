@@ -285,7 +285,7 @@ class TypeAPI implements ParserInterface
             case SecurityInterface::TYPE_OAUTH2:
                 $tokenUrl = isset($data->tokenUrl) && is_string($data->tokenUrl) ? $data->tokenUrl : throw new ParserException('Provided security "oauth2" must contain a "tokenUrl" property');
                 $authorizationUrl = isset($data->authorizationUrl) && is_string($data->authorizationUrl) ? $data->authorizationUrl : null;
-                $scopes = isset($data->scopes) && is_string($data->scopes) ? $data->scopes : [];
+                $scopes = isset($data->scopes) && is_array($data->scopes) ? $data->scopes : [];
 
                 return new Security\OAuth2($tokenUrl, $authorizationUrl, $scopes);
         }
