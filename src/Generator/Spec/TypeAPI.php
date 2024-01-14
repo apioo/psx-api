@@ -39,6 +39,7 @@ use PSX\Schema\TypeFactory;
 class TypeAPI implements GeneratorInterface
 {
     private ?string $baseUrl;
+    private ?SecurityInterface $security;
 
     public function __construct(?string $baseUrl = null)
     {
@@ -52,19 +53,34 @@ class TypeAPI implements GeneratorInterface
 
         $data = [];
 
-        if (!empty($this->baseUrl)) {
+        $baseUrl = $specification->getBaseUrl();
+        if (!empty($baseUrl)) {
+            $data['baseUrl'] = $baseUrl;
+        } elseif (!empty($this->baseUrl)) {
             $data['baseUrl'] = $this->baseUrl;
         }
 
         $security = $specification->getSecurity();
         if ($security instanceof SecurityInterface) {
             $data['security'] = $security;
+        } elseif ($this->security instanceof SecurityInterface) {
+            $data['security'] = $this->security;
         }
 
         $data['operations'] = $operations;
         $data['definitions'] = $this->generateDefinitions($definitions);
 
         return Parser::encode($data);
+    }
+
+    public function setBaseUrl(string $baseUrl): void
+    {
+        $this->baseUrl = $baseUrl;
+    }
+
+    public function setSecurity(SecurityInterface $security): void
+    {
+        $this->security = $security;
     }
 
     private function generateDefinitions(DefinitionsInterface $definitions): ?array
