@@ -45,7 +45,7 @@
 
 ## Response
 
-<table><colgroup><col width="40%" /><col width="60%" /></colgroup><thead><tr><th>Status-Code</th><th>Type</th></tr></thead><tbody><tr><td>200</td><td>EntryMessage</td></tr></tbody></table>
+<table><colgroup><col width="40%" /><col width="60%" /></colgroup><thead><tr><th>Status-Code</th><th>Type</th></tr></thead><tbody></tbody></table>
 
 # patch
 `PATCH /foo/:name/:type`

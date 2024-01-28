@@ -4,7 +4,7 @@
   },
   "operations": {
     "get": {
-      "path": "\/foo\/:name\/:type",
+      "path": "/foo/:name/:type",
       "method": "GET",
       "return": {
         "code": 200,
@@ -77,7 +77,7 @@
       "tags": []
     },
     "create": {
-      "path": "\/foo\/:name\/:type",
+      "path": "/foo/:name/:type",
       "method": "POST",
       "return": {
         "code": 201,
@@ -126,7 +126,7 @@
       "tags": []
     },
     "update": {
-      "path": "\/foo\/:name\/:type",
+      "path": "/foo/:name/:type",
       "method": "PUT",
       "return": {
         "code": 200,
@@ -162,10 +162,10 @@
       "tags": []
     },
     "delete": {
-      "path": "\/foo\/:name\/:type",
+      "path": "/foo/:name/:type",
       "method": "DELETE",
       "return": {
-        "code": 200,
+        "code": 204,
         "schema": {
           "$ref": "EntryMessage"
         }
@@ -198,7 +198,7 @@
       "tags": []
     },
     "patch": {
-      "path": "\/foo\/:name\/:type",
+      "path": "/foo/:name/:type",
       "method": "PATCH",
       "return": {
         "code": 200,
