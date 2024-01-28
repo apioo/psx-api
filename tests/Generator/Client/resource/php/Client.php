@@ -149,10 +149,10 @@ class Client extends ClientAbstract
     /**
      * @param string $name
      * @param string $type
-     * @return EntryMessage
+     * @return void
      * @throws ClientException
      */
-    public function delete(string $name, string $type): EntryMessage
+    public function delete(string $name, string $type): void
     {
         $url = $this->parser->url('/foo/:name/:type', [
             'name' => $name,
@@ -168,7 +168,6 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('DELETE', $url, $options);
             $data = (string) $response->getBody();
 
-            return $this->parser->parse($data, EntryMessage::class);
         } catch (ClientException $e) {
             throw $e;
         } catch (BadResponseException $e) {

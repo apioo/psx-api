@@ -134,10 +134,10 @@ export class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<EntryMessage>}
+     * @returns {Promise<void>}
      * @throws {ClientException}
      */
-    public async delete(name: string, type: string): Promise<EntryMessage> {
+    public async delete(name: string, type: string): Promise<void> {
         const url = this.parser.url('/foo/:name/:type', {
             'name': name,
             'type': type,
@@ -151,8 +151,7 @@ export class Client extends ClientAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<EntryMessage>(params);
-            return response.data;
+            const response = await this.httpClient.request(params);
         } catch (error) {
             if (error instanceof ClientException) {
                 throw error;

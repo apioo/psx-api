@@ -83,7 +83,7 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $operation->addArgument('type', ArgumentInterface::IN_PATH, TypeFactory::getString());
         $operation->addArgument('payload', ArgumentInterface::IN_BODY, $update);
 
-        $operation = $builder->addOperation('delete', 'DELETE', '/foo/:name/:type', 200, $message);
+        $operation = $builder->addOperation('delete', 'DELETE', '/foo/:name/:type', 204, $message);
         $operation->addArgument('name', ArgumentInterface::IN_PATH, TypeFactory::getString());
         $operation->addArgument('type', ArgumentInterface::IN_PATH, TypeFactory::getString());
         $operation->addArgument('payload', ArgumentInterface::IN_BODY, $delete);
