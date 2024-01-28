@@ -178,7 +178,7 @@ class LanguageBuilder
             $arguments = array_merge($path, $body !== null ? [$bodyName => $body] : [], $query);
 
             $return = null;
-            if (in_array($operation->getReturn()->getCode(), [200, 201])) {
+            if (in_array($operation->getReturn()->getCode(), [200, 201, 202])) {
                 $return = new Dto\Response($operation->getReturn()->getCode(), $this->newType($operation->getReturn()->getSchema(), false, $definitions));
 
                 $this->resolveImport($operation->getReturn()->getSchema(), $imports);
