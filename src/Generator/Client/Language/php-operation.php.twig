@@ -3,9 +3,9 @@
 {% if operation.description %}     * {{ operation.description }}
      *
 {% endif %}
-{% for name, arg in operation.arguments %}     * @param {{ arg.schema.docType }}{% if arg.schema.optional %}|null{% endif %} ${{ name }}
+{% for name, arg in operation.arguments %}     * @param {{ arg.schema.docType|raw }}{% if arg.schema.optional %}|null{% endif %} ${{ name }}
 {% endfor %}
-     * @return {% if operation.return %}{{ operation.return.schema.docType }}{% else %}void{% endif %}
+     * @return {% if operation.return %}{{ operation.return.schema.docType|raw }}{% else %}void{% endif %}
 
 {% for throw in operation.throws|throws_unique %}     * @throws {{ throw.schema.docType }}Exception
 {% endfor %}
