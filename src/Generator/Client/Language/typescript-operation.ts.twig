@@ -40,9 +40,9 @@
                 throw error;
             } else if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
-{% for code, return in operation.throws %}
+{% for code, throw in operation.throws %}
                     case {{ code }}:
-                        throw new {{ return.className|raw }}(error.response.data);
+                        throw new {{ throw.className|raw }}(error.response.data);
 {% endfor %}
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
