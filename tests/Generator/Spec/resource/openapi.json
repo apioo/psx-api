@@ -19,7 +19,7 @@
             "name": "startIndex",
             "in": "query",
             "description": "startIndex parameter",
-            "required": true,
+            "required": false,
             "schema": {
               "description": "startIndex parameter",
               "type": "integer",
@@ -30,7 +30,7 @@
           {
             "name": "float",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "number"
             }
@@ -38,7 +38,7 @@
           {
             "name": "boolean",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "boolean"
             }
@@ -46,7 +46,7 @@
           {
             "name": "date",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "format": "date",
               "type": "string"
@@ -55,7 +55,7 @@
           {
             "name": "datetime",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "format": "date-time",
               "type": "string"

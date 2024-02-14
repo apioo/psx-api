@@ -22,7 +22,7 @@
             "name": "foo",
             "in": "query",
             "description": "Test",
-            "required": true,
+            "required": false,
             "schema": {
               "description": "Test",
               "type": "string"
@@ -31,7 +31,7 @@
           {
             "name": "bar",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -39,7 +39,7 @@
           {
             "name": "baz",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "enum": [
                 "foo",
@@ -51,7 +51,7 @@
           {
             "name": "boz",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string",
               "pattern": "[A-z]+"
@@ -60,7 +60,7 @@
           {
             "name": "integer",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "integer"
             }
@@ -68,7 +68,7 @@
           {
             "name": "number",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "number"
             }
@@ -76,7 +76,7 @@
           {
             "name": "date",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -85,7 +85,7 @@
           {
             "name": "boolean",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "boolean"
             }
@@ -93,7 +93,7 @@
           {
             "name": "string",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
