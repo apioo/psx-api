@@ -166,33 +166,28 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $testRequest = $this->addSchema($builder, Schema\TestRequest::class);
         $testResponse = $this->addSchema($builder, Schema\TestResponse::class);
 
-        $operation = $builder->addOperation('getAll', 'GET', '/anything', 200, $testResponse);
+        $operation = $builder->addOperation('product.getAll', 'GET', '/anything', 200, $testResponse);
         $operation->setDescription('Returns a collection');
-        $operation->setTags(['product']);
         $operation->addArgument('startIndex', 'query', TypeFactory::getInteger());
         $operation->addArgument('count', 'query', TypeFactory::getInteger());
         $operation->addArgument('search', 'query', TypeFactory::getString());
 
-        $operation = $builder->addOperation('create', 'POST', '/anything', 200, $testResponse);
+        $operation = $builder->addOperation('product.create', 'POST', '/anything', 200, $testResponse);
         $operation->setDescription('Creates a new product');
-        $operation->setTags(['product']);
         $operation->addArgument('payload', 'body', $testRequest);
 
-        $operation = $builder->addOperation('update', 'PUT', '/anything/:id', 200, $testResponse);
+        $operation = $builder->addOperation('product.update', 'PUT', '/anything/:id', 200, $testResponse);
         $operation->setDescription('Updates an existing product');
-        $operation->setTags(['product']);
         $operation->addArgument('id', 'path', TypeFactory::getInteger());
         $operation->addArgument('payload', 'body', $testRequest);
 
-        $operation = $builder->addOperation('patch', 'PATCH', '/anything/:id', 200, $testResponse);
+        $operation = $builder->addOperation('product.patch', 'PATCH', '/anything/:id', 200, $testResponse);
         $operation->setDescription('Patches an existing product');
-        $operation->setTags(['product']);
         $operation->addArgument('id', 'path', TypeFactory::getInteger());
         $operation->addArgument('payload', 'body', $testRequest);
 
-        $operation = $builder->addOperation('delete', 'DELETE', '/anything/:id', 200, $testResponse);
+        $operation = $builder->addOperation('product.delete', 'DELETE', '/anything/:id', 200, $testResponse);
         $operation->setDescription('Deletes an existing product');
-        $operation->setTags(['product']);
         $operation->addArgument('id', 'path', TypeFactory::getInteger());
 
         return $builder->getSpecification();
