@@ -1,17 +1,17 @@
 {% for operation in operations %}
     /**
-{% if operation.description %}     * {{ operation.description }}
+{% if operation.description %}     * {{ operation.description|raw }}
      *
 {% endif %}
 {% for name, arg in operation.arguments %}     * @param {{ arg.schema.docType|raw }}{% if arg.schema.optional %}|null{% endif %} ${{ name }}
 {% endfor %}
      * @return {% if operation.return %}{{ operation.return.schema.docType|raw }}{% else %}void{% endif %}
 
-{% for throw in operation.throws|throws_unique %}     * @throws {{ throw.schema.docType }}Exception
+{% for throw in operation.throws|throws_unique %}     * @throws {{ throw.className|raw }}
 {% endfor %}
      * @throws ClientException
      */
-    public function {{ operation.methodName }}({% for name, arg in operation.arguments %}{% if arg.schema.optional %}?{% endif %}{{ arg.schema.type }} ${{ name }}{% if arg.schema.optional %} = null{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): {% if operation.return %}{{ operation.return.schema.type }}{% else %}void{% endif %}
+    public function {{ operation.methodName }}({% for name, arg in operation.arguments %}{% if arg.schema.optional %}?{% endif %}{{ arg.schema.type }} ${{ name }}{% if arg.schema.optional %} = null{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): {% if operation.return %}{{ operation.return.schema.type|raw }}{% else %}void{% endif %}
 
     {
         $url = $this->parser->url('{{ operation.path|raw }}', [
@@ -36,7 +36,13 @@
             $data = (string) $response->getBody();
 
 {% if operation.return %}
+{% if operation.return.innerSchema.isMap %}
+            return $this->parser->parse($data, {{ operation.return.innerSchema.type }}::class, isMap: true);
+{% elseif operation.return.innerSchema.isArray %}
+            return $this->parser->parse($data, {{ operation.return.innerSchema.type }}::class, isArray: true);
+{% else %}
             return $this->parser->parse($data, {{ operation.return.schema.type }}::class);
+{% endif %}
 {% endif %}
         } catch (ClientException $e) {
             throw $e;
@@ -46,7 +52,13 @@
             switch ($e->getResponse()->getStatusCode()) {
 {% for code, throw in operation.throws %}
                 case {{ code }}:
-                    throw new {{ throw.schema.type }}Exception($this->parser->parse($data, {{ throw.schema.type }}::class));
+{% if throw.innerSchema.isMap %}
+                    throw new {{ throw.className|raw }}($this->parser->parse($data, {{ throw.innerSchema.type }}::class, isMap: true));
+{% elseif throw.innerSchema.isArray %}
+                    throw new {{ throw.className|raw }}($this->parser->parse($data, {{ throw.innerSchema.type }}::class, isArray: true));
+{% else %}
+                    throw new {{ throw.className|raw }}($this->parser->parse($data, {{ throw.schema.type }}::class));
+{% endif %}
 {% endfor %}
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');

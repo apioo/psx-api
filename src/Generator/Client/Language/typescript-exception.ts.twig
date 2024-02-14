@@ -1,14 +1,16 @@
 import {KnownStatusCodeException} from "sdkgen-client"
 
-import {{ '{' }}{{ type }}{{ '}' }} from "./{{ type }}";
+{% for className in imports %}
+import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
+{% endfor %}
 
 export class {{ className }} extends KnownStatusCodeException {
 
-    public constructor(private payload: {{ type }}) {
-        super();
+    public constructor(private payload: {{ schema.type|raw }}) {
+        super('{{ message }}');
     }
 
-    public getPayload(): {{ type }} {
+    public getPayload(): {{ schema.type|raw }} {
         return this.payload;
     }
 

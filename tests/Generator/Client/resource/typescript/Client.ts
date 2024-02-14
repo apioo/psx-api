@@ -8,6 +8,7 @@ import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-
 import {HttpBearer} from "sdkgen-client"
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
+import {ArrayEntryMessageException} from "./ArrayEntryMessageException";
 import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
 import {EntryDelete} from "./EntryDelete";
@@ -15,6 +16,7 @@ import {EntryMessage} from "./EntryMessage";
 import {EntryMessageException} from "./EntryMessageException";
 import {EntryPatch} from "./EntryPatch";
 import {EntryUpdate} from "./EntryUpdate";
+import {MapEntryMessageException} from "./MapEntryMessageException";
 
 export class Client extends ClientAbstract {
     /**
@@ -60,7 +62,7 @@ export class Client extends ClientAbstract {
 
     /**
      * @returns {Promise<EntryMessage>}
-     * @throws {EntryMessageException}
+     * @throws {EntryMessageExceptionException}
      * @throws {ClientException}
      */
     public async create(name: string, type: string, payload: EntryCreate): Promise<EntryMessage> {
@@ -99,10 +101,12 @@ export class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<EntryMessage>}
+     * @returns {Promise<Record<string, EntryMessage>>}
+     * @throws {EntryMessageExceptionException}
+     * @throws {MapEntryMessageExceptionException}
      * @throws {ClientException}
      */
-    public async update(name: string, type: string, payload: EntryUpdate): Promise<EntryMessage> {
+    public async update(name: string, type: string, payload: Record<string, EntryUpdate>): Promise<Record<string, EntryMessage>> {
         const url = this.parser.url('/foo/:name/:type', {
             'name': name,
             'type': type,
@@ -117,13 +121,17 @@ export class Client extends ClientAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<EntryMessage>(params);
+            const response = await this.httpClient.request<Record<string, EntryMessage>>(params);
             return response.data;
         } catch (error) {
             if (error instanceof ClientException) {
                 throw error;
             } else if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
+                    case 400:
+                        throw new EntryMessageException(error.response.data);
+                    case 500:
+                        throw new MapEntryMessageException(error.response.data);
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
@@ -167,10 +175,12 @@ export class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<EntryMessage>}
+     * @returns {Promise<Array<EntryMessage>>}
+     * @throws {EntryMessageExceptionException}
+     * @throws {ArrayEntryMessageExceptionException}
      * @throws {ClientException}
      */
-    public async patch(name: string, type: string, payload: EntryPatch): Promise<EntryMessage> {
+    public async patch(name: string, type: string, payload: Array<EntryPatch>): Promise<Array<EntryMessage>> {
         const url = this.parser.url('/foo/:name/:type', {
             'name': name,
             'type': type,
@@ -185,13 +195,17 @@ export class Client extends ClientAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<EntryMessage>(params);
+            const response = await this.httpClient.request<Array<EntryMessage>>(params);
             return response.data;
         } catch (error) {
             if (error instanceof ClientException) {
                 throw error;
             } else if (axios.isAxiosError(error) && error.response) {
                 switch (error.response.status) {
+                    case 400:
+                        throw new EntryMessageException(error.response.data);
+                    case 500:
+                        throw new ArrayEntryMessageException(error.response.data);
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }

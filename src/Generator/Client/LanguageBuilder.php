@@ -179,24 +179,30 @@ class LanguageBuilder
 
             $return = null;
             if (in_array($operation->getReturn()->getCode(), [200, 201, 202])) {
-                $return = new Dto\Response($operation->getReturn()->getCode(), $this->newType($operation->getReturn()->getSchema(), false, $definitions));
+                $returnType = $this->newType($operation->getReturn()->getSchema(), false, $definitions);
+                $innerSchema = $this->getInnerSchema($operation->getReturn()->getSchema(), $definitions);
+
+                $return = new Dto\Response($operation->getReturn()->getCode(), $returnType, null, $innerSchema);
 
                 $this->resolveImport($operation->getReturn()->getSchema(), $imports);
             }
 
             $throws = [];
             foreach ($operation->getThrows() as $throw) {
-                $throws[$throw->getCode()] = new Dto\Response($throw->getCode(), $this->newType($throw->getSchema(), false, $definitions));
-
-                $this->resolveImport($throw->getSchema(), $imports);
-
                 $throwSchema = $throw->getSchema();
-                if ($throwSchema instanceof ReferenceType) {
-                    $exceptionClassName = $this->naming->buildClassNameByException($throwSchema->getRef());
-                    $exceptions[$exceptionClassName] = new Dto\Exception($exceptionClassName, $this->normalizer->class($throwSchema->getRef()), 'The server returned an error');
 
-                    $imports[$this->normalizer->file($exceptionClassName)] = $exceptionClassName;
-                }
+                $exceptionImports = [];
+                $this->resolveImport($throwSchema, $exceptionImports);
+
+                $exceptionType = $this->newType($throwSchema, false, $definitions);
+                $innerSchema = $this->getInnerSchema($throwSchema, $definitions);
+
+                $exceptionClassName = $this->naming->buildExceptionClassNameByType($throwSchema);
+                $exceptions[$exceptionClassName] = new Dto\Exception($exceptionClassName, $exceptionType, 'The server returned an error', $exceptionImports);
+
+                $throws[$throw->getCode()] = new Dto\Response($throw->getCode(), $exceptionType, $exceptionClassName, $innerSchema);
+
+                $imports[$this->normalizer->file($exceptionClassName)] = $exceptionClassName;
             }
 
             $result[] = new Dto\Operation(
@@ -215,6 +221,21 @@ class LanguageBuilder
         }
 
         return $result;
+    }
+
+    private function getInnerSchema(TypeInterface $type, DefinitionsInterface $definitions): ?Dto\Type
+    {
+        if ($type instanceof MapType) {
+            $type = $this->newType($type->getAdditionalProperties(), false, $definitions);
+            $type->isMap = true;
+            return $type;
+        } elseif ($type instanceof ArrayType) {
+            $type = $this->newType($type->getItems(), false, $definitions);
+            $type->isArray = true;
+            return $type;
+        } else {
+            return null;
+        }
     }
 
     /**

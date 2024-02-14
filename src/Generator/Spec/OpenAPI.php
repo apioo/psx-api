@@ -52,6 +52,8 @@ use PSX\OpenAPI\Tag;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
 use PSX\Schema\Parser\Popo\Dumper;
+use PSX\Schema\Type\ArrayType;
+use PSX\Schema\Type\MapType;
 use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
@@ -252,17 +254,33 @@ class OpenAPI extends ApiAbstract
     private function getMediaTypes(TypeInterface $type, DefinitionsInterface $definitions): MediaTypes
     {
         $mediaType = new MediaType();
-
-        if ($type instanceof ReferenceType) {
-            $mediaType->setSchema((object) ['$ref' => '#/components/schemas/' . $type->getRef()]);
-        } else {
-            $mediaType->setSchema((object) $this->generator->toArray($type, $definitions));
-        }
+        $mediaType->setSchema($this->resolveSchema($type, $definitions));
 
         $mediaTypes = new MediaTypes();
         $mediaTypes['application/json'] = $mediaType;
 
         return $mediaTypes;
+    }
+
+    private function resolveSchema(TypeInterface $type, DefinitionsInterface $definitions): \stdClass
+    {
+        if ($type instanceof ReferenceType) {
+            return (object) [
+                '$ref' => '#/components/schemas/' . $type->getRef(),
+            ];
+        } elseif ($type instanceof MapType) {
+            return (object) [
+                'type' => 'object',
+                'additionalProperties' => $this->resolveSchema($type->getAdditionalProperties(), $definitions),
+            ];
+        } elseif ($type instanceof ArrayType) {
+            return (object) [
+                'type' => 'array',
+                'items' => $this->resolveSchema($type->getItems(), $definitions),
+            ];
+        } else {
+            return (object) $this->generator->toArray($type, $definitions);
+        }
     }
 
     private function groupOperationsByPath(OperationsInterface $operations): array

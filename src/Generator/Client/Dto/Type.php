@@ -33,6 +33,8 @@ class Type
         public string $type,
         public string $docType,
         public bool $optional = false,
+        public bool $isMap = false,
+        public bool $isArray = false,
     )
     {
     }

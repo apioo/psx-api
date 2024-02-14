@@ -1,12 +1,12 @@
 {% for operation in operations %}
     /**
-{% if operation.description %}     * {{ operation.description }}
+{% if operation.description %}     * {{ operation.description|raw }}
      *
 {% endif %}
-{% for name, arg in operation.args %}     * @param {{ '{' }}{{ arg.schema.docType }}{{ '}' }} {{ name }}
+{% for name, arg in operation.args %}     * @param {{ '{' }}{{ arg.schema.docType|raw }}{{ '}' }} {{ name }}
 {% endfor %}
      * @returns {{ '{' }}Promise<{% if operation.return %}{{ operation.return.schema.docType|raw }}{% else %}void{% endif %}>{{ '}' }}
-{% for throw in operation.throws|throws_unique %}     * @throws {{ '{' }}{{ throw.schema.docType }}Exception{{ '}' }}
+{% for throw in operation.throws|throws_unique %}     * @throws {{ '{' }}{{ throw.className|raw }}Exception{{ '}' }}
 {% endfor %}
      * @throws {{ '{' }}ClientException{{ '}' }}
      */
@@ -31,7 +31,7 @@
         };
 
         try {
-            const response = await this.httpClient.request{% if operation.return %}<{{ operation.return.schema.type }}>{% endif %}(params);
+            const response = await this.httpClient.request{% if operation.return %}<{{ operation.return.schema.type|raw }}>{% endif %}(params);
 {% if operation.return %}
             return response.data;
 {% endif %}
@@ -42,7 +42,7 @@
                 switch (error.response.status) {
 {% for code, return in operation.throws %}
                     case {{ code }}:
-                        throw new {{ return.schema.type }}Exception(error.response.data);
+                        throw new {{ return.className|raw }}(error.response.data);
 {% endfor %}
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');

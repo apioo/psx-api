@@ -32,6 +32,8 @@ class Response
     public function __construct(
         public int $code,
         public Type $schema,
+        public ?string $className = null,
+        public ?Type $innerSchema = null,
     )
     {
     }

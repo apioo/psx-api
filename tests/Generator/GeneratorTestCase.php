@@ -78,20 +78,24 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $operation->addThrow(400, $message);
         $operation->addThrow(500, $message);
 
-        $operation = $builder->addOperation('update', 'PUT', '/foo/:name/:type', 200, $message);
+        $operation = $builder->addOperation('update', 'PUT', '/foo/:name/:type', 200, TypeFactory::getMap($message));
         $operation->addArgument('name', ArgumentInterface::IN_PATH, TypeFactory::getString());
         $operation->addArgument('type', ArgumentInterface::IN_PATH, TypeFactory::getString());
-        $operation->addArgument('payload', ArgumentInterface::IN_BODY, $update);
+        $operation->addArgument('payload', ArgumentInterface::IN_BODY, TypeFactory::getMap($update));
+        $operation->addThrow(400, $message);
+        $operation->addThrow(500, TypeFactory::getMap($message));
 
         $operation = $builder->addOperation('delete', 'DELETE', '/foo/:name/:type', 204, $message);
         $operation->addArgument('name', ArgumentInterface::IN_PATH, TypeFactory::getString());
         $operation->addArgument('type', ArgumentInterface::IN_PATH, TypeFactory::getString());
         $operation->addArgument('payload', ArgumentInterface::IN_BODY, $delete);
 
-        $operation = $builder->addOperation('patch', 'PATCH', '/foo/:name/:type', 200, $message);
+        $operation = $builder->addOperation('patch', 'PATCH', '/foo/:name/:type', 200, TypeFactory::getArray($message));
         $operation->addArgument('name', ArgumentInterface::IN_PATH, TypeFactory::getString());
         $operation->addArgument('type', ArgumentInterface::IN_PATH, TypeFactory::getString());
-        $operation->addArgument('payload', ArgumentInterface::IN_BODY, $patch);
+        $operation->addArgument('payload', ArgumentInterface::IN_BODY, TypeFactory::getArray($patch));
+        $operation->addThrow(400, $message);
+        $operation->addThrow(500, TypeFactory::getArray($message));
 
         return $builder->getSpecification();
     }

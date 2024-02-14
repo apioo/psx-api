@@ -29,11 +29,11 @@
 
 ## Request
 
-<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr><tr><td>payload</td><td>EntryUpdate</td><td>body</td></tr></tbody></table>
+<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr><tr><td>payload</td><td>Map (EntryUpdate)</td><td>body</td></tr></tbody></table>
 
 ## Response
 
-<table><colgroup><col width="40%" /><col width="60%" /></colgroup><thead><tr><th>Status-Code</th><th>Type</th></tr></thead><tbody><tr><td>200</td><td>EntryMessage</td></tr></tbody></table>
+<table><colgroup><col width="40%" /><col width="60%" /></colgroup><thead><tr><th>Status-Code</th><th>Type</th></tr></thead><tbody><tr><td>200</td><td>Map (EntryMessage)</td></tr><tr><td>400</td><td>EntryMessage</td></tr><tr><td>500</td><td>Map (EntryMessage)</td></tr></tbody></table>
 
 # delete
 `DELETE /foo/:name/:type`
@@ -53,11 +53,11 @@
 
 ## Request
 
-<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr><tr><td>payload</td><td>EntryPatch</td><td>body</td></tr></tbody></table>
+<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr><tr><td>payload</td><td>Array (EntryPatch)</td><td>body</td></tr></tbody></table>
 
 ## Response
 
-<table><colgroup><col width="40%" /><col width="60%" /></colgroup><thead><tr><th>Status-Code</th><th>Type</th></tr></thead><tbody><tr><td>200</td><td>EntryMessage</td></tr></tbody></table>
+<table><colgroup><col width="40%" /><col width="60%" /></colgroup><thead><tr><th>Status-Code</th><th>Type</th></tr></thead><tbody><tr><td>200</td><td>Array (EntryMessage)</td></tr><tr><td>400</td><td>EntryMessage</td></tr><tr><td>500</td><td>Array (EntryMessage)</td></tr></tbody></table>
 
 
 <div id="EntryCollection" class="psx-object psx-struct"><h4><a class="psx-type-link" data-name="EntryCollection">EntryCollection</a></h4><pre class="psx-object-json"><span class="psx-object-json-pun">{</span>

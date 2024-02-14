@@ -31,8 +31,9 @@ class Exception
 {
     public function __construct(
         public string $className,
-        public string $type,
+        public Type $schema,
         public string $message,
+        public array $imports = [],
     )
     {
     }

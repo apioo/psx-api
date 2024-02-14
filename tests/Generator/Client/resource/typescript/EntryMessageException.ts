@@ -10,7 +10,7 @@ import {EntryMessage} from "./EntryMessage";
 export class EntryMessageException extends KnownStatusCodeException {
 
     public constructor(private payload: EntryMessage) {
-        super();
+        super('The server returned an error');
     }
 
     public getPayload(): EntryMessage {

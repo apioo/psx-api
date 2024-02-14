@@ -81,7 +81,10 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EntryUpdate"
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/EntryUpdate"
+                }
               }
             }
           }
@@ -92,7 +95,33 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/EntryMessage"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
                   "$ref": "#/components/schemas/EntryMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/EntryMessage"
+                  }
                 }
               }
             }
@@ -173,7 +202,10 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EntryPatch"
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EntryPatch"
+                }
               }
             }
           }
@@ -184,7 +216,33 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EntryMessage"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
                   "$ref": "#/components/schemas/EntryMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EntryMessage"
+                  }
                 }
               }
             }

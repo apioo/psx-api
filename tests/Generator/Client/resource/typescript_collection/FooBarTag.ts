@@ -49,7 +49,7 @@ export class FooBarTag extends TagAbstract {
 
     /**
      * @returns {Promise<EntryMessage>}
-     * @throws {EntryMessageException}
+     * @throws {EntryMessageExceptionException}
      * @throws {ClientException}
      */
     public async create(payload: EntryCreate): Promise<EntryMessage> {

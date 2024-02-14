@@ -19,6 +19,9 @@ class EntryMessageException extends KnownStatusCodeException
         $this->payload = $payload;
     }
 
+    /**
+     * @return EntryMessage
+     */
     public function getPayload(): EntryMessage
     {
         return $this->payload;

@@ -6,16 +6,19 @@ use Sdkgen\Client\Exception\KnownStatusCodeException;
 
 class {{ className }} extends KnownStatusCodeException
 {
-    private {{ type }} $payload;
+    private {{ schema.type|raw }} $payload;
 
-    public function __construct({{ type }} $payload)
+    public function __construct({{ schema.type|raw }} $payload)
     {
         parent::__construct('{{ message }}');
 
         $this->payload = $payload;
     }
 
-    public function getPayload(): {{ type }}
+    /**
+     * @return {{ schema.docType|raw }}
+     */
+    public function getPayload(): {{ schema.type|raw }}
     {
         return $this->payload;
     }

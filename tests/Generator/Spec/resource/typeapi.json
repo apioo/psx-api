@@ -131,7 +131,10 @@
       "return": {
         "code": 200,
         "schema": {
-          "$ref": "EntryMessage"
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "EntryMessage"
+          }
         }
       },
       "arguments": {
@@ -150,11 +153,30 @@
         "payload": {
           "in": "body",
           "schema": {
-            "$ref": "EntryUpdate"
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "EntryUpdate"
+            }
           }
         }
       },
-      "throws": [],
+      "throws": [
+        {
+          "code": 400,
+          "schema": {
+            "$ref": "EntryMessage"
+          }
+        },
+        {
+          "code": 500,
+          "schema": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "EntryMessage"
+            }
+          }
+        }
+      ],
       "description": "",
       "stability": 1,
       "security": [],
@@ -203,7 +225,10 @@
       "return": {
         "code": 200,
         "schema": {
-          "$ref": "EntryMessage"
+          "type": "array",
+          "items": {
+            "$ref": "EntryMessage"
+          }
         }
       },
       "arguments": {
@@ -222,11 +247,30 @@
         "payload": {
           "in": "body",
           "schema": {
-            "$ref": "EntryPatch"
+            "type": "array",
+            "items": {
+              "$ref": "EntryPatch"
+            }
           }
         }
       },
-      "throws": [],
+      "throws": [
+        {
+          "code": 400,
+          "schema": {
+            "$ref": "EntryMessage"
+          }
+        },
+        {
+          "code": 500,
+          "schema": {
+            "type": "array",
+            "items": {
+              "$ref": "EntryMessage"
+            }
+          }
+        }
+      ],
       "description": "",
       "stability": 1,
       "security": [],

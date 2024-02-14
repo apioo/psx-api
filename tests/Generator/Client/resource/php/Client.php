@@ -110,11 +110,13 @@ class Client extends ClientAbstract
     /**
      * @param string $name
      * @param string $type
-     * @param EntryUpdate $payload
-     * @return EntryMessage
+     * @param \PSX\Record\Record<EntryUpdate> $payload
+     * @return \PSX\Record\Record<EntryMessage>
+     * @throws EntryMessageException
+     * @throws MapEntryMessageException
      * @throws ClientException
      */
-    public function update(string $name, string $type, EntryUpdate $payload): EntryMessage
+    public function update(string $name, string $type, \PSX\Record\Record $payload): \PSX\Record\Record
     {
         $url = $this->parser->url('/foo/:name/:type', [
             'name' => $name,
@@ -131,13 +133,17 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('PUT', $url, $options);
             $data = (string) $response->getBody();
 
-            return $this->parser->parse($data, EntryMessage::class);
+            return $this->parser->parse($data, EntryMessage::class, isMap: true);
         } catch (ClientException $e) {
             throw $e;
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
             switch ($e->getResponse()->getStatusCode()) {
+                case 400:
+                    throw new EntryMessageException($this->parser->parse($data, EntryMessage::class));
+                case 500:
+                    throw new MapEntryMessageException($this->parser->parse($data, EntryMessage::class, isMap: true));
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
@@ -185,11 +191,13 @@ class Client extends ClientAbstract
     /**
      * @param string $name
      * @param string $type
-     * @param EntryPatch $payload
-     * @return EntryMessage
+     * @param array<EntryPatch> $payload
+     * @return array<EntryMessage>
+     * @throws EntryMessageException
+     * @throws ArrayEntryMessageException
      * @throws ClientException
      */
-    public function patch(string $name, string $type, EntryPatch $payload): EntryMessage
+    public function patch(string $name, string $type, array $payload): array
     {
         $url = $this->parser->url('/foo/:name/:type', [
             'name' => $name,
@@ -206,13 +214,17 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('PATCH', $url, $options);
             $data = (string) $response->getBody();
 
-            return $this->parser->parse($data, EntryMessage::class);
+            return $this->parser->parse($data, EntryMessage::class, isArray: true);
         } catch (ClientException $e) {
             throw $e;
         } catch (BadResponseException $e) {
             $data = (string) $e->getResponse()->getBody();
 
             switch ($e->getResponse()->getStatusCode()) {
+                case 400:
+                    throw new EntryMessageException($this->parser->parse($data, EntryMessage::class));
+                case 500:
+                    throw new ArrayEntryMessageException($this->parser->parse($data, EntryMessage::class, isArray: true));
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');
             }

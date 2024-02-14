@@ -20,7 +20,12 @@
 
 namespace PSX\Api\Generator\Client\Util;
 
+use PSX\Api\Exception\InvalidTypeException;
 use PSX\Schema\Generator\Normalizer\NormalizerInterface;
+use PSX\Schema\Type\ArrayType;
+use PSX\Schema\Type\MapType;
+use PSX\Schema\Type\ReferenceType;
+use PSX\Schema\TypeInterface;
 
 /**
  * Naming
@@ -48,9 +53,17 @@ class Naming
         return $this->normalizer->method($tagName);
     }
 
-    public function buildClassNameByException(string $ref): string
+    public function buildExceptionClassNameByType(TypeInterface $type): string
     {
-        return $this->normalizer->class($ref, 'Exception');
+        if ($type instanceof ReferenceType) {
+            return $this->normalizer->class($type->getRef(), 'Exception');
+        } elseif ($type instanceof MapType) {
+            return 'Map' . $this->buildExceptionClassNameByType($type->getAdditionalProperties());
+        } elseif ($type instanceof ArrayType) {
+            return 'Array' . $this->buildExceptionClassNameByType($type->getItems());
+        } else {
+            throw new InvalidTypeException('Provided an invalid type must be reference, map or array type');
+        }
     }
 
     public function buildMethodNameByOperationId(string $operationId): string
