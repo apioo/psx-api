@@ -323,7 +323,7 @@ class OpenAPI extends ApiAbstract
         $arguments = $operation->getArguments();
         foreach ($arguments->getAll() as $argumentName => $argument) {
             if ($argument->getIn() === Argument::IN_QUERY) {
-                $param = $this->newParameter($argument->getSchema(), true, $definitions);
+                $param = $this->newParameter($argument->getSchema(), false, $definitions);
                 $param->setName($argumentName);
                 $param->setIn('query');
                 $result[$argumentName] = $param;
