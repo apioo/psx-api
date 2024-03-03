@@ -60,6 +60,14 @@
               "format": "date-time",
               "type": "string"
             }
+          },
+          {
+            "name": "args",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Entry"
+            }
           }
         ],
         "responses": {

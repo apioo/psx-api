@@ -67,6 +67,12 @@
             "format": "date-time",
             "type": "string"
           }
+        },
+        "args": {
+          "in": "query",
+          "schema": {
+            "$ref": "Entry"
+          }
         }
       },
       "throws": [],

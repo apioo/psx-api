@@ -5,7 +5,7 @@
 
 ## Request
 
-<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr><tr><td>startIndex</td><td>Integer</td><td>query</td></tr><tr><td>float</td><td>Number</td><td>query</td></tr><tr><td>boolean</td><td>Boolean</td><td>query</td></tr><tr><td>date</td><td>Date</td><td>query</td></tr><tr><td>datetime</td><td>DateTime</td><td>query</td></tr></tbody></table>
+<table><colgroup><col width="40%" /><col width="40%" /><col width="20%" /></colgroup><thead><tr><th>Name</th><th>Type</th><th>Location</th></tr></thead><tbody><tr><td>name</td><td>String</td><td>path</td></tr><tr><td>type</td><td>String</td><td>path</td></tr><tr><td>startIndex</td><td>Integer</td><td>query</td></tr><tr><td>float</td><td>Number</td><td>query</td></tr><tr><td>boolean</td><td>Boolean</td><td>query</td></tr><tr><td>date</td><td>Date</td><td>query</td></tr><tr><td>datetime</td><td>DateTime</td><td>query</td></tr><tr><td>args</td><td>Entry</td><td>query</td></tr></tbody></table>
 
 ## Response
 

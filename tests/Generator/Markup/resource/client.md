@@ -1,5 +1,5 @@
 const client = new Client()
-client.get(name: string, type: string, startIndex: number, float: number, boolean: boolean, date: string, datetime: string): EntryCollection
+client.get(name: string, type: string, startIndex: number, float: number, boolean: boolean, date: string, datetime: string, args: Entry): EntryCollection
 client.create(name: string, type: string, payload: EntryCreate): EntryMessage throws EntryMessage
 client.update(name: string, type: string, payload: Record<string, EntryUpdate>): Record<string, EntryMessage> throws EntryMessage, Record<string, EntryMessage>
 client.delete(name: string, type: string): void

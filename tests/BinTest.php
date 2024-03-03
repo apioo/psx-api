@@ -42,7 +42,7 @@ class BinTest extends TestCase
     {
         $actual = shell_exec('php ' . __DIR__ . '/../bin/api');
 
-        $this->assertRegExp('/api:generate/', $actual);
-        $this->assertRegExp('/api:parse/', $actual);
+        $this->assertMatchesRegularExpression('/api:generate/', $actual);
+        $this->assertMatchesRegularExpression('/api:parse/', $actual);
     }
 }
