@@ -147,7 +147,7 @@ class LanguageBuilder
 
             $imports = [];
             $path = $pathNames = [];
-            $query = $queryNames = [];
+            $query = $queryNames = $queryStructNames = [];
             $body = $bodyName = null;
             foreach ($operation->getArguments()->getAll() as $name => $argument) {
                 $realName = $argument->getName();
@@ -162,6 +162,9 @@ class LanguageBuilder
                 } elseif ($argument->getIn() === ArgumentInterface::IN_QUERY) {
                     $query[$normalized] = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), true, $definitions));
                     $queryNames[$normalized] = $realName;
+                    if ($argument->getSchema() instanceof ReferenceType) {
+                        $queryStructNames[] = $realName;
+                    }
                 } elseif ($argument->getIn() === ArgumentInterface::IN_BODY) {
                     $body = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions));
                     $bodyName = $normalized;
@@ -215,6 +218,7 @@ class LanguageBuilder
                 $throws,
                 $pathNames,
                 $queryNames,
+                $queryStructNames,
                 $bodyName,
                 $imports
             );

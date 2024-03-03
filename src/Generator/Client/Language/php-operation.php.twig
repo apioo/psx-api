@@ -25,6 +25,10 @@
 {% for name, realName in operation.queryNames %}
                 '{{ realName }}' => ${{ name }},
 {% endfor %}
+            ], [
+{% for realName in operation.queryStructNames %}
+                '{{ realName }}',
+{% endfor %}
             ]),
 {% if operation.bodyName %}
             'json' => ${{ operation.bodyName }}

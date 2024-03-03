@@ -9,6 +9,7 @@ import {HttpBearer} from "sdkgen-client"
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
 import {ArrayEntryMessageException} from "./ArrayEntryMessageException";
+import {Entry} from "./Entry";
 import {EntryCollection} from "./EntryCollection";
 import {EntryCreate} from "./EntryCreate";
 import {EntryDelete} from "./EntryDelete";
@@ -25,7 +26,7 @@ export class Client extends ClientAbstract {
      * @returns {Promise<EntryCollection>}
      * @throws {ClientException}
      */
-    public async get(name: string, type: string, startIndex?: number, float?: number, boolean?: boolean, date?: string, datetime?: string): Promise<EntryCollection> {
+    public async get(name: string, type: string, startIndex?: number, float?: number, boolean?: boolean, date?: string, datetime?: string, args?: Entry): Promise<EntryCollection> {
         const url = this.parser.url('/foo/:name/:type', {
             'name': name,
             'type': type,
@@ -40,7 +41,10 @@ export class Client extends ClientAbstract {
                 'boolean': boolean,
                 'date': date,
                 'datetime': datetime,
-            }),
+                'args': args,
+            }, [
+                'args',
+            ]),
         };
 
         try {
@@ -75,7 +79,8 @@ export class Client extends ClientAbstract {
             url: url,
             method: 'POST',
             params: this.parser.query({
-            }),
+            }, [
+            ]),
             data: payload
         };
 
@@ -116,7 +121,8 @@ export class Client extends ClientAbstract {
             url: url,
             method: 'PUT',
             params: this.parser.query({
-            }),
+            }, [
+            ]),
             data: payload
         };
 
@@ -155,7 +161,8 @@ export class Client extends ClientAbstract {
             url: url,
             method: 'DELETE',
             params: this.parser.query({
-            }),
+            }, [
+            ]),
         };
 
         try {
@@ -190,7 +197,8 @@ export class Client extends ClientAbstract {
             url: url,
             method: 'PATCH',
             params: this.parser.query({
-            }),
+            }, [
+            ]),
             data: payload
         };
 

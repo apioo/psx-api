@@ -70,6 +70,7 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
             ->setFormat(Format::DATE));
         $operation->addArgument('datetime', ArgumentInterface::IN_QUERY, TypeFactory::getString()
             ->setFormat(Format::DATETIME));
+        $operation->addArgument('args', ArgumentInterface::IN_QUERY, TypeFactory::getReference('Entry'));
 
         $operation = $builder->addOperation('create', 'POST', '/foo/:name/:type', 201, $message);
         $operation->addArgument('name', ArgumentInterface::IN_PATH, TypeFactory::getString());

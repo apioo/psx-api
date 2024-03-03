@@ -39,6 +39,7 @@ class Operation
         /** @var array<int, Response> */ public array $throws,
         public array $pathNames,
         public array $queryNames,
+        public array $queryStructNames,
         public ?string $bodyName,
         public array $imports,
     )

@@ -12,6 +12,7 @@ use Sdkgen\Client\Credentials;
 use Sdkgen\Client\CredentialsInterface;
 use Sdkgen\Client\Exception\ClientException;
 use Sdkgen\Client\Exception\UnknownStatusCodeException;
+use Sdkgen\Client\TokenStoreInterface;
 
 class Client extends ClientAbstract
 {

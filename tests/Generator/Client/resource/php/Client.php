@@ -11,6 +11,7 @@ use Sdkgen\Client\Credentials;
 use Sdkgen\Client\CredentialsInterface;
 use Sdkgen\Client\Exception\ClientException;
 use Sdkgen\Client\Exception\UnknownStatusCodeException;
+use Sdkgen\Client\TokenStoreInterface;
 
 class Client extends ClientAbstract
 {
@@ -24,10 +25,11 @@ class Client extends ClientAbstract
      * @param bool|null $boolean
      * @param \PSX\DateTime\LocalDate|null $date
      * @param \PSX\DateTime\LocalDateTime|null $datetime
+     * @param Entry|null $args
      * @return EntryCollection
      * @throws ClientException
      */
-    public function get(string $name, string $type, ?int $startIndex = null, ?float $float = null, ?bool $boolean = null, ?\PSX\DateTime\LocalDate $date = null, ?\PSX\DateTime\LocalDateTime $datetime = null): EntryCollection
+    public function get(string $name, string $type, ?int $startIndex = null, ?float $float = null, ?bool $boolean = null, ?\PSX\DateTime\LocalDate $date = null, ?\PSX\DateTime\LocalDateTime $datetime = null, ?Entry $args = null): EntryCollection
     {
         $url = $this->parser->url('/foo/:name/:type', [
             'name' => $name,
@@ -41,6 +43,9 @@ class Client extends ClientAbstract
                 'boolean' => $boolean,
                 'date' => $date,
                 'datetime' => $datetime,
+                'args' => $args,
+            ], [
+                'args',
             ]),
         ];
 
@@ -80,6 +85,7 @@ class Client extends ClientAbstract
 
         $options = [
             'query' => $this->parser->query([
+            ], [
             ]),
             'json' => $payload
         ];
@@ -125,6 +131,7 @@ class Client extends ClientAbstract
 
         $options = [
             'query' => $this->parser->query([
+            ], [
             ]),
             'json' => $payload
         ];
@@ -167,6 +174,7 @@ class Client extends ClientAbstract
 
         $options = [
             'query' => $this->parser->query([
+            ], [
             ]),
         ];
 
@@ -206,6 +214,7 @@ class Client extends ClientAbstract
 
         $options = [
             'query' => $this->parser->query([
+            ], [
             ]),
             'json' => $payload
         ];

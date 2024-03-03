@@ -28,7 +28,8 @@ export class ProductTag extends TagAbstract {
                 'startIndex': startIndex,
                 'count': count,
                 'search': search,
-            }),
+            }, [
+            ]),
         };
 
         try {
@@ -62,7 +63,8 @@ export class ProductTag extends TagAbstract {
             url: url,
             method: 'POST',
             params: this.parser.query({
-            }),
+            }, [
+            ]),
             data: payload
         };
 
@@ -98,7 +100,8 @@ export class ProductTag extends TagAbstract {
             url: url,
             method: 'PUT',
             params: this.parser.query({
-            }),
+            }, [
+            ]),
             data: payload
         };
 
@@ -134,7 +137,8 @@ export class ProductTag extends TagAbstract {
             url: url,
             method: 'PATCH',
             params: this.parser.query({
-            }),
+            }, [
+            ]),
             data: payload
         };
 
@@ -170,7 +174,8 @@ export class ProductTag extends TagAbstract {
             url: url,
             method: 'DELETE',
             params: this.parser.query({
-            }),
+            }, [
+            ]),
         };
 
         try {
