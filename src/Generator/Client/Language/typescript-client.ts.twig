@@ -6,10 +6,8 @@ import {HttpBasic} from "sdkgen-client"
 import {HttpBearer} from "sdkgen-client"
 {% elseif security.type == 'apiKey' %}
 import {ApiKey} from "sdkgen-client"
-{% elseif security.type == 'clientCredentials' %}
-import {ClientCredentials} from "sdkgen-client"
-{% elseif security.type == 'authorizationCode' %}
-import {AuthorizationCode} from "sdkgen-client"
+{% elseif security.type == 'oauth2' %}
+import {OAuth2} from "sdkgen-client"
 {% endif %}
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
