@@ -124,11 +124,11 @@ class ChangelogGenerator
         $leftSecurity = implode(', ', $left->getSecurity());
         $rightSecurity = implode(', ', $right->getSecurity());
         if ($leftSecurity !== $rightSecurity) {
-            yield SemVer::MAJOR => $this->getMessageChanged([$name, 'security'], $leftSecurity, $rightSecurity);
+            yield SemVer::PATCH => $this->getMessageChanged([$name, 'security'], $leftSecurity, $rightSecurity);
         }
 
         if ($left->hasAuthorization() !== $right->hasAuthorization()) {
-            yield SemVer::MAJOR => $this->getMessageChanged([$name, 'authorization'], $left->hasAuthorization(), $right->hasAuthorization());
+            yield SemVer::PATCH => $this->getMessageChanged([$name, 'authorization'], $left->hasAuthorization(), $right->hasAuthorization());
         }
 
         $leftTags = implode(', ', $left->getTags());
