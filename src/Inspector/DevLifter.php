@@ -4,6 +4,7 @@ namespace PSX\Api\Inspector;
 
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\Inspector\SemVer;
 
 /**
  * The dev lifter increases the minor version in case the operation and definition count has changed, otherwise we
@@ -14,21 +15,17 @@ class DevLifter
 {
     private const MINOR_PERCENTAGE_CHANGE = 24;
 
-    public function elevate(string $version, SpecificationInterface $left, ?SpecificationInterface $right = null): string
+    public function elevate(string $baseVersion, SpecificationInterface $left, ?SpecificationInterface $right = null): string
     {
-        $parts = explode('.', $version);
-        $major = (int) ($parts[0] ?? 0);
-        $minor = (int) ($parts[1] ?? 0);
-        $patch = (int) ($parts[2] ?? 0);
+        $version = SemVer::fromString($baseVersion);
 
         if ($this->getPercentageChange($left, $right) > self::MINOR_PERCENTAGE_CHANGE) {
-            $minor++;
-            $patch = 0;
+            $version->increaseMinor();
         } else {
-            $patch++;
+            $version->increasePatch();
         }
 
-        return implode('.', [$major, $minor, $patch]);
+        return $version->toString();
     }
 
     private function getPercentageChange(SpecificationInterface $left, ?SpecificationInterface $right = null): int
