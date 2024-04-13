@@ -38,5 +38,14 @@ interface ArgumentsInterface
      */
     public function getAll(): array;
 
+    /**
+     * Returns all arguments with a specific in type i.e. query, header, body
+     *
+     * @return array<string, Argument>
+     */
+    public function getAllIn(string $in): array;
+
+    public function getFirstIn(string $in): ?Argument;
+
     public function isEmpty(): bool;
 }

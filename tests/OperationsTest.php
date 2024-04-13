@@ -26,7 +26,7 @@ use PSX\Api\Operations;
 use PSX\Schema\TypeFactory;
 
 /**
- * ResourceCollectionTest
+ * OperationsTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0

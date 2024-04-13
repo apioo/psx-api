@@ -72,6 +72,34 @@ class Arguments implements ArgumentsInterface, \JsonSerializable
         return $this->container;
     }
 
+    /**
+     * @return array<string, Argument>
+     */
+    public function getAllIn(string $in): array
+    {
+        $result = [];
+        foreach ($this->container as $name => $argument) {
+            if ($argument->getIn() !== $in) {
+                continue;
+            }
+
+            $result[$name] = $argument;
+        }
+
+        return $result;
+    }
+
+    public function getFirstIn(string $in): ?Argument
+    {
+        foreach ($this->container as $argument) {
+            if ($argument->getIn() === $in) {
+                return $argument;
+            }
+        }
+
+        return null;
+    }
+
     public function remove(string $name): void
     {
         if (isset($this->container[$name])) {
