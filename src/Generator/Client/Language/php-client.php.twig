@@ -60,10 +60,14 @@ class {{ className }} extends ClientAbstract
         return new self('{{ baseUrl }}', new Credentials\OAuth2($clientId, $clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', $tokenStore, $scopes));
 {% endif %}
     }
-{% elseif baseUrl %}
-    public static function build(CredentialsInterface $credentials): self
+{% else %}
+    public static function build({% if not baseUrl %}string $baseUrl{% endif %}): self
     {
-        return new self('{{ baseUrl }}', $credentials);
+{% if not baseUrl %}
+        return new self($baseUrl, new Credentials\Anonymous());
+{% else %}
+        return new self('{{ baseUrl }}', new Credentials\Anonymous());
+{% endif %}
     }
 {% endif %}
 }

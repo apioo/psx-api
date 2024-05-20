@@ -64,10 +64,14 @@ export class {{ className }} extends ClientAbstract {
         return new {{ className }}('{{ baseUrl }}', new OAuth2(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
 {% endif %}
     }
-{% elseif baseUrl %}
-    public static build(credentials: CredentialsInterface): {{ className }}
+{% else %}
+    public static build({% if not baseUrl %}baseUrl: string{% endif %}): {{ className }}
     {
-        return new {{ className }}('{{ baseUrl }}', credentials);
+{% if not baseUrl %}
+        return new {{ className }}(baseUrl, new Anonymous());
+{% else %}
+        return new {{ className }}('{{ baseUrl }}', new Anonymous());
+{% endif %}
     }
 {% endif %}
 }
