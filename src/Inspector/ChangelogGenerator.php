@@ -24,6 +24,7 @@ use PSX\Api\Exception\OperationNotFoundException;
 use PSX\Api\Operation;
 use PSX\Api\OperationInterface;
 use PSX\Api\OperationsInterface;
+use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\Inspector\ChangelogGenerator as SchemaChangelogGenerator;
 use PSX\Schema\Inspector\SemVer;
@@ -49,8 +50,42 @@ class ChangelogGenerator
      */
     public function generate(SpecificationInterface $left, SpecificationInterface $right): \Generator
     {
+        if ($left->getBaseUrl() !== $right->getBaseUrl()) {
+            yield SemVer::MINOR => $this->getMessageChanged(['baseUrl'], $left->getBaseUrl(), $right->getBaseUrl(), 'Specification');
+        }
+
+        if ($left->getSecurity() !== null && $right->getSecurity() !== null) {
+            yield from $this->generateSecurity($left->getSecurity(), $right->getSecurity());
+        } elseif ($left->getSecurity() !== null && $right->getSecurity() === null) {
+            yield SemVer::MINOR => 'Security settings was removed';
+        } elseif ($left->getSecurity() === null && $right->getSecurity() !== null) {
+            yield SemVer::MINOR => 'Security settings was added';
+        }
+
         yield from $this->generateCollection($left->getOperations(), $right->getOperations());
         yield from $this->changelogGenerator->generate($left->getDefinitions(), $right->getDefinitions());
+    }
+
+    private function generateSecurity(SecurityInterface $left, SecurityInterface $right): \Generator
+    {
+        $leftData = $left->toArray();
+        $rightData = $right->toArray();
+
+        foreach ($leftData as $key => $value) {
+            if (isset($rightData[$key])) {
+                if ($value !== $rightData[$key]) {
+                    yield $this->getMessageChanged([$key], $value, $rightData[$key], 'Security');
+                }
+            } else {
+                yield $this->getMessageRemoved([$key], 'Security');
+            }
+        }
+
+        foreach ($rightData as $key => $value) {
+            if (!isset($leftData[$key])) {
+                yield $this->getMessageAdded([$key], 'Security');
+            }
+        }
     }
 
     /**
@@ -76,11 +111,11 @@ class ChangelogGenerator
     private function generateOperation(OperationInterface $left, OperationInterface $right, string $name): \Generator
     {
         if ($left->getMethod() !== $right->getMethod()) {
-            yield SemVer::MINOR => $this->getMessageChanged([$name, 'method'], $left->getMethod(), $right->getMethod());
+            yield SemVer::PATCH => $this->getMessageChanged([$name, 'method'], $left->getMethod(), $right->getMethod());
         }
 
         if ($left->getPath() !== $right->getPath()) {
-            yield SemVer::MINOR => $this->getMessageChanged([$name, 'path'], $left->getPath(), $right->getPath());
+            yield SemVer::PATCH => $this->getMessageChanged([$name, 'path'], $left->getPath(), $right->getPath());
         }
 
         yield from $this->generateResponse($left->getReturn(), $right->getReturn(), [$name, 'return']);
@@ -95,7 +130,7 @@ class ChangelogGenerator
 
         foreach ($right->getArguments()->getAll() as $argumentName => $argument) {
             if (!$left->getArguments()->has($argumentName)) {
-                yield SemVer::PATCH => $this->getMessageAdded([$name, 'arguments', $argumentName]);
+                yield SemVer::MINOR => $this->getMessageAdded([$name, 'arguments', $argumentName]);
             }
         }
 
@@ -109,12 +144,12 @@ class ChangelogGenerator
 
         foreach ($right->getThrows() as $index => $throw) {
             if (!isset($left->getThrows()[$index])) {
-                yield SemVer::PATCH => $this->getMessageAdded([$name, 'throws', $throw->getCode()]);
+                yield SemVer::MINOR => $this->getMessageAdded([$name, 'throws', $throw->getCode()]);
             }
         }
 
         if ($left->getDescription() !== $right->getDescription()) {
-            yield SemVer::MINOR => $this->getMessageChanged([$name, 'description'], $left->getDescription(), $right->getDescription());
+            yield SemVer::PATCH => $this->getMessageChanged([$name, 'description'], $left->getDescription(), $right->getDescription());
         }
 
         if ($left->getStability() !== $right->getStability()) {
@@ -141,7 +176,7 @@ class ChangelogGenerator
     private function generateArgument(Operation\Argument $left, Operation\Argument $right, array $path): \Generator
     {
         if ($left->getIn() != $right->getIn()) {
-            yield SemVer::MINOR => $this->getMessageChanged(array_merge($path, ['in']), $left->getIn(), $right->getIn());
+            yield SemVer::PATCH => $this->getMessageChanged(array_merge($path, ['in']), $left->getIn(), $right->getIn());
         }
 
         yield from $this->changelogGenerator->generateType($left->getSchema(), $right->getSchema(), implode('.', $path));
@@ -156,21 +191,21 @@ class ChangelogGenerator
         yield from $this->changelogGenerator->generateType($left->getSchema(), $right->getSchema(), implode('.', $path));
     }
 
-    private function getMessageAdded(array $path): string
+    private function getMessageAdded(array $path, string $type = 'Operation'): string
     {
-        return 'Operation "' . implode('.', $path) . '" was added';
+        return $type . ' "' . implode('.', $path) . '" was added';
     }
 
-    private function getMessageRemoved(array $path): string
+    private function getMessageRemoved(array $path, string $type = 'Operation'): string
     {
-        return 'Operation "' . implode('.', $path) . '" was removed';
+        return $type . ' "' . implode('.', $path) . '" was removed';
     }
 
-    private function getMessageChanged(array $path, mixed $from, mixed $to): string
+    private function getMessageChanged(array $path, mixed $from, mixed $to, string $type = 'Operation'): string
     {
         $from = $from ?? 'NULL';
         $to = $to ?? 'NULL';
 
-        return 'Operation "' . implode('.', $path) . '" has changed from "' . $from . '" to "' . $to . '"';
+        return $type . ' "' . implode('.', $path) . '" has changed from "' . $from . '" to "' . $to . '"';
     }
 }

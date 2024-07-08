@@ -1,4 +1,8 @@
 {
+  "baseUrl": "https://api.acme.com",
+  "security": {
+    "type": "httpBearer"
+  },
   "operations": {
     "my.operation.get": {
       "path": "/my/endpoint",

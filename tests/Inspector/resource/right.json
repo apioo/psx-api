@@ -1,4 +1,9 @@
 {
+  "baseUrl": "https://api.foobar.com",
+  "security": {
+    "type": "oauth2",
+    "tokenUrl": "https://api.foobar.com/authorization/token"
+  },
   "operations": {
     "my.operation.get": {
       "path": "/my/endpoint/foo",

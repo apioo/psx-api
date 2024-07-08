@@ -41,6 +41,10 @@ class ChangelogGeneratorTest extends GeneratorTestCase
 
         $actual = iterator_to_array($generator->generate($left, $right), false);
         $expect = [
+            'Specification "baseUrl" has changed from "https://api.acme.com" to "https://api.foobar.com"',
+            'Security "type" has changed from "httpBearer" to "oauth2"',
+            'Security "tokenUrl" was added',
+            'Security "scopes" was added',
             'Operation "my.operation.get.method" has changed from "GET" to "PUT"',
             'Operation "my.operation.get.path" has changed from "/my/endpoint" to "/my/endpoint/foo"',
             'Operation "my.operation.get.return.code" has changed from "200" to "201"',
@@ -76,6 +80,10 @@ class ChangelogGeneratorTest extends GeneratorTestCase
 
         $actual = iterator_to_array($generator->generate($right, $left), false);
         $expect = [
+            'Specification "baseUrl" has changed from "https://api.foobar.com" to "https://api.acme.com"',
+            'Security "type" has changed from "oauth2" to "httpBearer"',
+            'Security "tokenUrl" was removed',
+            'Security "scopes" was removed',
             'Operation "my.operation.get.method" has changed from "PUT" to "GET"',
             'Operation "my.operation.get.path" has changed from "/my/endpoint/foo" to "/my/endpoint"',
             'Operation "my.operation.get.return.code" has changed from "201" to "200"',
