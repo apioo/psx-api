@@ -51,15 +51,15 @@ class ChangelogGenerator
     public function generate(SpecificationInterface $left, SpecificationInterface $right): \Generator
     {
         if ($left->getBaseUrl() !== $right->getBaseUrl()) {
-            yield SemVer::MINOR => $this->getMessageChanged(['baseUrl'], $left->getBaseUrl(), $right->getBaseUrl(), 'Specification');
+            yield SemVer::PATCH => $this->getMessageChanged(['baseUrl'], $left->getBaseUrl(), $right->getBaseUrl(), 'Specification');
         }
 
         if ($left->getSecurity() !== null && $right->getSecurity() !== null) {
             yield from $this->generateSecurity($left->getSecurity(), $right->getSecurity());
         } elseif ($left->getSecurity() !== null && $right->getSecurity() === null) {
-            yield SemVer::MINOR => 'Security settings was removed';
+            yield SemVer::PATCH => 'Security settings was removed';
         } elseif ($left->getSecurity() === null && $right->getSecurity() !== null) {
-            yield SemVer::MINOR => 'Security settings was added';
+            yield SemVer::PATCH => 'Security settings was added';
         }
 
         yield from $this->generateCollection($left->getOperations(), $right->getOperations());
@@ -74,16 +74,16 @@ class ChangelogGenerator
         foreach ($leftData as $key => $value) {
             if (isset($rightData[$key])) {
                 if ($value !== $rightData[$key]) {
-                    yield $this->getMessageChanged([$key], $value, $rightData[$key], 'Security');
+                    yield SemVer::PATCH => $this->getMessageChanged([$key], $value, $rightData[$key], 'Security');
                 }
             } else {
-                yield $this->getMessageRemoved([$key], 'Security');
+                yield SemVer::PATCH => $this->getMessageRemoved([$key], 'Security');
             }
         }
 
         foreach ($rightData as $key => $value) {
             if (!isset($leftData[$key])) {
-                yield $this->getMessageAdded([$key], 'Security');
+                yield SemVer::PATCH => $this->getMessageAdded([$key], 'Security');
             }
         }
     }
