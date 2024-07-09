@@ -21,7 +21,8 @@
 namespace PSX\Api\Console;
 
 use Composer\InstalledVersions;
-use PSX\Api\Generator\Spec\TypeAPI;
+use PSX\Api\GeneratorFactory;
+use PSX\Api\Repository\LocalRepository;
 use PSX\Api\Scanner\FilterFactoryInterface;
 use PSX\Api\ScannerInterface;
 use PSX\Http\Client\Client;
@@ -47,14 +48,16 @@ class PushCommand extends Command
     private const TYPEHUB_URL = 'https://api.typehub.cloud';
 
     private ScannerInterface $scanner;
+    private GeneratorFactory $factory;
     private FilterFactoryInterface $filterFactory;
     private ClientInterface $client;
 
-    public function __construct(ScannerInterface $scanner, FilterFactoryInterface $filterFactory)
+    public function __construct(ScannerInterface $scanner, GeneratorFactory $factory, FilterFactoryInterface $filterFactory)
     {
         parent::__construct();
 
         $this->scanner = $scanner;
+        $this->factory = $factory;
         $this->filterFactory = $filterFactory;
         $this->client = new Client();
     }
@@ -81,8 +84,11 @@ class PushCommand extends Command
             $filterName = $this->filterFactory->getDefault();
         }
 
+        $registry = $this->factory->factory();
+        $generator = $registry->getGenerator(LocalRepository::SPEC_TYPEAPI);
+
         $filter = $this->filterFactory->getFilter($filterName);
-        $spec   = (string) (new TypeAPI())->generate($this->scanner->generate($filter));
+        $spec = (string) $generator->generate($this->scanner->generate($filter));
         $helper = $this->getHelper('question');
 
         if (empty($clientId)) {
