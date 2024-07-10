@@ -206,6 +206,14 @@ class ChangelogGenerator
         $from = $from ?? 'NULL';
         $to = $to ?? 'NULL';
 
+        if (is_array($from)) {
+            $from = implode(', ', $from);
+        }
+
+        if (is_array($to)) {
+            $to = implode(', ', $to);
+        }
+
         return $type . ' "' . implode('.', $path) . '" has changed from "' . $from . '" to "' . $to . '"';
     }
 }
