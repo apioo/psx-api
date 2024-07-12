@@ -21,9 +21,10 @@
 namespace PSX\Api\Generator\Proxy;
 
 use PSX\Api\Exception\GeneratorException;
+use PSX\Api\Generator\ConfigurationAwareInterface;
+use PSX\Api\Generator\ConfigurationTrait;
 use PSX\Api\Generator\Spec\TypeAPI;
 use PSX\Api\GeneratorInterface;
-use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Http\Client\ClientInterface;
 use PSX\Http\Client\PostRequest;
@@ -38,14 +39,14 @@ use PSX\Uri\Uri;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class SDKgen implements GeneratorInterface
+class SDKgen implements GeneratorInterface, ConfigurationAwareInterface
 {
+    use ConfigurationTrait;
+
     private ClientInterface $httpClient;
     private string $accessToken;
     private string $type;
-    private ?string $baseUrl;
     private ?Generator\Config $config;
-    private ?SecurityInterface $security = null;
 
     public function __construct(ClientInterface $httpClient, string $accessToken, string $type, ?string $baseUrl = null, ?Generator\Config $config = null)
     {
@@ -98,40 +99,6 @@ class SDKgen implements GeneratorInterface
             return $data->output;
         } else {
             throw new GeneratorException('Could not generate SDK, received an invalid response');
-        }
-    }
-
-    public function setBaseUrl(?string $baseUrl): void
-    {
-        $this->baseUrl = $baseUrl;
-    }
-
-    public function setSecurity(?SecurityInterface $security): void
-    {
-        $this->security = $security;
-    }
-
-    private function getBaseUrl(SpecificationInterface $specification): ?string
-    {
-        $baseUrl = $specification->getBaseUrl();
-        if (!empty($baseUrl)) {
-            return $baseUrl;
-        } elseif (!empty($this->baseUrl)) {
-            return $this->baseUrl;
-        } else {
-            return null;
-        }
-    }
-
-    private function getSecurity(SpecificationInterface $specification): ?SecurityInterface
-    {
-        $security = $specification->getSecurity();
-        if ($security instanceof SecurityInterface) {
-            return $security;
-        } elseif ($this->security instanceof SecurityInterface) {
-            return $this->security;
-        } else {
-            return null;
         }
     }
 }

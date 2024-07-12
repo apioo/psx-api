@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Generator\Spec;
 
+use PSX\Api\Generator\ConfigurationTrait;
 use PSX\Api\Operation\Argument;
 use PSX\Api\OperationInterface;
 use PSX\Api\OperationsInterface;
@@ -67,8 +68,9 @@ use PSX\Schema\TypeInterface;
  */
 class OpenAPI extends ApiAbstract
 {
+    use ConfigurationTrait;
+
     private int $apiVersion;
-    private ?string $baseUrl;
 
     private Dumper $dumper;
     private Generator\JsonSchema $generator;
@@ -93,11 +95,6 @@ class OpenAPI extends ApiAbstract
         }
 
         return $this->buildDeclaration($paths, $definitions, $this->getBaseUrl($specification));
-    }
-
-    public function setBaseUrl(?string $baseUrl): void
-    {
-        $this->baseUrl = $baseUrl;
     }
 
     protected function buildDeclaration(Paths $paths, DefinitionsInterface $definitions, ?string $baseUrl): string
@@ -436,17 +433,5 @@ class OpenAPI extends ApiAbstract
         $config->put('ref_base', '#/components/schemas/');
 
         return $config;
-    }
-
-    private function getBaseUrl(SpecificationInterface $specification): ?string
-    {
-        $baseUrl = $specification->getBaseUrl();
-        if (!empty($baseUrl)) {
-            return $baseUrl;
-        } elseif (!empty($this->baseUrl)) {
-            return $this->baseUrl;
-        } else {
-            return null;
-        }
     }
 }

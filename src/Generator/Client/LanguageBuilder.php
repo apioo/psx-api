@@ -80,13 +80,8 @@ class LanguageBuilder
      * @throws InvalidTypeException
      * @throws TypeNotFoundException
      */
-    public function getClient(SpecificationInterface $specification): Dto\Client
+    public function getClient(SpecificationInterface $specification, ?string $baseUrl, ?SecurityInterface $security): Dto\Client
     {
-        $security = null;
-        if ($specification->getSecurity() instanceof SecurityInterface) {
-            $security = $specification->getSecurity()->toArray();
-        }
-
         $exceptions = [];
 
         $grouped = $this->groupOperations($specification->getOperations());
@@ -98,8 +93,8 @@ class LanguageBuilder
             $operations,
             $tags,
             $exceptions,
-            $security,
-            $specification->getBaseUrl(),
+            $security?->toArray(),
+            $baseUrl,
         );
     }
 

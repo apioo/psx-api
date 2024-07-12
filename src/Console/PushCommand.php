@@ -21,6 +21,7 @@
 namespace PSX\Api\Console;
 
 use Composer\InstalledVersions;
+use PSX\Api\Generator\ConfigurationAwareInterface;
 use PSX\Api\Generator\Spec\OpenAPI;
 use PSX\Api\Generator\Spec\TypeAPI;
 use PSX\Api\GeneratorFactory;
@@ -98,11 +99,9 @@ class PushCommand extends Command
             $spec->setBaseUrl(null);
             $spec->setSecurity(null);
 
-            if ($generator instanceof TypeAPI) {
+            if ($generator instanceof ConfigurationAwareInterface) {
                 $generator->setBaseUrl(null);
                 $generator->setSecurity(null);
-            } elseif ($generator instanceof OpenAPI) {
-                $generator->setBaseUrl(null);
             }
         }
 

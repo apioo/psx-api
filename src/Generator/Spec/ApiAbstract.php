@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Generator\Spec;
 
+use PSX\Api\Generator\ConfigurationAwareInterface;
 use PSX\Api\GeneratorInterface;
 
 /**
@@ -27,7 +28,7 @@ use PSX\Api\GeneratorInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-abstract class ApiAbstract implements GeneratorInterface
+abstract class ApiAbstract implements GeneratorInterface, ConfigurationAwareInterface
 {
     public const FLOW_AUTHORIZATION_CODE = 0;
     public const FLOW_IMPLICIT = 1;

@@ -23,6 +23,8 @@ namespace PSX\Api\Generator\Client;
 use PSX\Api\Generator\Client\Dto\Response;
 use PSX\Api\Generator\Client\Dto\Tag;
 use PSX\Api\Generator\Client\Util\Naming;
+use PSX\Api\Generator\ConfigurationAwareInterface;
+use PSX\Api\Generator\ConfigurationTrait;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\DefinitionsInterface;
@@ -44,9 +46,10 @@ use Twig\TwigFilter;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-abstract class LanguageAbstract implements GeneratorInterface
+abstract class LanguageAbstract implements GeneratorInterface, ConfigurationAwareInterface
 {
-    protected ?string $baseUrl;
+    use ConfigurationTrait;
+
     protected ?string $namespace;
     protected ?Generator\Config $config;
     protected Environment $engine;
@@ -61,10 +64,10 @@ abstract class LanguageAbstract implements GeneratorInterface
 
     public function __construct(?string $baseUrl = null, ?Generator\Config $config = null)
     {
-        $this->baseUrl   = $baseUrl;
+        $this->baseUrl = $baseUrl;
         $this->namespace = $config?->get(Generator\Config::NAMESPACE);
-        $this->config    = $config;
-        $this->engine    = $this->newTemplateEngine();
+        $this->config = $config;
+        $this->engine = $this->newTemplateEngine();
         $this->generator = $this->newGenerator();
 
         if (!$this->generator instanceof Generator\TypeAwareInterface) {
@@ -88,7 +91,9 @@ abstract class LanguageAbstract implements GeneratorInterface
     {
         $chunks = new Generator\Code\Chunks();
 
-        $client = $this->converter->getClient($specification);
+        $baseUrl = $this->getBaseUrl($specification);
+        $security = $this->getSecurity($specification);
+        $client = $this->converter->getClient($specification, $baseUrl, $security);
         $tagImports = [];
 
         foreach ($client->tags as $tag) {

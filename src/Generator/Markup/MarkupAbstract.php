@@ -24,6 +24,8 @@ use PSX\Api\Exception\GeneratorException;
 use PSX\Api\Generator\Client\Dto;
 use PSX\Api\Generator\Client\LanguageBuilder;
 use PSX\Api\Generator\Client\Util\Naming;
+use PSX\Api\Generator\ConfigurationAwareInterface;
+use PSX\Api\Generator\ConfigurationTrait;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\DefinitionsInterface;
@@ -39,8 +41,10 @@ use PSX\Schema\TypeFactory;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-abstract class MarkupAbstract implements GeneratorInterface
+abstract class MarkupAbstract implements GeneratorInterface, ConfigurationAwareInterface
 {
+    use ConfigurationTrait;
+
     private SchemaGeneratorInterface $generator;
     private Naming $naming;
     private LanguageBuilder $converter;
@@ -58,7 +62,9 @@ abstract class MarkupAbstract implements GeneratorInterface
 
     public function generate(SpecificationInterface $specification): string
     {
-        $client = $this->converter->getClient($specification);
+        $baseUrl = $this->getBaseUrl($specification);
+        $security = $this->getSecurity($specification);
+        $client = $this->converter->getClient($specification, $baseUrl, $security);
 
         $lines = $this->startLines($client);
 
