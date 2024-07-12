@@ -97,7 +97,7 @@ class PushCommand extends Command
             $spec->setSecurity(null);
         }
 
-        $result = (string) $generator->generate($this->scanner->generate($filter));
+        $result = (string) $generator->generate($spec);
         $helper = $this->getHelper('question');
 
         if (empty($clientId)) {
