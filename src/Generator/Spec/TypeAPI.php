@@ -73,12 +73,12 @@ class TypeAPI implements GeneratorInterface
         return Parser::encode($data);
     }
 
-    public function setBaseUrl(string $baseUrl): void
+    public function setBaseUrl(?string $baseUrl): void
     {
         $this->baseUrl = $baseUrl;
     }
 
-    public function setSecurity(SecurityInterface $security): void
+    public function setSecurity(?SecurityInterface $security): void
     {
         $this->security = $security;
     }

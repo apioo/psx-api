@@ -68,17 +68,17 @@ use PSX\Schema\TypeInterface;
 class OpenAPI extends ApiAbstract
 {
     private int $apiVersion;
-    private ?string $baseUri;
+    private ?string $baseUrl;
 
     private Dumper $dumper;
     private Generator\JsonSchema $generator;
 
-    public function __construct(int $apiVersion, ?string $baseUri)
+    public function __construct(int $apiVersion, ?string $baseUrl)
     {
         $this->apiVersion = $apiVersion;
-        $this->baseUri    = $baseUri;
-        $this->dumper     = new Dumper();
-        $this->generator  = new Generator\JsonSchema($this->newConfig());
+        $this->baseUrl = $baseUrl;
+        $this->dumper = new Dumper();
+        $this->generator = new Generator\JsonSchema($this->newConfig());
     }
 
     public function generate(SpecificationInterface $specification): Generator\Code\Chunks|string
@@ -92,10 +92,15 @@ class OpenAPI extends ApiAbstract
             $paths[Inflection::convertPlaceholderToCurly($path)] = $this->buildPathItem($operations, $definitions);
         }
 
-        return $this->buildDeclaration($paths, $definitions);
+        return $this->buildDeclaration($paths, $definitions, $this->getBaseUrl($specification));
     }
 
-    protected function buildDeclaration(Paths $paths, DefinitionsInterface $definitions): string
+    public function setBaseUrl(?string $baseUrl): void
+    {
+        $this->baseUrl = $baseUrl;
+    }
+
+    protected function buildDeclaration(Paths $paths, DefinitionsInterface $definitions, ?string $baseUrl): string
     {
         $info = new Info();
         $info->setTitle($this->title ?: 'PSX');
@@ -122,7 +127,7 @@ class OpenAPI extends ApiAbstract
         $info->setVersion($this->apiVersion);
 
         $server = new Server();
-        $server->setUrl($this->baseUri);
+        $server->setUrl($baseUrl);
 
         $result = $this->generator->toArray(TypeFactory::getAny(), $definitions);
 
@@ -431,5 +436,17 @@ class OpenAPI extends ApiAbstract
         $config->put('ref_base', '#/components/schemas/');
 
         return $config;
+    }
+
+    private function getBaseUrl(SpecificationInterface $specification): ?string
+    {
+        $baseUrl = $specification->getBaseUrl();
+        if (!empty($baseUrl)) {
+            return $baseUrl;
+        } elseif (!empty($this->baseUrl)) {
+            return $this->baseUrl;
+        } else {
+            return null;
+        }
     }
 }

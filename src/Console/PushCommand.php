@@ -21,6 +21,8 @@
 namespace PSX\Api\Console;
 
 use Composer\InstalledVersions;
+use PSX\Api\Generator\Spec\OpenAPI;
+use PSX\Api\Generator\Spec\TypeAPI;
 use PSX\Api\GeneratorFactory;
 use PSX\Api\Repository\LocalRepository;
 use PSX\Api\Scanner\FilterFactoryInterface;
@@ -92,9 +94,16 @@ class PushCommand extends Command
         $filter = $this->filterFactory->getFilter($filterName);
         $spec = $this->scanner->generate($filter);
 
-        if ($input->hasOption('standalone') && $spec instanceof Specification) {
+        if ($input->getOption('standalone') && $spec instanceof Specification) {
             $spec->setBaseUrl(null);
             $spec->setSecurity(null);
+
+            if ($generator instanceof TypeAPI) {
+                $generator->setBaseUrl(null);
+                $generator->setSecurity(null);
+            } elseif ($generator instanceof OpenAPI) {
+                $generator->setBaseUrl(null);
+            }
         }
 
         $result = (string) $generator->generate($spec);
