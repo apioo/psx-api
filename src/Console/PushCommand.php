@@ -25,6 +25,7 @@ use PSX\Api\GeneratorFactory;
 use PSX\Api\Repository\LocalRepository;
 use PSX\Api\Scanner\FilterFactoryInterface;
 use PSX\Api\ScannerInterface;
+use PSX\Api\Specification;
 use PSX\Http\Client\Client;
 use PSX\Http\Client\ClientInterface;
 use PSX\Http\Client\GetRequest;
@@ -70,7 +71,8 @@ class PushCommand extends Command
             ->addArgument('name', InputArgument::REQUIRED, 'The target document name')
             ->addOption('client_id', 'u', InputOption::VALUE_REQUIRED, 'Optional the client id')
             ->addOption('client_secret', 's', InputOption::VALUE_REQUIRED, 'Optional the client secret')
-            ->addOption('filter', 'i', InputOption::VALUE_REQUIRED, 'Optional a specific filter');
+            ->addOption('filter', 'i', InputOption::VALUE_REQUIRED, 'Optional a specific filter')
+            ->addOption('standalone', 'a', InputOption::VALUE_NONE, 'Ignore base url and security settings');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -88,7 +90,14 @@ class PushCommand extends Command
         $generator = $registry->getGenerator(LocalRepository::SPEC_TYPEAPI);
 
         $filter = $this->filterFactory->getFilter($filterName);
-        $spec = (string) $generator->generate($this->scanner->generate($filter));
+        $spec = $this->scanner->generate($filter);
+
+        if ($input->hasOption('standalone') && $spec instanceof Specification) {
+            $spec->setBaseUrl(null);
+            $spec->setSecurity(null);
+        }
+
+        $result = (string) $generator->generate($this->scanner->generate($filter));
         $helper = $this->getHelper('question');
 
         if (empty($clientId)) {
@@ -106,7 +115,7 @@ class PushCommand extends Command
         $accessToken = $this->obtainAccessToken($clientId, $clientSecret);
         $userName = $this->obtainUserName($accessToken);
 
-        $this->importDocument($accessToken, $userName, $name, $spec);
+        $this->importDocument($accessToken, $userName, $name, $result);
 
         $output->writeln('Document import Successful!');
 

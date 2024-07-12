@@ -60,7 +60,7 @@ class Specification implements SpecificationInterface, \JsonSerializable
         return $this->security;
     }
 
-    public function setSecurity(SecurityInterface $security): void
+    public function setSecurity(?SecurityInterface $security): void
     {
         $this->security = $security;
     }
