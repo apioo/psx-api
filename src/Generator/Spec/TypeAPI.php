@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Generator\Spec;
 
+use PSX\Api\Generator\ConfigurationAwareInterface;
 use PSX\Api\Generator\ConfigurationTrait;
 use PSX\Api\GeneratorInterface;
 use PSX\Api\SecurityInterface;
@@ -32,12 +33,12 @@ use PSX\Schema\TypeFactory;
 /**
  * TypeAPI
  *
- * @see     https://typeschema.org/
+ * @see     https://typeapi.org/
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class TypeAPI implements GeneratorInterface
+class TypeAPI implements GeneratorInterface, ConfigurationAwareInterface
 {
     use ConfigurationTrait;
 

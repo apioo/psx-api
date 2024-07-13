@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Generator\Spec;
 
+use PSX\Api\Generator\ConfigurationAwareInterface;
 use PSX\Api\Generator\ConfigurationTrait;
 use PSX\Api\Operation\Argument;
 use PSX\Api\OperationInterface;
@@ -62,11 +63,12 @@ use PSX\Schema\TypeInterface;
 /**
  * Generates an OpenAPI 3.0 representation of an API resource
  *
+ * @see     https://www.openapis.org/
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class OpenAPI extends ApiAbstract
+class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
 {
     use ConfigurationTrait;
 
