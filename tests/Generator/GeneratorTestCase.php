@@ -201,9 +201,7 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
 
     protected function writeChunksToFolder(Chunks $result, string $target): void
     {
-        foreach ($result->getChunks() as $file => $code) {
-            file_put_contents($target . '/' . $file, $code);
-        }
+        iterator_to_array($result->writeToFolder($target));
     }
 
     private function addSchema(SpecificationBuilderInterface $builder, string $schema): TypeInterface
