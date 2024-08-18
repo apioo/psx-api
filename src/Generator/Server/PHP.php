@@ -52,7 +52,12 @@ class PHP extends ServerAbstract
 
     protected function buildControllerFileName(string $name): string
     {
-        return $name;
+        return $this->normalizer->file($name);
+    }
+
+    protected function buildFolderName(string $name): string
+    {
+        return $this->normalizer->file($name);
     }
 
     protected function getFileExtension(): string
