@@ -26,13 +26,13 @@ use PSX\Api\Tests\Generator\GeneratorTestCase;
 use PSX\Schema\Generator\Config;
 
 /**
- * PhpTest
+ * PHPTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class PhpTest extends GeneratorTestCase
+class PHPTest extends GeneratorTestCase
 {
     public function testGenerate()
     {

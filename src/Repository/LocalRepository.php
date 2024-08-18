@@ -80,7 +80,7 @@ class LocalRepository implements RepositoryInterface
         );
 
         $result[self::MARKUP_HTML] = new GeneratorConfig(
-            fn(?string $baseUrl, ?Config $config) => new Generator\Markup\Html(),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Markup\HTML(),
             'html',
             'text/html'
         );

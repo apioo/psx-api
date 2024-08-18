@@ -25,13 +25,13 @@ use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 
 /**
- * Html
+ * HTML
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Html extends MarkupAbstract
+class HTML extends MarkupAbstract
 {
     protected function generateOperation(Dto\Operation $operation, ?string $tagMethod = null): string
     {

@@ -25,13 +25,13 @@ use PSX\Api\Generator\Client\TypeScript;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 
 /**
- * TypescriptTest
+ * TypeScriptTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class TypescriptTest extends GeneratorTestCase
+class TypeScriptTest extends GeneratorTestCase
 {
     public function testGenerate()
     {

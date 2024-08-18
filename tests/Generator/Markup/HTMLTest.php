@@ -20,21 +20,21 @@
 
 namespace PSX\Api\Tests\Generator\Markup;
 
-use PSX\Api\Generator\Markup\Html;
+use PSX\Api\Generator\Markup\HTML;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 
 /**
- * HtmlTest
+ * HTMLTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class HtmlTest extends GeneratorTestCase
+class HTMLTest extends GeneratorTestCase
 {
     public function testGenerate()
     {
-        $generator = new Html();
+        $generator = new HTML();
 
         $actual = $generator->generate($this->getSpecification());
         $actual = preg_replace('/psx_model_Object([0-9A-Fa-f]{8})/', '[dynamic_id]', $actual);
