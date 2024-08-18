@@ -35,6 +35,7 @@ class LocalRepository implements RepositoryInterface
     public const CLIENT_PHP = 'client-php';
     public const CLIENT_TYPESCRIPT = 'client-typescript';
 
+    public const SERVER_PHP = 'server-php';
     public const SERVER_TYPESCRIPT = 'server-typescript';
 
     public const MARKUP_CLIENT = 'markup-client';
@@ -60,8 +61,14 @@ class LocalRepository implements RepositoryInterface
             'application/typescript'
         );
 
+        $result[self::SERVER_PHP] = new GeneratorConfig(
+            fn(?string $baseUrl, ?Config $config) => new Generator\Server\PHP(),
+            'php',
+            'application/php'
+        );
+
         $result[self::SERVER_TYPESCRIPT] = new GeneratorConfig(
-            fn(?string $baseUrl, ?Config $config) => new Generator\Server\Typescript(),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Server\TypeScript(),
             'ts',
             'application/typescript'
         );

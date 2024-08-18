@@ -51,6 +51,7 @@ class GeneratorRegistryTest extends TestCase
             [LocalRepository::CLIENT_PHP],
             [LocalRepository::CLIENT_TYPESCRIPT],
 
+            [LocalRepository::SERVER_PHP],
             [LocalRepository::SERVER_TYPESCRIPT],
 
             [LocalRepository::MARKUP_CLIENT],
