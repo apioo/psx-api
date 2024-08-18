@@ -56,8 +56,7 @@ use Twig\Loader\FilesystemLoader;
  */
 abstract class ServerAbstract implements GeneratorInterface
 {
-    private string $templateDir;
-    private Environment $templateEngine;
+    private Environment $engine;
     private SchemaGeneratorInterface $generator;
     private Type\GeneratorInterface $typeGenerator;
     protected NormalizerInterface $normalizer;
@@ -65,11 +64,7 @@ abstract class ServerAbstract implements GeneratorInterface
 
     public function __construct()
     {
-        $this->templateDir = __DIR__ . '/Template/' . $this->getTemplateDir();
-
-        $this->templateEngine = new Environment(new FilesystemLoader($this->templateDir), [
-            'cache' => false,
-        ]);
+        $this->engine = $this->newTemplateEngine();
         $this->generator = $this->newGenerator();
 
         if ($this->generator instanceof TypeAwareInterface) {
@@ -91,7 +86,7 @@ abstract class ServerAbstract implements GeneratorInterface
     {
         $context = $this->buildContext($specification);
         $folder = $this->buildFolderStructure($specification);
-        $chunks = $this->copyFiles($this->templateDir, $context);
+        $chunks = $this->copyFiles($this->getTemplateDir(), $context);
 
         $controllerChunks = $chunks->findByPath($this->getControllerPath());
         if (!$controllerChunks instanceof Chunks) {
@@ -266,7 +261,7 @@ abstract class ServerAbstract implements GeneratorInterface
                 $extension = pathinfo($file, PATHINFO_EXTENSION);
                 if ($extension === 'twig') {
                     $file = substr($file, 0, -5);
-                    $result = $this->templateEngine->render(substr($templatePath, strlen($this->templateDir)), $context->getArrayCopy());
+                    $result = $this->engine->render(substr($templatePath, strlen($this->getTemplateDir())), $context->getArrayCopy());
                 } else {
                     $result = file_get_contents($templatePath);
                 }
@@ -278,11 +273,15 @@ abstract class ServerAbstract implements GeneratorInterface
         return $chunks;
     }
 
-    private function getTemplateDir(): string
+    private function newTemplateEngine(): Environment
     {
-        $parts = explode('\\', static::class);
-        $lastKey = array_key_last($parts);
+        return new Environment(new FilesystemLoader([$this->getTemplateDir()]));
+    }
 
-        return $parts[$lastKey];
+    protected function getTemplateDir(): string
+    {
+        $className = (new \ReflectionClass(static::class))->getShortName();
+
+        return __DIR__ . '/Template/' . $className;
     }
 }
