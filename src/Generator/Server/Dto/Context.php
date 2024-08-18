@@ -21,6 +21,8 @@
 namespace PSX\Api\Generator\Server\Dto;
 
 /**
+ * Context
+ *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
