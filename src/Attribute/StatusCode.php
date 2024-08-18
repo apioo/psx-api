@@ -23,14 +23,14 @@ namespace PSX\Api\Attribute;
 use Attribute;
 
 /**
- * ResponseStatus
+ * StatusCode
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class ResponseStatus
+class StatusCode
 {
     public function __construct(
         public int $code,

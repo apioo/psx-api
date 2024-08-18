@@ -32,7 +32,7 @@ use PSX\Api\Attribute\Outgoing;
 use PSX\Api\Attribute\Path;
 use PSX\Api\Attribute\PathParam;
 use PSX\Api\Attribute\QueryParam;
-use PSX\Api\Attribute\ResponseStatus;
+use PSX\Api\Attribute\StatusCode;
 use PSX\Api\Attribute\Security;
 use PSX\Api\Attribute\Tags;
 
@@ -71,7 +71,7 @@ class Meta
     private ?Security $security = null;
     private ?Deprecated $deprecated = null;
     private ?Authorization $authorization = null;
-    private ?ResponseStatus $responseStatus = null;
+    private ?StatusCode $responseStatus = null;
 
     public function __construct(array $attributes)
     {
@@ -104,7 +104,7 @@ class Meta
                 $this->deprecated = $attribute;
             } elseif ($attribute instanceof Authorization) {
                 $this->authorization = $attribute;
-            } elseif ($attribute instanceof ResponseStatus) {
+            } elseif ($attribute instanceof StatusCode) {
                 $this->responseStatus = $attribute;
             }
         }
@@ -278,7 +278,7 @@ class Meta
         return $this->authorization;
     }
 
-    public function getResponseStatus(): ?ResponseStatus
+    public function getResponseStatus(): ?StatusCode
     {
         return $this->responseStatus;
     }

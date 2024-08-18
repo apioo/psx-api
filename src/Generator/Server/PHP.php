@@ -95,7 +95,7 @@ class PHP extends ServerAbstract
 
             $controller.= '  #[' . $method . ']' . "\n";
             $controller.= '  #[Path(\'' . $operation->getPath() . '\')]' . "\n";
-            $controller.= '  #[ResponseStatus(' . $operation->getReturn()->getCode() . ')]' . "\n";
+            $controller.= '  #[StatusCode(' . $operation->getReturn()->getCode() . ')]' . "\n";
             $controller.= '  public function ' . $operationName . '(' . implode(', ', $args) . '): ' . $type->type . ' {' . "\n";
             $controller.= '    // @TODO implement method' . "\n";
             $controller.= '  }' . "\n";
