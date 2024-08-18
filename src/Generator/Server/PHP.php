@@ -35,7 +35,7 @@ class PHP extends ServerAbstract
 {
     protected function newGenerator(): SchemaGeneratorInterface
     {
-        return new Generator\PHP();
+        return new Generator\Php();
     }
 
     protected function getControllerPath(): string
