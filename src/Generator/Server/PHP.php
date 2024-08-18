@@ -31,41 +31,43 @@ use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class TypeScript extends ServerAbstract
+class PHP extends ServerAbstract
 {
     protected function newGenerator(): SchemaGeneratorInterface
     {
-        return new Generator\TypeScript();
+        return new Generator\PHP();
     }
 
     protected function getControllerPath(): string
     {
-        return 'src/controller';
+        return 'src/Controller';
     }
 
     protected function getModelPath(): string
     {
-        return 'src/dto';
+        return 'src/Model';
     }
 
     protected function buildControllerFileName(string $name): string
     {
-        return $name . '.controller';
+        return $name;
     }
 
     protected function getFileExtension(): string
     {
-        return 'ts';
+        return 'php';
     }
 
     protected function generateControllerFile(File $file, SpecificationInterface $specification): string
     {
         $controllerClass = $this->buildControllerClass($file);
 
-        $controller = 'import { Controller, Get, Post, Put, Patch, Delete, HttpCode, Param, Query, Headers, Body } from \'@nestjs/common\'' . "\n";
+        $controller = '<?php' . "\n";
         $controller.= "\n";
-        $controller.= '@Controller()' . "\n";
-        $controller.= 'export class ' . $controllerClass . ' {' . "\n";
+        $controller.= 'namespace App\Controller;' . "\n";
+        $controller.= "\n";
+        $controller.= 'class ' . $controllerClass . ' extends ControllerAbstract' . "\n";
+        $controller.= '{' . "\n";
 
         foreach ($file->getOperations() as $operationName => $operation) {
             $method = ucfirst(strtolower($operation->getMethod()));
@@ -74,24 +76,25 @@ class TypeScript extends ServerAbstract
             foreach ($operation->getArguments()->getAll() as $argumentName => $argument) {
                 if ($argument->getIn() === ArgumentInterface::IN_PATH) {
                     $type = $this->newType($argument->getSchema(), $specification->getDefinitions());
-                    $args[] = '@Param(\'' . $argumentName . '\') ' . $this->normalizer->argument($argumentName) . ': ' . $type->type;
+                    $args[] = '#[Param(\'' . $argumentName . '\')] ' . $type->type . ' $' . $this->normalizer->argument($argumentName);
                 } elseif ($argument->getIn() === ArgumentInterface::IN_QUERY) {
                     $type = $this->newType($argument->getSchema(), $specification->getDefinitions());
-                    $args[] = '@Query(\'' . $argumentName . '\') ' . $this->normalizer->argument($argumentName) . '?: ' . $type->type;
+                    $args[] = '#[Query(\'' . $argumentName . '\')] ' . $type->type . ' $' . $this->normalizer->argument($argumentName);
                 } elseif ($argument->getIn() === ArgumentInterface::IN_HEADER) {
                     $type = $this->newType($argument->getSchema(), $specification->getDefinitions());
-                    $args[] = '@Headers(\'' . $argumentName . '\') ' . $this->normalizer->argument($argumentName) . '?: ' . $type->type;
+                    $args[] = '#[Header(\'' . $argumentName . '\')] ' . $type->type . ' $' . $this->normalizer->argument($argumentName);
                 } elseif ($argument->getIn() === ArgumentInterface::IN_BODY) {
                     $type = $this->newType($argument->getSchema(), $specification->getDefinitions());
-                    $args[] = '@Body() ' . $this->normalizer->argument($argumentName) . ': ' . $type->type;
+                    $args[] = '#[Body] ' . $type->type . ' $' . $this->normalizer->argument($argumentName);
                 }
             }
 
             $type = $this->newType($operation->getReturn()->getSchema(), $specification->getDefinitions());
 
-            $controller.= '  @' . $method . '()' . "\n";
-            $controller.= '  @HttpCode(' . $operation->getReturn()->getCode() . ')' . "\n";
-            $controller.= '  ' . $operationName . '(' . implode(', ', $args) . '): ' . $type->type . ' {' . "\n";
+            $controller.= '  #[' . $method . ']' . "\n";
+            $controller.= '  #[Path(\'' . $operation->getPath() . '\')]' . "\n";
+            $controller.= '  #[ResponseStatus(' . $operation->getReturn()->getCode() . ')]' . "\n";
+            $controller.= '  public function ' . $operationName . '(' . implode(', ', $args) . '): ' . $type->type . ' {' . "\n";
             $controller.= '    // @TODO implement method' . "\n";
             $controller.= '  }' . "\n";
             $controller.= "\n";
@@ -104,6 +107,6 @@ class TypeScript extends ServerAbstract
 
     private function buildControllerClass(File $file): string
     {
-        return ucfirst($file->getName()) . 'Controller';
+        return $this->normalizer->class($file->getName());
     }
 }
