@@ -24,13 +24,13 @@ use PSX\Schema;
 use PSX\Schema\GeneratorInterface;
 
 /**
- * Php
+ * PHP
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Php extends LanguageAbstract
+class PHP extends LanguageAbstract
 {
     protected function getOperationTemplate(): string
     {

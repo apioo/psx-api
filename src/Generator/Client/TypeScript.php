@@ -24,13 +24,13 @@ use PSX\Schema;
 use PSX\Schema\GeneratorInterface;
 
 /**
- * Typescript
+ * TypeScript
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Typescript extends LanguageAbstract
+class TypeScript extends LanguageAbstract
 {
     protected function getOperationTemplate(): string
     {
