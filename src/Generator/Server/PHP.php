@@ -81,18 +81,30 @@ class PHP extends ServerAbstract
 
             $args = [];
             foreach ($operation->getArguments()->getAll() as $argumentName => $argument) {
+                $rawName = $argumentName;
+                $variableName = $this->normalizer->argument($argumentName);
+                $type = $this->newType($argument->getSchema(), $specification->getDefinitions());
+
                 if ($argument->getIn() === ArgumentInterface::IN_PATH) {
-                    $type = $this->newType($argument->getSchema(), $specification->getDefinitions());
-                    $args[] = '#[Param(\'' . $argumentName . '\')] ' . $type->type . ' $' . $this->normalizer->argument($argumentName);
+                    if ($rawName === $variableName) {
+                        $args[] = '#[Param] ' . $type->type . ' $' . $variableName;
+                    } else {
+                        $args[] = '#[Param(\'' . $rawName . '\')] ' . $type->type . ' $' . $variableName;
+                    }
                 } elseif ($argument->getIn() === ArgumentInterface::IN_QUERY) {
-                    $type = $this->newType($argument->getSchema(), $specification->getDefinitions());
-                    $args[] = '#[Query(\'' . $argumentName . '\')] ' . $type->type . ' $' . $this->normalizer->argument($argumentName);
+                    if ($rawName === $variableName) {
+                        $args[] = '#[Query] ' . $type->type . ' $' . $variableName;
+                    } else {
+                        $args[] = '#[Query(\'' . $rawName . '\')] ' . $type->type . ' $' . $variableName;
+                    }
                 } elseif ($argument->getIn() === ArgumentInterface::IN_HEADER) {
-                    $type = $this->newType($argument->getSchema(), $specification->getDefinitions());
-                    $args[] = '#[Header(\'' . $argumentName . '\')] ' . $type->type . ' $' . $this->normalizer->argument($argumentName);
+                    if ($rawName === $variableName) {
+                        $args[] = '#[Header] ' . $type->type . ' $' . $variableName;
+                    } else {
+                        $args[] = '#[Header(\'' . $rawName . '\')] ' . $type->type . ' $' . $variableName;
+                    }
                 } elseif ($argument->getIn() === ArgumentInterface::IN_BODY) {
-                    $type = $this->newType($argument->getSchema(), $specification->getDefinitions());
-                    $args[] = '#[Body] ' . $type->type . ' $' . $this->normalizer->argument($argumentName);
+                    $args[] = '#[Body] ' . $type->type . ' $' . $variableName;
                 }
             }
 

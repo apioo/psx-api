@@ -7,7 +7,7 @@ class Bar extends ControllerAbstract
   #[Get]
   #[Path('/bar/:foo')]
   #[StatusCode(200)]
-  public function find(#[Param('foo')] string $foo): EntryCollection {
+  public function find(#[Param] string $foo): EntryCollection {
     // @TODO implement method
   }
 

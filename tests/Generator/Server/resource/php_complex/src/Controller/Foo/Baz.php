@@ -7,7 +7,7 @@ class Baz extends ControllerAbstract
   #[Get]
   #[Path('/bar/$year<[0-9]+>')]
   #[StatusCode(200)]
-  public function get(#[Param('year')] string $year): EntryCollection {
+  public function get(#[Param] string $year): EntryCollection {
     // @TODO implement method
   }
 
