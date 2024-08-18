@@ -79,9 +79,16 @@ class PHP extends ServerAbstract
 
     protected function generateHeader(File $file, array $imports): string
     {
+        $namespace = ['App', 'Controller'];
+        $folder = $file->getFolder();
+        while ($folder->getName() !== '.') {
+            $namespace[] = $this->normalizer->class($folder->getName());
+            $folder = $folder->getParent();
+        }
+
         $controllerClass = $this->normalizer->class($file->getName());
 
-        $controller = 'namespace App\Controller;' . "\n";
+        $controller = 'namespace ' . implode('\\', $namespace). ';' . "\n";
         $controller.= "\n";
 
         foreach ($imports as $className) {

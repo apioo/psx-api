@@ -29,13 +29,27 @@ namespace PSX\Api\Generator\Server\Dto;
  */
 class Folder
 {
+    private string $name;
+    private ?Folder $parent;
     private array $folders;
     private array $files;
 
-    public function __construct()
+    public function __construct(string $name, ?Folder $parent = null)
     {
+        $this->name = $name;
+        $this->parent = $parent;
         $this->folders = [];
         $this->files = [];
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getParent(): ?Folder
+    {
+        return $this->parent;
     }
 
     /**
@@ -51,9 +65,9 @@ class Folder
         return count($this->folders) > 0;
     }
 
-    public function addFolder(string $name, Folder $folder): void
+    public function addFolder(Folder $folder): void
     {
-        $this->folders[$name] = $folder;
+        $this->folders[$folder->getName()] = $folder;
     }
 
     public function getFolder(string $name): ?Folder

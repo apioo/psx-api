@@ -4,7 +4,7 @@
  * @see https://sdkgen.app
  */
 
-namespace App\Controller;
+namespace App\Controller\Foo;
 
 use App\Model\EntryCollection;
 use App\Model\EntryCreate;

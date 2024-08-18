@@ -4,9 +4,9 @@
  */
 
 import { Controller, Get, Post, Put, Patch, Delete, HttpCode, Param, Query, Headers, Body } from '@nestjs/common'
-import {EntryCollection} from "../dto/EntryCollection";
-import {EntryCreate} from "../dto/EntryCreate";
-import {EntryMessage} from "../dto/EntryMessage";
+import {EntryCollection} from "../../dto/EntryCollection";
+import {EntryCreate} from "../../dto/EntryCreate";
+import {EntryMessage} from "../../dto/EntryMessage";
 
 @Controller()
 export class BazController {

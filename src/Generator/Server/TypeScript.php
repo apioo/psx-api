@@ -71,12 +71,21 @@ class TypeScript extends ServerAbstract
 
     protected function generateHeader(File $file, array $imports): string
     {
+        $path = [];
+        $folder = $file->getFolder();
+        while ($folder->getName() !== '.') {
+            $path[] = $this->normalizer->class($folder->getName());
+            $folder = $folder->getParent();
+        }
+
+        $basePath = str_repeat('../', count($path)) . '../dto';
+
         $controllerClass = ucfirst($file->getName()) . 'Controller';
 
         $controller = 'import { Controller, Get, Post, Put, Patch, Delete, HttpCode, Param, Query, Headers, Body } from \'@nestjs/common\'' . "\n";
 
         foreach ($imports as $className) {
-            $controller.= 'import {' . $className . '} from "../dto/' . $className . '";' . "\n";
+            $controller.= 'import {' . $className . '} from "' . $basePath . '/' . $className . '";' . "\n";
         }
 
         $controller.= "\n";

@@ -32,17 +32,24 @@ use PSX\Api\OperationInterface;
 class File
 {
     private string $name;
+    private Folder $folder;
     private array $operations;
 
-    public function __construct(string $name)
+    public function __construct(string $name, Folder $folder)
     {
         $this->name = $name;
+        $this->folder = $folder;
         $this->operations = [];
     }
 
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getFolder(): Folder
+    {
+        return $this->folder;
     }
 
     /**

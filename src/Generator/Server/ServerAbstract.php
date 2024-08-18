@@ -158,7 +158,7 @@ abstract class ServerAbstract implements GeneratorInterface
 
     protected function buildFolderStructure(SpecificationInterface $specification): Folder
     {
-        $folder = new Folder();
+        $folder = new Folder('.');
         $operations = $specification->getOperations();
         foreach ($operations->getAll() as $operationId => $operation) {
             $this->buildRecursive($folder, explode('.', $operationId), $operation);
@@ -294,7 +294,7 @@ abstract class ServerAbstract implements GeneratorInterface
 
             $file = $parent->getFile($fileName);
             if ($file === null) {
-                $file = new File($fileName);
+                $file = new File($fileName, $parent);
                 $parent->addFile($fileName, $file);
             }
 
@@ -305,8 +305,8 @@ abstract class ServerAbstract implements GeneratorInterface
 
             $child = $parent->getFolder($name);
             if ($child === null) {
-                $child = new Folder();
-                $parent->addFolder($name, $child);
+                $child = new Folder($name, $parent);
+                $parent->addFolder($child);
             }
 
             $this->buildRecursive($child, array_values($operationId), $operation);
