@@ -71,7 +71,7 @@ class Meta
     private ?Security $security = null;
     private ?Deprecated $deprecated = null;
     private ?Authorization $authorization = null;
-    private ?StatusCode $responseStatus = null;
+    private ?StatusCode $statusCode = null;
 
     public function __construct(array $attributes)
     {
@@ -105,7 +105,7 @@ class Meta
             } elseif ($attribute instanceof Authorization) {
                 $this->authorization = $attribute;
             } elseif ($attribute instanceof StatusCode) {
-                $this->responseStatus = $attribute;
+                $this->statusCode = $attribute;
             }
         }
     }
@@ -158,8 +158,8 @@ class Meta
             $this->authorization = $meta->getAuthorization();
         }
 
-        if ($this->responseStatus === null) {
-            $this->responseStatus = $meta->getResponseStatus();
+        if ($this->statusCode === null) {
+            $this->statusCode = $meta->getStatusCode();
         }
     }
 
@@ -278,9 +278,9 @@ class Meta
         return $this->authorization;
     }
 
-    public function getResponseStatus(): ?StatusCode
+    public function getStatusCode(): ?StatusCode
     {
-        return $this->responseStatus;
+        return $this->statusCode;
     }
 
     public function isExcluded(): bool

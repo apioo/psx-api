@@ -433,7 +433,7 @@ class Attribute implements ParserInterface
         if (!$meta->hasOutgoing()) {
             $schema = $this->getSchemaFromTypeHint($method->getReturnType());
             if (!empty($schema) && class_exists($schema)) {
-                $meta->addOutgoing(new Attr\Outgoing($meta->getResponseStatus()?->code ?? 200, $schema));
+                $meta->addOutgoing(new Attr\Outgoing($meta->getStatusCode()?->code ?? 200, $schema));
             }
         }
     }
