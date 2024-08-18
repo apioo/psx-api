@@ -26,6 +26,7 @@ use PSX\Api\Generator\Server\Dto\Context;
 use PSX\Api\Generator\Server\Dto\File;
 use PSX\Api\Generator\Server\Dto\Folder;
 use PSX\Api\GeneratorInterface;
+use PSX\Api\Operation\ArgumentInterface;
 use PSX\Api\OperationInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\DefinitionsInterface;
@@ -39,9 +40,12 @@ use PSX\Schema\Generator\TypeAwareInterface;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\Schema;
 use PSX\Schema\Type\AnyType;
+use PSX\Schema\Type\ArrayType;
+use PSX\Schema\Type\IntersectionType;
 use PSX\Schema\Type\MapType;
 use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\Type\StructType;
+use PSX\Schema\Type\UnionType;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 use Twig\Environment;
@@ -132,9 +136,20 @@ abstract class ServerAbstract implements GeneratorInterface
 
     abstract protected function getControllerPath(): string;
     abstract protected function getModelPath(): string;
-    abstract protected function buildControllerFileName(string $name): string;
-    abstract protected function generateControllerFile(File $file, SpecificationInterface $specification): string;
     abstract protected function getFileExtension(): string;
+
+    abstract protected function generateHeader(File $file, array $imports): string;
+    abstract protected function generateFooter(File $file): string;
+    abstract protected function generateArgumentPath(string $rawName, string $variableName, string $type): string;
+    abstract protected function generateArgumentQuery(string $rawName, string $variableName, string $type): string;
+    abstract protected function generateArgumentHeader(string $rawName, string $variableName, string $type): string;
+    abstract protected function generateArgumentBody(string $variableName, string $type): string;
+    abstract protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $returnType): string;
+
+    protected function buildControllerFileName(string $name): string
+    {
+        return $name;
+    }
 
     protected function buildFolderName(string $name): string
     {
@@ -188,6 +203,69 @@ abstract class ServerAbstract implements GeneratorInterface
             }
         } else {
             $chunks->append($this->getFileName('RootSchema'), $result);
+        }
+    }
+
+    private function generateControllerFile(File $file, SpecificationInterface $specification): string
+    {
+        $controller = '';
+        $imports = [];
+
+        foreach ($file->getOperations() as $operationName => $operation) {
+            $args = [];
+            foreach ($operation->getArguments()->getAll() as $argumentName => $argument) {
+                $rawName = $argumentName;
+                $variableName = $this->normalizer->argument($argumentName);
+                $type = $this->newType($argument->getSchema(), $specification->getDefinitions());
+
+                if ($argument->getIn() === ArgumentInterface::IN_PATH) {
+                    $args[] = $this->generateArgumentPath($rawName, $variableName, $type->type);
+                } elseif ($argument->getIn() === ArgumentInterface::IN_QUERY) {
+                    $args[] = $this->generateArgumentQuery($rawName, $variableName, $type->type);
+                } elseif ($argument->getIn() === ArgumentInterface::IN_HEADER) {
+                    $args[] = $this->generateArgumentHeader($rawName, $variableName, $type->type);
+                } elseif ($argument->getIn() === ArgumentInterface::IN_BODY) {
+                    $args[] = $this->generateArgumentBody($variableName, $type->type);
+                }
+
+                $this->resolveImport($argument->getSchema(), $imports);
+            }
+
+            $type = $this->newType($operation->getReturn()->getSchema(), $specification->getDefinitions());
+
+            $this->resolveImport($operation->getReturn()->getSchema(), $imports);
+
+            $controller.= $this->generateMethod($operationName, $operation, $args, $type->type);
+        }
+
+        $result = $this->generateHeader($file, $imports);
+        $result.= $controller;
+        $result.= $this->generateFooter($file);
+
+        return $this->getFileContent($result, $file->getName());
+    }
+
+    private function resolveImport(TypeInterface $type, array &$imports): void
+    {
+        if ($type instanceof ReferenceType) {
+            $imports[$this->normalizer->file($type->getRef())] = $this->normalizer->class($type->getRef());
+            if ($type->getTemplate()) {
+                foreach ($type->getTemplate() as $typeRef) {
+                    $imports[$this->normalizer->file($typeRef)] = $this->normalizer->class($typeRef);
+                }
+            }
+        } elseif ($type instanceof MapType && $type->getAdditionalProperties() instanceof TypeInterface) {
+            $this->resolveImport($type->getAdditionalProperties(), $imports);
+        } elseif ($type instanceof ArrayType && $type->getItems() instanceof TypeInterface) {
+            $this->resolveImport($type->getItems(), $imports);
+        } elseif ($type instanceof UnionType && $type->getOneOf()) {
+            foreach ($type->getOneOf() as $item) {
+                $this->resolveImport($item, $imports);
+            }
+        } elseif ($type instanceof IntersectionType) {
+            foreach ($type->getAllOf() as $item) {
+                $this->resolveImport($item, $imports);
+            }
         }
     }
 
