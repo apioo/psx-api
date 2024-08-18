@@ -10,6 +10,8 @@
         <directory name="src" />
         <ignoreFiles>
             <directory name="vendor" />
+            <directory name="src/Generator/Client/Language" />
+            <directory name="src/Generator/Server/Template" />
         </ignoreFiles>
     </projectFiles>
 </psalm>
