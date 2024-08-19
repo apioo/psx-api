@@ -85,7 +85,7 @@ class TypeScript extends ServerAbstract
         $controller = 'import { Controller, Get, Post, Put, Patch, Delete, HttpCode, Param, Query, Headers, Body } from \'@nestjs/common\'' . "\n";
 
         foreach ($imports as $className) {
-            $controller.= 'import {' . $className . '} from "' . $basePath . '/' . $className . '";' . "\n";
+            $controller.= 'import { ' . $className . ' } from "' . $basePath . '/' . $className . '";' . "\n";
         }
 
         $controller.= "\n";
@@ -130,6 +130,7 @@ class TypeScript extends ServerAbstract
         $method.= '  @HttpCode(' . $operation->getReturn()->getCode() . ')' . "\n";
         $method.= '  ' . $operationName . '(' . implode(', ', $arguments) . '): ' . $returnType . ' {' . "\n";
         $method.= '    // @TODO implement method' . "\n";
+        $method.= '    return {};' . "\n";
         $method.= '  }' . "\n";
         $method.= "\n";
 

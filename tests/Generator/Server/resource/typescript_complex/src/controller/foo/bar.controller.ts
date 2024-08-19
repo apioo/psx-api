@@ -4,9 +4,9 @@
  */
 
 import { Controller, Get, Post, Put, Patch, Delete, HttpCode, Param, Query, Headers, Body } from '@nestjs/common'
-import {EntryCollection} from "../../dto/EntryCollection";
-import {EntryCreate} from "../../dto/EntryCreate";
-import {EntryMessage} from "../../dto/EntryMessage";
+import { EntryCollection } from "../../dto/EntryCollection";
+import { EntryCreate } from "../../dto/EntryCreate";
+import { EntryMessage } from "../../dto/EntryMessage";
 
 @Controller()
 export class BarController {
@@ -14,12 +14,14 @@ export class BarController {
   @HttpCode(200)
   get(): EntryCollection {
     // @TODO implement method
+    return {};
   }
 
   @Post('/foo')
   @HttpCode(201)
   create(@Body() payload: EntryCreate): EntryMessage {
     // @TODO implement method
+    return {};
   }
 
 }
