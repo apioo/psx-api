@@ -453,16 +453,28 @@ class Attribute implements ParserInterface
                     $args[0] = $param->name;
                 }
 
+                if (!empty($param->description)) {
+                    $args[2] = $param->description;
+                }
+
                 return new Attr\PathParam(...$args);
             } elseif ($param instanceof Attr\Query) {
                 if (!empty($param->name)) {
                     $args[0] = $param->name;
                 }
 
+                if (!empty($param->description)) {
+                    $args[2] = $param->description;
+                }
+
                 return new Attr\QueryParam(...$args);
             } elseif ($param instanceof Attr\HeaderParam) {
                 if (!empty($param->name)) {
                     $args[0] = $param->name;
+                }
+
+                if (!empty($param->description)) {
+                    $args[2] = $param->description;
                 }
 
                 return new Attr\HeaderParam(...$args);
