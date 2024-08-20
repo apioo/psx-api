@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright (c) Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,9 @@ class LocalRepository implements RepositoryInterface
     public const CLIENT_PHP = 'client-php';
     public const CLIENT_TYPESCRIPT = 'client-typescript';
 
+    public const SERVER_PHP = 'server-php';
+    public const SERVER_TYPESCRIPT = 'server-typescript';
+
     public const MARKUP_CLIENT = 'markup-client';
     public const MARKUP_HTML = 'markup-html';
     public const MARKUP_MARKDOWN = 'markup-markdown';
@@ -47,13 +50,25 @@ class LocalRepository implements RepositoryInterface
         $result = [];
 
         $result[self::CLIENT_PHP] = new GeneratorConfig(
-            fn(?string $baseUrl, ?Config $config) => new Generator\Client\Php($baseUrl, $config),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Client\PHP($baseUrl, $config),
             'php',
             'application/php'
         );
 
         $result[self::CLIENT_TYPESCRIPT] = new GeneratorConfig(
-            fn(?string $baseUrl, ?Config $config) => new Generator\Client\Typescript($baseUrl, $config),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Client\TypeScript($baseUrl, $config),
+            'ts',
+            'application/typescript'
+        );
+
+        $result[self::SERVER_PHP] = new GeneratorConfig(
+            fn(?string $baseUrl, ?Config $config) => new Generator\Server\PHP(),
+            'php',
+            'application/php'
+        );
+
+        $result[self::SERVER_TYPESCRIPT] = new GeneratorConfig(
+            fn(?string $baseUrl, ?Config $config) => new Generator\Server\TypeScript(),
             'ts',
             'application/typescript'
         );
@@ -65,7 +80,7 @@ class LocalRepository implements RepositoryInterface
         );
 
         $result[self::MARKUP_HTML] = new GeneratorConfig(
-            fn(?string $baseUrl, ?Config $config) => new Generator\Markup\Html(),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Markup\HTML(),
             'html',
             'text/html'
         );

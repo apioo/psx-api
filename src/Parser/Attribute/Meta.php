@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright (c) Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ use PSX\Api\Attribute\Outgoing;
 use PSX\Api\Attribute\Path;
 use PSX\Api\Attribute\PathParam;
 use PSX\Api\Attribute\QueryParam;
+use PSX\Api\Attribute\StatusCode;
 use PSX\Api\Attribute\Security;
 use PSX\Api\Attribute\Tags;
 
@@ -70,6 +71,7 @@ class Meta
     private ?Security $security = null;
     private ?Deprecated $deprecated = null;
     private ?Authorization $authorization = null;
+    private ?StatusCode $statusCode = null;
 
     public function __construct(array $attributes)
     {
@@ -102,25 +104,27 @@ class Meta
                 $this->deprecated = $attribute;
             } elseif ($attribute instanceof Authorization) {
                 $this->authorization = $attribute;
+            } elseif ($attribute instanceof StatusCode) {
+                $this->statusCode = $attribute;
             }
         }
     }
 
     public function merge(Meta $meta)
     {
-        if ($this->exclude == null) {
+        if ($this->exclude === null) {
             $this->exclude = $meta->getExclude();
         }
 
-        if ($this->description == null) {
+        if ($this->description === null) {
             $this->description = $meta->getDescription();
         }
 
-        if ($this->method == null) {
+        if ($this->method === null) {
             $this->method = $meta->getMethod();
         }
 
-        if ($this->path == null) {
+        if ($this->path === null) {
             $this->path = $meta->getPath();
         }
 
@@ -128,22 +132,34 @@ class Meta
         $this->headerParams = array_merge($this->headerParams, $meta->getHeaderParams());
         $this->queryParams = array_merge($this->queryParams, $meta->getQueryParams());
 
-        if ($this->incoming == null) {
+        if ($this->incoming === null) {
             $this->incoming = $meta->getIncoming();
         }
 
         $this->outgoing = array_merge($this->outgoing, $meta->getOutgoing());
 
-        if ($this->operationId == null) {
+        if ($this->operationId === null) {
             $this->operationId = $meta->getOperationId();
         }
 
-        if ($this->tags == null) {
+        if ($this->tags === null) {
             $this->tags = $meta->getTags();
         }
 
-        if ($this->security == null) {
+        if ($this->security === null) {
             $this->security = $meta->getSecurity();
+        }
+
+        if ($this->deprecated === null) {
+            $this->deprecated = $meta->getDeprecated();
+        }
+
+        if ($this->authorization === null) {
+            $this->authorization = $meta->getAuthorization();
+        }
+
+        if ($this->statusCode === null) {
+            $this->statusCode = $meta->getStatusCode();
         }
     }
 
@@ -260,6 +276,11 @@ class Meta
     public function getAuthorization(): ?Authorization
     {
         return $this->authorization;
+    }
+
+    public function getStatusCode(): ?StatusCode
+    {
+        return $this->statusCode;
     }
 
     public function isExcluded(): bool

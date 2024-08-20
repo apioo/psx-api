@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright (c) Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,21 +21,21 @@
 namespace PSX\Api\Tests\Generator\Client;
 
 use PSX\Api\Exception\InvalidTypeException;
-use PSX\Api\Generator\Client\Typescript;
+use PSX\Api\Generator\Client\TypeScript;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 
 /**
- * TypescriptTest
+ * TypeScriptTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class TypescriptTest extends GeneratorTestCase
+class TypeScriptTest extends GeneratorTestCase
 {
     public function testGenerate()
     {
-        $generator = new Typescript('http://api.foo.com');
+        $generator = new TypeScript('http://api.foo.com');
 
         $result = $generator->generate($this->getSpecification());
         $target = __DIR__ . '/resource/typescript';
@@ -47,7 +47,7 @@ class TypescriptTest extends GeneratorTestCase
 
     public function testGenerateCollection()
     {
-        $generator = new Typescript('http://api.foo.com');
+        $generator = new TypeScript('http://api.foo.com');
 
         $result = $generator->generate($this->getSpecificationCollection());
         $target = __DIR__ . '/resource/typescript_collection';
@@ -61,13 +61,13 @@ class TypescriptTest extends GeneratorTestCase
     {
         $this->expectException(InvalidTypeException::class);
 
-        $generator = new Typescript('http://api.foo.com');
+        $generator = new TypeScript('http://api.foo.com');
         $generator->generate($this->getSpecificationComplex());
     }
 
     public function testGenerateTest()
     {
-        $generator = new Typescript('http://127.0.0.1:8081');
+        $generator = new TypeScript('http://127.0.0.1:8081');
 
         $result = $generator->generate($this->getSpecificationTest());
         $target = __DIR__ . '/resource/typescript_test';

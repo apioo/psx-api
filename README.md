@@ -24,14 +24,14 @@ class MyController
 {
     #[Get]
     #[Path('/my/endpoint/:id')]
-    public function getModel(int $id, int $year): \My\Response\Model
+    public function getModel(#[Param] int $id, #[Query] int $year): \My\Response\Model
     {
         // @TODO implement
     }
     
     #[Post]
     #[Path('/my/endpoint')]
-    public function insertModel(\My\Request\Model $model): \My\Response\Model
+    public function insertModel(#[Body] \My\Request\Model $model): \My\Response\Model
     {
         // @TODO implement
     }

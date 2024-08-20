@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright (c) Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,11 @@ class Attribute implements ParserInterface
                 continue;
             }
 
-            $operationId = self::buildOperationId($controller->getName(), $method->getName());
+            $operationId = $meta->getOperationId()?->operationId;
+            if (empty($operationId)) {
+                $operationId = self::buildOperationId($controller->getName(), $method->getName());
+            }
+
             if ($specification->getOperations()->has($operationId)) {
                 continue;
             }
@@ -373,7 +377,16 @@ class Attribute implements ParserInterface
         $queryParams = [];
         $incoming = null;
         foreach ($method->getParameters() as $parameter) {
-            if (isset($pathNames[$parameter->getName()])) {
+            $attribute = $this->getFromAttribute($parameter, $method);
+            if ($attribute instanceof Attr\PathParam) {
+                $pathParams[] = $attribute;
+            } elseif ($attribute instanceof Attr\QueryParam) {
+                $queryParams[] = $attribute;
+            } elseif ($attribute instanceof Attr\HeaderParam) {
+                $headerParams[] = $attribute;
+            } elseif ($attribute instanceof Attr\Incoming) {
+                $incoming = $attribute;
+            } elseif (isset($pathNames[$parameter->getName()])) {
                 $pathParams[] = $meta->getPathParams()[$pathNames[$parameter->getName()]];
             } elseif (isset($headerNames[$parameter->getName()])) {
                 $headerParams[] = $meta->getHeaderParams()[$headerNames[$parameter->getName()]];
@@ -381,14 +394,14 @@ class Attribute implements ParserInterface
                 $queryParams[] = $meta->getQueryParams()[$queryNames[$parameter->getName()]];
             } elseif (in_array($parameter->getName(), $missingPathNames)) {
                 // in case the path contains a variable path fragment which is no yet mapped through a path param
-                $args = $this->getParamArgsFromType($parameter, true);
+                $args = $this->getParamArgsFromType($parameter->getName(), $parameter->getType(), true);
                 if (!empty($args)) {
                     $pathParams[] = new Attr\PathParam(...$args);
                 }
             } else {
                 // in all other cases the parameter is either a query parameter in case it is a scalar value or a body
                 // parameter in case it is a class
-                $args = $this->getParamArgsFromType($parameter, false);
+                $args = $this->getParamArgsFromType($parameter->getName(), $parameter->getType(), false);
                 if (!empty($args)) {
                     $queryParams[] = new Attr\QueryParam(...$args);
                 } elseif (!$meta->hasIncoming() && in_array($meta->getMethod()->method, ['POST', 'PUT', 'PATCH'])) {
@@ -397,9 +410,11 @@ class Attribute implements ParserInterface
                         if (!class_exists($schema)) {
                             throw new ParserException('The method ' . $method->getName() . ' contains an argument "' . $parameter->getName() . '" which has as type-hint a non existing class "' . $schema . '"');
                         }
+
                         if ($incoming !== null) {
                             throw new ParserException('The method ' . $method->getName() . ' must contains already the argument "' . $incoming->name . '" which represents the request body, we can not also set "' . $parameter->getName() . '" as request body');
                         }
+
                         $incoming = new Attr\Incoming($schema, $parameter->getName());
                     }
                 }
@@ -418,9 +433,64 @@ class Attribute implements ParserInterface
         if (!$meta->hasOutgoing()) {
             $schema = $this->getSchemaFromTypeHint($method->getReturnType());
             if (!empty($schema) && class_exists($schema)) {
-                $meta->addOutgoing(new Attr\Outgoing(200, $schema));
+                $meta->addOutgoing(new Attr\Outgoing($meta->getStatusCode()?->code ?? 200, $schema));
             }
         }
+    }
+
+    /**
+     * @throws ParserException
+     */
+    private function getFromAttribute(\ReflectionParameter $parameter, \ReflectionMethod $method): Attr\PathParam|Attr\QueryParam|Attr\HeaderParam|Attr\Incoming|null
+    {
+        $attributes = $parameter->getAttributes();
+        foreach ($attributes as $attribute) {
+            $param = $attribute->newInstance();
+            $args = $this->getParamArgsFromType($parameter->getName(), $parameter->getType(), !$parameter->isOptional());
+
+            if ($param instanceof Attr\Param) {
+                if (!empty($param->name)) {
+                    $args[0] = $param->name;
+                }
+
+                if (!empty($param->description)) {
+                    $args[2] = $param->description;
+                }
+
+                return new Attr\PathParam(...$args);
+            } elseif ($param instanceof Attr\Query) {
+                if (!empty($param->name)) {
+                    $args[0] = $param->name;
+                }
+
+                if (!empty($param->description)) {
+                    $args[2] = $param->description;
+                }
+
+                return new Attr\QueryParam(...$args);
+            } elseif ($param instanceof Attr\HeaderParam) {
+                if (!empty($param->name)) {
+                    $args[0] = $param->name;
+                }
+
+                if (!empty($param->description)) {
+                    $args[2] = $param->description;
+                }
+
+                return new Attr\HeaderParam(...$args);
+            } elseif ($param instanceof Attr\Body) {
+                $schema = $this->getSchemaFromTypeHint($parameter->getType());
+                if (empty($schema)) {
+                    throw new ParserException('The method ' . $method->getName() . ' contains an argument "' . $parameter->getName() . '" which is marked as body but has an invalid type-hint');
+                } elseif (!class_exists($schema)) {
+                    throw new ParserException('The method ' . $method->getName() . ' contains an argument "' . $parameter->getName() . '" which has as type-hint a non existing class "' . $schema . '"');
+                }
+
+                return new Attr\Incoming($schema, $parameter->getName());
+            }
+        }
+
+        return null;
     }
 
     private function getMissingPathNames(Meta $meta): array
@@ -450,11 +520,10 @@ class Attribute implements ParserInterface
         return $result;
     }
 
-    private function getParamArgsFromType(?\ReflectionParameter $parameter, bool $required, ?array $enum = null): ?array
+    private function getParamArgsFromType(string $name, ?\ReflectionType $type, bool $required, ?array $enum = null): ?array
     {
-        $name = $parameter->getName();
-        $type = $parameter->getType();
         if (!$type instanceof \ReflectionNamedType) {
+            // @TODO maybe handle union type
             return null;
         }
 
@@ -474,17 +543,14 @@ class Attribute implements ParserInterface
             default => null,
         };
 
-        /*
         if ($return === null && function_exists('enum_exists') && enum_exists($type->getName())) {
-            $return = $this->getTypeFromEnum(new \ReflectionEnum($type->getName()), $required);
+            $return = $this->getTypeFromEnum(new \ReflectionEnum($type->getName()), $name, $required);
         }
-        */
 
         return $return;
     }
 
-    /*
-    private function getTypeFromEnum(\ReflectionEnum $enum, bool $required): ?array
+    private function getTypeFromEnum(\ReflectionEnum $enum, string $name, bool $required): ?array
     {
         if (!$enum->isBacked()) {
             // we handle only backed enums since we have only in this case a stable value
@@ -499,9 +565,8 @@ class Attribute implements ParserInterface
             }
         }
 
-        return $this->getParamArgsFromType($enum->getBackingType(), $required, $values);
+        return $this->getParamArgsFromType($name, $enum->getBackingType(), $required, $values);
     }
-    */
 
     public static function buildOperationId(string $controllerName, string $methodName): string
     {

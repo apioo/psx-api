@@ -3,7 +3,7 @@
  * PSX is an open source PHP framework to develop RESTful APIs.
  * For the current version and information visit <https://phpsx.org>
  *
- * Copyright 2010-2023 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright (c) Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,63 +18,45 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests\Generator\Client;
+namespace PSX\Api\Tests\Generator\Server;
 
-use PSX\Api\Exception\InvalidTypeException;
-use PSX\Api\Generator\Client\Php;
+use PSX\Api\Generator\Server\TypeScript;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
-use PSX\Schema\Generator\Config;
 
 /**
- * PhpTest
+ * TypeScriptTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class PhpTest extends GeneratorTestCase
+class TypeScriptTest extends GeneratorTestCase
 {
     public function testGenerate()
     {
-        $generator = new Php('http://api.foo.com');
+        $generator = new TypeScript();
 
         $result = $generator->generate($this->getSpecification());
-        $target = __DIR__ . '/resource/php';
+        $target = __DIR__ . '/resource/typescript';
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/Client.php');
+        $this->assertFileExists($target . '/src/controller/app.controller.ts');
+        $this->assertFileExists($target . '/src/dto/Entry.ts');
     }
 
     public function testGenerateCollection()
     {
-        $generator = new Php('http://api.foo.com', Config::of('Foo\\Bar'));
+        $generator = new TypeScript();
 
         $result = $generator->generate($this->getSpecificationCollection());
-        $target = __DIR__ . '/resource/php_collection';
+        $target = __DIR__ . '/resource/typescript_complex';
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/Client.php');
-    }
-
-    public function testGenerateComplex()
-    {
-        $this->expectException(InvalidTypeException::class);
-
-        $generator = new Php('http://api.foo.com', Config::of('Foo\\Bar'));
-        $generator->generate($this->getSpecificationComplex());
-    }
-
-    public function testGenerateTest()
-    {
-        $generator = new Php('http://127.0.0.1:8081', Config::of('Sdkgen\\Client\\Tests\\Generated'));
-
-        $result = $generator->generate($this->getSpecificationTest());
-        $target = __DIR__ . '/resource/php_test';
-
-        $this->writeChunksToFolder($result, $target);
-
-        $this->assertFileExists($target . '/Client.php');
+        $this->assertFileExists($target . '/src/controller/foo/bar.controller.ts');
+        $this->assertFileExists($target . '/src/controller/foo/baz.controller.ts');
+        $this->assertFileExists($target . '/src/controller/bar.controller.ts');
+        $this->assertFileExists($target . '/src/dto/Entry.ts');
     }
 }
