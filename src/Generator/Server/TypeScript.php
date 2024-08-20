@@ -20,7 +20,6 @@
 
 namespace PSX\Api\Generator\Server;
 
-use phpDocumentor\Reflection\Types\Parent_;
 use PSX\Api\Generator\Server\Dto\Context;
 use PSX\Api\Generator\Server\Dto\File;
 use PSX\Api\Generator\Server\Dto\Folder;
