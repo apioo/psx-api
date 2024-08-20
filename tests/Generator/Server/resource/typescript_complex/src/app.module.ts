@@ -5,7 +5,7 @@ import { BarController } from './controller/bar.controller';
 
 @Module({
   imports: [],
-  controllers: [BarController, BazController, BarController, ],
+  controllers: [BarController, BazController, BarController],
   providers: [],
 })
 export class AppModule {}

@@ -5,7 +5,7 @@ import { {{ controller }} } from './controller/{{ path }}.controller';
 
 @Module({
   imports: [],
-  controllers: [{% for controller in controllers %}{{ controller }}, {% endfor %}],
+  controllers: [{% for controller in controllers %}{{ controller }}{% if not loop.last %}, {% endif %}{% endfor %}],
   providers: [],
 })
 export class AppModule {}
