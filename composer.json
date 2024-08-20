@@ -26,7 +26,6 @@
     "phpunit/phpunit": "^9.0",
     "vimeo/psalm": "^5.0"
   },
-  "bin": ["bin/api"],
   "autoload": {
     "psr-4": {
       "PSX\\Api\\": "src/"
