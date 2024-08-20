@@ -88,8 +88,8 @@ abstract class ServerAbstract implements GeneratorInterface
 
     public function generate(SpecificationInterface $specification): Chunks|string
     {
-        $context = $this->buildContext($specification);
         $folder = $this->buildFolderStructure($specification);
+        $context = $this->buildContext($specification, $folder);
         $chunks = $this->copyFiles($this->getTemplateDir(), $context);
 
         $controllerChunks = $chunks->findByPath($this->getControllerPath());
@@ -281,6 +281,11 @@ abstract class ServerAbstract implements GeneratorInterface
         return $code;
     }
 
+    protected function buildContext(SpecificationInterface $specification, Folder $folder): Context
+    {
+        return new Context();
+    }
+
     private function buildRecursive(Folder $parent, array $operationId, OperationInterface $operation): void
     {
         if (count($operationId) === 1 || count($operationId) === 2) {
@@ -311,13 +316,6 @@ abstract class ServerAbstract implements GeneratorInterface
 
             $this->buildRecursive($child, array_values($operationId), $operation);
         }
-    }
-
-    private function buildContext(SpecificationInterface $specification): Context
-    {
-        $context = new Context();
-
-        return $context;
     }
 
     private function copyFiles(string $templateDir, Context $context): Chunks

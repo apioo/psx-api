@@ -20,8 +20,12 @@
 
 namespace PSX\Api\Generator\Server;
 
+use phpDocumentor\Reflection\Types\Parent_;
+use PSX\Api\Generator\Server\Dto\Context;
 use PSX\Api\Generator\Server\Dto\File;
+use PSX\Api\Generator\Server\Dto\Folder;
 use PSX\Api\OperationInterface;
+use PSX\Api\SpecificationInterface;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 
@@ -135,5 +139,30 @@ class TypeScript extends ServerAbstract
         $method.= "\n";
 
         return $method;
+    }
+
+    protected function buildContext(SpecificationInterface $specification, Folder $folder): Context
+    {
+        $context = parent::buildContext($specification, $folder);
+        $context['controllers'] = $this->fetchControllers($folder);
+
+        return $context;
+    }
+
+    private function fetchControllers(Folder $folder, array $path = []): array
+    {
+        $controllers = [];
+
+        $folders = $folder->getFolders();
+        foreach ($folders as $child) {
+            $controllers = array_merge($controllers, $this->fetchControllers($child, array_merge($path, [$child->getName()])));
+        }
+
+        $files = $folder->getFiles();
+        foreach ($files as $file) {
+            $controllers[(count($path) > 0 ? implode('/', $path) . '/' : '') . $file->getName()] = $this->normalizer->class($file->getName(), 'Controller');
+        }
+
+        return $controllers;
     }
 }
