@@ -83,7 +83,7 @@ class AttributeTest extends ParserTestCase
     public function testParseProperty()
     {
         $specification = $this->apiManager->getApi(PropertyController::class);
-        $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.PropertyController.doGet');
+        $operation = $specification->getOperations()->get('my.operation');
 
         $this->assertInstanceOf(OperationInterface::class, $operation);
         $this->assertEquals('Test description', $operation->getDescription());

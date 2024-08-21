@@ -24,6 +24,7 @@ use PSX\Api\Attribute\Body;
 use PSX\Api\Attribute\Description;
 use PSX\Api\Attribute\Get;
 use PSX\Api\Attribute\Header;
+use PSX\Api\Attribute\OperationId;
 use PSX\Api\Attribute\Param;
 use PSX\Api\Attribute\Path;
 use PSX\Api\Attribute\Query;
@@ -43,6 +44,7 @@ class PropertyController
 {
     #[Get]
     #[Path('/foo/:fooId')]
+    #[OperationId('my.operation')]
     #[Description('Test description')]
     protected function doGet(
         #[Header('Content-Type')] string $contentType,
