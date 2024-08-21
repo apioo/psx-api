@@ -447,6 +447,9 @@ class Attribute implements ParserInterface
         foreach ($attributes as $attribute) {
             $param = $attribute->newInstance();
             $args = $this->getParamArgsFromType($parameter->getName(), $parameter->getType(), !$parameter->isOptional());
+            if (empty($args)) {
+                continue;
+            }
 
             if ($param instanceof Attr\Param) {
                 if (!empty($param->name)) {
@@ -468,7 +471,7 @@ class Attribute implements ParserInterface
                 }
 
                 return new Attr\QueryParam(...$args);
-            } elseif ($param instanceof Attr\HeaderParam) {
+            } elseif ($param instanceof Attr\Header) {
                 if (!empty($param->name)) {
                     $args[0] = $param->name;
                 }

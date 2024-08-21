@@ -25,6 +25,7 @@ use PSX\Api\OperationInterface;
 use PSX\Api\Parser\Attribute as AttributeParser;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Attribute\BarController;
+use PSX\Api\Tests\Parser\Attribute\PropertyController;
 use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\TypeFactory;
 
@@ -77,5 +78,14 @@ class AttributeTest extends ParserTestCase
 
         $annotation = new AttributeParser($this->schemaManager);
         $annotation->parse('foo');
+    }
+
+    public function testParseProperty()
+    {
+        $specification = $this->apiManager->getApi(PropertyController::class);
+        $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.PropertyController.doGet');
+
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals('Test description', $operation->getDescription());
     }
 }
