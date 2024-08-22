@@ -39,7 +39,7 @@ abstract class ParserTestCase extends ApiManagerTestCase
     {
         $specification = $this->getSpecification();
         $definitions = $specification->getDefinitions();
-        $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.TestController.doGet');
+        $operation = $specification->getOperations()->get('test.get');
 
         $this->assertInstanceOf(OperationInterface::class, $operation);
         $this->assertEquals('GET', $operation->getMethod());

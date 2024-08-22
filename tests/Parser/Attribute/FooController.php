@@ -23,6 +23,7 @@ namespace PSX\Api\Tests\Parser\Attribute;
 use PSX\Api\Attribute\Description;
 use PSX\Api\Attribute\Get;
 use PSX\Api\Attribute\Incoming;
+use PSX\Api\Attribute\OperationId;
 use PSX\Api\Attribute\Outgoing;
 use PSX\Api\Attribute\Path;
 
@@ -40,6 +41,7 @@ class FooController
     #[Get]
     #[Incoming(schema: '../schema/schema.json')]
     #[Outgoing(code: 200, schema: '../schema/schema.json')]
+    #[OperationId('foo.get')]
     protected function doGet()
     {
     }

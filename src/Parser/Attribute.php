@@ -573,6 +573,22 @@ class Attribute implements ParserInterface
 
     public static function buildOperationId(string $controllerName, string $methodName): string
     {
-        return str_replace('\\', '.', $controllerName . '.' . $methodName);
+        $result = [];
+        $parts = explode('\\', $controllerName);
+        array_shift($parts); // vendor
+        array_shift($parts); // controller
+
+        foreach ($parts as $part) {
+            $result[] = self::snakeCase($part);
+        }
+
+        $result[] = $methodName;
+
+        return implode('.', $result);
+    }
+
+    private static function snakeCase(string $name): string
+    {
+        return strtolower(preg_replace(['/([A-Z]+)([A-Z][a-z])/', '/([a-z\d])([A-Z])/'], ['\\1_\\2', '\\1_\\2'], $name));
     }
 }

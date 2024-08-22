@@ -1,6 +1,6 @@
 {
   "operations": {
-    "PSX.Api.Tests.Parser.Attribute.TestController.doGet": {
+    "test.get": {
       "description": "A long **Test** description",
       "method": "GET",
       "path": "/foo/:fooId",

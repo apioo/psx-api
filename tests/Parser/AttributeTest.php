@@ -49,7 +49,7 @@ class AttributeTest extends ParserTestCase
     public function testOperationId()
     {
         $specification = $this->apiManager->getApi(TestController::class);
-        $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.TestController.doGet');
+        $operation = $specification->getOperations()->get('test.get');
 
         $this->assertInstanceOf(OperationInterface::class, $operation);
         $this->assertEquals('A long **Test** description', $operation->getDescription());
@@ -59,7 +59,7 @@ class AttributeTest extends ParserTestCase
     {
         $annotation = new AttributeParser($this->schemaManager);
         $specification = $annotation->parse(BarController::class);
-        $operation = $specification->getOperations()->get('PSX.Api.Tests.Parser.Attribute.BarController.myMethod');
+        $operation = $specification->getOperations()->get('tests.parser.attribute.bar_controller.myMethod');
 
         $this->assertInstanceOf(OperationInterface::class, $operation);
         $this->assertEquals('path', $operation->getArguments()->get('id')->getIn());

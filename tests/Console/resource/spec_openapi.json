@@ -16,7 +16,7 @@
           "foo"
         ],
         "description": "A long **Test** description",
-        "operationId": "PSX.Api.Tests.Parser.Attribute.TestController.doGet",
+        "operationId": "test.get",
         "parameters": [
           {
             "name": "foo",
