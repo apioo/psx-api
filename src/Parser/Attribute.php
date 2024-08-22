@@ -27,6 +27,7 @@ use PSX\Api\Exception\ParserException;
 use PSX\Api\Model\Passthru;
 use PSX\Api\Operation;
 use PSX\Api\Parser\Attribute\Meta;
+use PSX\Api\Parser\Attribute\OperationIdBuilderInterface;
 use PSX\Api\ParserInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
@@ -62,11 +63,13 @@ use ReflectionClass;
 class Attribute implements ParserInterface
 {
     private SchemaManagerInterface $schemaManager;
+    private OperationIdBuilderInterface $operationIdBuilder;
     private bool $inspectTypeHints;
 
-    public function __construct(SchemaManagerInterface $schemaManager, bool $inspectTypeHints = true)
+    public function __construct(SchemaManagerInterface $schemaManager, OperationIdBuilderInterface $operationIdBuilder, bool $inspectTypeHints = true)
     {
         $this->schemaManager = $schemaManager;
+        $this->operationIdBuilder = $operationIdBuilder;
         $this->inspectTypeHints = $inspectTypeHints;
     }
 
@@ -112,10 +115,7 @@ class Attribute implements ParserInterface
                 continue;
             }
 
-            $operationId = $meta->getOperationId()?->operationId;
-            if (empty($operationId)) {
-                $operationId = self::buildOperationId($controller->getName(), $method->getName());
-            }
+            $operationId = $this->operationIdBuilder->build($controller->getName(), $method->getName());
 
             if ($specification->getOperations()->has($operationId)) {
                 continue;
@@ -569,26 +569,5 @@ class Attribute implements ParserInterface
         }
 
         return $this->getParamArgsFromType($name, $enum->getBackingType(), $required, $values);
-    }
-
-    public static function buildOperationId(string $controllerName, string $methodName): string
-    {
-        $result = [];
-        $parts = explode('\\', $controllerName);
-        array_shift($parts); // vendor
-        array_shift($parts); // controller
-
-        foreach ($parts as $part) {
-            $result[] = self::snakeCase($part);
-        }
-
-        $result[] = $methodName;
-
-        return implode('.', $result);
-    }
-
-    private static function snakeCase(string $name): string
-    {
-        return strtolower(preg_replace(['/([A-Z]+)([A-Z][a-z])/', '/([a-z\d])([A-Z])/'], ['\\1_\\2', '\\1_\\2'], $name));
     }
 }

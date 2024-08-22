@@ -18,29 +18,32 @@
  * limitations under the License.
  */
 
-namespace PSX\Api\Tests;
+namespace PSX\Api\Parser\Attribute;
 
-use PHPUnit\Framework\TestCase;
-use PSX\Api\ApiManager;
-use PSX\Api\Parser\Attribute\OperationIdBuilder;
-use PSX\Schema\SchemaManager;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use PSX\Api\Attribute\Authorization;
+use PSX\Api\Attribute\Deprecated;
+use PSX\Api\Attribute\Description;
+use PSX\Api\Attribute\Exclude;
+use PSX\Api\Attribute\HeaderParam;
+use PSX\Api\Attribute\Incoming;
+use PSX\Api\Attribute\MethodAbstract;
+use PSX\Api\Attribute\OperationId;
+use PSX\Api\Attribute\Outgoing;
+use PSX\Api\Attribute\Path;
+use PSX\Api\Attribute\PathParam;
+use PSX\Api\Attribute\QueryParam;
+use PSX\Api\Attribute\StatusCode;
+use PSX\Api\Attribute\Security;
+use PSX\Api\Attribute\Tags;
 
 /**
- * ApiManagerTest
+ * OperationIdBuilder
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-abstract class ApiManagerTestCase extends TestCase
+interface OperationIdBuilderInterface
 {
-    protected SchemaManager $schemaManager;
-    protected ApiManager $apiManager;
-
-    protected function setUp(): void
-    {
-        $this->schemaManager = new SchemaManager();
-        $this->apiManager    = new ApiManager($this->schemaManager, new OperationIdBuilder(new ArrayAdapter(), false));
-    }
+    public function build(string $controllerClass, string $methodName): string;
 }

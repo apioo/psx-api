@@ -27,13 +27,12 @@ use PSX\Api\Attribute\Exclude;
 use PSX\Api\Attribute\HeaderParam;
 use PSX\Api\Attribute\Incoming;
 use PSX\Api\Attribute\MethodAbstract;
-use PSX\Api\Attribute\OperationId;
 use PSX\Api\Attribute\Outgoing;
 use PSX\Api\Attribute\Path;
 use PSX\Api\Attribute\PathParam;
 use PSX\Api\Attribute\QueryParam;
-use PSX\Api\Attribute\StatusCode;
 use PSX\Api\Attribute\Security;
+use PSX\Api\Attribute\StatusCode;
 use PSX\Api\Attribute\Tags;
 
 /**
@@ -66,7 +65,6 @@ class Meta
      * @var Outgoing[]
      */
     private array $outgoing = [];
-    private ?OperationId $operationId = null;
     private ?Tags $tags = null;
     private ?Security $security = null;
     private ?Deprecated $deprecated = null;
@@ -94,8 +92,6 @@ class Meta
                 $this->incoming = $attribute;
             } elseif ($attribute instanceof Outgoing) {
                 $this->outgoing[$attribute->code] = $attribute;
-            } elseif ($attribute instanceof OperationId) {
-                $this->operationId = $attribute;
             } elseif ($attribute instanceof Tags) {
                 $this->tags = $attribute;
             } elseif ($attribute instanceof Security) {
@@ -137,10 +133,6 @@ class Meta
         }
 
         $this->outgoing = array_merge($this->outgoing, $meta->getOutgoing());
-
-        if ($this->operationId === null) {
-            $this->operationId = $meta->getOperationId();
-        }
 
         if ($this->tags === null) {
             $this->tags = $meta->getTags();
@@ -251,11 +243,6 @@ class Meta
     public function hasOutgoing(): bool
     {
         return count($this->outgoing) > 0;
-    }
-
-    public function getOperationId(): ?OperationId
-    {
-        return $this->operationId;
     }
 
     public function getTags(): ?Tags

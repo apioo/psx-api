@@ -24,9 +24,11 @@ use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
 use PSX\Api\Console\ParseCommand;
 use PSX\Api\GeneratorFactory;
+use PSX\Api\Parser\Attribute\OperationIdBuilder;
 use PSX\Api\Repository\LocalRepository;
 use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -55,9 +57,9 @@ class ParseCommandTest extends TestCase
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
-    protected function getParseCommand()
+    protected function getParseCommand(): ParseCommand
     {
-        $apiManager = new ApiManager(new SchemaManager());
+        $apiManager = new ApiManager(new SchemaManager(), new OperationIdBuilder(new ArrayAdapter(), false));
         $factory    = GeneratorFactory::fromLocal('http://foo.com/');
 
         return new ParseCommand($apiManager, $factory);

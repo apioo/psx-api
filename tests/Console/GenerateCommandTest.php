@@ -24,10 +24,12 @@ use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
 use PSX\Api\Console\GenerateCommand;
 use PSX\Api\GeneratorFactory;
+use PSX\Api\Parser\Attribute\OperationIdBuilder;
 use PSX\Api\Repository\LocalRepository;
 use PSX\Api\Scanner\Memory;
 use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -68,7 +70,7 @@ class GenerateCommandTest extends TestCase
 
     protected function getGenerateCommand()
     {
-        $apiManager = new ApiManager(new SchemaManager());
+        $apiManager = new ApiManager(new SchemaManager(), new OperationIdBuilder(new ArrayAdapter(), false));
 
         $scanner = new Memory();
         $scanner->merge($apiManager->getApi(TestController::class));
