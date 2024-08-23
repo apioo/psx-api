@@ -22,16 +22,19 @@ namespace PSX\Api\Parser\Attribute;
 
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use PSX\Api\Attribute\Header;
 use PSX\Api\Attribute\OperationId;
+use PSX\Api\Attribute\Param;
+use PSX\Api\Attribute\Query;
 
 /**
- * OperationIdBuilder
+ * Builder
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class OperationIdBuilder implements OperationIdBuilderInterface
+class Builder implements BuilderInterface
 {
     private CacheItemPoolInterface $cache;
     private bool $debug;
@@ -42,7 +45,7 @@ class OperationIdBuilder implements OperationIdBuilderInterface
         $this->debug = $debug;
     }
 
-    public function build(string $controllerClass, string $methodName): string
+    public function buildOperationId(string $controllerClass, string $methodName): string
     {
         $item = null;
         if (!$this->debug) {
@@ -66,9 +69,31 @@ class OperationIdBuilder implements OperationIdBuilderInterface
         return $operationId;
     }
 
+    public function buildArguments(string $controllerClass, string $methodName): array
+    {
+        $item = null;
+        if (!$this->debug) {
+            $key = 'psx_arguments_' . str_replace('\\', '_', $controllerClass) . '_' . $methodName;
+            $item = $this->cache->getItem($key);
+            if ($item->isHit()) {
+                return $item->get();
+            }
+        }
+
+        $arguments = $this->getArguments($controllerClass, $methodName);
+
+        if (!$this->debug && $item instanceof CacheItemInterface) {
+            $item->set($arguments);
+            $this->cache->save($item);
+        }
+
+        return $arguments;
+    }
+
     private function getByOperationIdAttribute(string $controllerClass, string $methodName): ?string
     {
         $method = new \ReflectionMethod($controllerClass, $methodName);
+
         $attributes = $method->getAttributes(OperationId::class);
         foreach ($attributes as $attribute) {
             $operation = $attribute->newInstance();
@@ -78,6 +103,31 @@ class OperationIdBuilder implements OperationIdBuilderInterface
         }
 
         return null;
+    }
+
+    private function getArguments(string $controllerClass, string $methodName): array
+    {
+        $method = new \ReflectionMethod($controllerClass, $methodName);
+
+        $parameters = $method->getParameters();
+        $arguments = [];
+        foreach ($parameters as $parameter) {
+            $pathAttribute = $parameter->getAttributes(Param::class)[0] ?? null;
+            $headerAttribute = $parameter->getAttributes(Header::class)[0] ?? null;
+            $queryAttribute = $parameter->getAttributes(Query::class)[0] ?? null;
+
+            if ($pathAttribute instanceof Param && !empty($pathAttribute->name)) {
+                $arguments[$parameter->getName()] = $pathAttribute->name;
+            } elseif ($headerAttribute instanceof Header && !empty($headerAttribute->name)) {
+                $arguments[$parameter->getName()] = $headerAttribute->name;
+            } elseif ($queryAttribute instanceof Query && !empty($queryAttribute->name)) {
+                $arguments[$parameter->getName()] = $queryAttribute->name;
+            } else {
+                $arguments[$parameter->getName()] = $parameter->getName();
+            }
+        }
+
+        return $arguments;
     }
 
     private function buildByClassAndMethodName(string $controllerClass, string $methodName): string

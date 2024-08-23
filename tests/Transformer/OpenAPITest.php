@@ -22,7 +22,7 @@ namespace PSX\Api\Tests\Transformer;
 
 use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
-use PSX\Api\Parser\Attribute\OperationIdBuilder;
+use PSX\Api\Parser\Attribute\Builder;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Transformer\OpenAPI;
 use PSX\Schema\SchemaManager;
@@ -57,7 +57,7 @@ class OpenAPITest extends TestCase
         $this->assertJsonStringEqualsJsonFile($expectFile, \json_encode($actual));
 
         // test whether we can parse the spec file
-        $spec = (new ApiManager(new SchemaManager(), new OperationIdBuilder(new ArrayAdapter(), false)))->getApi($expectFile);
+        $spec = (new ApiManager(new SchemaManager(), new Builder(new ArrayAdapter(), false)))->getApi($expectFile);
         $this->assertInstanceOf(SpecificationInterface::class, $spec);
     }
 

@@ -27,7 +27,7 @@ use PSX\Api\Exception\ParserException;
 use PSX\Api\Model\Passthru;
 use PSX\Api\Operation;
 use PSX\Api\Parser\Attribute\Meta;
-use PSX\Api\Parser\Attribute\OperationIdBuilderInterface;
+use PSX\Api\Parser\Attribute\BuilderInterface;
 use PSX\Api\ParserInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
@@ -63,13 +63,13 @@ use ReflectionClass;
 class Attribute implements ParserInterface
 {
     private SchemaManagerInterface $schemaManager;
-    private OperationIdBuilderInterface $operationIdBuilder;
+    private BuilderInterface $builder;
     private bool $inspectTypeHints;
 
-    public function __construct(SchemaManagerInterface $schemaManager, OperationIdBuilderInterface $operationIdBuilder, bool $inspectTypeHints = true)
+    public function __construct(SchemaManagerInterface $schemaManager, BuilderInterface $builder, bool $inspectTypeHints = true)
     {
         $this->schemaManager = $schemaManager;
-        $this->operationIdBuilder = $operationIdBuilder;
+        $this->builder = $builder;
         $this->inspectTypeHints = $inspectTypeHints;
     }
 
@@ -115,7 +115,7 @@ class Attribute implements ParserInterface
                 continue;
             }
 
-            $operationId = $this->operationIdBuilder->build($controller->getName(), $method->getName());
+            $operationId = $this->builder->buildOperationId($controller->getName(), $method->getName());
 
             if ($specification->getOperations()->has($operationId)) {
                 continue;

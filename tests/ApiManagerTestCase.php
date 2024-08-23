@@ -22,7 +22,7 @@ namespace PSX\Api\Tests;
 
 use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
-use PSX\Api\Parser\Attribute\OperationIdBuilder;
+use PSX\Api\Parser\Attribute\Builder;
 use PSX\Schema\SchemaManager;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
@@ -41,6 +41,6 @@ abstract class ApiManagerTestCase extends TestCase
     protected function setUp(): void
     {
         $this->schemaManager = new SchemaManager();
-        $this->apiManager    = new ApiManager($this->schemaManager, new OperationIdBuilder(new ArrayAdapter(), false));
+        $this->apiManager    = new ApiManager($this->schemaManager, new Builder(new ArrayAdapter(), false));
     }
 }

@@ -23,7 +23,7 @@ namespace PSX\Api\Tests\Parser;
 use PSX\Api\Exception\ParserException;
 use PSX\Api\OperationInterface;
 use PSX\Api\Parser\Attribute as AttributeParser;
-use PSX\Api\Parser\Attribute\OperationIdBuilder;
+use PSX\Api\Parser\Attribute\Builder;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Attribute\BarController;
 use PSX\Api\Tests\Parser\Attribute\PropertyController;
@@ -59,7 +59,7 @@ class AttributeTest extends ParserTestCase
 
     public function testParseTypeHint()
     {
-        $annotation = new AttributeParser($this->schemaManager, new OperationIdBuilder(new ArrayAdapter(), false));
+        $annotation = new AttributeParser($this->schemaManager, new Builder(new ArrayAdapter(), false));
         $specification = $annotation->parse(BarController::class);
         $operation = $specification->getOperations()->get('tests.parser.attribute.bar_controller.myMethod');
 
@@ -78,7 +78,7 @@ class AttributeTest extends ParserTestCase
     {
         $this->expectException(ParserException::class);
 
-        $annotation = new AttributeParser($this->schemaManager, new OperationIdBuilder(new ArrayAdapter(), false));
+        $annotation = new AttributeParser($this->schemaManager, new Builder(new ArrayAdapter(), false));
         $annotation->parse('foo');
     }
 

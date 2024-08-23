@@ -24,7 +24,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\Builder\SpecificationBuilder;
 use PSX\Api\Builder\SpecificationBuilderInterface;
 use PSX\Api\Exception\InvalidApiException;
-use PSX\Api\Parser\Attribute\OperationIdBuilderInterface;
+use PSX\Api\Parser\Attribute\BuilderInterface;
 use PSX\Schema\Parser\ContextInterface;
 use PSX\Schema\SchemaManagerInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -43,12 +43,12 @@ class ApiManager implements ApiManagerInterface
 
     private array $parsers = [];
 
-    public function __construct(SchemaManagerInterface $schemaManager, OperationIdBuilderInterface $operationIdBuilder, ?CacheItemPoolInterface $cache = null, bool $debug = false)
+    public function __construct(SchemaManagerInterface $schemaManager, BuilderInterface $builder, ?CacheItemPoolInterface $cache = null, bool $debug = false)
     {
         $this->cache = $cache === null ? new ArrayAdapter() : $cache;
         $this->debug = $debug;
 
-        $this->register('php', new Parser\Attribute($schemaManager, $operationIdBuilder));
+        $this->register('php', new Parser\Attribute($schemaManager, $builder));
         $this->register('file', new Parser\File($schemaManager));
         $this->register('openapi', new Parser\OpenAPI($schemaManager));
         $this->register('typeapi', new Parser\TypeAPI($schemaManager));

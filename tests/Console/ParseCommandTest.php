@@ -24,7 +24,7 @@ use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
 use PSX\Api\Console\ParseCommand;
 use PSX\Api\GeneratorFactory;
-use PSX\Api\Parser\Attribute\OperationIdBuilder;
+use PSX\Api\Parser\Attribute\Builder;
 use PSX\Api\Repository\LocalRepository;
 use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
@@ -59,7 +59,7 @@ class ParseCommandTest extends TestCase
 
     protected function getParseCommand(): ParseCommand
     {
-        $apiManager = new ApiManager(new SchemaManager(), new OperationIdBuilder(new ArrayAdapter(), false));
+        $apiManager = new ApiManager(new SchemaManager(), new Builder(new ArrayAdapter(), false));
         $factory    = GeneratorFactory::fromLocal('http://foo.com/');
 
         return new ParseCommand($apiManager, $factory);

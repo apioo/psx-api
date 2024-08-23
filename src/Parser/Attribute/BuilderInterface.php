@@ -20,30 +20,16 @@
 
 namespace PSX\Api\Parser\Attribute;
 
-use PSX\Api\Attribute\Authorization;
-use PSX\Api\Attribute\Deprecated;
-use PSX\Api\Attribute\Description;
-use PSX\Api\Attribute\Exclude;
-use PSX\Api\Attribute\HeaderParam;
-use PSX\Api\Attribute\Incoming;
-use PSX\Api\Attribute\MethodAbstract;
-use PSX\Api\Attribute\OperationId;
-use PSX\Api\Attribute\Outgoing;
-use PSX\Api\Attribute\Path;
-use PSX\Api\Attribute\PathParam;
-use PSX\Api\Attribute\QueryParam;
-use PSX\Api\Attribute\StatusCode;
-use PSX\Api\Attribute\Security;
-use PSX\Api\Attribute\Tags;
-
 /**
- * OperationIdBuilder
+ * BuilderInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-interface OperationIdBuilderInterface
+interface BuilderInterface
 {
-    public function build(string $controllerClass, string $methodName): string;
+    public function buildOperationId(string $controllerClass, string $methodName): string;
+
+    public function buildArguments(string $controllerClass, string $methodName): array;
 }
