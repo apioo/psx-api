@@ -112,9 +112,9 @@ class Builder implements BuilderInterface
         $parameters = $method->getParameters();
         $arguments = [];
         foreach ($parameters as $parameter) {
-            $pathAttribute = $parameter->getAttributes(Param::class)[0] ?? null;
-            $headerAttribute = $parameter->getAttributes(Header::class)[0] ?? null;
-            $queryAttribute = $parameter->getAttributes(Query::class)[0] ?? null;
+            $pathAttribute = ($parameter->getAttributes(Param::class)[0] ?? null)?->newInstance();
+            $headerAttribute = ($parameter->getAttributes(Header::class)[0] ?? null)?->newInstance();
+            $queryAttribute = ($parameter->getAttributes(Query::class)[0] ?? null)?->newInstance();
 
             if ($pathAttribute instanceof Param && !empty($pathAttribute->name)) {
                 $arguments[$parameter->getName()] = $pathAttribute->name;
