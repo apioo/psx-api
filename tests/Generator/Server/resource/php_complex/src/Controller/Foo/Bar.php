@@ -6,9 +6,7 @@
 
 namespace App\Controller\Foo;
 
-use App\Model\EntryCollection;
-use App\Model\EntryCreate;
-use App\Model\EntryMessage;
+use App\Model;
 use PSX\Api\Attribute\Body;
 use PSX\Api\Attribute\Delete;
 use PSX\Api\Attribute\Get;
@@ -26,7 +24,7 @@ class Bar extends ControllerAbstract
     #[Get]
     #[Path('/foo')]
     #[StatusCode(200)]
-    public function get(): EntryCollection
+    public function get(): Model\EntryCollection
     {
         // @TODO implement method
     }
@@ -34,7 +32,7 @@ class Bar extends ControllerAbstract
     #[Post]
     #[Path('/foo')]
     #[StatusCode(201)]
-    public function create(#[Body] EntryCreate $payload): EntryMessage
+    public function create(#[Body] Model\EntryCreate $payload): Model\EntryMessage
     {
         // @TODO implement method
     }

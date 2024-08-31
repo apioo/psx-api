@@ -27,6 +27,7 @@ use PSX\Api\OperationInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
+use PSX\Schema\TypeInterface;
 
 /**
  * TypeScript
@@ -105,33 +106,33 @@ class TypeScript extends ServerAbstract
         return $controller;
     }
 
-    protected function generateArgumentPath(string $rawName, string $variableName, string $type): string
+    protected function generateArgumentPath(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string
     {
         return '@Param(\'' . $rawName . '\') ' . $variableName . ': ' . $type;
     }
 
-    protected function generateArgumentQuery(string $rawName, string $variableName, string $type): string
+    protected function generateArgumentQuery(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string
     {
         return '@Query(\'' . $rawName . '\') ' . $variableName . ': ' . $type;
     }
 
-    protected function generateArgumentHeader(string $rawName, string $variableName, string $type): string
+    protected function generateArgumentHeader(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string
     {
         return '@Headers(\'' . $rawName . '\') ' . $variableName . ': ' . $type;
     }
 
-    protected function generateArgumentBody(string $variableName, string $type): string
+    protected function generateArgumentBody(string $variableName, string $type, TypeInterface $argumentType): string
     {
         return '@Body() ' . $variableName . ': ' . $type;
     }
 
-    protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $returnType): string
+    protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, TypeInterface $returnType): string
     {
         $methodName = ucfirst(strtolower($operation->getMethod()));
 
         $method = '  @' . $methodName . '(\'' . $operation->getPath() . '\')' . "\n";
         $method.= '  @HttpCode(' . $operation->getReturn()->getCode() . ')' . "\n";
-        $method.= '  ' . $operationName . '(' . implode(', ', $arguments) . '): ' . $returnType . ' {' . "\n";
+        $method.= '  ' . $operationName . '(' . implode(', ', $arguments) . '): ' . $type . ' {' . "\n";
         $method.= '    // @TODO implement method' . "\n";
         $method.= '    return {};' . "\n";
         $method.= '  }' . "\n";

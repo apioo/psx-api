@@ -24,6 +24,8 @@ use PSX\Api\Generator\Server\Dto\File;
 use PSX\Api\OperationInterface;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
+use PSX\Schema\Type\ReferenceType;
+use PSX\Schema\TypeInterface;
 
 /**
  * PHP
@@ -90,11 +92,7 @@ class PHP extends ServerAbstract
 
         $controller = 'namespace ' . implode('\\', $namespace). ';' . "\n";
         $controller.= "\n";
-
-        foreach ($imports as $className) {
-            $controller.= 'use App\\Model\\' . $className . ';' . "\n";
-        }
-
+        $controller.= 'use App\Model;' . "\n";
         $controller.= 'use PSX\Api\Attribute\Body;' . "\n";
         $controller.= 'use PSX\Api\Attribute\Delete;' . "\n";
         $controller.= 'use PSX\Api\Attribute\Get;' . "\n";
@@ -120,8 +118,12 @@ class PHP extends ServerAbstract
         return $controller;
     }
 
-    protected function generateArgumentPath(string $rawName, string $variableName, string $type): string
+    protected function generateArgumentPath(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string
     {
+        if ($argumentType instanceof ReferenceType) {
+            $type = 'Model\\' . $type;
+        }
+
         if ($rawName === $variableName) {
             return '#[Param] ' . $type . ' $' . $variableName;
         } else {
@@ -129,8 +131,12 @@ class PHP extends ServerAbstract
         }
     }
 
-    protected function generateArgumentQuery(string $rawName, string $variableName, string $type): string
+    protected function generateArgumentQuery(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string
     {
+        if ($argumentType instanceof ReferenceType) {
+            $type = 'Model\\' . $type;
+        }
+
         if ($rawName === $variableName) {
             return '#[Query] ' . $type . ' $' . $variableName;
         } else {
@@ -138,8 +144,12 @@ class PHP extends ServerAbstract
         }
     }
 
-    protected function generateArgumentHeader(string $rawName, string $variableName, string $type): string
+    protected function generateArgumentHeader(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string
     {
+        if ($argumentType instanceof ReferenceType) {
+            $type = 'Model\\' . $type;
+        }
+
         if ($rawName === $variableName) {
             return '#[Header] ' . $type . ' $' . $variableName;
         } else {
@@ -147,19 +157,27 @@ class PHP extends ServerAbstract
         }
     }
 
-    protected function generateArgumentBody(string $variableName, string $type): string
+    protected function generateArgumentBody(string $variableName, string $type, TypeInterface $argumentType): string
     {
+        if ($argumentType instanceof ReferenceType) {
+            $type = 'Model\\' . $type;
+        }
+
         return '#[Body] ' . $type . ' $' . $variableName;
     }
 
-    protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $returnType): string
+    protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, TypeInterface $returnType): string
     {
+        if ($returnType instanceof ReferenceType) {
+            $type = 'Model\\' . $type;
+        }
+
         $methodName = ucfirst(strtolower($operation->getMethod()));
 
         $method = '    #[' . $methodName . ']' . "\n";
         $method.= '    #[Path(\'' . $operation->getPath() . '\')]' . "\n";
         $method.= '    #[StatusCode(' . $operation->getReturn()->getCode() . ')]' . "\n";
-        $method.= '    public function ' . $operationName . '(' . implode(', ', $arguments) . '): ' . $returnType . "\n";
+        $method.= '    public function ' . $operationName . '(' . implode(', ', $arguments) . '): ' . $type . "\n";
         $method.= '    {' . "\n";
         $method.= '        // @TODO implement method' . "\n";
         $method.= '    }' . "\n";

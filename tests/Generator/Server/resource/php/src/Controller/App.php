@@ -6,13 +6,7 @@
 
 namespace App\Controller;
 
-use App\Model\Entry;
-use App\Model\EntryCollection;
-use App\Model\EntryCreate;
-use App\Model\EntryMessage;
-use App\Model\EntryUpdate;
-use App\Model\EntryDelete;
-use App\Model\EntryPatch;
+use App\Model;
 use PSX\Api\Attribute\Body;
 use PSX\Api\Attribute\Delete;
 use PSX\Api\Attribute\Get;
@@ -30,7 +24,7 @@ class App extends ControllerAbstract
     #[Get]
     #[Path('/foo/:name/:type')]
     #[StatusCode(200)]
-    public function get(#[Param] string $name, #[Param] string $type, #[Query] int $startIndex, #[Query] float $float, #[Query] bool $boolean, #[Query] \PSX\DateTime\LocalDate $date, #[Query] \PSX\DateTime\LocalDateTime $datetime, #[Query] Entry $args): EntryCollection
+    public function get(#[Param] string $name, #[Param] string $type, #[Query] int $startIndex, #[Query] float $float, #[Query] bool $boolean, #[Query] \PSX\DateTime\LocalDate $date, #[Query] \PSX\DateTime\LocalDateTime $datetime, #[Query] Model\Entry $args): Model\EntryCollection
     {
         // @TODO implement method
     }
@@ -38,7 +32,7 @@ class App extends ControllerAbstract
     #[Post]
     #[Path('/foo/:name/:type')]
     #[StatusCode(201)]
-    public function create(#[Param] string $name, #[Param] string $type, #[Body] EntryCreate $payload): EntryMessage
+    public function create(#[Param] string $name, #[Param] string $type, #[Body] Model\EntryCreate $payload): Model\EntryMessage
     {
         // @TODO implement method
     }
@@ -54,7 +48,7 @@ class App extends ControllerAbstract
     #[Delete]
     #[Path('/foo/:name/:type')]
     #[StatusCode(204)]
-    public function delete(#[Param] string $name, #[Param] string $type, #[Body] EntryDelete $payload): EntryMessage
+    public function delete(#[Param] string $name, #[Param] string $type, #[Body] Model\EntryDelete $payload): Model\EntryMessage
     {
         // @TODO implement method
     }

@@ -140,11 +140,11 @@ abstract class ServerAbstract implements GeneratorInterface
 
     abstract protected function generateHeader(File $file, array $imports): string;
     abstract protected function generateFooter(File $file): string;
-    abstract protected function generateArgumentPath(string $rawName, string $variableName, string $type): string;
-    abstract protected function generateArgumentQuery(string $rawName, string $variableName, string $type): string;
-    abstract protected function generateArgumentHeader(string $rawName, string $variableName, string $type): string;
-    abstract protected function generateArgumentBody(string $variableName, string $type): string;
-    abstract protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $returnType): string;
+    abstract protected function generateArgumentPath(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string;
+    abstract protected function generateArgumentQuery(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string;
+    abstract protected function generateArgumentHeader(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string;
+    abstract protected function generateArgumentBody(string $variableName, string $type, TypeInterface $argumentType): string;
+    abstract protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, TypeInterface $returnType): string;
 
     protected function buildControllerFileName(string $name): string
     {
@@ -216,26 +216,28 @@ abstract class ServerAbstract implements GeneratorInterface
             foreach ($operation->getArguments()->getAll() as $argumentName => $argument) {
                 $rawName = $argumentName;
                 $variableName = $this->normalizer->argument($argumentName);
-                $type = $this->newType($argument->getSchema(), $specification->getDefinitions());
+                $argumentType = $argument->getSchema();
+                $type = $this->newType($argumentType, $specification->getDefinitions());
 
                 if ($argument->getIn() === ArgumentInterface::IN_PATH) {
-                    $args[] = $this->generateArgumentPath($rawName, $variableName, $type->type);
+                    $args[] = $this->generateArgumentPath($rawName, $variableName, $type->type, $argumentType);
                 } elseif ($argument->getIn() === ArgumentInterface::IN_QUERY) {
-                    $args[] = $this->generateArgumentQuery($rawName, $variableName, $type->type);
+                    $args[] = $this->generateArgumentQuery($rawName, $variableName, $type->type, $argumentType);
                 } elseif ($argument->getIn() === ArgumentInterface::IN_HEADER) {
-                    $args[] = $this->generateArgumentHeader($rawName, $variableName, $type->type);
+                    $args[] = $this->generateArgumentHeader($rawName, $variableName, $type->type, $argumentType);
                 } elseif ($argument->getIn() === ArgumentInterface::IN_BODY) {
-                    $args[] = $this->generateArgumentBody($variableName, $type->type);
+                    $args[] = $this->generateArgumentBody($variableName, $type->type, $argumentType);
                 }
 
-                $this->resolveImport($argument->getSchema(), $imports);
+                $this->resolveImport($argumentType, $imports);
             }
 
-            $type = $this->newType($operation->getReturn()->getSchema(), $specification->getDefinitions());
+            $returnType = $operation->getReturn()->getSchema();
+            $type = $this->newType($returnType, $specification->getDefinitions());
 
-            $this->resolveImport($operation->getReturn()->getSchema(), $imports);
+            $this->resolveImport($returnType, $imports);
 
-            $controller.= $this->generateMethod($operationName, $operation, $args, $type->type);
+            $controller.= $this->generateMethod($operationName, $operation, $args, $type->type, $returnType);
         }
 
         $result = $this->generateHeader($file, $imports);

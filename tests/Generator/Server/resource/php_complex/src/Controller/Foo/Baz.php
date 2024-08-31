@@ -6,9 +6,7 @@
 
 namespace App\Controller\Foo;
 
-use App\Model\EntryCollection;
-use App\Model\EntryCreate;
-use App\Model\EntryMessage;
+use App\Model;
 use PSX\Api\Attribute\Body;
 use PSX\Api\Attribute\Delete;
 use PSX\Api\Attribute\Get;
@@ -26,7 +24,7 @@ class Baz extends ControllerAbstract
     #[Get]
     #[Path('/bar/$year<[0-9]+>')]
     #[StatusCode(200)]
-    public function get(#[Param] string $year): EntryCollection
+    public function get(#[Param] string $year): Model\EntryCollection
     {
         // @TODO implement method
     }
@@ -34,7 +32,7 @@ class Baz extends ControllerAbstract
     #[Post]
     #[Path('/bar/$year<[0-9]+>')]
     #[StatusCode(201)]
-    public function create(#[Body] EntryCreate $payload): EntryMessage
+    public function create(#[Body] Model\EntryCreate $payload): Model\EntryMessage
     {
         // @TODO implement method
     }
