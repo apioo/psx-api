@@ -66,7 +66,7 @@ export class Client extends ClientAbstract {
 
     /**
      * @returns {Promise<EntryMessage>}
-     * @throws {EntryMessageExceptionException}
+     * @throws {EntryMessageException}
      * @throws {ClientException}
      */
     public async create(name: string, type: string, payload: EntryCreate): Promise<EntryMessage> {
@@ -107,8 +107,8 @@ export class Client extends ClientAbstract {
 
     /**
      * @returns {Promise<Record<string, EntryMessage>>}
-     * @throws {EntryMessageExceptionException}
-     * @throws {MapEntryMessageExceptionException}
+     * @throws {EntryMessageException}
+     * @throws {MapEntryMessageException}
      * @throws {ClientException}
      */
     public async update(name: string, type: string, payload: Record<string, EntryUpdate>): Promise<Record<string, EntryMessage>> {
@@ -183,8 +183,8 @@ export class Client extends ClientAbstract {
 
     /**
      * @returns {Promise<Array<EntryMessage>>}
-     * @throws {EntryMessageExceptionException}
-     * @throws {ArrayEntryMessageExceptionException}
+     * @throws {EntryMessageException}
+     * @throws {ArrayEntryMessageException}
      * @throws {ClientException}
      */
     public async patch(name: string, type: string, payload: Array<EntryPatch>): Promise<Array<EntryMessage>> {

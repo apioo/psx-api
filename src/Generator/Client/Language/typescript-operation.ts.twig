@@ -6,7 +6,7 @@
 {% for name, arg in operation.args %}     * @param {{ '{' }}{{ arg.schema.docType|raw }}{{ '}' }} {{ name }}
 {% endfor %}
      * @returns {{ '{' }}Promise<{% if operation.return %}{{ operation.return.schema.docType|raw }}{% else %}void{% endif %}>{{ '}' }}
-{% for throw in operation.throws|throws_unique %}     * @throws {{ '{' }}{{ throw.className|raw }}Exception{{ '}' }}
+{% for throw in operation.throws|throws_unique %}     * @throws {{ '{' }}{{ throw.className|raw }}{{ '}' }}
 {% endfor %}
      * @throws {{ '{' }}ClientException{{ '}' }}
      */
