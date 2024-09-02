@@ -62,13 +62,13 @@ class LocalRepository implements RepositoryInterface
         );
 
         $result[self::SERVER_PHP] = new GeneratorConfig(
-            fn(?string $baseUrl, ?Config $config) => new Generator\Server\PHP(),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Server\PHP($baseUrl, $config),
             'php',
             'application/php'
         );
 
         $result[self::SERVER_TYPESCRIPT] = new GeneratorConfig(
-            fn(?string $baseUrl, ?Config $config) => new Generator\Server\TypeScript(),
+            fn(?string $baseUrl, ?Config $config) => new Generator\Server\TypeScript($baseUrl, $config),
             'ts',
             'application/typescript'
         );

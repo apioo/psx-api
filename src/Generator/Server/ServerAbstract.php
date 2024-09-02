@@ -22,6 +22,7 @@ namespace PSX\Api\Generator\Server;
 
 use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Util\Naming;
+use PSX\Api\Generator\ConfigurationTrait;
 use PSX\Api\Generator\Server\Dto\Context;
 use PSX\Api\Generator\Server\Dto\File;
 use PSX\Api\Generator\Server\Dto\Folder;
@@ -60,14 +61,22 @@ use Twig\Loader\FilesystemLoader;
  */
 abstract class ServerAbstract implements GeneratorInterface
 {
+    use ConfigurationTrait;
+
+    protected ?string $namespace;
+    protected ?Generator\Config $config;
     private Environment $engine;
     private SchemaGeneratorInterface $generator;
     private Type\GeneratorInterface $typeGenerator;
     protected NormalizerInterface $normalizer;
     protected Naming $naming;
 
-    public function __construct()
+    public function __construct(?string $baseUrl = null, ?Generator\Config $config = null)
     {
+        $this->baseUrl = $baseUrl;
+        $this->namespace = $config?->get(Generator\Config::NAMESPACE);
+        $this->config = $config;
+
         $this->engine = $this->newTemplateEngine();
         $this->generator = $this->newGenerator();
 
@@ -285,7 +294,10 @@ abstract class ServerAbstract implements GeneratorInterface
 
     protected function buildContext(SpecificationInterface $specification, Folder $folder): Context
     {
-        return new Context();
+        $context = new Context();
+        $context['namespace'] = $this->namespace;
+
+        return $context;
     }
 
     private function buildRecursive(Folder $parent, array $operationId, OperationInterface $operation): void
