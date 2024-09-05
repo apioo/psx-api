@@ -34,4 +34,9 @@ export class Client extends ClientAbstract {
     {
         return new Client('http://api.foo.com', new HttpBearer(token));
     }
+
+    public static buildAnonymous(): Client
+    {
+        return new Client('http://api.foo.com', new Anonymous());
+    }
 }

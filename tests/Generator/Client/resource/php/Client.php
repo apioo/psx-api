@@ -248,4 +248,9 @@ class Client extends ClientAbstract
     {
         return new self('http://api.foo.com', new Credentials\HttpBearer($token));
     }
+
+    public static function buildAnonymous(): self
+    {
+        return new self('http://api.foo.com', new Credentials\Anonymous());
+    }
 }
