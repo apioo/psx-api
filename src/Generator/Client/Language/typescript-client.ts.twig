@@ -66,8 +66,9 @@ export class {{ className }} extends ClientAbstract {
         return new {{ className }}('{{ baseUrl }}', new OAuth2(clientId, clientSecret, '{{ security.tokenUrl }}', '{{ security.authorizationUrl }}', tokenStore, scopes));
 {% endif %}
     }
-{% else %}
-    public static build({% if not baseUrl %}baseUrl: string{% endif %}): {{ className }}
+{% endif %}
+
+    public static buildAnonymous({% if not baseUrl %}baseUrl: string{% endif %}): {{ className }}
     {
 {% if not baseUrl %}
         return new {{ className }}(baseUrl, new Anonymous());
@@ -75,5 +76,4 @@ export class {{ className }} extends ClientAbstract {
         return new {{ className }}('{{ baseUrl }}', new Anonymous());
 {% endif %}
     }
-{% endif %}
 }
