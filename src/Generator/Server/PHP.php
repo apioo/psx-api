@@ -83,7 +83,7 @@ class PHP extends ServerAbstract
     {
         $namespace = ['App', 'Controller'];
         $folder = $file->getFolder();
-        while ($folder->getName() !== '.') {
+        while ($folder !== null && $folder->getName() !== '.') {
             $namespace[] = $this->normalizer->class($folder->getName());
             $folder = $folder->getParent();
         }
