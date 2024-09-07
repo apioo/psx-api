@@ -153,6 +153,10 @@ abstract class ServerAbstract implements GeneratorInterface
     abstract protected function generateArgumentQuery(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string;
     abstract protected function generateArgumentHeader(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string;
     abstract protected function generateArgumentBody(string $variableName, string $type, TypeInterface $argumentType): string;
+
+    /**
+     * @param array<string> $arguments
+     */
     abstract protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, TypeInterface $returnType): string;
 
     protected function buildControllerFileName(string $name): string
