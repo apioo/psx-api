@@ -59,4 +59,16 @@ class TypeScriptTest extends GeneratorTestCase
         $this->assertFileExists($target . '/src/controller/bar.controller.ts');
         $this->assertFileExists($target . '/src/dto/Entry.ts');
     }
+
+    public function testGenerateContentType()
+    {
+        $generator = new TypeScript();
+
+        $result = $generator->generate($this->getSpecificationContentType());
+        $target = __DIR__ . '/resource/typescript_content_type';
+
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/src/controller/app.controller.ts');
+    }
 }

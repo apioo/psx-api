@@ -59,4 +59,16 @@ class PHPTest extends GeneratorTestCase
         $this->assertFileExists($target . '/src/Controller/Bar.php');
         $this->assertFileExists($target . '/src/Model/Entry.php');
     }
+
+    public function testGenerateContentType()
+    {
+        $generator = new PHP();
+
+        $result = $generator->generate($this->getSpecificationContentType());
+        $target = __DIR__ . '/resource/php_content_type';
+
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/src/Controller/App.php');
+    }
 }

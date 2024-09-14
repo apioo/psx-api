@@ -22,6 +22,7 @@ namespace PSX\Api\Generator\Server;
 
 use PSX\Api\Generator\Server\Dto\File;
 use PSX\Api\OperationInterface;
+use PSX\Schema\ContentType;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\Type\ReferenceType;
@@ -118,7 +119,7 @@ class PHP extends ServerAbstract
         return $controller;
     }
 
-    protected function generateArgumentPath(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string
+    protected function generateArgumentPath(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string
     {
         if ($argumentType instanceof ReferenceType) {
             $type = 'Model\\' . $type;
@@ -131,7 +132,7 @@ class PHP extends ServerAbstract
         }
     }
 
-    protected function generateArgumentQuery(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string
+    protected function generateArgumentQuery(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string
     {
         if ($argumentType instanceof ReferenceType) {
             $type = 'Model\\' . $type;
@@ -144,7 +145,7 @@ class PHP extends ServerAbstract
         }
     }
 
-    protected function generateArgumentHeader(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string
+    protected function generateArgumentHeader(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string
     {
         if ($argumentType instanceof ReferenceType) {
             $type = 'Model\\' . $type;
@@ -157,7 +158,7 @@ class PHP extends ServerAbstract
         }
     }
 
-    protected function generateArgumentBody(string $variableName, string $type, TypeInterface $argumentType): string
+    protected function generateArgumentBody(string $variableName, string $type, TypeInterface|ContentType $argumentType): string
     {
         if ($argumentType instanceof ReferenceType) {
             $type = 'Model\\' . $type;
@@ -166,7 +167,7 @@ class PHP extends ServerAbstract
         return '#[Body] ' . $type . ' $' . $variableName;
     }
 
-    protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, TypeInterface $returnType): string
+    protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, TypeInterface|ContentType $returnType): string
     {
         if ($returnType instanceof ReferenceType) {
             $type = 'Model\\' . $type;

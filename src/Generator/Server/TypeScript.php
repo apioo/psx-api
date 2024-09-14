@@ -25,6 +25,7 @@ use PSX\Api\Generator\Server\Dto\File;
 use PSX\Api\Generator\Server\Dto\Folder;
 use PSX\Api\OperationInterface;
 use PSX\Api\SpecificationInterface;
+use PSX\Schema\ContentType;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\TypeInterface;
@@ -106,27 +107,27 @@ class TypeScript extends ServerAbstract
         return $controller;
     }
 
-    protected function generateArgumentPath(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string
+    protected function generateArgumentPath(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string
     {
         return '@Param(\'' . $rawName . '\') ' . $variableName . ': ' . $type;
     }
 
-    protected function generateArgumentQuery(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string
+    protected function generateArgumentQuery(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string
     {
         return '@Query(\'' . $rawName . '\') ' . $variableName . ': ' . $type;
     }
 
-    protected function generateArgumentHeader(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string
+    protected function generateArgumentHeader(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string
     {
         return '@Headers(\'' . $rawName . '\') ' . $variableName . ': ' . $type;
     }
 
-    protected function generateArgumentBody(string $variableName, string $type, TypeInterface $argumentType): string
+    protected function generateArgumentBody(string $variableName, string $type, TypeInterface|ContentType $argumentType): string
     {
         return '@Body() ' . $variableName . ': ' . $type;
     }
 
-    protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, TypeInterface $returnType): string
+    protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, TypeInterface|ContentType $returnType): string
     {
         $methodName = ucfirst(strtolower($operation->getMethod()));
 

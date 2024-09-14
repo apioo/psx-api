@@ -30,6 +30,7 @@ use PSX\Api\GeneratorInterface;
 use PSX\Api\Operation\ArgumentInterface;
 use PSX\Api\OperationInterface;
 use PSX\Api\SpecificationInterface;
+use PSX\Schema\ContentType;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\TypeNotFoundException;
 use PSX\Schema\Generator;
@@ -149,15 +150,15 @@ abstract class ServerAbstract implements GeneratorInterface
 
     abstract protected function generateHeader(File $file, array $imports): string;
     abstract protected function generateFooter(File $file): string;
-    abstract protected function generateArgumentPath(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string;
-    abstract protected function generateArgumentQuery(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string;
-    abstract protected function generateArgumentHeader(string $rawName, string $variableName, string $type, TypeInterface $argumentType): string;
-    abstract protected function generateArgumentBody(string $variableName, string $type, TypeInterface $argumentType): string;
+    abstract protected function generateArgumentPath(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string;
+    abstract protected function generateArgumentQuery(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string;
+    abstract protected function generateArgumentHeader(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string;
+    abstract protected function generateArgumentBody(string $variableName, string $type, TypeInterface|ContentType $argumentType): string;
 
     /**
      * @param array<string> $arguments
      */
-    abstract protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, TypeInterface $returnType): string;
+    abstract protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, TypeInterface|ContentType $returnType): string;
 
     protected function buildControllerFileName(string $name): string
     {
@@ -184,7 +185,7 @@ abstract class ServerAbstract implements GeneratorInterface
      * @throws InvalidTypeException
      * @throws TypeNotFoundException
      */
-    protected function newType(TypeInterface $type, DefinitionsInterface $definitions): Dto\Type
+    protected function newType(TypeInterface|ContentType $type, DefinitionsInterface $definitions): Dto\Type
     {
         if ($type instanceof ReferenceType) {
             // in case we have a reference type we take a look at the reference, normally this is a struct type but in
@@ -199,9 +200,17 @@ abstract class ServerAbstract implements GeneratorInterface
             }
         }
 
+        if ($type instanceof ContentType) {
+            $dataType = $this->typeGenerator->getContentType($type);
+            $docType = $dataType;
+        } else {
+            $dataType = $this->typeGenerator->getType($type);
+            $docType = $this->typeGenerator->getDocType($type);
+        }
+
         return new Dto\Type(
-            $this->typeGenerator->getType($type),
-            $this->typeGenerator->getDocType($type),
+            $dataType,
+            $docType
         );
     }
 
@@ -242,13 +251,17 @@ abstract class ServerAbstract implements GeneratorInterface
                     $args[] = $this->generateArgumentBody($variableName, $type->type, $argumentType);
                 }
 
-                $this->resolveImport($argumentType, $imports);
+                if ($argumentType instanceof TypeInterface) {
+                    $this->resolveImport($argumentType, $imports);
+                }
             }
 
             $returnType = $operation->getReturn()->getSchema();
             $type = $this->newType($returnType, $specification->getDefinitions());
 
-            $this->resolveImport($returnType, $imports);
+            if ($returnType instanceof TypeInterface) {
+                $this->resolveImport($returnType, $imports);
+            }
 
             $controller.= $this->generateMethod($operationName, $operation, $args, $type->type, $returnType);
         }
