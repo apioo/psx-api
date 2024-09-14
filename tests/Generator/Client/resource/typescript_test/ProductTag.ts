@@ -24,6 +24,8 @@ export class ProductTag extends TagAbstract {
         let params: AxiosRequestConfig = {
             url: url,
             method: 'GET',
+            headers: {
+            },
             params: this.parser.query({
                 'startIndex': startIndex,
                 'count': count,
@@ -39,7 +41,9 @@ export class ProductTag extends TagAbstract {
             if (error instanceof ClientException) {
                 throw error;
             } else if (axios.isAxiosError(error) && error.response) {
-                switch (error.response.status) {
+                const statusCode = error.response.status;
+
+                switch (true) {
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
@@ -62,6 +66,8 @@ export class ProductTag extends TagAbstract {
         let params: AxiosRequestConfig = {
             url: url,
             method: 'POST',
+            headers: {
+            },
             params: this.parser.query({
             }, [
             ]),
@@ -75,7 +81,9 @@ export class ProductTag extends TagAbstract {
             if (error instanceof ClientException) {
                 throw error;
             } else if (axios.isAxiosError(error) && error.response) {
-                switch (error.response.status) {
+                const statusCode = error.response.status;
+
+                switch (true) {
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
@@ -99,6 +107,8 @@ export class ProductTag extends TagAbstract {
         let params: AxiosRequestConfig = {
             url: url,
             method: 'PUT',
+            headers: {
+            },
             params: this.parser.query({
             }, [
             ]),
@@ -112,7 +122,9 @@ export class ProductTag extends TagAbstract {
             if (error instanceof ClientException) {
                 throw error;
             } else if (axios.isAxiosError(error) && error.response) {
-                switch (error.response.status) {
+                const statusCode = error.response.status;
+
+                switch (true) {
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
@@ -136,6 +148,8 @@ export class ProductTag extends TagAbstract {
         let params: AxiosRequestConfig = {
             url: url,
             method: 'PATCH',
+            headers: {
+            },
             params: this.parser.query({
             }, [
             ]),
@@ -149,7 +163,9 @@ export class ProductTag extends TagAbstract {
             if (error instanceof ClientException) {
                 throw error;
             } else if (axios.isAxiosError(error) && error.response) {
-                switch (error.response.status) {
+                const statusCode = error.response.status;
+
+                switch (true) {
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
@@ -173,6 +189,8 @@ export class ProductTag extends TagAbstract {
         let params: AxiosRequestConfig = {
             url: url,
             method: 'DELETE',
+            headers: {
+            },
             params: this.parser.query({
             }, [
             ]),
@@ -185,7 +203,9 @@ export class ProductTag extends TagAbstract {
             if (error instanceof ClientException) {
                 throw error;
             } else if (axios.isAxiosError(error) && error.response) {
-                switch (error.response.status) {
+                const statusCode = error.response.status;
+
+                switch (true) {
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }

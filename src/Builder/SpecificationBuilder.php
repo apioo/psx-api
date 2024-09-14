@@ -24,6 +24,7 @@ use PSX\Api\Exception\OperationAlreadyExistsException;
 use PSX\Api\SecurityInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
+use PSX\Schema\ContentType;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\TypeInterface;
 
@@ -53,7 +54,7 @@ class SpecificationBuilder implements SpecificationBuilderInterface
         $this->specification->setSecurity($security);
     }
 
-    public function addOperation(string $operationId, string $method, string $path, int $statusCode, TypeInterface $schema): OperationBuilderInterface
+    public function addOperation(string $operationId, string $method, string $path, int $statusCode, TypeInterface|ContentType $schema): OperationBuilderInterface
     {
         if ($this->specification->getOperations()->has($operationId)) {
             throw new OperationAlreadyExistsException('Operation "' . $operationId . '" already exists');

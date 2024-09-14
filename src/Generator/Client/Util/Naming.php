@@ -21,10 +21,12 @@
 namespace PSX\Api\Generator\Client\Util;
 
 use PSX\Api\Exception\InvalidTypeException;
+use PSX\Schema\ContentType;
 use PSX\Schema\Generator\Normalizer\NormalizerInterface;
 use PSX\Schema\Type\ArrayType;
 use PSX\Schema\Type\MapType;
 use PSX\Schema\Type\ReferenceType;
+use PSX\Schema\Type\StringType;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -53,9 +55,18 @@ class Naming
         return $this->normalizer->method($tagName);
     }
 
-    public function buildExceptionClassNameByType(TypeInterface $type): string
+    public function buildExceptionClassNameByType(TypeInterface|ContentType $type): string
     {
-        if ($type instanceof ReferenceType) {
+        if ($type instanceof ContentType) {
+            return match ($type) {
+                ContentType::BINARY => 'BinaryException',
+                ContentType::FORM => 'FormException',
+                ContentType::JSON => 'JsonException',
+                ContentType::MULTIPART => 'MultipartException',
+                ContentType::TEXT => 'TextException',
+                ContentType::XML => 'XmlException',
+            };
+        } elseif ($type instanceof ReferenceType) {
             return $this->normalizer->class($type->getRef(), 'Exception');
         } elseif ($type instanceof MapType) {
             return 'Map' . $this->buildExceptionClassNameByType($type->getAdditionalProperties());

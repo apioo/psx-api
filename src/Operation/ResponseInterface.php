@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Operation;
 
+use PSX\Schema\ContentType;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -33,5 +34,5 @@ interface ResponseInterface
 {
     public function getCode(): int;
 
-    public function getSchema(): TypeInterface;
+    public function getSchema(): TypeInterface|ContentType;
 }

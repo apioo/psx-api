@@ -21,8 +21,10 @@
 namespace PSX\Api\Tests\Generator\Client;
 
 use PSX\Api\Exception\InvalidTypeException;
+use PSX\Api\Generator\Client\PHP;
 use PSX\Api\Generator\Client\TypeScript;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
+use PSX\Schema\Generator\Config;
 
 /**
  * TypeScriptTest
@@ -77,4 +79,15 @@ class TypeScriptTest extends GeneratorTestCase
         $this->assertFileExists($target . '/Client.ts');
     }
 
+    public function testGenerateContentType()
+    {
+        $generator = new TypeScript('http://api.foo.com');
+
+        $result = $generator->generate($this->getSpecificationContentType());
+        $target = __DIR__ . '/resource/typescript_content_type';
+
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/Client.ts');
+    }
 }

@@ -20,6 +20,8 @@
 
 namespace PSX\Api\Attribute;
 
+use PSX\Schema\ContentType;
+
 /**
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -28,8 +30,8 @@ namespace PSX\Api\Attribute;
 abstract class SchemaAbstract
 {
     public function __construct(
-        public string $schema,
-        public ?string $name = null
+        public string|ContentType $schema,
+        public ?string $name = null,
     )
     {
     }

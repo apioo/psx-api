@@ -4,6 +4,7 @@
  * @see https://sdkgen.app
  */
 
+namespace Foo\Bar;
 
 use GuzzleHttp\Exception\BadResponseException;
 use Sdkgen\Client\ClientAbstract;
@@ -17,92 +18,31 @@ use Sdkgen\Client\TokenStoreInterface;
 class Client extends ClientAbstract
 {
     /**
-     * Returns a collection
-     *
-     * @param string $name
-     * @param string $type
-     * @param int|null $startIndex
-     * @param float|null $float
-     * @param bool|null $boolean
-     * @param \PSX\DateTime\LocalDate|null $date
-     * @param \PSX\DateTime\LocalDateTime|null $datetime
-     * @param Entry|null $args
-     * @return EntryCollection
+     * @param \Psr\Http\Message\StreamInterface $body
+     * @return \Psr\Http\Message\StreamInterface
+     * @throws BinaryException
      * @throws ClientException
      */
-    public function get(string $name, string $type, ?int $startIndex = null, ?float $float = null, ?bool $boolean = null, ?\PSX\DateTime\LocalDate $date = null, ?\PSX\DateTime\LocalDateTime $datetime = null, ?Entry $args = null): EntryCollection
+    public function binary(\Psr\Http\Message\StreamInterface $body): \Psr\Http\Message\StreamInterface
     {
-        $url = $this->parser->url('/foo/:name/:type', [
-            'name' => $name,
-            'type' => $type,
+        $url = $this->parser->url('/binary', [
         ]);
 
         $options = [
             'headers' => [
-            ],
-            'query' => $this->parser->query([
-                'startIndex' => $startIndex,
-                'float' => $float,
-                'boolean' => $boolean,
-                'date' => $date,
-                'datetime' => $datetime,
-                'args' => $args,
-            ], [
-                'args',
-            ]),
-        ];
-
-        try {
-            $response = $this->httpClient->request('GET', $url, $options);
-            $body = $response->getBody();
-
-            $data = $this->parser->parse((string) $body, ::class);
-
-            return $data;
-        } catch (ClientException $e) {
-            throw $e;
-        } catch (BadResponseException $e) {
-            $body = $e->getResponse()->getBody();
-            $statusCode = $e->getResponse()->getStatusCode();
-
-            switch (true) {
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
-            }
-        } catch (\Throwable $e) {
-            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * @param string $name
-     * @param string $type
-     * @param EntryCreate $payload
-     * @return EntryMessage
-     * @throws EntryMessageException
-     * @throws ClientException
-     */
-    public function create(string $name, string $type, EntryCreate $payload): EntryMessage
-    {
-        $url = $this->parser->url('/foo/:name/:type', [
-            'name' => $name,
-            'type' => $type,
-        ]);
-
-        $options = [
-            'headers' => [
+                'Content-Type' => 'application/octet-stream',
             ],
             'query' => $this->parser->query([
             ], [
             ]),
-            'json' => $payload
+            'body' => $body
         ];
 
         try {
             $response = $this->httpClient->request('POST', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class);
+            $data = $body;
 
             return $data;
         } catch (ClientException $e) {
@@ -112,14 +52,10 @@ class Client extends ClientAbstract
             $statusCode = $e->getResponse()->getStatusCode();
 
             switch (true) {
-                case $statusCode === 400:
-                    $data = $this->parser->parse((string) $body, ::class);
+                case $statusCode >= 0 && $statusCode <= 999:
+                    $data = $body;
 
-                    throw new EntryMessageException($data);
-                case $statusCode === 500:
-                    $data = $this->parser->parse((string) $body, ::class);
-
-                    throw new EntryMessageException($data);
+                    throw new BinaryException($data);
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
@@ -129,35 +65,32 @@ class Client extends ClientAbstract
     }
 
     /**
-     * @param string $name
-     * @param string $type
-     * @param \PSX\Record\Record<EntryUpdate> $payload
-     * @return \PSX\Record\Record<EntryMessage>
-     * @throws EntryMessageException
-     * @throws MapEntryMessageException
+     * @param array $body
+     * @return array
+     * @throws FormException
      * @throws ClientException
      */
-    public function update(string $name, string $type, \PSX\Record\Record $payload): \PSX\Record\Record
+    public function form(array $body): array
     {
-        $url = $this->parser->url('/foo/:name/:type', [
-            'name' => $name,
-            'type' => $type,
+        $url = $this->parser->url('/form', [
         ]);
 
         $options = [
             'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
             ],
             'query' => $this->parser->query([
             ], [
             ]),
-            'json' => $payload
+            'form_params' => $body
         ];
 
         try {
-            $response = $this->httpClient->request('PUT', $url, $options);
+            $response = $this->httpClient->request('POST', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class, isMap: true);
+            $data = [];
+            parse_str((string) $body, $data);
 
             return $data;
         } catch (ClientException $e) {
@@ -167,14 +100,11 @@ class Client extends ClientAbstract
             $statusCode = $e->getResponse()->getStatusCode();
 
             switch (true) {
-                case $statusCode === 400:
-                    $data = $this->parser->parse((string) $body, ::class, isMap: true);
+                case $statusCode >= 500 && $statusCode <= 599:
+                    $data = [];
+                    parse_str((string) $body, $data);
 
-                    throw new EntryMessageException($data);
-                case $statusCode === 500:
-                    $data = $this->parser->parse((string) $body, ::class, isMap: true);
-
-                    throw new MapEntryMessageException($data);
+                    throw new FormException($data);
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
@@ -184,75 +114,31 @@ class Client extends ClientAbstract
     }
 
     /**
-     * @param string $name
-     * @param string $type
-     * @return void
+     * @param mixed $body
+     * @return mixed
+     * @throws JsonException
      * @throws ClientException
      */
-    public function delete(string $name, string $type): void
+    public function json(mixed $body): mixed
     {
-        $url = $this->parser->url('/foo/:name/:type', [
-            'name' => $name,
-            'type' => $type,
+        $url = $this->parser->url('/json', [
         ]);
 
         $options = [
             'headers' => [
+                'Content-Type' => 'application/json',
             ],
             'query' => $this->parser->query([
             ], [
             ]),
+            'json' => $body
         ];
 
         try {
-            $response = $this->httpClient->request('DELETE', $url, $options);
+            $response = $this->httpClient->request('POST', $url, $options);
             $body = $response->getBody();
 
-        } catch (ClientException $e) {
-            throw $e;
-        } catch (BadResponseException $e) {
-            $body = $e->getResponse()->getBody();
-            $statusCode = $e->getResponse()->getStatusCode();
-
-            switch (true) {
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
-            }
-        } catch (\Throwable $e) {
-            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * @param string $name
-     * @param string $type
-     * @param array<EntryPatch> $payload
-     * @return array<EntryMessage>
-     * @throws EntryMessageException
-     * @throws ArrayEntryMessageException
-     * @throws ClientException
-     */
-    public function patch(string $name, string $type, array $payload): array
-    {
-        $url = $this->parser->url('/foo/:name/:type', [
-            'name' => $name,
-            'type' => $type,
-        ]);
-
-        $options = [
-            'headers' => [
-            ],
-            'query' => $this->parser->query([
-            ], [
-            ]),
-            'json' => $payload
-        ];
-
-        try {
-            $response = $this->httpClient->request('PATCH', $url, $options);
-            $body = $response->getBody();
-
-            $data = $this->parser->parse((string) $body, ::class, isArray: true);
+            $data = \json_decode((string) $body);
 
             return $data;
         } catch (ClientException $e) {
@@ -262,14 +148,155 @@ class Client extends ClientAbstract
             $statusCode = $e->getResponse()->getStatusCode();
 
             switch (true) {
-                case $statusCode === 400:
-                    $data = $this->parser->parse((string) $body, ::class, isArray: true);
+                case $statusCode >= 400 && $statusCode <= 499:
+                    $data = \json_decode((string) $body);
 
-                    throw new EntryMessageException($data);
+                    throw new JsonException($data);
+                default:
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+            }
+        } catch (\Throwable $e) {
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * @param array $body
+     * @return array
+     * @throws MultipartException
+     * @throws ClientException
+     */
+    public function multipart(array $body): array
+    {
+        $url = $this->parser->url('/multipart', [
+        ]);
+
+        $options = [
+            'headers' => [
+                'Content-Type' => 'multipart/form-data',
+            ],
+            'query' => $this->parser->query([
+            ], [
+            ]),
+            'multipart' => $body
+        ];
+
+        try {
+            $response = $this->httpClient->request('POST', $url, $options);
+            $body = $response->getBody();
+
+            // @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
+            $data = [];
+
+            return $data;
+        } catch (ClientException $e) {
+            throw $e;
+        } catch (BadResponseException $e) {
+            $body = $e->getResponse()->getBody();
+            $statusCode = $e->getResponse()->getStatusCode();
+
+            switch (true) {
                 case $statusCode === 500:
-                    $data = $this->parser->parse((string) $body, ::class, isArray: true);
+                    // @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
+                    $data = [];
 
-                    throw new ArrayEntryMessageException($data);
+                    throw new MultipartException($data);
+                default:
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+            }
+        } catch (\Throwable $e) {
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * @param string $body
+     * @return string
+     * @throws TextException
+     * @throws ClientException
+     */
+    public function text(string $body): string
+    {
+        $url = $this->parser->url('/text', [
+        ]);
+
+        $options = [
+            'headers' => [
+                'Content-Type' => 'text/plain',
+            ],
+            'query' => $this->parser->query([
+            ], [
+            ]),
+            'body' => $body
+        ];
+
+        try {
+            $response = $this->httpClient->request('POST', $url, $options);
+            $body = $response->getBody();
+
+            $data = (string) $body;
+
+            return $data;
+        } catch (ClientException $e) {
+            throw $e;
+        } catch (BadResponseException $e) {
+            $body = $e->getResponse()->getBody();
+            $statusCode = $e->getResponse()->getStatusCode();
+
+            switch (true) {
+                case $statusCode === 500:
+                    $data = (string) $body;
+
+                    throw new TextException($data);
+                default:
+                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+            }
+        } catch (\Throwable $e) {
+            throw new ClientException('An unknown error occurred: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * @param \DOMDocument $body
+     * @return \DOMDocument
+     * @throws XmlException
+     * @throws ClientException
+     */
+    public function xml(\DOMDocument $body): \DOMDocument
+    {
+        $url = $this->parser->url('/xml', [
+        ]);
+
+        $options = [
+            'headers' => [
+                'Content-Type' => 'application/xml',
+            ],
+            'query' => $this->parser->query([
+            ], [
+            ]),
+            'body' => $body->saveXML()
+        ];
+
+        try {
+            $response = $this->httpClient->request('POST', $url, $options);
+            $body = $response->getBody();
+
+            $data = new \DOMDocument();
+            $data->loadXML((string) $body);
+
+            return $data;
+        } catch (ClientException $e) {
+            throw $e;
+        } catch (BadResponseException $e) {
+            $body = $e->getResponse()->getBody();
+            $statusCode = $e->getResponse()->getStatusCode();
+
+            switch (true) {
+                case $statusCode === 500:
+                    $data = new \DOMDocument();
+                    $data->loadXML((string) $body);
+
+                    throw new XmlException($data);
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
@@ -281,10 +308,6 @@ class Client extends ClientAbstract
 
 
 
-    public static function build(string $token): self
-    {
-        return new self('http://api.foo.com', new Credentials\HttpBearer($token));
-    }
 
     public static function buildAnonymous(): self
     {

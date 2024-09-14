@@ -37,6 +37,7 @@ use PSX\DateTime\LocalDate;
 use PSX\DateTime\LocalDateTime;
 use PSX\DateTime\LocalTime;
 use PSX\DateTime\Period;
+use PSX\Schema\ContentType;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Format;
@@ -260,8 +261,12 @@ class Attribute implements ParserInterface
     /**
      * @throws InvalidSchemaException
      */
-    private function getBodySchema(Attr\SchemaAbstract $annotation, DefinitionsInterface $definitions, string $basePath): TypeInterface
+    private function getBodySchema(Attr\SchemaAbstract $annotation, DefinitionsInterface $definitions, string $basePath): TypeInterface|ContentType
     {
+        if ($annotation->schema instanceof ContentType) {
+            return $annotation->schema;
+        }
+
         $schema = $this->schemaManager->getSchema($annotation->schema, new FilesystemContext($basePath));
 
         $definitions->merge($schema->getDefinitions());

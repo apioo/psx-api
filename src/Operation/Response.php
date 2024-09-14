@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Operation;
 
+use PSX\Schema\ContentType;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -32,14 +33,10 @@ use PSX\Schema\TypeInterface;
 class Response implements ResponseInterface, \JsonSerializable
 {
     private int $code;
-    private TypeInterface $schema;
+    private TypeInterface|ContentType $schema;
 
-    public function __construct(int $code, TypeInterface $schema)
+    public function __construct(int $code, TypeInterface|ContentType $schema)
     {
-        if (!($code >= 200 && $code < 600)) {
-            throw new \InvalidArgumentException('Provided an invalid "code" value, must be a valid HTTP status code');
-        }
-
         $this->code = $code;
         $this->schema = $schema;
     }
@@ -49,16 +46,25 @@ class Response implements ResponseInterface, \JsonSerializable
         return $this->code;
     }
 
-    public function getSchema(): TypeInterface
+    public function getSchema(): TypeInterface|ContentType
     {
         return $this->schema;
     }
 
     public function jsonSerialize(): array
     {
-        return [
+        if ($this->schema instanceof ContentType) {
+            $contentType = $this->schema->value;
+            $schema = null;
+        } else {
+            $contentType = null;
+            $schema = $this->schema;
+        }
+
+        return array_filter([
             'code' => $this->code,
-            'schema' => $this->schema,
-        ];
+            'contentType' => $contentType,
+            'schema' => $schema,
+        ], fn ($value) => $value !== null);
     }
 }

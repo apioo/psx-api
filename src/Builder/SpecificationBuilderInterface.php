@@ -22,6 +22,7 @@ namespace PSX\Api\Builder;
 
 use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
+use PSX\Schema\ContentType;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\TypeInterface;
 
@@ -38,7 +39,7 @@ interface SpecificationBuilderInterface
 
     public function setSecurity(SecurityInterface $security): void;
 
-    public function addOperation(string $operationId, string $method, string $path, int $statusCode, TypeInterface $schema): OperationBuilderInterface;
+    public function addOperation(string $operationId, string $method, string $path, int $statusCode, TypeInterface|ContentType $schema): OperationBuilderInterface;
 
     public function addDefinitions(DefinitionsInterface $definitions): self;
 

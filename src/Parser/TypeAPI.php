@@ -31,6 +31,7 @@ use PSX\Api\SecurityInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Json\Parser;
+use PSX\Schema\ContentType;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Parser as SchemaParser;
 use PSX\Schema\Parser\ContextInterface;
@@ -214,9 +215,16 @@ class TypeAPI implements ParserInterface
             throw new ParserException('Property "in" must be a string and not empty');
         }
 
-        $schema = $data->schema ?? null;
-        if (!$schema instanceof \stdClass) {
-            throw new ParserException('Property "schema" must be an object');
+        $contentType = $data->contentType ?? null;
+        if (is_string($contentType)) {
+            $type = ContentType::from($contentType);
+        } else {
+            $schema = $data->schema ?? null;
+            if (!$schema instanceof \stdClass) {
+                throw new ParserException('Property "schema" must be an object');
+            }
+
+            $type = $this->schemaParser->parseType($schema);
         }
 
         $name = $data->name ?? null;
@@ -224,7 +232,7 @@ class TypeAPI implements ParserInterface
             throw new ParserException('Property "name" must be a string');
         }
 
-        return new Operation\Argument($in, $this->schemaParser->parseType($schema), $name);
+        return new Operation\Argument($in, $type, $name);
     }
 
     /**
@@ -254,12 +262,19 @@ class TypeAPI implements ParserInterface
             throw new ParserException('Property "code" must be an int and not empty');
         }
 
-        $schema = $data->schema ?? null;
-        if (!$schema instanceof \stdClass) {
-            throw new ParserException('Property "schema" must be an object');
+        $contentType = $data->contentType ?? null;
+        if (is_string($contentType)) {
+            $type = ContentType::from($contentType);
+        } else {
+            $schema = $data->schema ?? null;
+            if (!$schema instanceof \stdClass) {
+                throw new ParserException('Property "schema" must be an object');
+            }
+
+            $type = $this->schemaParser->parseType($schema);
         }
 
-        return new Operation\Response($code, $this->schemaParser->parseType($schema));
+        return new Operation\Response($code, $type);
     }
 
     /**

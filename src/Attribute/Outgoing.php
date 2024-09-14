@@ -21,6 +21,7 @@
 namespace PSX\Api\Attribute;
 
 use Attribute;
+use PSX\Schema\ContentType;
 
 /**
  * Outgoing
@@ -34,7 +35,7 @@ class Outgoing extends SchemaAbstract
 {
     public function __construct(
         public int $code,
-        public string $schema,
+        public string|ContentType $schema,
         public ?string $type = null
     )
     {

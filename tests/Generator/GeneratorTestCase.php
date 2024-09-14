@@ -25,6 +25,7 @@ use PSX\Api\Operation\ArgumentInterface;
 use PSX\Api\Security\HttpBearer;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
+use PSX\Schema\ContentType;
 use PSX\Schema\Format;
 use PSX\Schema\Generator\Code\Chunks;
 use PSX\Schema\TypeFactory;
@@ -190,6 +191,37 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $operation = $builder->addOperation('product.delete', 'DELETE', '/anything/:id', 200, $testResponse);
         $operation->setDescription('Deletes an existing product');
         $operation->addArgument('id', 'path', TypeFactory::getInteger());
+
+        return $builder->getSpecification();
+    }
+
+    protected function getSpecificationContentType(): SpecificationInterface
+    {
+        $builder = $this->apiManager->getBuilder();
+
+        $operation = $builder->addOperation('binary', 'POST', '/binary', 200, ContentType::BINARY);
+        $operation->addArgument('body', 'body', ContentType::BINARY);
+        $operation->addThrow(999, ContentType::BINARY);
+
+        $operation = $builder->addOperation('form', 'POST', '/form', 200, ContentType::FORM);
+        $operation->addArgument('body', 'body', ContentType::FORM);
+        $operation->addThrow(599, ContentType::FORM);
+
+        $operation = $builder->addOperation('json', 'POST', '/json', 200, ContentType::JSON);
+        $operation->addArgument('body', 'body', ContentType::JSON);
+        $operation->addThrow(499, ContentType::JSON);
+
+        $operation = $builder->addOperation('multipart', 'POST', '/multipart', 200, ContentType::MULTIPART);
+        $operation->addArgument('body', 'body', ContentType::MULTIPART);
+        $operation->addThrow(500, ContentType::MULTIPART);
+
+        $operation = $builder->addOperation('text', 'POST', '/text', 200, ContentType::TEXT);
+        $operation->addArgument('body', 'body', ContentType::TEXT);
+        $operation->addThrow(500, ContentType::TEXT);
+
+        $operation = $builder->addOperation('xml', 'POST', '/xml', 200, ContentType::XML);
+        $operation->addArgument('body', 'body', ContentType::XML);
+        $operation->addThrow(500, ContentType::XML);
 
         return $builder->getSpecification();
     }

@@ -27,6 +27,7 @@ use PSX\Api\OperationInterface;
 use PSX\Api\OperationsInterface;
 use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
+use PSX\Schema\ContentType;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\TypeNotFoundException;
 use PSX\Schema\Generator\Normalizer\NormalizerInterface;
@@ -143,7 +144,7 @@ class LanguageBuilder
             $imports = [];
             $path = $pathNames = [];
             $query = $queryNames = $queryStructNames = [];
-            $body = $bodyName = null;
+            $body = $bodyName = $bodyContentType = null;
             foreach ($operation->getArguments()->getAll() as $name => $argument) {
                 $realName = $argument->getName();
                 if (empty($realName)) {
@@ -163,26 +164,36 @@ class LanguageBuilder
                 } elseif ($argument->getIn() === ArgumentInterface::IN_BODY) {
                     $body = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions));
                     $bodyName = $normalized;
+
+                    if ($argument->getSchema() instanceof ContentType) {
+                        $bodyContentType = $argument->getSchema()->value;
+                    }
                 }
 
-                $this->resolveImport($argument->getSchema(), $imports);
+                if ($argument->getSchema() instanceof TypeInterface) {
+                    $this->resolveImport($argument->getSchema(), $imports);
+                }
             }
 
             if (!in_array($operation->getMethod(), ['POST', 'PUT', 'PATCH'])) {
                 $body = null;
                 $bodyName = null;
+                $bodyContentType = null;
             }
 
             $arguments = array_merge($path, $body !== null ? [$bodyName => $body] : [], $query);
 
             $return = null;
             if (in_array($operation->getReturn()->getCode(), [200, 201, 202])) {
-                $returnType = $this->newType($operation->getReturn()->getSchema(), false, $definitions);
-                $innerSchema = $this->getInnerSchema($operation->getReturn()->getSchema(), $definitions);
+                $returnSchema = $operation->getReturn()->getSchema();
+                $returnType = $this->newType($returnSchema, false, $definitions);
+                $innerSchema = $returnSchema instanceof TypeInterface ? $this->getInnerSchema($returnSchema, $definitions) : null;
 
-                $return = new Dto\Response($operation->getReturn()->getCode(), $returnType, null, $innerSchema);
+                $return = new Dto\Response($operation->getReturn()->getCode(), $returnType, null, $innerSchema, $returnSchema instanceof ContentType ? $returnSchema->value : null);
 
-                $this->resolveImport($operation->getReturn()->getSchema(), $imports);
+                if ($returnSchema instanceof TypeInterface) {
+                    $this->resolveImport($returnSchema, $imports);
+                }
             }
 
             $throws = [];
@@ -190,15 +201,17 @@ class LanguageBuilder
                 $throwSchema = $throw->getSchema();
 
                 $exceptionImports = [];
-                $this->resolveImport($throwSchema, $exceptionImports);
+                if ($throwSchema instanceof TypeInterface) {
+                    $this->resolveImport($throwSchema, $exceptionImports);
+                }
 
                 $exceptionType = $this->newType($throwSchema, false, $definitions);
-                $innerSchema = $this->getInnerSchema($throwSchema, $definitions);
+                $innerSchema = $throwSchema instanceof TypeInterface ? $this->getInnerSchema($throwSchema, $definitions) : null;
 
                 $exceptionClassName = $this->naming->buildExceptionClassNameByType($throwSchema);
                 $exceptions[$exceptionClassName] = new Dto\Exception($exceptionClassName, $exceptionType, 'The server returned an error', $exceptionImports);
 
-                $throws[$throw->getCode()] = new Dto\Response($throw->getCode(), $exceptionType, $exceptionClassName, $innerSchema);
+                $throws[$throw->getCode()] = new Dto\Response($throw->getCode(), $exceptionType, $exceptionClassName, $innerSchema, $throwSchema instanceof ContentType ? $throwSchema->value : null);
 
                 $imports[$this->normalizer->file($exceptionClassName)] = $exceptionClassName;
             }
@@ -215,6 +228,7 @@ class LanguageBuilder
                 $queryNames,
                 $queryStructNames,
                 $bodyName,
+                $bodyContentType,
                 $imports
             );
         }
@@ -225,13 +239,13 @@ class LanguageBuilder
     private function getInnerSchema(TypeInterface $type, DefinitionsInterface $definitions): ?Dto\Type
     {
         if ($type instanceof MapType) {
-            $type = $this->newType($type->getAdditionalProperties(), false, $definitions);
-            $type->isMap = true;
-            return $type;
+            $return = $this->newType($type->getAdditionalProperties(), false, $definitions);
+            $return->isMap = true;
+            return $return;
         } elseif ($type instanceof ArrayType) {
-            $type = $this->newType($type->getItems(), false, $definitions);
-            $type->isArray = true;
-            return $type;
+            $return = $this->newType($type->getItems(), false, $definitions);
+            $return->isArray = true;
+            return $return;
         } else {
             return null;
         }
@@ -241,7 +255,7 @@ class LanguageBuilder
      * @throws InvalidTypeException
      * @throws TypeNotFoundException
      */
-    private function newType(TypeInterface $type, bool $optional, DefinitionsInterface $definitions): Dto\Type
+    private function newType(TypeInterface|ContentType $type, bool $optional, DefinitionsInterface $definitions): Dto\Type
     {
         if ($type instanceof ReferenceType) {
             // in case we have a reference type we take a look at the reference, normally this is a struct type but in
@@ -256,9 +270,17 @@ class LanguageBuilder
             }
         }
 
+        if ($type instanceof ContentType) {
+            $dataType = $this->typeGenerator->getContentType($type);
+            $docType = $dataType;
+        } else {
+            $dataType = $this->typeGenerator->getType($type);
+            $docType = $this->typeGenerator->getDocType($type);
+        }
+
         return new Dto\Type(
-            $this->typeGenerator->getType($type),
-            $this->typeGenerator->getDocType($type),
+            $dataType,
+            $docType,
             $optional
         );
     }

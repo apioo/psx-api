@@ -20,6 +20,11 @@
         let params: AxiosRequestConfig = {
             url: url,
             method: '{{ operation.method }}',
+            headers: {
+{% if operation.bodyContentType %}
+                'Content-Type': '{{ operation.bodyContentType }}',
+{% endif %}
+            },
             params: this.parser.query({
 {% for name, realName in operation.queryNames %}
                 '{{ realName }}': {{ name }},
@@ -29,6 +34,15 @@
                 '{{ realName }}',
 {% endfor %}
             ]),
+{% if operation.return.contentType == 'application/octet-stream' %}
+            responseType: 'arraybuffer',
+{% elseif operation.return.contentType == 'application/json' %}
+            responseType: 'json',
+{% elseif operation.return.contentType == 'text/plain' %}
+            responseType: 'text',
+{% elseif operation.return.contentType == 'application/xml' %}
+            responseType: 'document',
+{% endif %}
 {% if operation.bodyName %}
             data: {{ operation.bodyName }}
 {% endif %}
@@ -43,9 +57,11 @@
             if (error instanceof ClientException) {
                 throw error;
             } else if (axios.isAxiosError(error) && error.response) {
-                switch (error.response.status) {
+                const statusCode = error.response.status;
+
+                switch (true) {
 {% for code, throw in operation.throws %}
-                    case {{ code }}:
+                    case {% if code == 999 %}statusCode >= 0 && statusCode <= 999{% elseif code == 499 %}statusCode >= 400 && statusCode <= 499{% elseif code == 599 %}statusCode >= 500 && statusCode <= 599{% else %}statusCode === {{ code }}{% endif %}:
                         throw new {{ throw.className|raw }}(error.response.data);
 {% endfor %}
                     default:

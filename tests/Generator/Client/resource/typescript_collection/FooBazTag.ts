@@ -26,6 +26,8 @@ export class FooBazTag extends TagAbstract {
         let params: AxiosRequestConfig = {
             url: url,
             method: 'GET',
+            headers: {
+            },
             params: this.parser.query({
             }, [
             ]),
@@ -38,7 +40,9 @@ export class FooBazTag extends TagAbstract {
             if (error instanceof ClientException) {
                 throw error;
             } else if (axios.isAxiosError(error) && error.response) {
-                switch (error.response.status) {
+                const statusCode = error.response.status;
+
+                switch (true) {
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
@@ -59,6 +63,8 @@ export class FooBazTag extends TagAbstract {
         let params: AxiosRequestConfig = {
             url: url,
             method: 'POST',
+            headers: {
+            },
             params: this.parser.query({
             }, [
             ]),
@@ -72,7 +78,9 @@ export class FooBazTag extends TagAbstract {
             if (error instanceof ClientException) {
                 throw error;
             } else if (axios.isAxiosError(error) && error.response) {
-                switch (error.response.status) {
+                const statusCode = error.response.status;
+
+                switch (true) {
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }

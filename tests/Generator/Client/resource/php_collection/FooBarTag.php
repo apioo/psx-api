@@ -8,6 +8,7 @@ namespace Foo\Bar;
 
 use GuzzleHttp\Exception\BadResponseException;
 use Sdkgen\Client\Exception\ClientException;
+use Sdkgen\Client\Exception\Payload;
 use Sdkgen\Client\Exception\UnknownStatusCodeException;
 use Sdkgen\Client\TagAbstract;
 
@@ -25,6 +26,8 @@ class FooBarTag extends TagAbstract
         ]);
 
         $options = [
+            'headers' => [
+            ],
             'query' => $this->parser->query([
             ], [
             ]),
@@ -32,15 +35,18 @@ class FooBarTag extends TagAbstract
 
         try {
             $response = $this->httpClient->request('GET', $url, $options);
-            $data = (string) $response->getBody();
+            $body = $response->getBody();
 
-            return $this->parser->parse($data, EntryCollection::class);
+            $data = $this->parser->parse((string) $body, ::class);
+
+            return $data;
         } catch (ClientException $e) {
             throw $e;
         } catch (BadResponseException $e) {
-            $data = (string) $e->getResponse()->getBody();
+            $body = $e->getResponse()->getBody();
+            $statusCode = $e->getResponse()->getStatusCode();
 
-            switch ($e->getResponse()->getStatusCode()) {
+            switch (true) {
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
@@ -61,6 +67,8 @@ class FooBarTag extends TagAbstract
         ]);
 
         $options = [
+            'headers' => [
+            ],
             'query' => $this->parser->query([
             ], [
             ]),
@@ -69,19 +77,26 @@ class FooBarTag extends TagAbstract
 
         try {
             $response = $this->httpClient->request('POST', $url, $options);
-            $data = (string) $response->getBody();
+            $body = $response->getBody();
 
-            return $this->parser->parse($data, EntryMessage::class);
+            $data = $this->parser->parse((string) $body, ::class);
+
+            return $data;
         } catch (ClientException $e) {
             throw $e;
         } catch (BadResponseException $e) {
-            $data = (string) $e->getResponse()->getBody();
+            $body = $e->getResponse()->getBody();
+            $statusCode = $e->getResponse()->getStatusCode();
 
-            switch ($e->getResponse()->getStatusCode()) {
-                case 400:
-                    throw new EntryMessageException($this->parser->parse($data, EntryMessage::class));
-                case 500:
-                    throw new EntryMessageException($this->parser->parse($data, EntryMessage::class));
+            switch (true) {
+                case $statusCode === 400:
+                    $data = $this->parser->parse((string) $body, ::class);
+
+                    throw new EntryMessageException($data);
+                case $statusCode === 500:
+                    $data = $this->parser->parse((string) $body, ::class);
+
+                    throw new EntryMessageException($data);
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');
             }
@@ -89,6 +104,7 @@ class FooBarTag extends TagAbstract
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
     }
+
 
 
 }

@@ -22,6 +22,7 @@ namespace PSX\Api\Builder;
 
 use PSX\Api\Exception\InvalidArgumentException;
 use PSX\Api\OperationInterface;
+use PSX\Schema\ContentType;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -38,7 +39,7 @@ interface OperationBuilderInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function addArgument(string $name, string $in, TypeInterface $schema): self;
+    public function addArgument(string $name, string $in, TypeInterface|ContentType $schema): self;
 
     public function setAuthorization(bool $authorization): self;
 
@@ -49,7 +50,7 @@ interface OperationBuilderInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function addThrow(int $statusCode, TypeInterface $schema): self;
+    public function addThrow(int $statusCode, TypeInterface|ContentType $schema): self;
 
     public function setTags(array $tags): self;
 

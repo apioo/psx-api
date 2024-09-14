@@ -11,6 +11,7 @@ use Sdkgen\Client\ClientAbstract;
 use Sdkgen\Client\Credentials;
 use Sdkgen\Client\CredentialsInterface;
 use Sdkgen\Client\Exception\ClientException;
+use Sdkgen\Client\Exception\Payload;
 use Sdkgen\Client\Exception\UnknownStatusCodeException;
 use Sdkgen\Client\TokenStoreInterface;
 

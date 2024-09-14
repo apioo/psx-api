@@ -34,6 +34,7 @@ class Response
         public Type $schema,
         public ?string $className = null,
         public ?Type $innerSchema = null,
+        public ?string $contentType = null,
     )
     {
     }

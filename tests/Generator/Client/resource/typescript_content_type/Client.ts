@@ -5,93 +5,41 @@
 
 import axios, {AxiosRequestConfig} from "axios";
 import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
-import {HttpBearer} from "sdkgen-client"
+import {Anonymous} from "sdkgen-client"
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
-import {ArrayEntryMessageException} from "./ArrayEntryMessageException";
-import {Entry} from "./Entry";
-import {EntryCollection} from "./EntryCollection";
-import {EntryCreate} from "./EntryCreate";
-import {EntryDelete} from "./EntryDelete";
-import {EntryMessage} from "./EntryMessage";
-import {EntryMessageException} from "./EntryMessageException";
-import {EntryPatch} from "./EntryPatch";
-import {EntryUpdate} from "./EntryUpdate";
-import {MapEntryMessageException} from "./MapEntryMessageException";
+import {BinaryException} from "./BinaryException";
+import {FormException} from "./FormException";
+import {JsonException} from "./JsonException";
+import {MultipartException} from "./MultipartException";
+import {TextException} from "./TextException";
+import {XmlException} from "./XmlException";
 
 export class Client extends ClientAbstract {
     /**
-     * Returns a collection
-     *
-     * @returns {Promise<EntryCollection>}
+     * @returns {Promise<ArrayBuffer>}
+     * @throws {BinaryException}
      * @throws {ClientException}
      */
-    public async get(name: string, type: string, startIndex?: number, float?: number, boolean?: boolean, date?: string, datetime?: string, args?: Entry): Promise<EntryCollection> {
-        const url = this.parser.url('/foo/:name/:type', {
-            'name': name,
-            'type': type,
-        });
-
-        let params: AxiosRequestConfig = {
-            url: url,
-            method: 'GET',
-            headers: {
-            },
-            params: this.parser.query({
-                'startIndex': startIndex,
-                'float': float,
-                'boolean': boolean,
-                'date': date,
-                'datetime': datetime,
-                'args': args,
-            }, [
-                'args',
-            ]),
-        };
-
-        try {
-            const response = await this.httpClient.request<EntryCollection>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                switch (true) {
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
-                }
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
-        }
-    }
-
-    /**
-     * @returns {Promise<EntryMessage>}
-     * @throws {EntryMessageException}
-     * @throws {ClientException}
-     */
-    public async create(name: string, type: string, payload: EntryCreate): Promise<EntryMessage> {
-        const url = this.parser.url('/foo/:name/:type', {
-            'name': name,
-            'type': type,
+    public async binary(body: ArrayBuffer): Promise<ArrayBuffer> {
+        const url = this.parser.url('/binary', {
         });
 
         let params: AxiosRequestConfig = {
             url: url,
             method: 'POST',
             headers: {
+                'Content-Type': 'application/octet-stream',
             },
             params: this.parser.query({
             }, [
             ]),
-            data: payload
+            responseType: 'arraybuffer',
+            data: body
         };
 
         try {
-            const response = await this.httpClient.request<EntryMessage>(params);
+            const response = await this.httpClient.request<ArrayBuffer>(params);
             return response.data;
         } catch (error) {
             if (error instanceof ClientException) {
@@ -100,10 +48,8 @@ export class Client extends ClientAbstract {
                 const statusCode = error.response.status;
 
                 switch (true) {
-                    case statusCode === 400:
-                        throw new EntryMessageException(error.response.data);
-                    case statusCode === 500:
-                        throw new EntryMessageException(error.response.data);
+                    case statusCode >= 0 && statusCode <= 999:
+                        throw new BinaryException(error.response.data);
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
@@ -114,30 +60,28 @@ export class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<Record<string, EntryMessage>>}
-     * @throws {EntryMessageException}
-     * @throws {MapEntryMessageException}
+     * @returns {Promise<Record<string, string>>}
+     * @throws {FormException}
      * @throws {ClientException}
      */
-    public async update(name: string, type: string, payload: Record<string, EntryUpdate>): Promise<Record<string, EntryMessage>> {
-        const url = this.parser.url('/foo/:name/:type', {
-            'name': name,
-            'type': type,
+    public async form(body: Record<string, string>): Promise<Record<string, string>> {
+        const url = this.parser.url('/form', {
         });
 
         let params: AxiosRequestConfig = {
             url: url,
-            method: 'PUT',
+            method: 'POST',
             headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
             params: this.parser.query({
             }, [
             ]),
-            data: payload
+            data: body
         };
 
         try {
-            const response = await this.httpClient.request<Record<string, EntryMessage>>(params);
+            const response = await this.httpClient.request<Record<string, string>>(params);
             return response.data;
         } catch (error) {
             if (error instanceof ClientException) {
@@ -146,10 +90,8 @@ export class Client extends ClientAbstract {
                 const statusCode = error.response.status;
 
                 switch (true) {
-                    case statusCode === 400:
-                        throw new EntryMessageException(error.response.data);
-                    case statusCode === 500:
-                        throw new MapEntryMessageException(error.response.data);
+                    case statusCode >= 500 && statusCode <= 599:
+                        throw new FormException(error.response.data);
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
@@ -160,27 +102,30 @@ export class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<void>}
+     * @returns {Promise<any>}
+     * @throws {JsonException}
      * @throws {ClientException}
      */
-    public async delete(name: string, type: string): Promise<void> {
-        const url = this.parser.url('/foo/:name/:type', {
-            'name': name,
-            'type': type,
+    public async json(body: any): Promise<any> {
+        const url = this.parser.url('/json', {
         });
 
         let params: AxiosRequestConfig = {
             url: url,
-            method: 'DELETE',
+            method: 'POST',
             headers: {
+                'Content-Type': 'application/json',
             },
             params: this.parser.query({
             }, [
             ]),
+            responseType: 'json',
+            data: body
         };
 
         try {
-            const response = await this.httpClient.request(params);
+            const response = await this.httpClient.request<any>(params);
+            return response.data;
         } catch (error) {
             if (error instanceof ClientException) {
                 throw error;
@@ -188,6 +133,8 @@ export class Client extends ClientAbstract {
                 const statusCode = error.response.status;
 
                 switch (true) {
+                    case statusCode >= 400 && statusCode <= 499:
+                        throw new JsonException(error.response.data);
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
@@ -198,30 +145,28 @@ export class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<Array<EntryMessage>>}
-     * @throws {EntryMessageException}
-     * @throws {ArrayEntryMessageException}
+     * @returns {Promise<FormData>}
+     * @throws {MultipartException}
      * @throws {ClientException}
      */
-    public async patch(name: string, type: string, payload: Array<EntryPatch>): Promise<Array<EntryMessage>> {
-        const url = this.parser.url('/foo/:name/:type', {
-            'name': name,
-            'type': type,
+    public async multipart(body: FormData): Promise<FormData> {
+        const url = this.parser.url('/multipart', {
         });
 
         let params: AxiosRequestConfig = {
             url: url,
-            method: 'PATCH',
+            method: 'POST',
             headers: {
+                'Content-Type': 'multipart/form-data',
             },
             params: this.parser.query({
             }, [
             ]),
-            data: payload
+            data: body
         };
 
         try {
-            const response = await this.httpClient.request<Array<EntryMessage>>(params);
+            const response = await this.httpClient.request<FormData>(params);
             return response.data;
         } catch (error) {
             if (error instanceof ClientException) {
@@ -230,10 +175,94 @@ export class Client extends ClientAbstract {
                 const statusCode = error.response.status;
 
                 switch (true) {
-                    case statusCode === 400:
-                        throw new EntryMessageException(error.response.data);
                     case statusCode === 500:
-                        throw new ArrayEntryMessageException(error.response.data);
+                        throw new MultipartException(error.response.data);
+                    default:
+                        throw new UnknownStatusCodeException('The server returned an unknown status code');
+                }
+            } else {
+                throw new ClientException('An unknown error occurred: ' + String(error));
+            }
+        }
+    }
+
+    /**
+     * @returns {Promise<string>}
+     * @throws {TextException}
+     * @throws {ClientException}
+     */
+    public async text(body: string): Promise<string> {
+        const url = this.parser.url('/text', {
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+            params: this.parser.query({
+            }, [
+            ]),
+            responseType: 'text',
+            data: body
+        };
+
+        try {
+            const response = await this.httpClient.request<string>(params);
+            return response.data;
+        } catch (error) {
+            if (error instanceof ClientException) {
+                throw error;
+            } else if (axios.isAxiosError(error) && error.response) {
+                const statusCode = error.response.status;
+
+                switch (true) {
+                    case statusCode === 500:
+                        throw new TextException(error.response.data);
+                    default:
+                        throw new UnknownStatusCodeException('The server returned an unknown status code');
+                }
+            } else {
+                throw new ClientException('An unknown error occurred: ' + String(error));
+            }
+        }
+    }
+
+    /**
+     * @returns {Promise<XMLDocument>}
+     * @throws {XmlException}
+     * @throws {ClientException}
+     */
+    public async xml(body: XMLDocument): Promise<XMLDocument> {
+        const url = this.parser.url('/xml', {
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/xml',
+            },
+            params: this.parser.query({
+            }, [
+            ]),
+            responseType: 'document',
+            data: body
+        };
+
+        try {
+            const response = await this.httpClient.request<XMLDocument>(params);
+            return response.data;
+        } catch (error) {
+            if (error instanceof ClientException) {
+                throw error;
+            } else if (axios.isAxiosError(error) && error.response) {
+                const statusCode = error.response.status;
+
+                switch (true) {
+                    case statusCode === 500:
+                        throw new XmlException(error.response.data);
                     default:
                         throw new UnknownStatusCodeException('The server returned an unknown status code');
                 }
@@ -245,10 +274,6 @@ export class Client extends ClientAbstract {
 
 
 
-    public static build(token: string): Client
-    {
-        return new Client('http://api.foo.com', new HttpBearer(token));
-    }
 
     public static buildAnonymous(): Client
     {

@@ -21,6 +21,11 @@
         ]);
 
         $options = [
+            'headers' => [
+{% if operation.bodyContentType %}
+                'Content-Type' => '{{ operation.bodyContentType }}',
+{% endif %}
+            ],
             'query' => $this->parser->query([
 {% for name, realName in operation.queryNames %}
                 '{{ realName }}' => ${{ name }},
@@ -31,38 +36,39 @@
 {% endfor %}
             ]),
 {% if operation.bodyName %}
+{% if operation.bodyContentType == 'application/octet-stream' or operation.bodyContentType == 'text/plain' %}
+            'body' => ${{ operation.bodyName }}
+{% elseif operation.bodyContentType == 'application/x-www-form-urlencoded' %}
+            'form_params' => ${{ operation.bodyName }}
+{% elseif operation.bodyContentType == 'multipart/form-data' %}
+            'multipart' => ${{ operation.bodyName }}
+{% elseif operation.bodyContentType == 'application/xml' %}
+            'body' => ${{ operation.bodyName }}->saveXML()
+{% else %}
             'json' => ${{ operation.bodyName }}
+{% endif %}
 {% endif %}
         ];
 
         try {
             $response = $this->httpClient->request('{{ operation.method }}', $url, $options);
-            $data = (string) $response->getBody();
+            $body = $response->getBody();
 
 {% if operation.return %}
-{% if operation.return.innerSchema.isMap %}
-            return $this->parser->parse($data, {{ operation.return.innerSchema.type }}::class, isMap: true);
-{% elseif operation.return.innerSchema.isArray %}
-            return $this->parser->parse($data, {{ operation.return.innerSchema.type }}::class, isArray: true);
-{% else %}
-            return $this->parser->parse($data, {{ operation.return.schema.type }}::class);
-{% endif %}
+{{ _self.response(operation.return, false) }}
+            return $data;
 {% endif %}
         } catch (ClientException $e) {
             throw $e;
         } catch (BadResponseException $e) {
-            $data = (string) $e->getResponse()->getBody();
+            $body = $e->getResponse()->getBody();
+            $statusCode = $e->getResponse()->getStatusCode();
 
-            switch ($e->getResponse()->getStatusCode()) {
+            switch (true) {
 {% for code, throw in operation.throws %}
-                case {{ code }}:
-{% if throw.innerSchema.isMap %}
-                    throw new {{ throw.className|raw }}($this->parser->parse($data, {{ throw.innerSchema.type }}::class, isMap: true));
-{% elseif throw.innerSchema.isArray %}
-                    throw new {{ throw.className|raw }}($this->parser->parse($data, {{ throw.innerSchema.type }}::class, isArray: true));
-{% else %}
-                    throw new {{ throw.className|raw }}($this->parser->parse($data, {{ throw.schema.type }}::class));
-{% endif %}
+                case {% if code == 999 %}$statusCode >= 0 && $statusCode <= 999{% elseif code == 499 %}$statusCode >= 400 && $statusCode <= 499{% elseif code == 599 %}$statusCode >= 500 && $statusCode <= 599{% else %}$statusCode === {{ code }}{% endif %}:
+{{ _self.response(operation.return, true) }}
+                    throw new {{ throw.className|raw }}($data);
 {% endfor %}
                 default:
                     throw new UnknownStatusCodeException('The server returned an unknown status code');
@@ -73,3 +79,30 @@
     }
 
 {% endfor %}
+
+{% macro response(payload, in_throw) %}
+{% if payload.contentType == 'application/octet-stream' %}
+            {% if in_throw %}        {% endif %}$data = $body;
+{% elseif payload.contentType == 'application/x-www-form-urlencoded' %}
+            {% if in_throw %}        {% endif %}$data = [];
+            {% if in_throw %}        {% endif %}parse_str((string) $body, $data);
+{% elseif payload.contentType == 'application/json' %}
+            {% if in_throw %}        {% endif %}$data = \json_decode((string) $body);
+{% elseif payload.contentType == 'multipart/form-data' %}
+            {% if in_throw %}        {% endif %}// @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
+            {% if in_throw %}        {% endif %}$data = [];
+{% elseif payload.contentType == 'text/plain' %}
+            {% if in_throw %}        {% endif %}$data = (string) $body;
+{% elseif payload.contentType == 'application/xml' %}
+            {% if in_throw %}        {% endif %}$data = new \DOMDocument();
+            {% if in_throw %}        {% endif %}$data->loadXML((string) $body);
+{% else %}
+{% if payload.innerSchema.isMap %}
+            {% if in_throw %}        {% endif %}$data = $this->parser->parse((string) $body, {{ operation.return.innerSchema.type }}::class, isMap: true);
+{% elseif payload.innerSchema.isArray %}
+            {% if in_throw %}        {% endif %}$data = $this->parser->parse((string) $body, {{ operation.return.innerSchema.type }}::class, isArray: true);
+{% else %}
+            {% if in_throw %}        {% endif %}$data = $this->parser->parse((string) $body, {{ operation.return.schema.type }}::class);
+{% endif %}
+{% endif %}
+{% endmacro %}

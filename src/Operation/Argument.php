@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Operation;
 
+use PSX\Schema\ContentType;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -32,10 +33,10 @@ use PSX\Schema\TypeInterface;
 class Argument implements ArgumentInterface, \JsonSerializable
 {
     private string $in;
-    private TypeInterface $schema;
+    private TypeInterface|ContentType $schema;
     private ?string $name;
 
-    public function __construct(string $in, TypeInterface $schema, ?string $name = null)
+    public function __construct(string $in, TypeInterface|ContentType $schema, ?string $name = null)
     {
         if (!in_array($in, [self::IN_PATH, self::IN_HEADER, self::IN_QUERY, self::IN_BODY])) {
             throw new \InvalidArgumentException('Provided an invalid "in" value, must be one of: ' . implode(', ', [self::IN_PATH, self::IN_HEADER, self::IN_QUERY, self::IN_BODY]));
@@ -51,7 +52,7 @@ class Argument implements ArgumentInterface, \JsonSerializable
         return $this->in;
     }
 
-    public function getSchema(): TypeInterface
+    public function getSchema(): TypeInterface|ContentType
     {
         return $this->schema;
     }
@@ -63,12 +64,19 @@ class Argument implements ArgumentInterface, \JsonSerializable
 
     public function jsonSerialize(): array
     {
+        if ($this->schema instanceof ContentType) {
+            $contentType = $this->schema->value;
+            $schema = null;
+        } else {
+            $contentType = null;
+            $schema = $this->schema;
+        }
+
         return array_filter([
             'in' => $this->in,
-            'schema' => $this->schema,
+            'contentType' => $contentType,
+            'schema' => $schema,
             'name' => $this->name,
-        ], function ($value) {
-            return $value !== null;
-        });
+        ], fn ($value) => $value !== null);
     }
 }

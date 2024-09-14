@@ -22,6 +22,7 @@ namespace PSX\Api\Builder;
 
 use PSX\Api\Operation;
 use PSX\Api\OperationInterface;
+use PSX\Schema\ContentType;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -35,7 +36,7 @@ class OperationBuilder implements OperationBuilderInterface
 {
     private Operation $operation;
 
-    public function __construct(string $method, string $path, int $statusCode, TypeInterface $schema)
+    public function __construct(string $method, string $path, int $statusCode, TypeInterface|ContentType $schema)
     {
         $this->operation = new Operation($method, $path, new Operation\Response($statusCode, $schema));
     }
@@ -46,7 +47,7 @@ class OperationBuilder implements OperationBuilderInterface
         return $this;
     }
 
-    public function addArgument(string $name, string $in, TypeInterface $schema): self
+    public function addArgument(string $name, string $in, TypeInterface|ContentType $schema): self
     {
         $this->operation->getArguments()->add($name, new Operation\Argument($in, $schema));
         return $this;
@@ -70,7 +71,7 @@ class OperationBuilder implements OperationBuilderInterface
         return $this;
     }
 
-    public function addThrow(int $statusCode, TypeInterface $schema): self
+    public function addThrow(int $statusCode, TypeInterface|ContentType $schema): self
     {
         $this->operation->addThrow(new Operation\Response($statusCode, $schema));
         return $this;
