@@ -8,11 +8,11 @@ import {KnownStatusCodeException} from "sdkgen-client"
 
 export class FormException extends KnownStatusCodeException {
 
-    public constructor(private payload: Record<string, string>) {
+    public constructor(private payload: URLSearchParams) {
         super('The server returned an error');
     }
 
-    public getPayload(): Record<string, string> {
+    public getPayload(): URLSearchParams {
         return this.payload;
     }
 

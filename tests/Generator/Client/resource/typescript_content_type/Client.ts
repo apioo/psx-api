@@ -60,11 +60,11 @@ export class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<Record<string, string>>}
+     * @returns {Promise<URLSearchParams>}
      * @throws {FormException}
      * @throws {ClientException}
      */
-    public async form(body: Record<string, string>): Promise<Record<string, string>> {
+    public async form(body: URLSearchParams): Promise<URLSearchParams> {
         const url = this.parser.url('/form', {
         });
 
@@ -81,7 +81,7 @@ export class Client extends ClientAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<Record<string, string>>(params);
+            const response = await this.httpClient.request<URLSearchParams>(params);
             return response.data;
         } catch (error) {
             if (error instanceof ClientException) {

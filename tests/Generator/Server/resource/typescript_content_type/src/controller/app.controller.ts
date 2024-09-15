@@ -16,7 +16,7 @@ export class AppController {
 
   @Post('/form')
   @HttpCode(200)
-  form(@Body() body: Record<string, string>): Record<string, string> {
+  form(@Body() body: URLSearchParams): URLSearchParams {
     // @TODO implement method
     return {};
   }

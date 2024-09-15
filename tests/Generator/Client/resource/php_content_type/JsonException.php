@@ -10,9 +10,9 @@ use Sdkgen\Client\Exception\KnownStatusCodeException;
 
 class JsonException extends KnownStatusCodeException
 {
-    private mixed $payload;
+    private \stdClass $payload;
 
-    public function __construct(mixed $payload)
+    public function __construct(\stdClass $payload)
     {
         parent::__construct('The server returned an error');
 
@@ -20,9 +20,9 @@ class JsonException extends KnownStatusCodeException
     }
 
     /**
-     * @return mixed
+     * @return \stdClass
      */
-    public function getPayload(): mixed
+    public function getPayload(): \stdClass
     {
         return $this->payload;
     }

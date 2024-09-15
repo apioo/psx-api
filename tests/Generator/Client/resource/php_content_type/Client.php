@@ -114,12 +114,12 @@ class Client extends ClientAbstract
     }
 
     /**
-     * @param mixed $body
-     * @return mixed
+     * @param \stdClass $body
+     * @return \stdClass
      * @throws JsonException
      * @throws ClientException
      */
-    public function json(mixed $body): mixed
+    public function json(\stdClass $body): \stdClass
     {
         $url = $this->parser->url('/json', [
         ]);
