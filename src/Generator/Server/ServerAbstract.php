@@ -185,7 +185,7 @@ abstract class ServerAbstract implements GeneratorInterface
      * @throws InvalidTypeException
      * @throws TypeNotFoundException
      */
-    protected function newType(TypeInterface|ContentType $type, DefinitionsInterface $definitions): Dto\Type
+    protected function newType(TypeInterface|ContentType $type, DefinitionsInterface $definitions, int $context): Dto\Type
     {
         if ($type instanceof ReferenceType) {
             // in case we have a reference type we take a look at the reference, normally this is a struct type but in
@@ -201,7 +201,7 @@ abstract class ServerAbstract implements GeneratorInterface
         }
 
         if ($type instanceof ContentType) {
-            $dataType = $this->typeGenerator->getContentType($type);
+            $dataType = $this->typeGenerator->getContentType($type, $context);
             $docType = $dataType;
         } else {
             $dataType = $this->typeGenerator->getType($type);
@@ -239,7 +239,7 @@ abstract class ServerAbstract implements GeneratorInterface
                 $rawName = $argumentName;
                 $variableName = $this->normalizer->argument($argumentName);
                 $argumentType = $argument->getSchema();
-                $type = $this->newType($argumentType, $specification->getDefinitions());
+                $type = $this->newType($argumentType, $specification->getDefinitions(), Type\GeneratorInterface::CONTEXT_SERVER | Type\GeneratorInterface::CONTEXT_REQUEST);
 
                 if ($argument->getIn() === ArgumentInterface::IN_PATH) {
                     $args[] = $this->generateArgumentPath($rawName, $variableName, $type->type, $argumentType);
@@ -257,7 +257,7 @@ abstract class ServerAbstract implements GeneratorInterface
             }
 
             $returnType = $operation->getReturn()->getSchema();
-            $type = $this->newType($returnType, $specification->getDefinitions());
+            $type = $this->newType($returnType, $specification->getDefinitions(), Type\GeneratorInterface::CONTEXT_SERVER | Type\GeneratorInterface::CONTEXT_RESPONSE);
 
             if ($returnType instanceof TypeInterface) {
                 $this->resolveImport($returnType, $imports);

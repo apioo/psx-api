@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Generator\Client;
 
+use PSX\Schema\Generator\Type;
 use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Util\Naming;
 use PSX\Api\Operation\ArgumentInterface;
@@ -153,16 +154,16 @@ class LanguageBuilder
 
                 $normalized = $this->normalizer->argument($name);
                 if ($argument->getIn() === ArgumentInterface::IN_PATH) {
-                    $path[$normalized] = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions));
+                    $path[$normalized] = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_REQUEST));
                     $pathNames[$normalized] = $realName;
                 } elseif ($argument->getIn() === ArgumentInterface::IN_QUERY) {
-                    $query[$normalized] = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), true, $definitions));
+                    $query[$normalized] = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), true, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_REQUEST));
                     $queryNames[$normalized] = $realName;
                     if ($argument->getSchema() instanceof ReferenceType) {
                         $queryStructNames[] = $realName;
                     }
                 } elseif ($argument->getIn() === ArgumentInterface::IN_BODY) {
-                    $body = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions));
+                    $body = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_REQUEST));
                     $bodyName = $normalized;
 
                     if ($argument->getSchema() instanceof ContentType) {
@@ -186,7 +187,7 @@ class LanguageBuilder
             $return = null;
             if (in_array($operation->getReturn()->getCode(), [200, 201, 202])) {
                 $returnSchema = $operation->getReturn()->getSchema();
-                $returnType = $this->newType($returnSchema, false, $definitions);
+                $returnType = $this->newType($returnSchema, false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
                 $innerSchema = $returnSchema instanceof TypeInterface ? $this->getInnerSchema($returnSchema, $definitions) : null;
 
                 $return = new Dto\Response($operation->getReturn()->getCode(), $returnType, null, $innerSchema, $returnSchema instanceof ContentType ? $returnSchema->value : null);
@@ -205,7 +206,7 @@ class LanguageBuilder
                     $this->resolveImport($throwSchema, $exceptionImports);
                 }
 
-                $exceptionType = $this->newType($throwSchema, false, $definitions);
+                $exceptionType = $this->newType($throwSchema, false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
                 $innerSchema = $throwSchema instanceof TypeInterface ? $this->getInnerSchema($throwSchema, $definitions) : null;
 
                 $exceptionClassName = $this->naming->buildExceptionClassNameByType($throwSchema);
@@ -239,11 +240,11 @@ class LanguageBuilder
     private function getInnerSchema(TypeInterface $type, DefinitionsInterface $definitions): ?Dto\Type
     {
         if ($type instanceof MapType) {
-            $return = $this->newType($type->getAdditionalProperties(), false, $definitions);
+            $return = $this->newType($type->getAdditionalProperties(), false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
             $return->isMap = true;
             return $return;
         } elseif ($type instanceof ArrayType) {
-            $return = $this->newType($type->getItems(), false, $definitions);
+            $return = $this->newType($type->getItems(), false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
             $return->isArray = true;
             return $return;
         } else {
@@ -255,7 +256,7 @@ class LanguageBuilder
      * @throws InvalidTypeException
      * @throws TypeNotFoundException
      */
-    private function newType(TypeInterface|ContentType $type, bool $optional, DefinitionsInterface $definitions): Dto\Type
+    private function newType(TypeInterface|ContentType $type, bool $optional, DefinitionsInterface $definitions, int $context): Dto\Type
     {
         if ($type instanceof ReferenceType) {
             // in case we have a reference type we take a look at the reference, normally this is a struct type but in
@@ -271,7 +272,7 @@ class LanguageBuilder
         }
 
         if ($type instanceof ContentType) {
-            $dataType = $this->typeGenerator->getContentType($type);
+            $dataType = $this->typeGenerator->getContentType($type, $context);
             $docType = $dataType;
         } else {
             $dataType = $this->typeGenerator->getType($type);
