@@ -362,15 +362,15 @@ class Attribute implements ParserInterface
                 return Passthru::class;
             } elseif ($type->getName() === \DOMDocument::class) {
                 return ContentType::XML;
-            } elseif ($type->getName() === \stdClass::class) {
-                return ContentType::JSON;
             } elseif ($type->getName() === StreamInterface::class) {
                 return ContentType::BINARY;
             } elseif ($type->getName() === 'string') {
                 return ContentType::TEXT;
-            } elseif ($type->getName() === 'PSX\\Data\\Multipart\\Body') {
+            } elseif ($type->getName() === 'PSX\\Data\\Body\\Json') {
+                return ContentType::JSON;
+            } elseif ($type->getName() === 'PSX\\Data\\Body\\Multipart') {
                 return ContentType::MULTIPART;
-            } elseif ($type->getName() === 'array') {
+            } elseif ($type->getName() === 'PSX\\Data\\Body\\Form') {
                 return ContentType::FORM;
             } elseif (class_exists($type->getName())) {
                 return $type->getName();
