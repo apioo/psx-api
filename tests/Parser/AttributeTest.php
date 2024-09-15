@@ -26,8 +26,10 @@ use PSX\Api\Parser\Attribute as AttributeParser;
 use PSX\Api\Parser\Attribute\Builder;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Attribute\BarController;
+use PSX\Api\Tests\Parser\Attribute\ContentTypeController;
 use PSX\Api\Tests\Parser\Attribute\PropertyController;
 use PSX\Api\Tests\Parser\Attribute\TestController;
+use PSX\Schema\ContentType;
 use PSX\Schema\TypeFactory;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
@@ -89,5 +91,40 @@ class AttributeTest extends ParserTestCase
 
         $this->assertInstanceOf(OperationInterface::class, $operation);
         $this->assertEquals('Test description', $operation->getDescription());
+    }
+
+    public function testParseContentType()
+    {
+        $specification = $this->apiManager->getApi(ContentTypeController::class);
+
+        $operation = $specification->getOperations()->get('binary');
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals(ContentType::BINARY, $operation->getArguments()->get('body')->getSchema());
+        $this->assertEquals(ContentType::BINARY, $operation->getReturn()->getSchema());
+
+        $operation = $specification->getOperations()->get('text');
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals(ContentType::TEXT, $operation->getArguments()->get('body')->getSchema());
+        $this->assertEquals(ContentType::TEXT, $operation->getReturn()->getSchema());
+
+        $operation = $specification->getOperations()->get('form');
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals(ContentType::FORM, $operation->getArguments()->get('body')->getSchema());
+        $this->assertEquals(ContentType::FORM, $operation->getReturn()->getSchema());
+
+        $operation = $specification->getOperations()->get('multipart');
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals(ContentType::MULTIPART, $operation->getArguments()->get('body')->getSchema());
+        $this->assertEquals(ContentType::MULTIPART, $operation->getReturn()->getSchema());
+
+        $operation = $specification->getOperations()->get('json');
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals(ContentType::JSON, $operation->getArguments()->get('body')->getSchema());
+        $this->assertEquals(ContentType::JSON, $operation->getReturn()->getSchema());
+
+        $operation = $specification->getOperations()->get('xml');
+        $this->assertInstanceOf(OperationInterface::class, $operation);
+        $this->assertEquals(ContentType::XML, $operation->getArguments()->get('body')->getSchema());
+        $this->assertEquals(ContentType::XML, $operation->getReturn()->getSchema());
     }
 }
