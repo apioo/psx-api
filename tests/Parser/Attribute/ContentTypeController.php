@@ -25,11 +25,13 @@ use PSX\Api\Attribute\Body;
 use PSX\Api\Attribute\OperationId;
 use PSX\Api\Attribute\Path;
 use PSX\Api\Attribute\Post;
-use PSX\Data\Multipart;
+use PSX\Data\Body\Form;
+use PSX\Data\Body\Json;
+use PSX\Data\Body\Multipart;
 use PSX\Http\Stream\StringStream;
 
 /**
- * PropertyController
+ * ContentTypeController
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -56,25 +58,25 @@ class ContentTypeController
     #[Post]
     #[Path('/form')]
     #[OperationId('form')]
-    protected function form(#[Body] array $body): array
+    protected function form(#[Body] Form $body): Form
     {
-        return ['foo' => 'bar'];
+        return $body;
     }
 
     #[Post]
     #[Path('/multipart')]
     #[OperationId('multipart')]
-    protected function multipart(#[Body] Multipart\Body $body): Multipart\Body
+    protected function multipart(#[Body] Multipart $body): Multipart
     {
-        return new Multipart\Body();
+        return $body;
     }
 
     #[Post]
     #[Path('/json')]
     #[OperationId('json')]
-    protected function json(#[Body] \stdClass $body): \stdClass
+    protected function json(#[Body] Json $body): Json
     {
-        return new \stdClass();
+        return $body;
     }
 
     #[Post]
