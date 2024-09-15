@@ -27,13 +27,12 @@ use PSX\Api\Exception\InvalidArgumentException;
 use PSX\Api\Exception\ParserException;
 use PSX\Api\Model\Passthru;
 use PSX\Api\Operation;
-use PSX\Api\Parser\Attribute\Meta;
 use PSX\Api\Parser\Attribute\BuilderInterface;
+use PSX\Api\Parser\Attribute\Meta;
 use PSX\Api\ParserInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
-use PSX\Data\Multipart\Body;
 use PSX\DateTime\Duration;
 use PSX\DateTime\LocalDate;
 use PSX\DateTime\LocalDateTime;
@@ -369,7 +368,7 @@ class Attribute implements ParserInterface
                 return ContentType::BINARY;
             } elseif ($type->getName() === 'string') {
                 return ContentType::TEXT;
-            } elseif ($type->getName() === Body::class) {
+            } elseif ($type->getName() === 'PSX\\Data\\Multipart\\Body') {
                 return ContentType::MULTIPART;
             } elseif ($type->getName() === 'array') {
                 return ContentType::FORM;
