@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Parser;
 
+use Psr\Http\Message\StreamInterface;
 use PSX\Api\Attribute as Attr;
 use PSX\Api\Attribute\ParamAbstract;
 use PSX\Api\Exception\InvalidArgumentException;
@@ -32,6 +33,7 @@ use PSX\Api\ParserInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
+use PSX\Data\Multipart\Body;
 use PSX\DateTime\Duration;
 use PSX\DateTime\LocalDate;
 use PSX\DateTime\LocalDateTime;
@@ -354,11 +356,23 @@ class Attribute implements ParserInterface
         }
     }
 
-    private function getSchemaFromTypeHint(?\ReflectionType $type): ?string
+    private function getSchemaFromTypeHint(?\ReflectionType $type): string|ContentType|null
     {
         if ($type instanceof \ReflectionNamedType) {
             if ($type->getName() === 'mixed') {
                 return Passthru::class;
+            } elseif ($type->getName() === \DOMDocument::class) {
+                return ContentType::XML;
+            } elseif ($type->getName() === \stdClass::class) {
+                return ContentType::JSON;
+            } elseif ($type->getName() === StreamInterface::class) {
+                return ContentType::BINARY;
+            } elseif ($type->getName() === 'string') {
+                return ContentType::TEXT;
+            } elseif ($type->getName() === Body::class) {
+                return ContentType::MULTIPART;
+            } elseif ($type->getName() === 'array') {
+                return ContentType::FORM;
             } elseif (class_exists($type->getName())) {
                 return $type->getName();
             }
@@ -412,7 +426,7 @@ class Attribute implements ParserInterface
                 } elseif (!$meta->hasIncoming() && in_array($meta->getMethod()->method, ['POST', 'PUT', 'PATCH'])) {
                     $schema = $this->getSchemaFromTypeHint($parameter->getType());
                     if (!empty($schema)) {
-                        if (!class_exists($schema)) {
+                        if (!$schema instanceof ContentType && !class_exists($schema)) {
                             throw new ParserException('The method ' . $method->getName() . ' contains an argument "' . $parameter->getName() . '" which has as type-hint a non existing class "' . $schema . '"');
                         }
 
@@ -437,7 +451,7 @@ class Attribute implements ParserInterface
         // if we have no outgoing attribute we parse it from the return type hint
         if (!$meta->hasOutgoing()) {
             $schema = $this->getSchemaFromTypeHint($method->getReturnType());
-            if (!empty($schema) && class_exists($schema)) {
+            if (!empty($schema) && ($schema instanceof ContentType || class_exists($schema))) {
                 $meta->addOutgoing(new Attr\Outgoing($meta->getStatusCode()?->code ?? 200, $schema));
             }
         }
@@ -490,7 +504,7 @@ class Attribute implements ParserInterface
                 $schema = $this->getSchemaFromTypeHint($parameter->getType());
                 if (empty($schema)) {
                     throw new ParserException('The method ' . $method->getName() . ' contains an argument "' . $parameter->getName() . '" which is marked as body but has an invalid type-hint');
-                } elseif (!class_exists($schema)) {
+                } elseif (!$schema instanceof ContentType && !class_exists($schema)) {
                     throw new ParserException('The method ' . $method->getName() . ' contains an argument "' . $parameter->getName() . '" which has as type-hint a non existing class "' . $schema . '"');
                 }
 
