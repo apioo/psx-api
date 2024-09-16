@@ -22,6 +22,7 @@ namespace PSX\Api\Tests\Generator\Client;
 
 use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\PHP;
+use PSX\Api\Generator\Client\TypeScript;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 use PSX\Schema\Generator\Config;
 
@@ -84,6 +85,18 @@ class PHPTest extends GeneratorTestCase
 
         $result = $generator->generate($this->getSpecificationContentType());
         $target = __DIR__ . '/resource/php_content_type';
+
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/Client.php');
+    }
+
+    public function testGenerateImport()
+    {
+        $generator = new PHP('http://api.foo.com', Config::of('Foo\\Bar', ['import' => 'External\\Bar']));
+
+        $result = $generator->generate($this->getSpecificationImport());
+        $target = __DIR__ . '/resource/php_import';
 
         $this->writeChunksToFolder($result, $target);
 

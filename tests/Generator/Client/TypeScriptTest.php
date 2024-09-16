@@ -90,4 +90,16 @@ class TypeScriptTest extends GeneratorTestCase
 
         $this->assertFileExists($target . '/Client.ts');
     }
+
+    public function testGenerateImport()
+    {
+        $generator = new TypeScript('http://api.foo.com', Config::of('', ['import' => '../foo']));
+
+        $result = $generator->generate($this->getSpecificationImport());
+        $target = __DIR__ . '/resource/typescript_import';
+
+        $this->writeChunksToFolder($result, $target);
+
+        $this->assertFileExists($target . '/Client.ts');
+    }
 }

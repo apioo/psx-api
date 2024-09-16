@@ -13,8 +13,8 @@ import {Anonymous} from "sdkgen-client"
 {% endif %}
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
-{% for className in imports %}
-import {{ '{' }}{{ className }}{{ '}' }} from "./{{ className }}";
+{% for file, className in imports %}
+import {{ '{' }}{{ className }}{{ '}' }} from "./{{ file }}";
 {% endfor %}
 
 export class {{ className }} extends ClientAbstract {

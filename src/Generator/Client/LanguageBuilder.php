@@ -20,7 +20,7 @@
 
 namespace PSX\Api\Generator\Client;
 
-use PSX\Schema\Generator\Type;
+use PSX\Api\Exception\GeneratorException;
 use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Util\Naming;
 use PSX\Api\Operation\ArgumentInterface;
@@ -33,6 +33,7 @@ use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\TypeNotFoundException;
 use PSX\Schema\Generator\Normalizer\NormalizerInterface;
 use PSX\Schema\Generator\NormalizerAwareInterface;
+use PSX\Schema\Generator\Type;
 use PSX\Schema\Generator\Type\GeneratorInterface as TypeGeneratorInterface;
 use PSX\Schema\Generator\TypeAwareInterface;
 use PSX\Schema\GeneratorInterface;
@@ -44,6 +45,7 @@ use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\Type\StructType;
 use PSX\Schema\Type\UnionType;
 use PSX\Schema\TypeInterface;
+use PSX\Schema\TypeUtil;
 
 /**
  * Class which transforms resource objects into language dtos which we use at the template engine to generate the client
@@ -59,11 +61,13 @@ class LanguageBuilder
     private TypeGeneratorInterface $typeGenerator;
     private NormalizerInterface $normalizer;
     private Naming $naming;
+    private array $mapping;
 
-    public function __construct(GeneratorInterface $generator, Naming $naming)
+    public function __construct(GeneratorInterface $generator, Naming $naming, array $mapping)
     {
         $this->generator = $generator;
         $this->naming = $naming;
+        $this->mapping = $mapping;
 
         if ($generator instanceof TypeAwareInterface) {
             $this->typeGenerator = $generator->getTypeGenerator();
@@ -132,6 +136,7 @@ class LanguageBuilder
      * @param array<string, OperationInterface> $operations
      * @throws TypeNotFoundException
      * @throws InvalidTypeException
+     * @throws GeneratorException
      */
     private function getOperations(array $operations, DefinitionsInterface $definitions, array &$exceptions): array
     {
@@ -286,13 +291,16 @@ class LanguageBuilder
         );
     }
 
+    /**
+     * @throws GeneratorException
+     */
     private function resolveImport(TypeInterface $type, array &$imports): void
     {
         if ($type instanceof ReferenceType) {
-            $imports[$this->normalizer->file($type->getRef())] = $this->normalizer->class($type->getRef());
+            $this->buildImport($type->getRef(), $imports);
             if ($type->getTemplate()) {
                 foreach ($type->getTemplate() as $typeRef) {
-                    $imports[$this->normalizer->file($typeRef)] = $this->normalizer->class($typeRef);
+                    $this->buildImport($typeRef, $imports);
                 }
             }
         } elseif ($type instanceof MapType && $type->getAdditionalProperties() instanceof TypeInterface) {
@@ -307,6 +315,23 @@ class LanguageBuilder
             foreach ($type->getAllOf() as $item) {
                 $this->resolveImport($item, $imports);
             }
+        }
+    }
+
+    /**
+     * @throws GeneratorException
+     */
+    private function buildImport(string $ref, array &$imports): void
+    {
+        [$ns, $name] = TypeUtil::split($ref);
+        if ($ns !== DefinitionsInterface::SELF_NAMESPACE) {
+            if (!isset($this->mapping[$ns])) {
+                throw new GeneratorException('Could not find namespace "' . $ns . '" in mapping');
+            }
+
+            $imports[$this->normalizer->import($name, $this->mapping[$ns])] = $this->normalizer->class($name);
+        } else {
+            $imports[$this->normalizer->import($name)] = $this->normalizer->class($name);
         }
     }
 

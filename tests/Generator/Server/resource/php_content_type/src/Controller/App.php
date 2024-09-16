@@ -32,7 +32,7 @@ class App extends ControllerAbstract
     #[Post]
     #[Path('/form')]
     #[StatusCode(200)]
-    public function form(#[Body] \stdClass $body): \stdClass
+    public function form(#[Body] \PSX\Data\Body\Form $body): \PSX\Data\Body\Form
     {
         // @TODO implement method
     }
@@ -40,7 +40,7 @@ class App extends ControllerAbstract
     #[Post]
     #[Path('/json')]
     #[StatusCode(200)]
-    public function json(#[Body] \stdClass $body): \stdClass
+    public function json(#[Body] \PSX\Data\Body\Json $body): \PSX\Data\Body\Json
     {
         // @TODO implement method
     }
@@ -48,7 +48,7 @@ class App extends ControllerAbstract
     #[Post]
     #[Path('/multipart')]
     #[StatusCode(200)]
-    public function multipart(#[Body] \PSX\Data\Reader\Multipart $body): \PSX\Data\Reader\Multipart
+    public function multipart(#[Body] \PSX\Data\Body\Multipart $body): \PSX\Data\Body\Multipart
     {
         // @TODO implement method
     }

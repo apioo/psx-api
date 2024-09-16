@@ -52,12 +52,12 @@ abstract class MarkupAbstract implements GeneratorInterface, ConfigurationAwareI
     public function __construct()
     {
         $this->generator = $this->newSchemaGenerator();
-        if ($this->generator instanceof NormalizerAwareInterface) {
-            $this->naming = new Naming($this->generator->getNormalizer());
-            $this->converter = new LanguageBuilder($this->generator, $this->naming);
-        } else {
+        if (!$this->generator instanceof NormalizerAwareInterface) {
             throw new GeneratorException('The provided schema generator must implement the interface: ' . NormalizerAwareInterface::class);
         }
+
+        $this->naming = new Naming($this->generator->getNormalizer());
+        $this->converter = new LanguageBuilder($this->generator, $this->naming, []);
     }
 
     public function generate(SpecificationInterface $specification): string

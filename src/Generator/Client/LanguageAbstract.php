@@ -51,6 +51,7 @@ abstract class LanguageAbstract implements GeneratorInterface, ConfigurationAwar
     use ConfigurationTrait;
 
     protected ?string $namespace;
+    protected array $mapping;
     protected ?Generator\Config $config;
     protected Environment $engine;
 
@@ -66,6 +67,7 @@ abstract class LanguageAbstract implements GeneratorInterface, ConfigurationAwar
     {
         $this->baseUrl = $baseUrl;
         $this->namespace = $config?->get(Generator\Config::NAMESPACE);
+        $this->mapping = (array) $config?->get(Generator\Config::MAPPING);
         $this->config = $config;
         $this->engine = $this->newTemplateEngine();
         $this->generator = $this->newGenerator();
@@ -79,7 +81,7 @@ abstract class LanguageAbstract implements GeneratorInterface, ConfigurationAwar
         }
 
         $this->naming = new Naming($this->generator->getNormalizer());
-        $this->converter = new LanguageBuilder($this->generator, $this->naming);
+        $this->converter = new LanguageBuilder($this->generator, $this->naming, $this->mapping);
     }
 
     /**

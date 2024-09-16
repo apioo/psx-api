@@ -26,8 +26,10 @@ use PSX\Api\Security\HttpBearer;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
 use PSX\Schema\ContentType;
+use PSX\Schema\Definitions;
 use PSX\Schema\Format;
 use PSX\Schema\Generator\Code\Chunks;
+use PSX\Schema\Type\StructType;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 
@@ -222,6 +224,22 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $operation = $builder->addOperation('xml', 'POST', '/xml', 200, ContentType::XML);
         $operation->addArgument('body', 'body', ContentType::XML);
         $operation->addThrow(500, ContentType::XML);
+
+        return $builder->getSpecification();
+    }
+
+    protected function getSpecificationImport(): SpecificationInterface
+    {
+        $builder = $this->apiManager->getBuilder();
+
+        $definitions = new Definitions();
+        $definitions->addType('import:my_type', TypeFactory::getStruct()->addProperty('foo', TypeFactory::getString()));
+        $definitions->addType('my_schema', TypeFactory::getStruct()->addProperty('foo', TypeFactory::getReference('import:my_type')));
+        $builder->addDefinitions($definitions);
+
+        $operation = $builder->addOperation('foo', 'GET', '/anything', 200, TypeFactory::getReference('import:my_type'));
+        $operation->addArgument('body', 'body', TypeFactory::getReference('import:my_type'));
+        $operation->addThrow(500, TypeFactory::getReference('import:my_type'));
 
         return $builder->getSpecification();
     }
