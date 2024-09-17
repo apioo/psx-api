@@ -42,7 +42,7 @@ export class FooBazTag extends TagAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -77,7 +77,7 @@ export class FooBazTag extends TagAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }

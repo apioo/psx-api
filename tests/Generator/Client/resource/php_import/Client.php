@@ -54,7 +54,7 @@ class Client extends ClientAbstract
                 throw new ImportMyTypeException($data);
             }
 
-            throw new UnknownStatusCodeException('The server returned an unknown status code');
+            throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }

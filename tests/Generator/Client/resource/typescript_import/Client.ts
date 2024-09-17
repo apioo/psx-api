@@ -44,7 +44,7 @@ export class Client extends ClientAbstract {
                     throw new ImportMyTypeException(error.response.data);
                 }
 
-                throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }

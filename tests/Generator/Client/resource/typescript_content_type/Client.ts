@@ -51,7 +51,7 @@ export class Client extends ClientAbstract {
                     throw new BinaryException(error.response.data);
                 }
 
-                throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -92,7 +92,7 @@ export class Client extends ClientAbstract {
                     throw new FormException(error.response.data);
                 }
 
-                throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -134,7 +134,7 @@ export class Client extends ClientAbstract {
                     throw new JsonException(error.response.data);
                 }
 
-                throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -175,7 +175,7 @@ export class Client extends ClientAbstract {
                     throw new MultipartException(error.response.data);
                 }
 
-                throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -217,7 +217,7 @@ export class Client extends ClientAbstract {
                     throw new TextException(error.response.data);
                 }
 
-                throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -259,7 +259,7 @@ export class Client extends ClientAbstract {
                     throw new XmlException(error.response.data);
                 }
 
-                throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }

@@ -57,7 +57,7 @@ class Client extends ClientAbstract
                 throw new BinaryException($data);
             }
 
-            throw new UnknownStatusCodeException('The server returned an unknown status code');
+            throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -105,7 +105,7 @@ class Client extends ClientAbstract
                 throw new FormException($data);
             }
 
-            throw new UnknownStatusCodeException('The server returned an unknown status code');
+            throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -151,7 +151,7 @@ class Client extends ClientAbstract
                 throw new JsonException($data);
             }
 
-            throw new UnknownStatusCodeException('The server returned an unknown status code');
+            throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -199,7 +199,7 @@ class Client extends ClientAbstract
                 throw new MultipartException($data);
             }
 
-            throw new UnknownStatusCodeException('The server returned an unknown status code');
+            throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -245,7 +245,7 @@ class Client extends ClientAbstract
                 throw new TextException($data);
             }
 
-            throw new UnknownStatusCodeException('The server returned an unknown status code');
+            throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -293,7 +293,7 @@ class Client extends ClientAbstract
                 throw new XmlException($data);
             }
 
-            throw new UnknownStatusCodeException('The server returned an unknown status code');
+            throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
