@@ -66,7 +66,7 @@
 
 {% for code, throw in operation.throws %}
             if ({% if code == 999 %}$statusCode >= 0 && $statusCode <= 999{% elseif code == 499 %}$statusCode >= 400 && $statusCode <= 499{% elseif code == 599 %}$statusCode >= 500 && $statusCode <= 599{% else %}$statusCode === {{ code }}{% endif %}) {
-{{ _self.response(operation.return, true) }}
+{{ _self.response(throw, true) }}
                 throw new {{ throw.className|raw }}($data);
             }
 

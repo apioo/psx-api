@@ -165,7 +165,7 @@ class Client extends ClientAbstract
             $statusCode = $e->getResponse()->getStatusCode();
 
             if ($statusCode === 400) {
-                $data = $this->parser->parse((string) $body, EntryMessage::class, isMap: true);
+                $data = $this->parser->parse((string) $body, EntryMessage::class);
 
                 throw new EntryMessageException($data);
             }
@@ -258,7 +258,7 @@ class Client extends ClientAbstract
             $statusCode = $e->getResponse()->getStatusCode();
 
             if ($statusCode === 400) {
-                $data = $this->parser->parse((string) $body, EntryMessage::class, isArray: true);
+                $data = $this->parser->parse((string) $body, EntryMessage::class);
 
                 throw new EntryMessageException($data);
             }
