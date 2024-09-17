@@ -52,10 +52,7 @@ class ProductTag extends TagAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
-            }
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -95,10 +92,7 @@ class ProductTag extends TagAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
-            }
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -140,10 +134,7 @@ class ProductTag extends TagAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
-            }
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -185,10 +176,7 @@ class ProductTag extends TagAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
-            }
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -228,10 +216,7 @@ class ProductTag extends TagAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
-            }
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }

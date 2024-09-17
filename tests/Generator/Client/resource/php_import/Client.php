@@ -48,14 +48,13 @@ class Client extends ClientAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                case $statusCode === 500:
-                    $data = $this->parser->parse((string) $body, \External\Bar\MyType::class);
+            if ($statusCode === 500) {
+                $data = $this->parser->parse((string) $body, \External\Bar\MyType::class);
 
-                    throw new ImportMyTypeException($data);
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new ImportMyTypeException($data);
             }
+
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }

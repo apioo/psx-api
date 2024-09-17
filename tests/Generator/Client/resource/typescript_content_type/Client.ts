@@ -47,12 +47,11 @@ export class Client extends ClientAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                switch (true) {
-                    case statusCode >= 0 && statusCode <= 999:
-                        throw new BinaryException(error.response.data);
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
+                if (statusCode >= 0 && statusCode <= 999) {
+                    throw new BinaryException(error.response.data);
                 }
+
+                throw new UnknownStatusCodeException('The server returned an unknown status code');
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -89,12 +88,11 @@ export class Client extends ClientAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                switch (true) {
-                    case statusCode >= 500 && statusCode <= 599:
-                        throw new FormException(error.response.data);
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
+                if (statusCode >= 500 && statusCode <= 599) {
+                    throw new FormException(error.response.data);
                 }
+
+                throw new UnknownStatusCodeException('The server returned an unknown status code');
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -132,12 +130,11 @@ export class Client extends ClientAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                switch (true) {
-                    case statusCode >= 400 && statusCode <= 499:
-                        throw new JsonException(error.response.data);
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
+                if (statusCode >= 400 && statusCode <= 499) {
+                    throw new JsonException(error.response.data);
                 }
+
+                throw new UnknownStatusCodeException('The server returned an unknown status code');
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -174,12 +171,11 @@ export class Client extends ClientAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                switch (true) {
-                    case statusCode === 500:
-                        throw new MultipartException(error.response.data);
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
+                if (statusCode === 500) {
+                    throw new MultipartException(error.response.data);
                 }
+
+                throw new UnknownStatusCodeException('The server returned an unknown status code');
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -217,12 +213,11 @@ export class Client extends ClientAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                switch (true) {
-                    case statusCode === 500:
-                        throw new TextException(error.response.data);
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
+                if (statusCode === 500) {
+                    throw new TextException(error.response.data);
                 }
+
+                throw new UnknownStatusCodeException('The server returned an unknown status code');
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -260,12 +255,11 @@ export class Client extends ClientAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                switch (true) {
-                    case statusCode === 500:
-                        throw new XmlException(error.response.data);
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
+                if (statusCode === 500) {
+                    throw new XmlException(error.response.data);
                 }
+
+                throw new UnknownStatusCodeException('The server returned an unknown status code');
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }

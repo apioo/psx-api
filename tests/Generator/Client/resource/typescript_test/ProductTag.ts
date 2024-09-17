@@ -43,10 +43,7 @@ export class ProductTag extends TagAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                switch (true) {
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
-                }
+                throw new UnknownStatusCodeException('The server returned an unknown status code');
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -83,10 +80,7 @@ export class ProductTag extends TagAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                switch (true) {
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
-                }
+                throw new UnknownStatusCodeException('The server returned an unknown status code');
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -124,10 +118,7 @@ export class ProductTag extends TagAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                switch (true) {
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
-                }
+                throw new UnknownStatusCodeException('The server returned an unknown status code');
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -165,10 +156,7 @@ export class ProductTag extends TagAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                switch (true) {
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
-                }
+                throw new UnknownStatusCodeException('The server returned an unknown status code');
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
@@ -205,10 +193,7 @@ export class ProductTag extends TagAbstract {
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                switch (true) {
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
-                }
+                throw new UnknownStatusCodeException('The server returned an unknown status code');
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }

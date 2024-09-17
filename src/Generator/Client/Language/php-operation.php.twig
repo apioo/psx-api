@@ -64,15 +64,14 @@
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
 {% for code, throw in operation.throws %}
-                case {% if code == 999 %}$statusCode >= 0 && $statusCode <= 999{% elseif code == 499 %}$statusCode >= 400 && $statusCode <= 499{% elseif code == 599 %}$statusCode >= 500 && $statusCode <= 599{% else %}$statusCode === {{ code }}{% endif %}:
+            if ({% if code == 999 %}$statusCode >= 0 && $statusCode <= 999{% elseif code == 499 %}$statusCode >= 400 && $statusCode <= 499{% elseif code == 599 %}$statusCode >= 500 && $statusCode <= 599{% else %}$statusCode === {{ code }}{% endif %}) {
 {{ _self.response(operation.return, true) }}
-                    throw new {{ throw.className|raw }}($data);
-{% endfor %}
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new {{ throw.className|raw }}($data);
             }
+
+{% endfor %}
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -82,27 +81,27 @@
 
 {% macro response(payload, in_throw) %}
 {% if payload.contentType == 'application/octet-stream' %}
-            {% if in_throw %}        {% endif %}$data = $body;
+            {% if in_throw %}    {% endif %}$data = $body;
 {% elseif payload.contentType == 'application/x-www-form-urlencoded' %}
-            {% if in_throw %}        {% endif %}$data = [];
-            {% if in_throw %}        {% endif %}parse_str((string) $body, $data);
+            {% if in_throw %}    {% endif %}$data = [];
+            {% if in_throw %}    {% endif %}parse_str((string) $body, $data);
 {% elseif payload.contentType == 'application/json' %}
-            {% if in_throw %}        {% endif %}$data = \json_decode((string) $body);
+            {% if in_throw %}    {% endif %}$data = \json_decode((string) $body);
 {% elseif payload.contentType == 'multipart/form-data' %}
-            {% if in_throw %}        {% endif %}// @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
-            {% if in_throw %}        {% endif %}$data = [];
+            {% if in_throw %}    {% endif %}// @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
+            {% if in_throw %}    {% endif %}$data = [];
 {% elseif payload.contentType == 'text/plain' %}
-            {% if in_throw %}        {% endif %}$data = (string) $body;
+            {% if in_throw %}    {% endif %}$data = (string) $body;
 {% elseif payload.contentType == 'application/xml' %}
-            {% if in_throw %}        {% endif %}$data = new \DOMDocument();
-            {% if in_throw %}        {% endif %}$data->loadXML((string) $body);
+            {% if in_throw %}    {% endif %}$data = new \DOMDocument();
+            {% if in_throw %}    {% endif %}$data->loadXML((string) $body);
 {% else %}
 {% if payload.innerSchema.isMap %}
-            {% if in_throw %}        {% endif %}$data = $this->parser->parse((string) $body, {{ payload.innerSchema.type }}::class, isMap: true);
+            {% if in_throw %}    {% endif %}$data = $this->parser->parse((string) $body, {{ payload.innerSchema.type }}::class, isMap: true);
 {% elseif payload.innerSchema.isArray %}
-            {% if in_throw %}        {% endif %}$data = $this->parser->parse((string) $body, {{ payload.innerSchema.type }}::class, isArray: true);
+            {% if in_throw %}    {% endif %}$data = $this->parser->parse((string) $body, {{ payload.innerSchema.type }}::class, isArray: true);
 {% else %}
-            {% if in_throw %}        {% endif %}$data = $this->parser->parse((string) $body, {{ payload.schema.type }}::class);
+            {% if in_throw %}    {% endif %}$data = $this->parser->parse((string) $body, {{ payload.schema.type }}::class);
 {% endif %}
 {% endif %}
 {% endmacro %}

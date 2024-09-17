@@ -65,10 +65,7 @@ class Client extends ClientAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
-            }
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -111,18 +108,19 @@ class Client extends ClientAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                case $statusCode === 400:
-                    $data = $this->parser->parse((string) $body, EntryMessage::class);
+            if ($statusCode === 400) {
+                $data = $this->parser->parse((string) $body, EntryMessage::class);
 
-                    throw new EntryMessageException($data);
-                case $statusCode === 500:
-                    $data = $this->parser->parse((string) $body, EntryMessage::class);
-
-                    throw new EntryMessageException($data);
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new EntryMessageException($data);
             }
+
+            if ($statusCode === 500) {
+                $data = $this->parser->parse((string) $body, EntryMessage::class);
+
+                throw new EntryMessageException($data);
+            }
+
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -166,18 +164,19 @@ class Client extends ClientAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                case $statusCode === 400:
-                    $data = $this->parser->parse((string) $body, EntryMessage::class, isMap: true);
+            if ($statusCode === 400) {
+                $data = $this->parser->parse((string) $body, EntryMessage::class, isMap: true);
 
-                    throw new EntryMessageException($data);
-                case $statusCode === 500:
-                    $data = $this->parser->parse((string) $body, EntryMessage::class, isMap: true);
-
-                    throw new MapEntryMessageException($data);
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new EntryMessageException($data);
             }
+
+            if ($statusCode === 500) {
+                $data = $this->parser->parse((string) $body, EntryMessage::class, isMap: true);
+
+                throw new MapEntryMessageException($data);
+            }
+
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -214,10 +213,7 @@ class Client extends ClientAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
-            }
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -261,18 +257,19 @@ class Client extends ClientAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                case $statusCode === 400:
-                    $data = $this->parser->parse((string) $body, EntryMessage::class, isArray: true);
+            if ($statusCode === 400) {
+                $data = $this->parser->parse((string) $body, EntryMessage::class, isArray: true);
 
-                    throw new EntryMessageException($data);
-                case $statusCode === 500:
-                    $data = $this->parser->parse((string) $body, EntryMessage::class, isArray: true);
-
-                    throw new ArrayEntryMessageException($data);
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new EntryMessageException($data);
             }
+
+            if ($statusCode === 500) {
+                $data = $this->parser->parse((string) $body, EntryMessage::class, isArray: true);
+
+                throw new ArrayEntryMessageException($data);
+            }
+
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }

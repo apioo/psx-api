@@ -51,14 +51,13 @@ class Client extends ClientAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                case $statusCode >= 0 && $statusCode <= 999:
-                    $data = $body;
+            if ($statusCode >= 0 && $statusCode <= 999) {
+                $data = $body;
 
-                    throw new BinaryException($data);
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new BinaryException($data);
             }
+
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -99,15 +98,14 @@ class Client extends ClientAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                case $statusCode >= 500 && $statusCode <= 599:
-                    $data = [];
-                    parse_str((string) $body, $data);
+            if ($statusCode >= 500 && $statusCode <= 599) {
+                $data = [];
+                parse_str((string) $body, $data);
 
-                    throw new FormException($data);
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new FormException($data);
             }
+
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -147,14 +145,13 @@ class Client extends ClientAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                case $statusCode >= 400 && $statusCode <= 499:
-                    $data = \json_decode((string) $body);
+            if ($statusCode >= 400 && $statusCode <= 499) {
+                $data = \json_decode((string) $body);
 
-                    throw new JsonException($data);
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new JsonException($data);
             }
+
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -195,15 +192,14 @@ class Client extends ClientAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                case $statusCode === 500:
-                    // @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
-                    $data = [];
+            if ($statusCode === 500) {
+                // @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
+                $data = [];
 
-                    throw new MultipartException($data);
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new MultipartException($data);
             }
+
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -243,14 +239,13 @@ class Client extends ClientAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                case $statusCode === 500:
-                    $data = (string) $body;
+            if ($statusCode === 500) {
+                $data = (string) $body;
 
-                    throw new TextException($data);
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new TextException($data);
             }
+
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }
@@ -291,15 +286,14 @@ class Client extends ClientAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
-            switch (true) {
-                case $statusCode === 500:
-                    $data = new \DOMDocument();
-                    $data->loadXML((string) $body);
+            if ($statusCode === 500) {
+                $data = new \DOMDocument();
+                $data->loadXML((string) $body);
 
-                    throw new XmlException($data);
-                default:
-                    throw new UnknownStatusCodeException('The server returned an unknown status code');
+                throw new XmlException($data);
             }
+
+            throw new UnknownStatusCodeException('The server returned an unknown status code');
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
         }

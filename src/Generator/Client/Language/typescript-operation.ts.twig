@@ -59,14 +59,13 @@
             } else if (axios.isAxiosError(error) && error.response) {
                 const statusCode = error.response.status;
 
-                switch (true) {
 {% for code, throw in operation.throws %}
-                    case {% if code == 999 %}statusCode >= 0 && statusCode <= 999{% elseif code == 499 %}statusCode >= 400 && statusCode <= 499{% elseif code == 599 %}statusCode >= 500 && statusCode <= 599{% else %}statusCode === {{ code }}{% endif %}:
-                        throw new {{ throw.className|raw }}(error.response.data);
-{% endfor %}
-                    default:
-                        throw new UnknownStatusCodeException('The server returned an unknown status code');
+                if ({% if code == 999 %}statusCode >= 0 && statusCode <= 999{% elseif code == 499 %}statusCode >= 400 && statusCode <= 499{% elseif code == 599 %}statusCode >= 500 && statusCode <= 599{% else %}statusCode === {{ code }}{% endif %}) {
+                    throw new {{ throw.className|raw }}(error.response.data);
                 }
+
+{% endfor %}
+                throw new UnknownStatusCodeException('The server returned an unknown status code');
             } else {
                 throw new ClientException('An unknown error occurred: ' + String(error));
             }
