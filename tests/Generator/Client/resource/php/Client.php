@@ -56,7 +56,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('GET', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class);
+            $data = $this->parser->parse((string) $body, EntryCollection::class);
 
             return $data;
         } catch (ClientException $e) {
@@ -102,7 +102,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('POST', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class);
+            $data = $this->parser->parse((string) $body, EntryMessage::class);
 
             return $data;
         } catch (ClientException $e) {
@@ -113,11 +113,11 @@ class Client extends ClientAbstract
 
             switch (true) {
                 case $statusCode === 400:
-                    $data = $this->parser->parse((string) $body, ::class);
+                    $data = $this->parser->parse((string) $body, EntryMessage::class);
 
                     throw new EntryMessageException($data);
                 case $statusCode === 500:
-                    $data = $this->parser->parse((string) $body, ::class);
+                    $data = $this->parser->parse((string) $body, EntryMessage::class);
 
                     throw new EntryMessageException($data);
                 default:
@@ -157,7 +157,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('PUT', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class, isMap: true);
+            $data = $this->parser->parse((string) $body, EntryMessage::class, isMap: true);
 
             return $data;
         } catch (ClientException $e) {
@@ -168,11 +168,11 @@ class Client extends ClientAbstract
 
             switch (true) {
                 case $statusCode === 400:
-                    $data = $this->parser->parse((string) $body, ::class, isMap: true);
+                    $data = $this->parser->parse((string) $body, EntryMessage::class, isMap: true);
 
                     throw new EntryMessageException($data);
                 case $statusCode === 500:
-                    $data = $this->parser->parse((string) $body, ::class, isMap: true);
+                    $data = $this->parser->parse((string) $body, EntryMessage::class, isMap: true);
 
                     throw new MapEntryMessageException($data);
                 default:
@@ -252,7 +252,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('PATCH', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class, isArray: true);
+            $data = $this->parser->parse((string) $body, EntryMessage::class, isArray: true);
 
             return $data;
         } catch (ClientException $e) {
@@ -263,11 +263,11 @@ class Client extends ClientAbstract
 
             switch (true) {
                 case $statusCode === 400:
-                    $data = $this->parser->parse((string) $body, ::class, isArray: true);
+                    $data = $this->parser->parse((string) $body, EntryMessage::class, isArray: true);
 
                     throw new EntryMessageException($data);
                 case $statusCode === 500:
-                    $data = $this->parser->parse((string) $body, ::class, isArray: true);
+                    $data = $this->parser->parse((string) $body, EntryMessage::class, isArray: true);
 
                     throw new ArrayEntryMessageException($data);
                 default:

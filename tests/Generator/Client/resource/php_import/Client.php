@@ -39,7 +39,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('GET', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class);
+            $data = $this->parser->parse((string) $body, \External\Bar\MyType::class);
 
             return $data;
         } catch (ClientException $e) {
@@ -50,7 +50,7 @@ class Client extends ClientAbstract
 
             switch (true) {
                 case $statusCode === 500:
-                    $data = $this->parser->parse((string) $body, ::class);
+                    $data = $this->parser->parse((string) $body, \External\Bar\MyType::class);
 
                     throw new ImportMyTypeException($data);
                 default:

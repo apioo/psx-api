@@ -39,7 +39,7 @@ class BarTag extends TagAbstract
             $response = $this->httpClient->request('GET', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class);
+            $data = $this->parser->parse((string) $body, EntryCollection::class);
 
             return $data;
         } catch (ClientException $e) {
@@ -80,7 +80,7 @@ class BarTag extends TagAbstract
             $response = $this->httpClient->request('POST', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class);
+            $data = $this->parser->parse((string) $body, EntryMessage::class);
 
             return $data;
         } catch (ClientException $e) {

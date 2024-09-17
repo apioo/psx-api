@@ -98,11 +98,11 @@
             {% if in_throw %}        {% endif %}$data->loadXML((string) $body);
 {% else %}
 {% if payload.innerSchema.isMap %}
-            {% if in_throw %}        {% endif %}$data = $this->parser->parse((string) $body, {{ operation.return.innerSchema.type }}::class, isMap: true);
+            {% if in_throw %}        {% endif %}$data = $this->parser->parse((string) $body, {{ payload.innerSchema.type }}::class, isMap: true);
 {% elseif payload.innerSchema.isArray %}
-            {% if in_throw %}        {% endif %}$data = $this->parser->parse((string) $body, {{ operation.return.innerSchema.type }}::class, isArray: true);
+            {% if in_throw %}        {% endif %}$data = $this->parser->parse((string) $body, {{ payload.innerSchema.type }}::class, isArray: true);
 {% else %}
-            {% if in_throw %}        {% endif %}$data = $this->parser->parse((string) $body, {{ operation.return.schema.type }}::class);
+            {% if in_throw %}        {% endif %}$data = $this->parser->parse((string) $body, {{ payload.schema.type }}::class);
 {% endif %}
 {% endif %}
 {% endmacro %}

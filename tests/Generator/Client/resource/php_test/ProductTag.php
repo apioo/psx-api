@@ -43,7 +43,7 @@ class ProductTag extends TagAbstract
             $response = $this->httpClient->request('GET', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class);
+            $data = $this->parser->parse((string) $body, TestResponse::class);
 
             return $data;
         } catch (ClientException $e) {
@@ -86,7 +86,7 @@ class ProductTag extends TagAbstract
             $response = $this->httpClient->request('POST', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class);
+            $data = $this->parser->parse((string) $body, TestResponse::class);
 
             return $data;
         } catch (ClientException $e) {
@@ -131,7 +131,7 @@ class ProductTag extends TagAbstract
             $response = $this->httpClient->request('PUT', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class);
+            $data = $this->parser->parse((string) $body, TestResponse::class);
 
             return $data;
         } catch (ClientException $e) {
@@ -176,7 +176,7 @@ class ProductTag extends TagAbstract
             $response = $this->httpClient->request('PATCH', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class);
+            $data = $this->parser->parse((string) $body, TestResponse::class);
 
             return $data;
         } catch (ClientException $e) {
@@ -219,7 +219,7 @@ class ProductTag extends TagAbstract
             $response = $this->httpClient->request('DELETE', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, ::class);
+            $data = $this->parser->parse((string) $body, TestResponse::class);
 
             return $data;
         } catch (ClientException $e) {
