@@ -72,6 +72,7 @@ class ProductTag extends TagAbstract
 
         $options = [
             'headers' => [
+                'Content-Type' => 'application/json'
             ],
             'query' => $this->parser->query([
             ], [
@@ -114,6 +115,7 @@ class ProductTag extends TagAbstract
 
         $options = [
             'headers' => [
+                'Content-Type' => 'application/json'
             ],
             'query' => $this->parser->query([
             ], [
@@ -156,6 +158,7 @@ class ProductTag extends TagAbstract
 
         $options = [
             'headers' => [
+                'Content-Type' => 'application/json'
             ],
             'query' => $this->parser->query([
             ], [

@@ -360,18 +360,16 @@ class Attribute implements ParserInterface
         if ($type instanceof \ReflectionNamedType) {
             if ($type->getName() === 'mixed') {
                 return Passthru::class;
-            } elseif ($type->getName() === \DOMDocument::class) {
-                return ContentType::XML;
             } elseif ($type->getName() === StreamInterface::class) {
-                return ContentType::BINARY;
+                return new ContentType(ContentType::BINARY);
             } elseif ($type->getName() === 'string') {
-                return ContentType::TEXT;
+                return new ContentType(ContentType::TEXT);
             } elseif ($type->getName() === 'PSX\\Data\\Body\\Json') {
-                return ContentType::JSON;
+                return new ContentType(ContentType::JSON);
             } elseif ($type->getName() === 'PSX\\Data\\Body\\Multipart') {
-                return ContentType::MULTIPART;
+                return new ContentType(ContentType::MULTIPART);
             } elseif ($type->getName() === 'PSX\\Data\\Body\\Form') {
-                return ContentType::FORM;
+                return new ContentType(ContentType::FORM);
             } elseif (class_exists($type->getName())) {
                 return $type->getName();
             }

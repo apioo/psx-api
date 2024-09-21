@@ -80,6 +80,7 @@ export class Client extends ClientAbstract {
             url: url,
             method: 'POST',
             headers: {
+                'Content-Type': 'application/json',
             },
             params: this.parser.query({
             }, [
@@ -127,6 +128,7 @@ export class Client extends ClientAbstract {
             url: url,
             method: 'PUT',
             headers: {
+                'Content-Type': 'application/json',
             },
             params: this.parser.query({
             }, [
@@ -209,6 +211,7 @@ export class Client extends ClientAbstract {
             url: url,
             method: 'PATCH',
             headers: {
+                'Content-Type': 'application/json',
             },
             params: this.parser.query({
             }, [

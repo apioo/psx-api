@@ -64,7 +64,7 @@ class App extends ControllerAbstract
     #[Post]
     #[Path('/xml')]
     #[StatusCode(200)]
-    public function xml(#[Body] \DOMDocument $body): \DOMDocument
+    public function xml(#[Body] string $body): string
     {
         // @TODO implement method
     }

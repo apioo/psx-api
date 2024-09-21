@@ -88,6 +88,7 @@ class Client extends ClientAbstract
 
         $options = [
             'headers' => [
+                'Content-Type' => 'application/json'
             ],
             'query' => $this->parser->query([
             ], [
@@ -144,6 +145,7 @@ class Client extends ClientAbstract
 
         $options = [
             'headers' => [
+                'Content-Type' => 'application/json'
             ],
             'query' => $this->parser->query([
             ], [
@@ -237,6 +239,7 @@ class Client extends ClientAbstract
 
         $options = [
             'headers' => [
+                'Content-Type' => 'application/json'
             ],
             'query' => $this->parser->query([
             ], [

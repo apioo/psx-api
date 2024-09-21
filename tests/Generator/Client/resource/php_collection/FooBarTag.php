@@ -65,6 +65,7 @@ class FooBarTag extends TagAbstract
 
         $options = [
             'headers' => [
+                'Content-Type' => 'application/json'
             ],
             'query' => $this->parser->query([
             ], [

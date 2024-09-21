@@ -24,6 +24,8 @@
             'headers' => [
 {% if operation.bodyContentType %}
                 'Content-Type' => '{{ operation.bodyContentType }}',
+{% elseif operation.bodyName %}
+                'Content-Type' => 'application/json'
 {% endif %}
             ],
             'query' => $this->parser->query([
@@ -36,14 +38,12 @@
 {% endfor %}
             ]),
 {% if operation.bodyName %}
-{% if operation.bodyContentType == 'application/octet-stream' or operation.bodyContentType == 'text/plain' %}
+{% if operation.bodyContentShape == 'application/octet-stream' or operation.bodyContentShape == 'application/xml' or operation.bodyContentShape == 'text/plain' %}
             'body' => ${{ operation.bodyName }}
-{% elseif operation.bodyContentType == 'application/x-www-form-urlencoded' %}
+{% elseif operation.bodyContentShape == 'application/x-www-form-urlencoded' %}
             'form_params' => ${{ operation.bodyName }}
-{% elseif operation.bodyContentType == 'multipart/form-data' %}
+{% elseif operation.bodyContentShape == 'multipart/form-data' %}
             'multipart' => ${{ operation.bodyName }}
-{% elseif operation.bodyContentType == 'application/xml' %}
-            'body' => ${{ operation.bodyName }}->saveXML()
 {% else %}
             'json' => ${{ operation.bodyName }}
 {% endif %}
@@ -80,21 +80,18 @@
 {% endfor %}
 
 {% macro response(payload, in_throw) %}
-{% if payload.contentType == 'application/octet-stream' %}
+{% if payload.contentShape == 'application/octet-stream' %}
             {% if in_throw %}    {% endif %}$data = $body;
-{% elseif payload.contentType == 'application/x-www-form-urlencoded' %}
+{% elseif payload.contentShape == 'application/x-www-form-urlencoded' %}
             {% if in_throw %}    {% endif %}$data = [];
             {% if in_throw %}    {% endif %}parse_str((string) $body, $data);
-{% elseif payload.contentType == 'application/json' %}
+{% elseif payload.contentShape == 'application/json' %}
             {% if in_throw %}    {% endif %}$data = \json_decode((string) $body);
-{% elseif payload.contentType == 'multipart/form-data' %}
+{% elseif payload.contentShape == 'multipart/form-data' %}
             {% if in_throw %}    {% endif %}// @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
             {% if in_throw %}    {% endif %}$data = [];
-{% elseif payload.contentType == 'text/plain' %}
+{% elseif payload.contentShape == 'text/plain' or payload.contentShape == 'application/xml' %}
             {% if in_throw %}    {% endif %}$data = (string) $body;
-{% elseif payload.contentType == 'application/xml' %}
-            {% if in_throw %}    {% endif %}$data = new \DOMDocument();
-            {% if in_throw %}    {% endif %}$data->loadXML((string) $body);
 {% else %}
 {% if payload.innerSchema.isMap %}
             {% if in_throw %}    {% endif %}$data = $this->parser->parse((string) $body, {{ payload.innerSchema.type }}::class, isMap: true);

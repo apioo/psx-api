@@ -61,6 +61,7 @@ export class BarTag extends TagAbstract {
             url: url,
             method: 'POST',
             headers: {
+                'Content-Type': 'application/json',
             },
             params: this.parser.query({
             }, [

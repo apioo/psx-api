@@ -78,12 +78,4 @@ class ContentTypeController
     {
         return $body;
     }
-
-    #[Post]
-    #[Path('/xml')]
-    #[OperationId('xml')]
-    protected function xml(#[Body] \DOMDocument $body): \DOMDocument
-    {
-        return new \DOMDocument();
-    }
 }

@@ -201,29 +201,29 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
     {
         $builder = $this->apiManager->getBuilder();
 
-        $operation = $builder->addOperation('binary', 'POST', '/binary', 200, ContentType::BINARY);
-        $operation->addArgument('body', 'body', ContentType::BINARY);
-        $operation->addThrow(999, ContentType::BINARY);
+        $operation = $builder->addOperation('binary', 'POST', '/binary', 200, new ContentType(ContentType::BINARY));
+        $operation->addArgument('body', 'body', new ContentType(ContentType::BINARY));
+        $operation->addThrow(999, new ContentType(ContentType::BINARY));
 
-        $operation = $builder->addOperation('form', 'POST', '/form', 200, ContentType::FORM);
-        $operation->addArgument('body', 'body', ContentType::FORM);
-        $operation->addThrow(599, ContentType::FORM);
+        $operation = $builder->addOperation('form', 'POST', '/form', 200, new ContentType(ContentType::FORM));
+        $operation->addArgument('body', 'body', new ContentType(ContentType::FORM));
+        $operation->addThrow(599, new ContentType(ContentType::FORM));
 
-        $operation = $builder->addOperation('json', 'POST', '/json', 200, ContentType::JSON);
-        $operation->addArgument('body', 'body', ContentType::JSON);
-        $operation->addThrow(499, ContentType::JSON);
+        $operation = $builder->addOperation('json', 'POST', '/json', 200, new ContentType(ContentType::JSON));
+        $operation->addArgument('body', 'body', new ContentType(ContentType::JSON));
+        $operation->addThrow(499, new ContentType(ContentType::JSON));
 
-        $operation = $builder->addOperation('multipart', 'POST', '/multipart', 200, ContentType::MULTIPART);
-        $operation->addArgument('body', 'body', ContentType::MULTIPART);
-        $operation->addThrow(500, ContentType::MULTIPART);
+        $operation = $builder->addOperation('multipart', 'POST', '/multipart', 200, new ContentType(ContentType::MULTIPART));
+        $operation->addArgument('body', 'body', new ContentType(ContentType::MULTIPART));
+        $operation->addThrow(500, new ContentType(ContentType::MULTIPART));
 
-        $operation = $builder->addOperation('text', 'POST', '/text', 200, ContentType::TEXT);
-        $operation->addArgument('body', 'body', ContentType::TEXT);
-        $operation->addThrow(500, ContentType::TEXT);
+        $operation = $builder->addOperation('text', 'POST', '/text', 200, new ContentType(ContentType::TEXT));
+        $operation->addArgument('body', 'body', new ContentType(ContentType::TEXT));
+        $operation->addThrow(500, new ContentType(ContentType::TEXT));
 
-        $operation = $builder->addOperation('xml', 'POST', '/xml', 200, ContentType::XML);
-        $operation->addArgument('body', 'body', ContentType::XML);
-        $operation->addThrow(500, ContentType::XML);
+        $operation = $builder->addOperation('xml', 'POST', '/xml', 200, new ContentType(ContentType::XML));
+        $operation->addArgument('body', 'body', new ContentType(ContentType::XML));
+        $operation->addThrow(500, new ContentType(ContentType::XML));
 
         return $builder->getSpecification();
     }

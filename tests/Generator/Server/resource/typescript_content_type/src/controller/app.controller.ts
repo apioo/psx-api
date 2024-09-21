@@ -44,7 +44,7 @@ export class AppController {
 
   @Post('/xml')
   @HttpCode(200)
-  xml(@Body() body: XMLDocument): XMLDocument {
+  xml(@Body() body: string): string {
     // @TODO implement method
     return {};
   }

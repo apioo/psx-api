@@ -121,10 +121,5 @@ class AttributeTest extends ParserTestCase
         $this->assertInstanceOf(OperationInterface::class, $operation);
         $this->assertEquals(ContentType::JSON, $operation->getArguments()->get('body')->getSchema());
         $this->assertEquals(ContentType::JSON, $operation->getReturn()->getSchema());
-
-        $operation = $specification->getOperations()->get('xml');
-        $this->assertInstanceOf(OperationInterface::class, $operation);
-        $this->assertEquals(ContentType::XML, $operation->getArguments()->get('body')->getSchema());
-        $this->assertEquals(ContentType::XML, $operation->getReturn()->getSchema());
     }
 }

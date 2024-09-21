@@ -225,11 +225,11 @@ export class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<XMLDocument>}
+     * @returns {Promise<string>}
      * @throws {XmlException}
      * @throws {ClientException}
      */
-    public async xml(body: XMLDocument): Promise<XMLDocument> {
+    public async xml(body: string): Promise<string> {
         const url = this.parser.url('/xml', {
         });
 
@@ -242,12 +242,12 @@ export class Client extends ClientAbstract {
             params: this.parser.query({
             }, [
             ]),
-            responseType: 'document',
+            responseType: 'text',
             data: body
         };
 
         try {
-            const response = await this.httpClient.request<XMLDocument>(params);
+            const response = await this.httpClient.request<string>(params);
             return response.data;
         } catch (error) {
             if (error instanceof ClientException) {

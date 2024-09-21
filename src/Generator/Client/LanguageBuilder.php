@@ -150,7 +150,7 @@ class LanguageBuilder
             $imports = [];
             $path = $pathNames = [];
             $query = $queryNames = $queryStructNames = [];
-            $body = $bodyName = $bodyContentType = null;
+            $body = $bodyName = $bodyContentType = $bodyContentShape = null;
             foreach ($operation->getArguments()->getAll() as $name => $argument) {
                 $realName = $argument->getName();
                 if (empty($realName)) {
@@ -172,7 +172,8 @@ class LanguageBuilder
                     $bodyName = $normalized;
 
                     if ($argument->getSchema() instanceof ContentType) {
-                        $bodyContentType = $argument->getSchema()->value;
+                        $bodyContentType = $argument->getSchema()->toString();
+                        $bodyContentShape = $argument->getSchema()->getShape();
                     }
                 }
 
@@ -185,6 +186,7 @@ class LanguageBuilder
                 $body = null;
                 $bodyName = null;
                 $bodyContentType = null;
+                $bodyContentShape = null;
             }
 
             $arguments = array_merge($path, $body !== null ? [$bodyName => $body] : [], $query);
@@ -195,7 +197,14 @@ class LanguageBuilder
                 $returnType = $this->newType($returnSchema, false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
                 $innerSchema = $returnSchema instanceof TypeInterface ? $this->getInnerSchema($returnSchema, $definitions) : null;
 
-                $return = new Dto\Response($operation->getReturn()->getCode(), $returnType, null, $innerSchema, $returnSchema instanceof ContentType ? $returnSchema->value : null);
+                $return = new Dto\Response(
+                    $operation->getReturn()->getCode(),
+                    $returnType,
+                    null,
+                    $innerSchema,
+                    $returnSchema instanceof ContentType ? $returnSchema->toString() : null,
+                    $returnSchema instanceof ContentType ? $returnSchema->getShape() : null,
+                );
 
                 if ($returnSchema instanceof TypeInterface) {
                     $this->resolveImport($returnSchema, $imports);
@@ -217,7 +226,14 @@ class LanguageBuilder
                 $exceptionClassName = $this->naming->buildExceptionClassNameByType($throwSchema);
                 $exceptions[$exceptionClassName] = new Dto\Exception($exceptionClassName, $exceptionType, 'The server returned an error', $exceptionImports);
 
-                $throws[$throw->getCode()] = new Dto\Response($throw->getCode(), $exceptionType, $exceptionClassName, $innerSchema, $throwSchema instanceof ContentType ? $throwSchema->value : null);
+                $throws[$throw->getCode()] = new Dto\Response(
+                    $throw->getCode(),
+                    $exceptionType,
+                    $exceptionClassName,
+                    $innerSchema,
+                    $throwSchema instanceof ContentType ? $throwSchema->toString() : null,
+                    $throwSchema instanceof ContentType ? $throwSchema->getShape() : null,
+                );
 
                 $imports[$this->normalizer->file($exceptionClassName)] = $exceptionClassName;
             }
@@ -235,6 +251,7 @@ class LanguageBuilder
                 $queryStructNames,
                 $bodyName,
                 $bodyContentType,
+                $bodyContentShape,
                 $imports
             );
         }

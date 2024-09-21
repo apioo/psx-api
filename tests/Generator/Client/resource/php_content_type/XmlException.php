@@ -10,9 +10,9 @@ use Sdkgen\Client\Exception\KnownStatusCodeException;
 
 class XmlException extends KnownStatusCodeException
 {
-    private \DOMDocument $payload;
+    private string $payload;
 
-    public function __construct(\DOMDocument $payload)
+    public function __construct(string $payload)
     {
         parent::__construct('The server returned an error');
 
@@ -20,9 +20,9 @@ class XmlException extends KnownStatusCodeException
     }
 
     /**
-     * @return \DOMDocument
+     * @return string
      */
-    public function getPayload(): \DOMDocument
+    public function getPayload(): string
     {
         return $this->payload;
     }

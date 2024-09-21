@@ -23,6 +23,8 @@
             headers: {
 {% if operation.bodyContentType %}
                 'Content-Type': '{{ operation.bodyContentType }}',
+{% elseif operation.bodyName %}
+                'Content-Type': 'application/json',
 {% endif %}
             },
             params: this.parser.query({
@@ -34,14 +36,12 @@
                 '{{ realName }}',
 {% endfor %}
             ]),
-{% if operation.return.contentType == 'application/octet-stream' %}
+{% if operation.return.contentShape == 'application/octet-stream' %}
             responseType: 'arraybuffer',
-{% elseif operation.return.contentType == 'application/json' %}
+{% elseif operation.return.contentShape == 'application/json' %}
             responseType: 'json',
-{% elseif operation.return.contentType == 'text/plain' %}
+{% elseif operation.return.contentShape == 'text/plain' or operation.return.contentShape == 'application/xml' %}
             responseType: 'text',
-{% elseif operation.return.contentType == 'application/xml' %}
-            responseType: 'document',
 {% endif %}
 {% if operation.bodyName %}
             data: {{ operation.bodyName }}

@@ -58,7 +58,7 @@ class Naming
     public function buildExceptionClassNameByType(TypeInterface|ContentType $type): string
     {
         if ($type instanceof ContentType) {
-            return match ($type) {
+            return match ($type->getShape()) {
                 ContentType::BINARY => 'BinaryException',
                 ContentType::FORM => 'FormException',
                 ContentType::JSON => 'JsonException',

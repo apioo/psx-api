@@ -252,12 +252,12 @@ class Client extends ClientAbstract
     }
 
     /**
-     * @param \DOMDocument $body
-     * @return \DOMDocument
+     * @param string $body
+     * @return string
      * @throws XmlException
      * @throws ClientException
      */
-    public function xml(\DOMDocument $body): \DOMDocument
+    public function xml(string $body): string
     {
         $url = $this->parser->url('/xml', [
         ]);
@@ -269,15 +269,14 @@ class Client extends ClientAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'body' => $body->saveXML()
+            'body' => $body
         ];
 
         try {
             $response = $this->httpClient->request('POST', $url, $options);
             $body = $response->getBody();
 
-            $data = new \DOMDocument();
-            $data->loadXML((string) $body);
+            $data = (string) $body;
 
             return $data;
         } catch (ClientException $e) {
@@ -287,8 +286,7 @@ class Client extends ClientAbstract
             $statusCode = $e->getResponse()->getStatusCode();
 
             if ($statusCode === 500) {
-                $data = new \DOMDocument();
-                $data->loadXML((string) $body);
+                $data = (string) $body;
 
                 throw new XmlException($data);
             }

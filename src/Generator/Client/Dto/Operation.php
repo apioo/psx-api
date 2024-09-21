@@ -42,6 +42,7 @@ class Operation
         public array $queryStructNames,
         public ?string $bodyName,
         public ?string $bodyContentType,
+        public ?string $bodyContentShape,
         public array $imports,
     )
     {
