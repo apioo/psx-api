@@ -263,7 +263,7 @@ class TypeAPI implements ParserInterface
         }
 
         $contentType = $data->contentType ?? null;
-        if (is_string($contentType)) {
+        if (is_string($contentType) && !empty($contentType)) {
             $type = ContentType::from($contentType);
         } else {
             $schema = $data->schema ?? null;
