@@ -154,7 +154,6 @@ export class Client extends ClientAbstract {
             url: url,
             method: 'POST',
             headers: {
-                'Content-Type': 'multipart/form-data',
             },
             params: this.parser.query({
             }, [

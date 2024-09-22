@@ -7,6 +7,9 @@ import {TestMapScalar} from "./TestMapScalar";
 import {TestRequest} from "./TestRequest";
 export interface TestResponse {
     args?: TestMapScalar
+    data?: string
+    files?: TestMapScalar
+    form?: TestMapScalar
     headers?: TestMapScalar
     json?: TestRequest
     method?: string

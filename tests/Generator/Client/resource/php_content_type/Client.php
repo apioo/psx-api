@@ -170,7 +170,6 @@ class Client extends ClientAbstract
 
         $options = [
             'headers' => [
-                'Content-Type' => 'multipart/form-data',
             ],
             'query' => $this->parser->query([
             ], [

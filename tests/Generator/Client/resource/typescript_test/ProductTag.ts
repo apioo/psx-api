@@ -331,7 +331,6 @@ export class ProductTag extends TagAbstract {
             url: url,
             method: 'POST',
             headers: {
-                'Content-Type': 'multipart/form-data',
             },
             params: this.parser.query({
             }, [

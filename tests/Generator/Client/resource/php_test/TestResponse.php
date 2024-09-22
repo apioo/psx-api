@@ -10,6 +10,9 @@ namespace Sdkgen\Client\Tests\Generated;
 class TestResponse implements \JsonSerializable, \PSX\Record\RecordableInterface
 {
     protected ?TestMapScalar $args = null;
+    protected ?string $data = null;
+    protected ?TestMapScalar $files = null;
+    protected ?TestMapScalar $form = null;
     protected ?TestMapScalar $headers = null;
     protected ?TestRequest $json = null;
     protected ?string $method = null;
@@ -20,6 +23,30 @@ class TestResponse implements \JsonSerializable, \PSX\Record\RecordableInterface
     public function getArgs() : ?TestMapScalar
     {
         return $this->args;
+    }
+    public function setData(?string $data) : void
+    {
+        $this->data = $data;
+    }
+    public function getData() : ?string
+    {
+        return $this->data;
+    }
+    public function setFiles(?TestMapScalar $files) : void
+    {
+        $this->files = $files;
+    }
+    public function getFiles() : ?TestMapScalar
+    {
+        return $this->files;
+    }
+    public function setForm(?TestMapScalar $form) : void
+    {
+        $this->form = $form;
+    }
+    public function getForm() : ?TestMapScalar
+    {
+        return $this->form;
     }
     public function setHeaders(?TestMapScalar $headers) : void
     {
@@ -50,6 +77,9 @@ class TestResponse implements \JsonSerializable, \PSX\Record\RecordableInterface
         /** @var \PSX\Record\Record<mixed> $record */
         $record = new \PSX\Record\Record();
         $record->put('args', $this->args);
+        $record->put('data', $this->data);
+        $record->put('files', $this->files);
+        $record->put('form', $this->form);
         $record->put('headers', $this->headers);
         $record->put('json', $this->json);
         $record->put('method', $this->method);

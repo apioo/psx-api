@@ -362,7 +362,6 @@ class ProductTag extends TagAbstract
 
         $options = [
             'headers' => [
-                'Content-Type' => 'multipart/form-data',
             ],
             'query' => $this->parser->query([
             ], [

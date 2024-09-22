@@ -21,7 +21,8 @@
             url: url,
             method: '{{ operation.method }}',
             headers: {
-{% if operation.bodyContentType %}
+{% if operation.bodyContentShape == 'multipart/form-data' %}
+{% elseif operation.bodyContentType %}
                 'Content-Type': '{{ operation.bodyContentType }}',
 {% elseif operation.bodyName %}
                 'Content-Type': 'application/json',
