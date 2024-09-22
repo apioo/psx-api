@@ -63,6 +63,7 @@ class ProductTag extends TagAbstract
      *
      * @param TestRequest $payload
      * @return TestResponse
+     * @throws TestResponseException
      * @throws ClientException
      */
     public function create(TestRequest $payload): TestResponse
@@ -92,6 +93,12 @@ class ProductTag extends TagAbstract
         } catch (BadResponseException $e) {
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
+
+            if ($statusCode === 500) {
+                $data = $this->parser->parse((string) $body, TestResponse::class);
+
+                throw new TestResponseException($data);
+            }
 
             throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
@@ -230,6 +237,7 @@ class ProductTag extends TagAbstract
      *
      * @param \Psr\Http\Message\StreamInterface $payload
      * @return TestResponse
+     * @throws BinaryException
      * @throws ClientException
      */
     public function binary(\Psr\Http\Message\StreamInterface $payload): TestResponse
@@ -260,6 +268,12 @@ class ProductTag extends TagAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
+            if ($statusCode === 500) {
+                $data = $body;
+
+                throw new BinaryException($data);
+            }
+
             throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
@@ -271,6 +285,7 @@ class ProductTag extends TagAbstract
      *
      * @param array $payload
      * @return TestResponse
+     * @throws FormException
      * @throws ClientException
      */
     public function form(array $payload): TestResponse
@@ -301,6 +316,13 @@ class ProductTag extends TagAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
+            if ($statusCode === 500) {
+                $data = [];
+                parse_str((string) $body, $data);
+
+                throw new FormException($data);
+            }
+
             throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
@@ -312,6 +334,7 @@ class ProductTag extends TagAbstract
      *
      * @param \stdClass $payload
      * @return TestResponse
+     * @throws JsonException
      * @throws ClientException
      */
     public function json(\stdClass $payload): TestResponse
@@ -342,6 +365,12 @@ class ProductTag extends TagAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
+            if ($statusCode === 500) {
+                $data = \json_decode((string) $body);
+
+                throw new JsonException($data);
+            }
+
             throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
@@ -353,6 +382,7 @@ class ProductTag extends TagAbstract
      *
      * @param array $payload
      * @return TestResponse
+     * @throws MultipartException
      * @throws ClientException
      */
     public function multipart(array $payload): TestResponse
@@ -382,6 +412,13 @@ class ProductTag extends TagAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
+            if ($statusCode === 500) {
+                // @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
+                $data = [];
+
+                throw new MultipartException($data);
+            }
+
             throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
@@ -393,6 +430,7 @@ class ProductTag extends TagAbstract
      *
      * @param string $payload
      * @return TestResponse
+     * @throws TextException
      * @throws ClientException
      */
     public function text(string $payload): TestResponse
@@ -423,6 +461,12 @@ class ProductTag extends TagAbstract
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
 
+            if ($statusCode === 500) {
+                $data = (string) $body;
+
+                throw new TextException($data);
+            }
+
             throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {
             throw new ClientException('An unknown error occurred: ' . $e->getMessage());
@@ -434,6 +478,7 @@ class ProductTag extends TagAbstract
      *
      * @param string $payload
      * @return TestResponse
+     * @throws XmlException
      * @throws ClientException
      */
     public function xml(string $payload): TestResponse
@@ -463,6 +508,12 @@ class ProductTag extends TagAbstract
         } catch (BadResponseException $e) {
             $body = $e->getResponse()->getBody();
             $statusCode = $e->getResponse()->getStatusCode();
+
+            if ($statusCode === 500) {
+                $data = (string) $body;
+
+                throw new XmlException($data);
+            }
 
             throw new UnknownStatusCodeException('The server returned an unknown status code: ' . $statusCode);
         } catch (\Throwable $e) {

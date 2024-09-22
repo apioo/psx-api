@@ -25,6 +25,7 @@ use PSX\Api\Operation\ArgumentInterface;
 use PSX\Api\Security\HttpBearer;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
+use PSX\Api\Tests\Generator\Schema\TestMapScalar;
 use PSX\Schema\ContentType;
 use PSX\Schema\Definitions;
 use PSX\Schema\Format;
@@ -179,6 +180,7 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $operation = $builder->addOperation('product.create', 'POST', '/anything', 200, $testResponse);
         $operation->setDescription('Creates a new product');
         $operation->addArgument('payload', 'body', $testRequest);
+        $operation->addThrow(500, $testResponse);
 
         $operation = $builder->addOperation('product.update', 'PUT', '/anything/:id', 200, $testResponse);
         $operation->setDescription('Updates an existing product');
@@ -197,26 +199,32 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $operation = $builder->addOperation('product.binary', 'POST', '/anything/binary', 200, $testResponse);
         $operation->setDescription('Test binary content type');
         $operation->addArgument('payload', 'body', new ContentType(ContentType::BINARY));
+        $operation->addThrow(500, new ContentType(ContentType::BINARY));
 
         $operation = $builder->addOperation('product.form', 'POST', '/anything/form', 200, $testResponse);
         $operation->setDescription('Test form content type');
         $operation->addArgument('payload', 'body', new ContentType(ContentType::FORM));
+        $operation->addThrow(500, new ContentType(ContentType::FORM));
 
         $operation = $builder->addOperation('product.json', 'POST', '/anything/json', 200, $testResponse);
         $operation->setDescription('Test json content type');
         $operation->addArgument('payload', 'body', new ContentType(ContentType::JSON));
+        $operation->addThrow(500, new ContentType(ContentType::JSON));
 
         $operation = $builder->addOperation('product.multipart', 'POST', '/anything/multipart', 200, $testResponse);
         $operation->setDescription('Test json content type');
         $operation->addArgument('payload', 'body', new ContentType(ContentType::MULTIPART));
+        $operation->addThrow(500, new ContentType(ContentType::MULTIPART));
 
         $operation = $builder->addOperation('product.text', 'POST', '/anything/text', 200, $testResponse);
         $operation->setDescription('Test text content type');
         $operation->addArgument('payload', 'body', new ContentType(ContentType::TEXT));
+        $operation->addThrow(500, new ContentType(ContentType::TEXT));
 
         $operation = $builder->addOperation('product.xml', 'POST', '/anything/xml', 200, $testResponse);
         $operation->setDescription('Test xml content type');
         $operation->addArgument('payload', 'body', new ContentType(ContentType::XML));
+        $operation->addThrow(500, new ContentType(ContentType::XML));
 
         return $builder->getSpecification();
     }
