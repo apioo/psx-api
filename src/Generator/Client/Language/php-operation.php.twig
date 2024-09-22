@@ -26,7 +26,7 @@
 {% elseif operation.bodyContentType %}
                 'Content-Type' => '{{ operation.bodyContentType }}',
 {% elseif operation.bodyName %}
-                'Content-Type' => 'application/json'
+                'Content-Type' => 'application/json',
 {% endif %}
             ],
             'query' => $this->parser->query([
@@ -40,13 +40,13 @@
             ]),
 {% if operation.bodyName %}
 {% if operation.bodyContentShape == 'application/octet-stream' or operation.bodyContentShape == 'application/xml' or operation.bodyContentShape == 'text/plain' %}
-            'body' => ${{ operation.bodyName }}
+            'body' => ${{ operation.bodyName }},
 {% elseif operation.bodyContentShape == 'application/x-www-form-urlencoded' %}
-            'form_params' => ${{ operation.bodyName }}
+            'form_params' => ${{ operation.bodyName }},
 {% elseif operation.bodyContentShape == 'multipart/form-data' %}
-            'multipart' => ${{ operation.bodyName }}
+            'multipart' => ${{ operation.bodyName }}->getParts(),
 {% else %}
-            'json' => ${{ operation.bodyName }}
+            'json' => ${{ operation.bodyName }},
 {% endif %}
 {% endif %}
         ];
@@ -90,7 +90,7 @@
             {% if in_throw %}    {% endif %}$data = \json_decode((string) $body);
 {% elseif payload.contentShape == 'multipart/form-data' %}
             {% if in_throw %}    {% endif %}// @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
-            {% if in_throw %}    {% endif %}$data = [];
+            {% if in_throw %}    {% endif %}$data = new \Sdkgen\Client\Multipart();
 {% elseif payload.contentShape == 'text/plain' or payload.contentShape == 'application/xml' %}
             {% if in_throw %}    {% endif %}$data = (string) $body;
 {% else %}

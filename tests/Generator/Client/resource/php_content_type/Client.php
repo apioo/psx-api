@@ -35,7 +35,7 @@ class Client extends ClientAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'body' => $body
+            'body' => $body,
         ];
 
         try {
@@ -81,7 +81,7 @@ class Client extends ClientAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'form_params' => $body
+            'form_params' => $body,
         ];
 
         try {
@@ -112,12 +112,12 @@ class Client extends ClientAbstract
     }
 
     /**
-     * @param \stdClass $body
-     * @return \stdClass
+     * @param mixed $body
+     * @return mixed
      * @throws JsonException
      * @throws ClientException
      */
-    public function json(\stdClass $body): \stdClass
+    public function json(mixed $body): mixed
     {
         $url = $this->parser->url('/json', [
         ]);
@@ -129,7 +129,7 @@ class Client extends ClientAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'json' => $body
+            'json' => $body,
         ];
 
         try {
@@ -158,12 +158,12 @@ class Client extends ClientAbstract
     }
 
     /**
-     * @param array $body
-     * @return array
+     * @param \Sdkgen\Client\Multipart $body
+     * @return \Sdkgen\Client\Multipart
      * @throws MultipartException
      * @throws ClientException
      */
-    public function multipart(array $body): array
+    public function multipart(\Sdkgen\Client\Multipart $body): \Sdkgen\Client\Multipart
     {
         $url = $this->parser->url('/multipart', [
         ]);
@@ -174,7 +174,7 @@ class Client extends ClientAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'multipart' => $body
+            'multipart' => $body->getParts(),
         ];
 
         try {
@@ -182,7 +182,7 @@ class Client extends ClientAbstract
             $body = $response->getBody();
 
             // @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
-            $data = [];
+            $data = new \Sdkgen\Client\Multipart();
 
             return $data;
         } catch (ClientException $e) {
@@ -193,7 +193,7 @@ class Client extends ClientAbstract
 
             if ($statusCode === 500) {
                 // @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
-                $data = [];
+                $data = new \Sdkgen\Client\Multipart();
 
                 throw new MultipartException($data);
             }
@@ -222,7 +222,7 @@ class Client extends ClientAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'body' => $body
+            'body' => $body,
         ];
 
         try {
@@ -268,7 +268,7 @@ class Client extends ClientAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'body' => $body
+            'body' => $body,
         ];
 
         try {

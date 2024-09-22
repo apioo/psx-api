@@ -10,9 +10,9 @@ use Sdkgen\Client\Exception\KnownStatusCodeException;
 
 class MultipartException extends KnownStatusCodeException
 {
-    private array $payload;
+    private \Sdkgen\Client\Multipart $payload;
 
-    public function __construct(array $payload)
+    public function __construct(\Sdkgen\Client\Multipart $payload)
     {
         parent::__construct('The server returned an error');
 
@@ -20,9 +20,9 @@ class MultipartException extends KnownStatusCodeException
     }
 
     /**
-     * @return array
+     * @return \Sdkgen\Client\Multipart
      */
-    public function getPayload(): array
+    public function getPayload(): \Sdkgen\Client\Multipart
     {
         return $this->payload;
     }

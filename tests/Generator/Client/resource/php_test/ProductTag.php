@@ -73,12 +73,12 @@ class ProductTag extends TagAbstract
 
         $options = [
             'headers' => [
-                'Content-Type' => 'application/json'
+                'Content-Type' => 'application/json',
             ],
             'query' => $this->parser->query([
             ], [
             ]),
-            'json' => $payload
+            'json' => $payload,
         ];
 
         try {
@@ -122,12 +122,12 @@ class ProductTag extends TagAbstract
 
         $options = [
             'headers' => [
-                'Content-Type' => 'application/json'
+                'Content-Type' => 'application/json',
             ],
             'query' => $this->parser->query([
             ], [
             ]),
-            'json' => $payload
+            'json' => $payload,
         ];
 
         try {
@@ -165,12 +165,12 @@ class ProductTag extends TagAbstract
 
         $options = [
             'headers' => [
-                'Content-Type' => 'application/json'
+                'Content-Type' => 'application/json',
             ],
             'query' => $this->parser->query([
             ], [
             ]),
-            'json' => $payload
+            'json' => $payload,
         ];
 
         try {
@@ -252,7 +252,7 @@ class ProductTag extends TagAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'body' => $payload
+            'body' => $payload,
         ];
 
         try {
@@ -300,7 +300,7 @@ class ProductTag extends TagAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'form_params' => $payload
+            'form_params' => $payload,
         ];
 
         try {
@@ -332,12 +332,12 @@ class ProductTag extends TagAbstract
     /**
      * Test json content type
      *
-     * @param \stdClass $payload
+     * @param mixed $payload
      * @return TestResponse
      * @throws JsonException
      * @throws ClientException
      */
-    public function json(\stdClass $payload): TestResponse
+    public function json(mixed $payload): TestResponse
     {
         $url = $this->parser->url('/anything/json', [
         ]);
@@ -349,7 +349,7 @@ class ProductTag extends TagAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'json' => $payload
+            'json' => $payload,
         ];
 
         try {
@@ -380,12 +380,12 @@ class ProductTag extends TagAbstract
     /**
      * Test json content type
      *
-     * @param array $payload
+     * @param \Sdkgen\Client\Multipart $payload
      * @return TestResponse
      * @throws MultipartException
      * @throws ClientException
      */
-    public function multipart(array $payload): TestResponse
+    public function multipart(\Sdkgen\Client\Multipart $payload): TestResponse
     {
         $url = $this->parser->url('/anything/multipart', [
         ]);
@@ -396,7 +396,7 @@ class ProductTag extends TagAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'multipart' => $payload
+            'multipart' => $payload->getParts(),
         ];
 
         try {
@@ -414,7 +414,7 @@ class ProductTag extends TagAbstract
 
             if ($statusCode === 500) {
                 // @TODO currently not possible, please create an issue at https://github.com/apioo/psx-api if needed
-                $data = [];
+                $data = new \Sdkgen\Client\Multipart();
 
                 throw new MultipartException($data);
             }
@@ -445,7 +445,7 @@ class ProductTag extends TagAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'body' => $payload
+            'body' => $payload,
         ];
 
         try {
@@ -493,7 +493,7 @@ class ProductTag extends TagAbstract
             'query' => $this->parser->query([
             ], [
             ]),
-            'body' => $payload
+            'body' => $payload,
         ];
 
         try {
