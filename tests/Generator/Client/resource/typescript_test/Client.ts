@@ -6,6 +6,7 @@
 import axios, {AxiosRequestConfig} from "axios";
 import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
 import {HttpBearer} from "sdkgen-client"
+import {Anonymous} from "sdkgen-client"
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
 import {ProductTag} from "./ProductTag";
