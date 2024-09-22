@@ -13,6 +13,9 @@ class TestRequest implements \JsonSerializable, \PSX\Record\RecordableInterface
     protected ?float $float = null;
     protected ?string $string = null;
     protected ?bool $bool = null;
+    protected ?\PSX\DateTime\LocalDate $dateString = null;
+    protected ?\PSX\DateTime\LocalDateTime $dateTimeString = null;
+    protected ?\PSX\DateTime\LocalTime $timeString = null;
     /**
      * @var array<string>|null
      */
@@ -55,6 +58,30 @@ class TestRequest implements \JsonSerializable, \PSX\Record\RecordableInterface
     public function getBool() : ?bool
     {
         return $this->bool;
+    }
+    public function setDateString(?\PSX\DateTime\LocalDate $dateString) : void
+    {
+        $this->dateString = $dateString;
+    }
+    public function getDateString() : ?\PSX\DateTime\LocalDate
+    {
+        return $this->dateString;
+    }
+    public function setDateTimeString(?\PSX\DateTime\LocalDateTime $dateTimeString) : void
+    {
+        $this->dateTimeString = $dateTimeString;
+    }
+    public function getDateTimeString() : ?\PSX\DateTime\LocalDateTime
+    {
+        return $this->dateTimeString;
+    }
+    public function setTimeString(?\PSX\DateTime\LocalTime $timeString) : void
+    {
+        $this->timeString = $timeString;
+    }
+    public function getTimeString() : ?\PSX\DateTime\LocalTime
+    {
+        return $this->timeString;
     }
     /**
      * @param array<string>|null $arrayScalar
@@ -116,6 +143,9 @@ class TestRequest implements \JsonSerializable, \PSX\Record\RecordableInterface
         $record->put('float', $this->float);
         $record->put('string', $this->string);
         $record->put('bool', $this->bool);
+        $record->put('dateString', $this->dateString);
+        $record->put('dateTimeString', $this->dateTimeString);
+        $record->put('timeString', $this->timeString);
         $record->put('arrayScalar', $this->arrayScalar);
         $record->put('arrayObject', $this->arrayObject);
         $record->put('mapScalar', $this->mapScalar);

@@ -11,6 +11,9 @@ export interface TestRequest {
     float?: number
     string?: string
     bool?: boolean
+    dateString?: string
+    dateTimeString?: string
+    timeString?: string
     arrayScalar?: Array<string>
     arrayObject?: Array<TestObject>
     mapScalar?: TestMapScalar

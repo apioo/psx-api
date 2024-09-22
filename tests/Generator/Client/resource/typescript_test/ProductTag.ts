@@ -203,5 +203,233 @@ export class ProductTag extends TagAbstract {
         }
     }
 
+    /**
+     * Test binary content type
+     *
+     * @returns {Promise<TestResponse>}
+     * @throws {ClientException}
+     */
+    public async binary(payload: ArrayBuffer): Promise<TestResponse> {
+        const url = this.parser.url('/anything/binary', {
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/octet-stream',
+            },
+            params: this.parser.query({
+            }, [
+            ]),
+            data: payload
+        };
+
+        try {
+            const response = await this.httpClient.request<TestResponse>(params);
+            return response.data;
+        } catch (error) {
+            if (error instanceof ClientException) {
+                throw error;
+            } else if (axios.isAxiosError(error) && error.response) {
+                const statusCode = error.response.status;
+
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+            } else {
+                throw new ClientException('An unknown error occurred: ' + String(error));
+            }
+        }
+    }
+
+    /**
+     * Test form content type
+     *
+     * @returns {Promise<TestResponse>}
+     * @throws {ClientException}
+     */
+    public async form(payload: URLSearchParams): Promise<TestResponse> {
+        const url = this.parser.url('/anything/form', {
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            params: this.parser.query({
+            }, [
+            ]),
+            data: payload
+        };
+
+        try {
+            const response = await this.httpClient.request<TestResponse>(params);
+            return response.data;
+        } catch (error) {
+            if (error instanceof ClientException) {
+                throw error;
+            } else if (axios.isAxiosError(error) && error.response) {
+                const statusCode = error.response.status;
+
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+            } else {
+                throw new ClientException('An unknown error occurred: ' + String(error));
+            }
+        }
+    }
+
+    /**
+     * Test json content type
+     *
+     * @returns {Promise<TestResponse>}
+     * @throws {ClientException}
+     */
+    public async json(payload: any): Promise<TestResponse> {
+        const url = this.parser.url('/anything/json', {
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            params: this.parser.query({
+            }, [
+            ]),
+            data: payload
+        };
+
+        try {
+            const response = await this.httpClient.request<TestResponse>(params);
+            return response.data;
+        } catch (error) {
+            if (error instanceof ClientException) {
+                throw error;
+            } else if (axios.isAxiosError(error) && error.response) {
+                const statusCode = error.response.status;
+
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+            } else {
+                throw new ClientException('An unknown error occurred: ' + String(error));
+            }
+        }
+    }
+
+    /**
+     * Test json content type
+     *
+     * @returns {Promise<TestResponse>}
+     * @throws {ClientException}
+     */
+    public async multipart(payload: FormData): Promise<TestResponse> {
+        const url = this.parser.url('/anything/multipart', {
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            params: this.parser.query({
+            }, [
+            ]),
+            data: payload
+        };
+
+        try {
+            const response = await this.httpClient.request<TestResponse>(params);
+            return response.data;
+        } catch (error) {
+            if (error instanceof ClientException) {
+                throw error;
+            } else if (axios.isAxiosError(error) && error.response) {
+                const statusCode = error.response.status;
+
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+            } else {
+                throw new ClientException('An unknown error occurred: ' + String(error));
+            }
+        }
+    }
+
+    /**
+     * Test text content type
+     *
+     * @returns {Promise<TestResponse>}
+     * @throws {ClientException}
+     */
+    public async text(payload: string): Promise<TestResponse> {
+        const url = this.parser.url('/anything/text', {
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+            params: this.parser.query({
+            }, [
+            ]),
+            data: payload
+        };
+
+        try {
+            const response = await this.httpClient.request<TestResponse>(params);
+            return response.data;
+        } catch (error) {
+            if (error instanceof ClientException) {
+                throw error;
+            } else if (axios.isAxiosError(error) && error.response) {
+                const statusCode = error.response.status;
+
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+            } else {
+                throw new ClientException('An unknown error occurred: ' + String(error));
+            }
+        }
+    }
+
+    /**
+     * Test xml content type
+     *
+     * @returns {Promise<TestResponse>}
+     * @throws {ClientException}
+     */
+    public async xml(payload: string): Promise<TestResponse> {
+        const url = this.parser.url('/anything/xml', {
+        });
+
+        let params: AxiosRequestConfig = {
+            url: url,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/xml',
+            },
+            params: this.parser.query({
+            }, [
+            ]),
+            data: payload
+        };
+
+        try {
+            const response = await this.httpClient.request<TestResponse>(params);
+            return response.data;
+        } catch (error) {
+            if (error instanceof ClientException) {
+                throw error;
+            } else if (axios.isAxiosError(error) && error.response) {
+                const statusCode = error.response.status;
+
+                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+            } else {
+                throw new ClientException('An unknown error occurred: ' + String(error));
+            }
+        }
+    }
+
 
 }

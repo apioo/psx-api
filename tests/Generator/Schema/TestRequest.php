@@ -20,6 +20,10 @@
 
 namespace PSX\Api\Tests\Generator\Schema;
 
+use PSX\DateTime\LocalDate;
+use PSX\DateTime\LocalDateTime;
+use PSX\DateTime\LocalTime;
+
 /**
  * TestRequest
  */
@@ -29,6 +33,9 @@ class TestRequest
     private ?float $float = null;
     private ?string $string = null;
     private ?bool $bool = null;
+    private ?LocalDate $dateString = null;
+    private ?LocalDateTime $dateTimeString = null;
+    private ?LocalTime $timeString = null;
     /**
      * @var array<string>
      */
@@ -79,6 +86,36 @@ class TestRequest
     public function setBool(?bool $bool): void
     {
         $this->bool = $bool;
+    }
+
+    public function getDateString(): ?LocalDate
+    {
+        return $this->dateString;
+    }
+
+    public function setDateString(?LocalDate $dateString): void
+    {
+        $this->dateString = $dateString;
+    }
+
+    public function getDateTimeString(): ?LocalDateTime
+    {
+        return $this->dateTimeString;
+    }
+
+    public function setDateTimeString(?LocalDateTime $dateTimeString): void
+    {
+        $this->dateTimeString = $dateTimeString;
+    }
+
+    public function getTimeString(): ?LocalTime
+    {
+        return $this->timeString;
+    }
+
+    public function setTimeString(?LocalTime $timeString): void
+    {
+        $this->timeString = $timeString;
     }
 
     public function getArrayScalar(): ?array
