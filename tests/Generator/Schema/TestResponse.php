@@ -26,6 +26,9 @@ namespace PSX\Api\Tests\Generator\Schema;
 class TestResponse
 {
     private ?TestMapScalar $args = null;
+    private ?string $data = null;
+    private ?TestMapScalar $files = null;
+    private ?TestMapScalar $form = null;
     private ?TestMapScalar $headers = null;
     private ?TestRequest $json = null;
     private ?string $method = null;
@@ -38,6 +41,36 @@ class TestResponse
     public function setArgs(?TestMapScalar $args): void
     {
         $this->args = $args;
+    }
+
+    public function getData(): ?string
+    {
+        return $this->data;
+    }
+
+    public function setData(?string $data): void
+    {
+        $this->data = $data;
+    }
+
+    public function getFiles(): ?TestMapScalar
+    {
+        return $this->files;
+    }
+
+    public function setFiles(?TestMapScalar $files): void
+    {
+        $this->files = $files;
+    }
+
+    public function getForm(): ?TestMapScalar
+    {
+        return $this->form;
+    }
+
+    public function setForm(?TestMapScalar $form): void
+    {
+        $this->form = $form;
     }
 
     public function getHeaders(): ?TestMapScalar
