@@ -42,7 +42,6 @@ use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Format;
 use PSX\Schema\Parser\Context\FilesystemContext;
 use PSX\Schema\Parser\ContextInterface;
-use PSX\Schema\Parser\Popo\ReflectionReader;
 use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\Type;
 use PSX\Schema\TypeInterface;
@@ -59,7 +58,6 @@ class Attribute implements ParserInterface
 {
     private SchemaManagerInterface $schemaManager;
     private BuilderInterface $builder;
-    private ReflectionReader $reader;
     private bool $inspectTypeHints;
 
     public function __construct(SchemaManagerInterface $schemaManager, BuilderInterface $builder, bool $inspectTypeHints = true)
@@ -67,7 +65,6 @@ class Attribute implements ParserInterface
         $this->schemaManager = $schemaManager;
         $this->builder = $builder;
         $this->inspectTypeHints = $inspectTypeHints;
-        $this->reader = new ReflectionReader();
     }
 
     /**
