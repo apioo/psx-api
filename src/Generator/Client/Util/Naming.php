@@ -23,8 +23,12 @@ namespace PSX\Api\Generator\Client\Util;
 use PSX\Api\Exception\InvalidTypeException;
 use PSX\Schema\ContentType;
 use PSX\Schema\Generator\Normalizer\NormalizerInterface;
+use PSX\Schema\Type\ArrayPropertyType;
 use PSX\Schema\Type\ArrayType;
+use PSX\Schema\Type\MapPropertyType;
 use PSX\Schema\Type\MapType;
+use PSX\Schema\Type\PropertyTypeAbstract;
+use PSX\Schema\Type\ReferencePropertyType;
 use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\Type\StringType;
 use PSX\Schema\TypeInterface;
@@ -55,7 +59,10 @@ class Naming
         return $this->normalizer->method($tagName);
     }
 
-    public function buildExceptionClassNameByType(TypeInterface|ContentType $type): string
+    /**
+     * @throws InvalidTypeException
+     */
+    public function buildExceptionClassNameByType(PropertyTypeAbstract|ContentType $type): string
     {
         if ($type instanceof ContentType) {
             return match ($type->getShape()) {
@@ -66,12 +73,12 @@ class Naming
                 ContentType::TEXT => 'TextException',
                 ContentType::XML => 'XmlException',
             };
-        } elseif ($type instanceof ReferenceType) {
-            return $this->normalizer->class($type->getRef(), 'Exception');
-        } elseif ($type instanceof MapType) {
-            return 'Map' . $this->buildExceptionClassNameByType($type->getAdditionalProperties());
-        } elseif ($type instanceof ArrayType) {
-            return 'Array' . $this->buildExceptionClassNameByType($type->getItems());
+        } elseif ($type instanceof ReferencePropertyType) {
+            return $this->normalizer->class($type->getTarget(), 'Exception');
+        } elseif ($type instanceof MapPropertyType) {
+            return 'Map' . $this->buildExceptionClassNameByType($type->getSchema());
+        } elseif ($type instanceof ArrayPropertyType) {
+            return 'Array' . $this->buildExceptionClassNameByType($type->getSchema());
         } else {
             throw new InvalidTypeException('Provided an invalid type must be reference, map or array type');
         }

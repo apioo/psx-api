@@ -4,6 +4,6 @@
  */
 
 import {MyType} from "./../foo/MyType";
-export interface MySchema {
+export class MySchema {
     foo?: MyType
 }

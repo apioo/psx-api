@@ -36,10 +36,7 @@ class Entry extends SchemaAbstract
         $type = $this->newStruct('Entry');
         $type->addInteger('id');
         $type->addInteger('userId');
-        $type->addString('title')
-            ->setMinLength(3)
-            ->setMaxLength(16)
-            ->setPattern('[A-z]+');
+        $type->addString('title');
         $type->addDateTime('date');
     }
 }

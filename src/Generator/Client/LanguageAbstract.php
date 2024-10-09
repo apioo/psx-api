@@ -151,8 +151,7 @@ abstract class LanguageAbstract implements GeneratorInterface, ConfigurationAwar
 
     protected function generateSchema(DefinitionsInterface $definitions, Generator\Code\Chunks $chunks): void
     {
-        $schema = new Schema(TypeFactory::getAny(), $definitions);
-        $result = $this->generator->generate($schema);
+        $result = $this->generator->generate(new Schema($definitions, null));
 
         if ($result instanceof Generator\Code\Chunks) {
             foreach ($result->getChunks() as $identifier => $code) {

@@ -46,16 +46,6 @@ class OpenAPITest extends GeneratorTestCase
     public function testGenerateAll()
     {
         $generator = new OpenAPI(1, 'http://api.phpsx.org');
-
-        $actual = $generator->generate($this->getSpecificationCollection());
-        $expect = file_get_contents(__DIR__ . '/resource/openapi_collection.json');
-
-        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
-    }
-
-    public function testGenerateComplex()
-    {
-        $generator = new OpenAPI(1, 'http://api.phpsx.org');
         $generator->setTitle('Sample Pet Store App');
         $generator->setDescription('This is a sample server for a pet store.');
         $generator->setTermsOfService('http://example.com/terms/');
@@ -68,8 +58,8 @@ class OpenAPITest extends GeneratorTestCase
         $generator->addTag('foo', 'Foo tag');
         $generator->addTag('bar', 'Boo tag');
 
-        $actual = $generator->generate($this->getSpecificationComplex());
-        $expect = file_get_contents(__DIR__ . '/resource/openapi_complex.json');
+        $actual = $generator->generate($this->getSpecificationCollection());
+        $expect = file_get_contents(__DIR__ . '/resource/openapi_collection.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }

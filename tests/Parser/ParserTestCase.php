@@ -24,6 +24,7 @@ use PSX\Api\OperationInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
 use PSX\Schema\Format;
+use PSX\Schema\Type\Factory\PropertyTypeFactory;
 use PSX\Schema\TypeFactory;
 
 /**
@@ -55,9 +56,9 @@ abstract class ParserTestCase extends ApiManagerTestCase
         $this->assertEquals('query', $arguments->get('bar')->getIn());
         $this->assertEquals(['type' => 'string'], $arguments->get('bar')->getSchema()->toArray());
         $this->assertEquals('query', $arguments->get('baz')->getIn());
-        $this->assertEquals(['type' => 'string', 'enum' => ['foo', 'bar']], $arguments->get('baz')->getSchema()->toArray());
+        $this->assertEquals(['type' => 'string'], $arguments->get('baz')->getSchema()->toArray());
         $this->assertEquals('query', $arguments->get('boz')->getIn());
-        $this->assertEquals(['type' => 'string', 'pattern' => '[A-z]+'], $arguments->get('boz')->getSchema()->toArray());
+        $this->assertEquals(['type' => 'string'], $arguments->get('boz')->getSchema()->toArray());
         $this->assertEquals('query', $arguments->get('integer')->getIn());
         $this->assertEquals(['type' => 'integer'], $arguments->get('integer')->getSchema()->toArray());
         $this->assertEquals('query', $arguments->get('number')->getIn());
@@ -69,37 +70,33 @@ abstract class ParserTestCase extends ApiManagerTestCase
         $this->assertEquals('query', $arguments->get('string')->getIn());
         $this->assertEquals(['type' => 'string'], $arguments->get('string')->getSchema()->toArray());
         $this->assertEquals('body', $arguments->get('payload')->getIn());
-        $this->assertEquals(['$ref' => 'Song'], $arguments->get('payload')->getSchema()->toArray());
+        $this->assertEquals(['type' => 'reference', 'target' => 'Song'], $arguments->get('payload')->getSchema()->toArray());
 
         $this->assertEquals(200, $operation->getReturn()->getCode());
-        $this->assertEquals(['$ref' => 'Song'], $operation->getReturn()->getSchema()->toArray());
+        $this->assertEquals(['type' => 'reference', 'target' => 'Song'], $operation->getReturn()->getSchema()->toArray());
 
         $this->assertCount(1, $operation->getThrows());
         $this->assertEquals(500, $operation->getThrows()[0]->getCode());
-        $this->assertEquals(['$ref' => 'Error'], $operation->getThrows()[0]->getSchema()->toArray());
+        $this->assertEquals(['type' => 'reference', 'target' => 'Error'], $operation->getThrows()[0]->getSchema()->toArray());
 
         $this->assertEquals([
             'description' => 'A canonical song',
-            'type' => 'object',
+            'type' => 'struct',
             'properties' => [
-                'title' => TypeFactory::getString(),
-                'artist' => TypeFactory::getString(),
-                'length' => TypeFactory::getInteger(),
-                'ratings' => TypeFactory::getArray(TypeFactory::getReference('Rating')),
-            ],
-            'required' => ['title', 'artist']
+                'title' => PropertyTypeFactory::getString(),
+                'artist' => PropertyTypeFactory::getString(),
+                'length' => PropertyTypeFactory::getInteger(),
+                'ratings' => PropertyTypeFactory::getArray(PropertyTypeFactory::getReference('Rating')),
+            ]
         ], $definitions->getType('Song')->toArray());
         $this->assertEquals([
-            'type' => 'object',
+            'type' => 'struct',
             'properties' => [
-                'success' => TypeFactory::getBoolean(),
-                'message' => TypeFactory::getString(),
+                'success' => PropertyTypeFactory::getBoolean(),
+                'message' => PropertyTypeFactory::getString(),
             ],
         ], $definitions->getType('Error')->toArray());
     }
 
-    /**
-     * @return \PSX\Api\SpecificationInterface
-     */
     abstract protected function getSpecification(): SpecificationInterface;
 }

@@ -61,9 +61,14 @@ use PSX\Schema\SchemaInterface;
 use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Type\ArrayType;
+use PSX\Schema\Type\ArrayTypeInterface;
+use PSX\Schema\Type\Factory\PropertyTypeFactory;
 use PSX\Schema\Type\IntersectionType;
 use PSX\Schema\Type\MapType;
+use PSX\Schema\Type\MapTypeInterface;
+use PSX\Schema\Type\ReferencePropertyType;
 use PSX\Schema\Type\ReferenceType;
+use PSX\Schema\Type\StructDefinitionType;
 use PSX\Schema\Type\StructType;
 use PSX\Schema\Type\UnionType;
 use PSX\Schema\TypeFactory;
@@ -299,7 +304,7 @@ class OpenAPI implements ParserInterface
         }
 
         $name = $data->getName();
-        $type = TypeFactory::getString();
+        $type = PropertyTypeFactory::getString();
 
         $required = null;
         if (!empty($name) && $data->getIn() == $in) {
@@ -307,9 +312,9 @@ class OpenAPI implements ParserInterface
 
             $schema = $data->getSchema();
             if ($schema instanceof \stdClass) {
-                $type = $this->schemaParser->parseType($schema);
-                if ($type instanceof ReferenceType) {
-                    $type = $this->definitions->getType($type->getRef());
+                $type = $this->schemaParser->parsePropertyType($schema);
+                if ($type instanceof ReferencePropertyType) {
+                    $type = $this->definitions->getType($type->getTarget());
                 }
             }
         }
@@ -384,7 +389,7 @@ class OpenAPI implements ParserInterface
             return null;
         }
 
-        $type = $this->schemaParser->parseType($schema);
+        $type = $this->schemaParser->parsePropertyType($schema);
 
         return $this->transformInlineStruct($type);
     }
@@ -397,37 +402,25 @@ class OpenAPI implements ParserInterface
      */
     private function transformInlineStruct(TypeInterface $type): TypeInterface
     {
-        if ($type instanceof StructType) {
+        if ($type instanceof StructDefinitionType) {
             // we have an inline struct type we automatically add this ot the definitions, since we have no name we generate
             // it based on the type, this should motivate users to move the definition to the components section
             $typeName = 'Inline' . substr($this->hashInspector->generateByType($type), 0, 8);
             $this->definitions->addType($typeName, $type);
 
             return TypeFactory::getReference($typeName);
-        } elseif ($type instanceof MapType) {
-            $child = $type->getAdditionalProperties();
-            if ($child instanceof TypeInterface) {
-                $r = $this->transformInlineStruct($child);
+        } elseif ($type instanceof MapTypeInterface) {
+            $schema = $type->getSchema();
+            if ($schema instanceof TypeInterface) {
+                $r = $this->transformInlineStruct($schema);
                 return TypeFactory::getMap($r);
             }
-        } elseif ($type instanceof ArrayType) {
-            $child = $type->getItems();
-            if ($child instanceof TypeInterface) {
-                $r = $this->transformInlineStruct($child);
+        } elseif ($type instanceof ArrayTypeInterface) {
+            $schema = $type->getSchema();
+            if ($schema instanceof TypeInterface) {
+                $r = $this->transformInlineStruct($schema);
                 return TypeFactory::getArray($r);
             }
-        } elseif ($type instanceof UnionType) {
-            $result = [];
-            foreach ($type->getOneOf() as $child) {
-                $result[] = $this->transformInlineStruct($child);
-            }
-            return TypeFactory::getUnion($result);
-        } elseif ($type instanceof IntersectionType) {
-            $result = [];
-            foreach ($type->getAllOf() as $child) {
-                $result[] = $this->transformInlineStruct($child);
-            }
-            return TypeFactory::getIntersection($result);
         }
 
         return $type;

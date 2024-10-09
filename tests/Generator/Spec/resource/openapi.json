@@ -22,9 +22,7 @@
             "required": false,
             "schema": {
               "description": "startIndex parameter",
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 32
+              "type": "integer"
             }
           },
           {
@@ -48,8 +46,8 @@
             "in": "query",
             "required": false,
             "schema": {
-              "format": "date",
-              "type": "string"
+              "type": "string",
+              "format": "date"
             }
           },
           {
@@ -57,8 +55,8 @@
             "in": "query",
             "required": false,
             "schema": {
-              "format": "date-time",
-              "type": "string"
+              "type": "string",
+              "format": "date-time"
             }
           },
           {
@@ -289,14 +287,11 @@
             "type": "integer"
           },
           "title": {
-            "type": "string",
-            "pattern": "[A-z]+",
-            "minLength": 3,
-            "maxLength": 16
+            "type": "string"
           },
           "date": {
-            "format": "date-time",
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -321,20 +316,13 @@
             "type": "integer"
           },
           "title": {
-            "type": "string",
-            "pattern": "[A-z]+",
-            "minLength": 3,
-            "maxLength": 16
+            "type": "string"
           },
           "date": {
-            "format": "date-time",
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
           }
-        },
-        "required": [
-          "title",
-          "date"
-        ]
+        }
       },
       "EntryDelete": {
         "type": "object",
@@ -346,19 +334,13 @@
             "type": "integer"
           },
           "title": {
-            "type": "string",
-            "pattern": "[A-z]+",
-            "minLength": 3,
-            "maxLength": 16
+            "type": "string"
           },
           "date": {
-            "format": "date-time",
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
           }
-        },
-        "required": [
-          "id"
-        ]
+        }
       },
       "EntryMessage": {
         "type": "object",
@@ -381,19 +363,13 @@
             "type": "integer"
           },
           "title": {
-            "type": "string",
-            "pattern": "[A-z]+",
-            "minLength": 3,
-            "maxLength": 16
+            "type": "string"
           },
           "date": {
-            "format": "date-time",
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
           }
-        },
-        "required": [
-          "id"
-        ]
+        }
       },
       "EntryUpdate": {
         "type": "object",
@@ -405,19 +381,13 @@
             "type": "integer"
           },
           "title": {
-            "type": "string",
-            "pattern": "[A-z]+",
-            "minLength": 3,
-            "maxLength": 16
+            "type": "string"
           },
           "date": {
-            "format": "date-time",
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
           }
-        },
-        "required": [
-          "id"
-        ]
+        }
       }
     }
   }

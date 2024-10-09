@@ -23,6 +23,7 @@ namespace PSX\Api\Tests\Parser;
 use PSX\Api\OperationInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\Format;
+use PSX\Schema\Type\Factory\PropertyTypeFactory;
 use PSX\Schema\TypeFactory;
 
 /**
@@ -55,26 +56,24 @@ class OpenAPITest extends ParserTestCase
 
         $arguments = $operation->getArguments();
         $this->assertEquals('query', $arguments->get('limit')->getIn());
-        $this->assertEquals(['type' => 'integer', 'format' => Format::INT32, 'maximum' => 100], $arguments->get('limit')->getSchema()->toArray());
+        $this->assertEquals(['type' => 'integer'], $arguments->get('limit')->getSchema()->toArray());
 
         $this->assertEquals(200, $operation->getReturn()->getCode());
-        $this->assertEquals(['$ref' => 'Pets'], $operation->getReturn()->getSchema()->toArray());
+        $this->assertEquals(['type' => 'reference', 'target' => 'Pets'], $operation->getReturn()->getSchema()->toArray());
 
         $this->assertCount(0, $operation->getThrows());
 
         $this->assertEquals([
             'type' => 'array',
-            'items' => TypeFactory::getReference('Pet'),
-            'maxItems' => 100
+            'schema' => PropertyTypeFactory::getReference('Pet'),
         ], $definitions->getType('Pets')->toArray());
         $this->assertEquals([
-            'type' => 'object',
+            'type' => 'struct',
             'properties' => [
-                'id' => TypeFactory::getInteger()->setFormat(Format::INT64),
-                'name' => TypeFactory::getString(),
-                'tag' => TypeFactory::getString()
-            ],
-            'required' => ['id', 'name']
+                'id' => PropertyTypeFactory::getInteger(),
+                'name' => PropertyTypeFactory::getString(),
+                'tag' => PropertyTypeFactory::getString()
+            ]
         ], $definitions->getType('Pet')->toArray());
     }
 

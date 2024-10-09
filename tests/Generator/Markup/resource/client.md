@@ -1,50 +1,50 @@
 const client = new Client()
 client.get(name: string, type: string, startIndex: number, float: number, boolean: boolean, date: string, datetime: string, args: Entry): EntryCollection
 client.create(name: string, type: string, payload: EntryCreate): EntryMessage throws EntryMessage
-client.update(name: string, type: string, payload: Record<string, EntryUpdate>): Record<string, EntryMessage> throws EntryMessage, Record<string, EntryMessage>
+client.update(name: string, type: string, payload: Map<string, EntryUpdate>): Map<string, EntryMessage> throws EntryMessage, Map<string, EntryMessage>
 client.delete(name: string, type: string): void
 client.patch(name: string, type: string, payload: Array<EntryPatch>): Array<EntryMessage> throws EntryMessage, Array<EntryMessage>
 
 
-interface EntryCollection {
+export class EntryCollection {
     entry?: Array<Entry>
 }
 
-interface Entry {
+export class Entry {
     id?: number
     userId?: number
     title?: string
     date?: string
 }
 
-interface EntryMessage {
+export class EntryMessage {
     success?: boolean
     message?: string
 }
 
-interface EntryCreate {
+export class EntryCreate {
     id?: number
     userId?: number
-    title: string
-    date: string
+    title?: string
+    date?: string
 }
 
-interface EntryUpdate {
-    id: number
+export class EntryUpdate {
+    id?: number
     userId?: number
     title?: string
     date?: string
 }
 
-interface EntryDelete {
-    id: number
+export class EntryDelete {
+    id?: number
     userId?: number
     title?: string
     date?: string
 }
 
-interface EntryPatch {
-    id: number
+export class EntryPatch {
+    id?: number
     userId?: number
     title?: string
     date?: string

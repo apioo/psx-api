@@ -3,7 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-export interface EntryMessage {
+export class EntryMessage {
     success?: boolean
     message?: string
 }

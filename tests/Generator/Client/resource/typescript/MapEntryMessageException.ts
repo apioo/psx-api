@@ -9,11 +9,11 @@ import {EntryMessage} from "./EntryMessage";
 
 export class MapEntryMessageException extends KnownStatusCodeException {
 
-    public constructor(private payload: Record<string, EntryMessage>) {
+    public constructor(private payload: Map<string, EntryMessage>) {
         super('The server returned an error');
     }
 
-    public getPayload(): Record<string, EntryMessage> {
+    public getPayload(): Map<string, EntryMessage> {
         return this.payload;
     }
 

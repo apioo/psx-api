@@ -33,7 +33,6 @@ class Delete extends SchemaAbstract
 {
     public function build(): void
     {
-        $entry = $this->modify(Entry::class, 'EntryDelete');
-        $entry->setRequired(['id']);
+        $this->modify(Entry::class, 'EntryDelete');
     }
 }

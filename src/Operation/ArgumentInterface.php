@@ -21,7 +21,7 @@
 namespace PSX\Api\Operation;
 
 use PSX\Schema\ContentType;
-use PSX\Schema\TypeInterface;
+use PSX\Schema\Type\PropertyTypeAbstract;
 
 /**
  * ArgumentInterface
@@ -39,7 +39,7 @@ interface ArgumentInterface
 
     public function getIn(): string;
 
-    public function getSchema(): TypeInterface|ContentType;
+    public function getSchema(): PropertyTypeAbstract|ContentType;
 
     public function getName(): ?string;
 }

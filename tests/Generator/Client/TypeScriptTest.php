@@ -59,14 +59,6 @@ class TypeScriptTest extends GeneratorTestCase
         $this->assertFileExists($target . '/Client.ts');
     }
 
-    public function testGenerateComplex()
-    {
-        $this->expectException(InvalidTypeException::class);
-
-        $generator = new TypeScript('http://api.foo.com');
-        $generator->generate($this->getSpecificationComplex());
-    }
-
     public function testGenerateTest()
     {
         $generator = new TypeScript('http://127.0.0.1:8081');

@@ -30,6 +30,9 @@ use PSX\Schema\ContentType;
 use PSX\Schema\Definitions;
 use PSX\Schema\Format;
 use PSX\Schema\Generator\Code\Chunks;
+use PSX\Schema\Type\Factory\DefinitionTypeFactory;
+use PSX\Schema\Type\Factory\PropertyTypeFactory;
+use PSX\Schema\Type\ReferencePropertyType;
 use PSX\Schema\Type\StructType;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
@@ -55,52 +58,46 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $delete = $this->addSchema($builder, Schema\Delete::class);
         $patch = $this->addSchema($builder, Schema\Patch::class);
 
-        $operation = $builder->addOperation('get', 'GET', '/foo/:name/:type', 200, $collection);
+        $operation = $builder->addOperation('get', 'GET', '/foo/:name/:type', 200, PropertyTypeFactory::getReference($collection));
         $operation->setDescription('Returns a collection');
-        $operation->addArgument('name', ArgumentInterface::IN_PATH, TypeFactory::getString()
-            ->setDescription('Name parameter')
-            ->setMinLength(0)
-            ->setMaxLength(16)
-            ->setPattern('[A-z]+'));
-        $operation->addArgument('type', ArgumentInterface::IN_PATH, TypeFactory::getString()
-            ->setEnum(['foo', 'bar']));
-        $operation->addArgument('startIndex', ArgumentInterface::IN_QUERY, TypeFactory::getInteger()
-            ->setDescription('startIndex parameter')
-            ->setMinimum(0)
-            ->setMaximum(32));
-        $operation->addArgument('float', ArgumentInterface::IN_QUERY, TypeFactory::getNumber());
-        $operation->addArgument('boolean', ArgumentInterface::IN_QUERY, TypeFactory::getBoolean());
-        $operation->addArgument('date', ArgumentInterface::IN_QUERY, TypeFactory::getString()
+        $operation->addArgument('name', ArgumentInterface::IN_PATH, PropertyTypeFactory::getString()
+            ->setDescription('Name parameter'));
+        $operation->addArgument('type', ArgumentInterface::IN_PATH, PropertyTypeFactory::getString());
+        $operation->addArgument('startIndex', ArgumentInterface::IN_QUERY, PropertyTypeFactory::getInteger()
+            ->setDescription('startIndex parameter'));
+        $operation->addArgument('float', ArgumentInterface::IN_QUERY, PropertyTypeFactory::getNumber());
+        $operation->addArgument('boolean', ArgumentInterface::IN_QUERY, PropertyTypeFactory::getBoolean());
+        $operation->addArgument('date', ArgumentInterface::IN_QUERY, PropertyTypeFactory::getString()
             ->setFormat(Format::DATE));
-        $operation->addArgument('datetime', ArgumentInterface::IN_QUERY, TypeFactory::getString()
+        $operation->addArgument('datetime', ArgumentInterface::IN_QUERY, PropertyTypeFactory::getString()
             ->setFormat(Format::DATETIME));
-        $operation->addArgument('args', ArgumentInterface::IN_QUERY, TypeFactory::getReference('Entry'));
+        $operation->addArgument('args', ArgumentInterface::IN_QUERY, PropertyTypeFactory::getReference('Entry'));
 
-        $operation = $builder->addOperation('create', 'POST', '/foo/:name/:type', 201, $message);
-        $operation->addArgument('name', ArgumentInterface::IN_PATH, TypeFactory::getString());
-        $operation->addArgument('type', ArgumentInterface::IN_PATH, TypeFactory::getString());
-        $operation->addArgument('payload', ArgumentInterface::IN_BODY, $create);
-        $operation->addThrow(400, $message);
-        $operation->addThrow(500, $message);
+        $operation = $builder->addOperation('create', 'POST', '/foo/:name/:type', 201, PropertyTypeFactory::getReference($message));
+        $operation->addArgument('name', ArgumentInterface::IN_PATH, PropertyTypeFactory::getString());
+        $operation->addArgument('type', ArgumentInterface::IN_PATH, PropertyTypeFactory::getString());
+        $operation->addArgument('payload', ArgumentInterface::IN_BODY, PropertyTypeFactory::getReference($create));
+        $operation->addThrow(400, PropertyTypeFactory::getReference($message));
+        $operation->addThrow(500, PropertyTypeFactory::getReference($message));
 
-        $operation = $builder->addOperation('update', 'PUT', '/foo/:name/:type', 200, TypeFactory::getMap($message));
-        $operation->addArgument('name', ArgumentInterface::IN_PATH, TypeFactory::getString());
-        $operation->addArgument('type', ArgumentInterface::IN_PATH, TypeFactory::getString());
-        $operation->addArgument('payload', ArgumentInterface::IN_BODY, TypeFactory::getMap($update));
-        $operation->addThrow(400, $message);
-        $operation->addThrow(500, TypeFactory::getMap($message));
+        $operation = $builder->addOperation('update', 'PUT', '/foo/:name/:type', 200, PropertyTypeFactory::getMap(PropertyTypeFactory::getReference($message)));
+        $operation->addArgument('name', ArgumentInterface::IN_PATH, PropertyTypeFactory::getString());
+        $operation->addArgument('type', ArgumentInterface::IN_PATH, PropertyTypeFactory::getString());
+        $operation->addArgument('payload', ArgumentInterface::IN_BODY, PropertyTypeFactory::getMap(PropertyTypeFactory::getReference($update)));
+        $operation->addThrow(400, PropertyTypeFactory::getReference($message));
+        $operation->addThrow(500, PropertyTypeFactory::getMap(PropertyTypeFactory::getReference($message)));
 
-        $operation = $builder->addOperation('delete', 'DELETE', '/foo/:name/:type', 204, $message);
-        $operation->addArgument('name', ArgumentInterface::IN_PATH, TypeFactory::getString());
-        $operation->addArgument('type', ArgumentInterface::IN_PATH, TypeFactory::getString());
-        $operation->addArgument('payload', ArgumentInterface::IN_BODY, $delete);
+        $operation = $builder->addOperation('delete', 'DELETE', '/foo/:name/:type', 204, PropertyTypeFactory::getReference($message));
+        $operation->addArgument('name', ArgumentInterface::IN_PATH, PropertyTypeFactory::getString());
+        $operation->addArgument('type', ArgumentInterface::IN_PATH, PropertyTypeFactory::getString());
+        $operation->addArgument('payload', ArgumentInterface::IN_BODY, PropertyTypeFactory::getReference($delete));
 
-        $operation = $builder->addOperation('patch', 'PATCH', '/foo/:name/:type', 200, TypeFactory::getArray($message));
-        $operation->addArgument('name', ArgumentInterface::IN_PATH, TypeFactory::getString());
-        $operation->addArgument('type', ArgumentInterface::IN_PATH, TypeFactory::getString());
-        $operation->addArgument('payload', ArgumentInterface::IN_BODY, TypeFactory::getArray($patch));
-        $operation->addThrow(400, $message);
-        $operation->addThrow(500, TypeFactory::getArray($message));
+        $operation = $builder->addOperation('patch', 'PATCH', '/foo/:name/:type', 200, PropertyTypeFactory::getArray(PropertyTypeFactory::getReference($message)));
+        $operation->addArgument('name', ArgumentInterface::IN_PATH, PropertyTypeFactory::getString());
+        $operation->addArgument('type', ArgumentInterface::IN_PATH, PropertyTypeFactory::getString());
+        $operation->addArgument('payload', ArgumentInterface::IN_BODY, PropertyTypeFactory::getArray(PropertyTypeFactory::getReference($patch)));
+        $operation->addThrow(400, PropertyTypeFactory::getReference($message));
+        $operation->addThrow(500, PropertyTypeFactory::getArray(PropertyTypeFactory::getReference($message)));
 
         return $builder->getSpecification();
     }
@@ -114,51 +111,33 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $message = $this->addSchema($builder, Schema\Message::class);
         $create = $this->addSchema($builder, Schema\Create::class);
 
-        $operation = $builder->addOperation('foo.bar.get', 'GET', '/foo', 200, $collection);
+        $operation = $builder->addOperation('foo.bar.get', 'GET', '/foo', 200, PropertyTypeFactory::getReference($collection));
         $operation->setDescription('Returns a collection');
         $operation->setTags(['foo']);
 
-        $operation = $builder->addOperation('foo.bar.create', 'POST', '/foo', 201, $message);
+        $operation = $builder->addOperation('foo.bar.create', 'POST', '/foo', 201, PropertyTypeFactory::getReference($message));
         $operation->setTags(['foo']);
-        $operation->addArgument('payload', 'body', $create);
-        $operation->addThrow(400, $message);
-        $operation->addThrow(500, $message);
+        $operation->addArgument('payload', 'body', PropertyTypeFactory::getReference($create));
+        $operation->addThrow(400, PropertyTypeFactory::getReference($message));
+        $operation->addThrow(500, PropertyTypeFactory::getReference($message));
 
-        $operation = $builder->addOperation('bar.find', 'GET', '/bar/:foo', 200, $collection);
+        $operation = $builder->addOperation('bar.find', 'GET', '/bar/:foo', 200, PropertyTypeFactory::getReference($collection));
         $operation->setDescription('Returns a collection');
         $operation->setTags(['bar']);
-        $operation->addArgument('foo', 'path', TypeFactory::getString());
+        $operation->addArgument('foo', 'path', PropertyTypeFactory::getString());
 
-        $operation = $builder->addOperation('bar.put', 'POST', '/bar/:foo', 201, $message);
+        $operation = $builder->addOperation('bar.put', 'POST', '/bar/:foo', 201, PropertyTypeFactory::getReference($message));
         $operation->setTags(['bar']);
-        $operation->addArgument('payload', 'body', $create);
+        $operation->addArgument('payload', 'body', PropertyTypeFactory::getReference($create));
 
-        $operation = $builder->addOperation('foo.baz.get', 'GET', '/bar/$year<[0-9]+>', 200, $collection);
+        $operation = $builder->addOperation('foo.baz.get', 'GET', '/bar/$year<[0-9]+>', 200, PropertyTypeFactory::getReference($collection));
         $operation->setDescription('Returns a collection');
         $operation->setTags(['baz']);
-        $operation->addArgument('year', 'path', TypeFactory::getString());
+        $operation->addArgument('year', 'path', PropertyTypeFactory::getString());
 
-        $operation = $builder->addOperation('foo.baz.create', 'POST', '/bar/$year<[0-9]+>', 201, $message);
+        $operation = $builder->addOperation('foo.baz.create', 'POST', '/bar/$year<[0-9]+>', 201, PropertyTypeFactory::getReference($message));
         $operation->setTags(['baz']);
-        $operation->addArgument('payload', 'body', $create);
-
-        return $builder->getSpecification();
-    }
-
-    protected function getSpecificationComplex(): SpecificationInterface
-    {
-        $builder = $this->apiManager->getBuilder();
-        $builder->setSecurity(new HttpBearer());
-
-        $complex = $this->addSchema($builder, Schema\Complex::class);
-
-        $operation = $builder->addOperation('get', 'GET', '/foo/:name/:type', 200, $complex);
-        $operation->setDescription('Returns a collection');
-        $operation->setTags(['foo']);
-        $operation->setSecurity(['foo']);
-        $operation->addArgument('name', 'path', TypeFactory::getString());
-        $operation->addArgument('type', 'path', TypeFactory::getString());
-        $operation->addArgument('payload', 'body', $complex);
+        $operation->addArgument('payload', 'body', PropertyTypeFactory::getReference($create));
 
         return $builder->getSpecification();
     }
@@ -171,57 +150,57 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $testRequest = $this->addSchema($builder, Schema\TestRequest::class);
         $testResponse = $this->addSchema($builder, Schema\TestResponse::class);
 
-        $operation = $builder->addOperation('product.getAll', 'GET', '/anything', 200, $testResponse);
+        $operation = $builder->addOperation('product.getAll', 'GET', '/anything', 200, PropertyTypeFactory::getReference($testResponse));
         $operation->setDescription('Returns a collection');
-        $operation->addArgument('startIndex', 'query', TypeFactory::getInteger());
-        $operation->addArgument('count', 'query', TypeFactory::getInteger());
-        $operation->addArgument('search', 'query', TypeFactory::getString());
+        $operation->addArgument('startIndex', 'query', PropertyTypeFactory::getInteger());
+        $operation->addArgument('count', 'query', PropertyTypeFactory::getInteger());
+        $operation->addArgument('search', 'query', PropertyTypeFactory::getString());
 
-        $operation = $builder->addOperation('product.create', 'POST', '/anything', 200, $testResponse);
+        $operation = $builder->addOperation('product.create', 'POST', '/anything', 200, PropertyTypeFactory::getReference($testResponse));
         $operation->setDescription('Creates a new product');
-        $operation->addArgument('payload', 'body', $testRequest);
-        $operation->addThrow(500, $testResponse);
+        $operation->addArgument('payload', 'body', PropertyTypeFactory::getReference($testRequest));
+        $operation->addThrow(500, PropertyTypeFactory::getReference($testResponse));
 
-        $operation = $builder->addOperation('product.update', 'PUT', '/anything/:id', 200, $testResponse);
+        $operation = $builder->addOperation('product.update', 'PUT', '/anything/:id', 200, PropertyTypeFactory::getReference($testResponse));
         $operation->setDescription('Updates an existing product');
-        $operation->addArgument('id', 'path', TypeFactory::getInteger());
-        $operation->addArgument('payload', 'body', $testRequest);
+        $operation->addArgument('id', 'path', PropertyTypeFactory::getInteger());
+        $operation->addArgument('payload', 'body', PropertyTypeFactory::getReference($testRequest));
 
-        $operation = $builder->addOperation('product.patch', 'PATCH', '/anything/:id', 200, $testResponse);
+        $operation = $builder->addOperation('product.patch', 'PATCH', '/anything/:id', 200, PropertyTypeFactory::getReference($testResponse));
         $operation->setDescription('Patches an existing product');
-        $operation->addArgument('id', 'path', TypeFactory::getInteger());
-        $operation->addArgument('payload', 'body', $testRequest);
+        $operation->addArgument('id', 'path', PropertyTypeFactory::getInteger());
+        $operation->addArgument('payload', 'body', PropertyTypeFactory::getReference($testRequest));
 
-        $operation = $builder->addOperation('product.delete', 'DELETE', '/anything/:id', 200, $testResponse);
+        $operation = $builder->addOperation('product.delete', 'DELETE', '/anything/:id', 200, PropertyTypeFactory::getReference($testResponse));
         $operation->setDescription('Deletes an existing product');
-        $operation->addArgument('id', 'path', TypeFactory::getInteger());
+        $operation->addArgument('id', 'path', PropertyTypeFactory::getInteger());
 
-        $operation = $builder->addOperation('product.binary', 'POST', '/anything/binary', 200, $testResponse);
+        $operation = $builder->addOperation('product.binary', 'POST', '/anything/binary', 200, PropertyTypeFactory::getReference($testResponse));
         $operation->setDescription('Test binary content type');
         $operation->addArgument('payload', 'body', new ContentType(ContentType::BINARY));
         $operation->addThrow(500, new ContentType(ContentType::BINARY));
 
-        $operation = $builder->addOperation('product.form', 'POST', '/anything/form', 200, $testResponse);
+        $operation = $builder->addOperation('product.form', 'POST', '/anything/form', 200, PropertyTypeFactory::getReference($testResponse));
         $operation->setDescription('Test form content type');
         $operation->addArgument('payload', 'body', new ContentType(ContentType::FORM));
         $operation->addThrow(500, new ContentType(ContentType::FORM));
 
-        $operation = $builder->addOperation('product.json', 'POST', '/anything/json', 200, $testResponse);
+        $operation = $builder->addOperation('product.json', 'POST', '/anything/json', 200, PropertyTypeFactory::getReference($testResponse));
         $operation->setDescription('Test json content type');
         $operation->addArgument('payload', 'body', new ContentType(ContentType::JSON));
         $operation->addThrow(500, new ContentType(ContentType::JSON));
 
-        $operation = $builder->addOperation('product.multipart', 'POST', '/anything/multipart', 200, $testResponse);
+        $operation = $builder->addOperation('product.multipart', 'POST', '/anything/multipart', 200, PropertyTypeFactory::getReference($testResponse));
         $operation->setDescription('Test json content type');
         $operation->addArgument('payload', 'body', new ContentType(ContentType::MULTIPART));
         $operation->addThrow(500, new ContentType(ContentType::MULTIPART));
 
-        $operation = $builder->addOperation('product.text', 'POST', '/anything/text', 200, $testResponse);
+        $operation = $builder->addOperation('product.text', 'POST', '/anything/text', 200, PropertyTypeFactory::getReference($testResponse));
         $operation->setDescription('Test text content type');
         $operation->addArgument('payload', 'body', new ContentType(ContentType::TEXT));
         $operation->addThrow(500, new ContentType(ContentType::TEXT));
 
-        $operation = $builder->addOperation('product.xml', 'POST', '/anything/xml', 200, $testResponse);
+        $operation = $builder->addOperation('product.xml', 'POST', '/anything/xml', 200, PropertyTypeFactory::getReference($testResponse));
         $operation->setDescription('Test xml content type');
         $operation->addArgument('payload', 'body', new ContentType(ContentType::XML));
         $operation->addThrow(500, new ContentType(ContentType::XML));
@@ -265,13 +244,13 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         $builder = $this->apiManager->getBuilder();
 
         $definitions = new Definitions();
-        $definitions->addType('import:my_type', TypeFactory::getStruct()->addProperty('foo', TypeFactory::getString()));
-        $definitions->addType('my_schema', TypeFactory::getStruct()->addProperty('foo', TypeFactory::getReference('import:my_type')));
+        $definitions->addType('import:my_type', DefinitionTypeFactory::getStruct()->addProperty('foo', PropertyTypeFactory::getString()));
+        $definitions->addType('my_schema', DefinitionTypeFactory::getStruct()->addProperty('foo', PropertyTypeFactory::getReference('import:my_type')));
         $builder->addDefinitions($definitions);
 
-        $operation = $builder->addOperation('foo', 'GET', '/anything', 200, TypeFactory::getReference('import:my_type'));
-        $operation->addArgument('body', 'body', TypeFactory::getReference('import:my_type'));
-        $operation->addThrow(500, TypeFactory::getReference('import:my_type'));
+        $operation = $builder->addOperation('foo', 'GET', '/anything', 200, PropertyTypeFactory::getReference('import:my_type'));
+        $operation->addArgument('body', 'body', PropertyTypeFactory::getReference('import:my_type'));
+        $operation->addThrow(500, PropertyTypeFactory::getReference('import:my_type'));
 
         return $builder->getSpecification();
     }
@@ -286,10 +265,10 @@ abstract class GeneratorTestCase extends ApiManagerTestCase
         iterator_to_array($result->writeToFolder($target));
     }
 
-    private function addSchema(SpecificationBuilderInterface $builder, string $schema): TypeInterface
+    private function addSchema(SpecificationBuilderInterface $builder, string $schema): string
     {
         $result = $this->schemaManager->getSchema($schema);
         $builder->addDefinitions($result->getDefinitions());
-        return $result->getType();
+        return $result->getRoot();
     }
 }

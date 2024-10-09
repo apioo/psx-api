@@ -3,9 +3,9 @@
  * {@link https://sdkgen.app}
  */
 
-export interface EntryCreate {
+export class EntryCreate {
     id?: number
     userId?: number
-    title: string
-    date: string
+    title?: string
+    date?: string
 }

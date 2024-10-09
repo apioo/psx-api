@@ -9,7 +9,8 @@
       "return": {
         "code": 200,
         "schema": {
-          "$ref": "EntryCollection"
+          "type": "reference",
+          "target": "EntryCollection"
         }
       },
       "arguments": [],
@@ -28,14 +29,16 @@
       "return": {
         "code": 201,
         "schema": {
-          "$ref": "EntryMessage"
+          "type": "reference",
+          "target": "EntryMessage"
         }
       },
       "arguments": {
         "payload": {
           "in": "body",
           "schema": {
-            "$ref": "EntryCreate"
+            "type": "reference",
+            "target": "EntryCreate"
           }
         }
       },
@@ -43,13 +46,15 @@
         {
           "code": 400,
           "schema": {
-            "$ref": "EntryMessage"
+            "type": "reference",
+            "target": "EntryMessage"
           }
         },
         {
           "code": 500,
           "schema": {
-            "$ref": "EntryMessage"
+            "type": "reference",
+            "target": "EntryMessage"
           }
         }
       ],
@@ -67,7 +72,8 @@
       "return": {
         "code": 200,
         "schema": {
-          "$ref": "EntryCollection"
+          "type": "reference",
+          "target": "EntryCollection"
         }
       },
       "arguments": {
@@ -93,14 +99,16 @@
       "return": {
         "code": 201,
         "schema": {
-          "$ref": "EntryMessage"
+          "type": "reference",
+          "target": "EntryMessage"
         }
       },
       "arguments": {
         "payload": {
           "in": "body",
           "schema": {
-            "$ref": "EntryCreate"
+            "type": "reference",
+            "target": "EntryCreate"
           }
         }
       },
@@ -119,7 +127,8 @@
       "return": {
         "code": 200,
         "schema": {
-          "$ref": "EntryCollection"
+          "type": "reference",
+          "target": "EntryCollection"
         }
       },
       "arguments": {
@@ -145,14 +154,16 @@
       "return": {
         "code": 201,
         "schema": {
-          "$ref": "EntryMessage"
+          "type": "reference",
+          "target": "EntryMessage"
         }
       },
       "arguments": {
         "payload": {
           "in": "body",
           "schema": {
-            "$ref": "EntryCreate"
+            "type": "reference",
+            "target": "EntryCreate"
           }
         }
       },
@@ -168,7 +179,7 @@
   },
   "definitions": {
     "Entry": {
-      "type": "object",
+      "type": "struct",
       "properties": {
         "id": {
           "type": "integer"
@@ -177,30 +188,28 @@
           "type": "integer"
         },
         "title": {
-          "type": "string",
-          "pattern": "[A-z]+",
-          "minLength": 3,
-          "maxLength": 16
+          "type": "string"
         },
         "date": {
-          "format": "date-time",
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
     "EntryCollection": {
-      "type": "object",
+      "type": "struct",
       "properties": {
         "entry": {
           "type": "array",
-          "items": {
-            "$ref": "Entry"
+          "schema": {
+            "type": "reference",
+            "target": "Entry"
           }
         }
       }
     },
     "EntryCreate": {
-      "type": "object",
+      "type": "struct",
       "properties": {
         "id": {
           "type": "integer"
@@ -209,23 +218,16 @@
           "type": "integer"
         },
         "title": {
-          "type": "string",
-          "pattern": "[A-z]+",
-          "minLength": 3,
-          "maxLength": 16
+          "type": "string"
         },
         "date": {
-          "format": "date-time",
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         }
-      },
-      "required": [
-        "title",
-        "date"
-      ]
+      }
     },
     "EntryMessage": {
-      "type": "object",
+      "type": "struct",
       "properties": {
         "success": {
           "type": "boolean"

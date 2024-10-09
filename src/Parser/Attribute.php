@@ -33,26 +33,19 @@ use PSX\Api\ParserInterface;
 use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Util\Inflection;
-use PSX\DateTime\Duration;
 use PSX\DateTime\LocalDate;
 use PSX\DateTime\LocalDateTime;
 use PSX\DateTime\LocalTime;
-use PSX\DateTime\Period;
 use PSX\Schema\ContentType;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Format;
 use PSX\Schema\Parser\Context\FilesystemContext;
 use PSX\Schema\Parser\ContextInterface;
+use PSX\Schema\Parser\Popo\ReflectionReader;
 use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\Type;
-use PSX\Schema\Type\NumberType;
-use PSX\Schema\Type\ScalarType;
-use PSX\Schema\Type\StringType;
-use PSX\Schema\Type\TypeAbstract;
-use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
-use PSX\Uri\Uri;
 use ReflectionClass;
 
 /**
@@ -66,6 +59,7 @@ class Attribute implements ParserInterface
 {
     private SchemaManagerInterface $schemaManager;
     private BuilderInterface $builder;
+    private ReflectionReader $reader;
     private bool $inspectTypeHints;
 
     public function __construct(SchemaManagerInterface $schemaManager, BuilderInterface $builder, bool $inspectTypeHints = true)
@@ -73,6 +67,7 @@ class Attribute implements ParserInterface
         $this->schemaManager = $schemaManager;
         $this->builder = $builder;
         $this->inspectTypeHints = $inspectTypeHints;
+        $this->reader = new ReflectionReader();
     }
 
     /**
@@ -262,7 +257,7 @@ class Attribute implements ParserInterface
     /**
      * @throws InvalidSchemaException
      */
-    private function getBodySchema(Attr\SchemaAbstract $annotation, DefinitionsInterface $definitions, string $basePath): TypeInterface|ContentType
+    private function getBodySchema(Attr\SchemaAbstract $annotation, DefinitionsInterface $definitions, string $basePath): Type\PropertyTypeAbstract|ContentType
     {
         if ($annotation->schema instanceof ContentType) {
             return $annotation->schema;
@@ -272,64 +267,29 @@ class Attribute implements ParserInterface
 
         $definitions->merge($schema->getDefinitions());
 
-        return $schema->getType();
+        return Type\Factory\PropertyTypeFactory::getReference($schema->getRoot());
     }
 
-    /**
-     * @throws InvalidSchemaException
-     */
     private function getParameter(Attr\ParamAbstract $param): TypeInterface
     {
         $type = match ($param->type) {
-            Type::INTEGER => TypeFactory::getInteger(),
-            Type::NUMBER => TypeFactory::getNumber(),
-            Type::BOOLEAN => TypeFactory::getBoolean(),
-            default => TypeFactory::getString(),
+            Type::INTEGER => Type\Factory\PropertyTypeFactory::getInteger(),
+            Type::NUMBER => Type\Factory\PropertyTypeFactory::getNumber(),
+            Type::BOOLEAN => Type\Factory\PropertyTypeFactory::getBoolean(),
+            default => Type\Factory\PropertyTypeFactory::getString(),
         };
 
-        if ($type instanceof TypeAbstract) {
+        if ($type instanceof Type\PropertyTypeAbstract) {
             $description = $param->description;
             if ($description !== null) {
                 $type->setDescription($description);
             }
         }
 
-        if ($type instanceof ScalarType) {
-            $enum = $param->enum;
-            if (is_array($enum)) {
-                $type->setEnum($enum);
-            }
-        }
-
-        if ($type instanceof StringType) {
-            $minLength = $param->minLength;
-            if ($minLength !== null) {
-                $type->setMinLength($minLength);
-            }
-
-            $maxLength = $param->maxLength;
-            if ($maxLength !== null) {
-                $type->setMaxLength($maxLength);
-            }
-
-            $pattern = $param->pattern;
-            if ($pattern !== null) {
-                $type->setPattern($pattern);
-            }
-
+        if ($type instanceof Type\StringPropertyType) {
             $format = $param->format;
             if ($format !== null) {
                 $type->setFormat($format);
-            }
-        } elseif ($type instanceof NumberType) {
-            $minimum = $param->minimum;
-            if ($minimum !== null) {
-                $type->setMinimum($minimum);
-            }
-
-            $maximum = $param->maximum;
-            if ($maximum !== null) {
-                $type->setMaximum($maximum);
             }
         }
 
@@ -546,44 +506,16 @@ class Attribute implements ParserInterface
             return null;
         }
 
-        $return = match ($type->getName()) {
-            'string' => [$name, Type::STRING, '', $required, $enum],
-            'int' => [$name, Type::INTEGER, '', $required, $enum],
-            'float' => [$name, Type::NUMBER, '', $required, $enum],
-            'bool' => [$name, Type::BOOLEAN, '', $required, $enum],
-            'mixed' => [$name, Type::ANY, '', $required, $enum],
-            'resource' => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::BINARY],
-            LocalDateTime::class, \DateTimeInterface::class, \DateTimeImmutable::class, \DateTime::class => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::DATETIME],
-            LocalDate::class => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::DATE],
-            LocalTime::class => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::TIME],
-            Period::class, \DateInterval::class => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::PERIOD],
-            Duration::class => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::DURATION],
-            Uri::class => [$name, Type::STRING, '', $required, $enum, null, null, null, Format::URI],
+        return match ($type->getName()) {
+            'string' => [$name, Type::STRING, ''],
+            'int' => [$name, Type::INTEGER, ''],
+            'float' => [$name, Type::NUMBER, ''],
+            'bool' => [$name, Type::BOOLEAN, ''],
+            'mixed' => [$name, Type::ANY, ''],
+            LocalDate::class => [$name, Type::STRING, '', Format::DATE],
+            LocalDateTime::class, \DateTimeInterface::class, \DateTimeImmutable::class, \DateTime::class => [$name, Type::STRING, '', Format::DATETIME],
+            LocalTime::class => [$name, Type::STRING, '', Format::TIME],
             default => null,
         };
-
-        if ($return === null && function_exists('enum_exists') && enum_exists($type->getName())) {
-            $return = $this->getTypeFromEnum(new \ReflectionEnum($type->getName()), $name, $required);
-        }
-
-        return $return;
-    }
-
-    private function getTypeFromEnum(\ReflectionEnum $enum, string $name, bool $required): ?array
-    {
-        if (!$enum->isBacked()) {
-            // we handle only backed enums since we have only in this case a stable value
-            return null;
-        }
-
-        $values = [];
-        $cases = $enum->getCases();
-        foreach ($cases as $case) {
-            if ($case instanceof \ReflectionEnumBackedCase) {
-                $values[] = $case->getBackingValue();
-            }
-        }
-
-        return $this->getParamArgsFromType($name, $enum->getBackingType(), $required, $values);
     }
 }

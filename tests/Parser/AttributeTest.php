@@ -30,6 +30,7 @@ use PSX\Api\Tests\Parser\Attribute\ContentTypeController;
 use PSX\Api\Tests\Parser\Attribute\PropertyController;
 use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\ContentType;
+use PSX\Schema\Type\Factory\PropertyTypeFactory;
 use PSX\Schema\TypeFactory;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
@@ -67,13 +68,13 @@ class AttributeTest extends ParserTestCase
 
         $this->assertInstanceOf(OperationInterface::class, $operation);
         $this->assertEquals('path', $operation->getArguments()->get('id')->getIn());
-        $this->assertEquals(TypeFactory::getInteger(), $operation->getArguments()->get('id')->getSchema());
+        $this->assertEquals(PropertyTypeFactory::getInteger(), $operation->getArguments()->get('id')->getSchema());
         $this->assertEquals('query', $operation->getArguments()->get('year')->getIn());
-        $this->assertEquals(TypeFactory::getString(), $operation->getArguments()->get('year')->getSchema());
+        $this->assertEquals(PropertyTypeFactory::getString(), $operation->getArguments()->get('year')->getSchema());
         $this->assertEquals('body', $operation->getArguments()->get('incoming')->getIn());
-        $this->assertEquals(TypeFactory::getReference('Incoming'), $operation->getArguments()->get('incoming')->getSchema());
+        $this->assertEquals(PropertyTypeFactory::getReference('Incoming'), $operation->getArguments()->get('incoming')->getSchema());
         $this->assertEquals(200, $operation->getReturn()->getCode());
-        $this->assertEquals(TypeFactory::getReference('Outgoing'), $operation->getReturn()->getSchema());
+        $this->assertEquals(PropertyTypeFactory::getReference('Outgoing'), $operation->getReturn()->getSchema());
     }
 
     public function testParseInvalid()

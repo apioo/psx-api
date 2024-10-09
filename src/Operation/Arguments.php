@@ -42,10 +42,6 @@ class Arguments implements ArgumentsInterface, \JsonSerializable
 
     public function add(string $name, Argument $argument): void
     {
-        if ($argument->getSchema() instanceof StructType) {
-            throw new InvalidArgumentException('It is not allowed to pass a struct type as argument, please add it to the definitions and pass a reference');
-        }
-
         $this->container[$name] = $argument;
     }
 

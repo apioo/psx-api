@@ -6,17 +6,11 @@
 
 namespace App\Model;
 
-use PSX\Schema\Attribute\MaxLength;
-use PSX\Schema\Attribute\MinLength;
-use PSX\Schema\Attribute\Pattern;
 
 class Entry implements \JsonSerializable, \PSX\Record\RecordableInterface
 {
     protected ?int $id = null;
     protected ?int $userId = null;
-    #[Pattern('[A-z]+')]
-    #[MinLength(3)]
-    #[MaxLength(16)]
     protected ?string $title = null;
     protected ?\PSX\DateTime\LocalDateTime $date = null;
     public function setId(?int $id) : void

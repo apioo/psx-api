@@ -3,7 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-export interface TestObject {
+export class TestObject {
     id?: number
     name?: string
 }
