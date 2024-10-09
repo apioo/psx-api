@@ -46,11 +46,11 @@ class GenerateCommandTest extends TestCase
         $command = $this->getGenerateCommand();
 
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
+        $commandTester->execute([
             'type'     => LocalRepository::CLIENT_PHP,
             'dir'      => __DIR__ . '/output',
             '--config' => 'Acme\\Sdk\\Generated',
-        ));
+        ]);
 
         $this->assertFileExists(__DIR__ . '/output/sdk-client-php.zip');
     }
@@ -60,10 +60,10 @@ class GenerateCommandTest extends TestCase
         $command = $this->getGenerateCommand();
 
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
+        $commandTester->execute([
             'type'     => LocalRepository::SPEC_OPENAPI,
             'dir'      => __DIR__ . '/output',
-        ));
+        ]);
 
         $this->assertFileExists(__DIR__ . '/output/output-spec-openapi.json');
     }

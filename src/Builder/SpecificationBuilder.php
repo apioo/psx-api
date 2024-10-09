@@ -26,6 +26,8 @@ use PSX\Api\Specification;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\ContentType;
 use PSX\Schema\DefinitionsInterface;
+use PSX\Schema\Type\DefinitionTypeAbstract;
+use PSX\Schema\Type\PropertyTypeAbstract;
 use PSX\Schema\TypeInterface;
 
 /**
@@ -54,7 +56,7 @@ class SpecificationBuilder implements SpecificationBuilderInterface
         $this->specification->setSecurity($security);
     }
 
-    public function addOperation(string $operationId, string $method, string $path, int $statusCode, TypeInterface|ContentType $schema): OperationBuilderInterface
+    public function addOperation(string $operationId, string $method, string $path, int $statusCode, PropertyTypeAbstract|ContentType $schema): OperationBuilderInterface
     {
         if ($this->specification->getOperations()->has($operationId)) {
             throw new OperationAlreadyExistsException('Operation "' . $operationId . '" already exists');
@@ -71,7 +73,7 @@ class SpecificationBuilder implements SpecificationBuilderInterface
         return $this;
     }
 
-    public function addType(string $name, TypeInterface $schema): self
+    public function addType(string $name, DefinitionTypeAbstract $schema): self
     {
         $this->specification->getDefinitions()->addType($name, $schema);
         return $this;

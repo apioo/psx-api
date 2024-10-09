@@ -41,14 +41,15 @@ use PSX\Schema\Generator\Type;
 use PSX\Schema\Generator\TypeAwareInterface;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\Schema;
-use PSX\Schema\Type\AnyType;
+use PSX\Schema\Type\ArrayPropertyType;
 use PSX\Schema\Type\ArrayType;
 use PSX\Schema\Type\IntersectionType;
+use PSX\Schema\Type\MapPropertyType;
 use PSX\Schema\Type\MapType;
+use PSX\Schema\Type\PropertyTypeAbstract;
+use PSX\Schema\Type\ReferencePropertyType;
 use PSX\Schema\Type\ReferenceType;
-use PSX\Schema\Type\StructType;
 use PSX\Schema\Type\UnionType;
-use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -150,15 +151,15 @@ abstract class ServerAbstract implements GeneratorInterface
 
     abstract protected function generateHeader(File $file, array $imports): string;
     abstract protected function generateFooter(File $file): string;
-    abstract protected function generateArgumentPath(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string;
-    abstract protected function generateArgumentQuery(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string;
-    abstract protected function generateArgumentHeader(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string;
-    abstract protected function generateArgumentBody(string $variableName, string $type, TypeInterface|ContentType $argumentType): string;
+    abstract protected function generateArgumentPath(string $rawName, string $variableName, string $type, PropertyTypeAbstract|ContentType $argumentType): string;
+    abstract protected function generateArgumentQuery(string $rawName, string $variableName, string $type, PropertyTypeAbstract|ContentType $argumentType): string;
+    abstract protected function generateArgumentHeader(string $rawName, string $variableName, string $type, PropertyTypeAbstract|ContentType $argumentType): string;
+    abstract protected function generateArgumentBody(string $variableName, string $type, PropertyTypeAbstract|ContentType $argumentType): string;
 
     /**
      * @param array<string> $arguments
      */
-    abstract protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, TypeInterface|ContentType $returnType): string;
+    abstract protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, PropertyTypeAbstract|ContentType $returnType): string;
 
     protected function buildControllerFileName(string $name): string
     {
@@ -185,21 +186,8 @@ abstract class ServerAbstract implements GeneratorInterface
      * @throws InvalidTypeException
      * @throws TypeNotFoundException
      */
-    protected function newType(TypeInterface|ContentType $type, DefinitionsInterface $definitions, int $context): Dto\Type
+    protected function newType(PropertyTypeAbstract|ContentType $type, DefinitionsInterface $definitions, int $context): Dto\Type
     {
-        if ($type instanceof ReferenceType) {
-            // in case we have a reference type we take a look at the reference, normally this is a struct type but in
-            // some special cases we need to extract the type
-            $refType = $definitions->getType($type->getRef());
-            if ($refType instanceof ReferenceType) {
-                $refType = $definitions->getType($refType->getRef());
-            }
-
-            if (!$refType instanceof StructType && !$refType instanceof MapType && !$refType instanceof AnyType) {
-                throw new InvalidTypeException('A reference can only point to a struct or map type, got: ' . get_class($refType) . ' for reference: ' . $type->getRef());
-            }
-        }
-
         if ($type instanceof ContentType) {
             $dataType = $this->typeGenerator->getContentType($type, $context);
             $docType = $dataType;
@@ -216,8 +204,7 @@ abstract class ServerAbstract implements GeneratorInterface
 
     protected function generateSchema(DefinitionsInterface $definitions, Generator\Code\Chunks $chunks): void
     {
-        $schema = new Schema(TypeFactory::getAny(), $definitions);
-        $result = $this->generator->generate($schema);
+        $result = $this->generator->generate(new Schema($definitions, null));
 
         if ($result instanceof Generator\Code\Chunks) {
             foreach ($result->getChunks() as $identifier => $code) {
@@ -251,7 +238,7 @@ abstract class ServerAbstract implements GeneratorInterface
                     $args[] = $this->generateArgumentBody($variableName, $type->type, $argumentType);
                 }
 
-                if ($argumentType instanceof TypeInterface) {
+                if ($argumentType instanceof PropertyTypeAbstract) {
                     $this->resolveImport($argumentType, $imports);
                 }
             }
@@ -259,7 +246,7 @@ abstract class ServerAbstract implements GeneratorInterface
             $returnType = $operation->getReturn()->getSchema();
             $type = $this->newType($returnType, $specification->getDefinitions(), Type\GeneratorInterface::CONTEXT_SERVER | Type\GeneratorInterface::CONTEXT_RESPONSE);
 
-            if ($returnType instanceof TypeInterface) {
+            if ($returnType instanceof PropertyTypeAbstract) {
                 $this->resolveImport($returnType, $imports);
             }
 
@@ -273,27 +260,19 @@ abstract class ServerAbstract implements GeneratorInterface
         return $this->getFileContent($result, $file->getName());
     }
 
-    private function resolveImport(TypeInterface $type, array &$imports): void
+    private function resolveImport(PropertyTypeAbstract $type, array &$imports): void
     {
-        if ($type instanceof ReferenceType) {
-            $imports[$this->normalizer->file($type->getRef())] = $this->normalizer->class($type->getRef());
+        if ($type instanceof ReferencePropertyType) {
+            $imports[$this->normalizer->file($type->getTarget())] = $this->normalizer->class($type->getTarget());
             if ($type->getTemplate()) {
                 foreach ($type->getTemplate() as $typeRef) {
                     $imports[$this->normalizer->file($typeRef)] = $this->normalizer->class($typeRef);
                 }
             }
-        } elseif ($type instanceof MapType && $type->getAdditionalProperties() instanceof TypeInterface) {
-            $this->resolveImport($type->getAdditionalProperties(), $imports);
-        } elseif ($type instanceof ArrayType && $type->getItems() instanceof TypeInterface) {
-            $this->resolveImport($type->getItems(), $imports);
-        } elseif ($type instanceof UnionType && $type->getOneOf()) {
-            foreach ($type->getOneOf() as $item) {
-                $this->resolveImport($item, $imports);
-            }
-        } elseif ($type instanceof IntersectionType) {
-            foreach ($type->getAllOf() as $item) {
-                $this->resolveImport($item, $imports);
-            }
+        } elseif ($type instanceof MapPropertyType && $type->getSchema() instanceof PropertyTypeAbstract) {
+            $this->resolveImport($type->getSchema(), $imports);
+        } elseif ($type instanceof ArrayPropertyType && $type->getSchema() instanceof PropertyTypeAbstract) {
+            $this->resolveImport($type->getSchema(), $imports);
         }
     }
 

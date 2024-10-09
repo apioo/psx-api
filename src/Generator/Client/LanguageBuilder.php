@@ -38,9 +38,13 @@ use PSX\Schema\Generator\Type\GeneratorInterface as TypeGeneratorInterface;
 use PSX\Schema\Generator\TypeAwareInterface;
 use PSX\Schema\GeneratorInterface;
 use PSX\Schema\Type\AnyType;
+use PSX\Schema\Type\ArrayPropertyType;
 use PSX\Schema\Type\ArrayType;
 use PSX\Schema\Type\IntersectionType;
+use PSX\Schema\Type\MapPropertyType;
 use PSX\Schema\Type\MapType;
+use PSX\Schema\Type\PropertyTypeAbstract;
+use PSX\Schema\Type\ReferencePropertyType;
 use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\Type\StructType;
 use PSX\Schema\Type\UnionType;
@@ -164,7 +168,7 @@ class LanguageBuilder
                 } elseif ($argument->getIn() === ArgumentInterface::IN_QUERY) {
                     $query[$normalized] = new Dto\Argument($argument->getIn(), $this->newType($argument->getSchema(), true, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_REQUEST));
                     $queryNames[$normalized] = $realName;
-                    if ($argument->getSchema() instanceof ReferenceType) {
+                    if ($argument->getSchema() instanceof ReferencePropertyType) {
                         $queryStructNames[] = $realName;
                     }
                 } elseif ($argument->getIn() === ArgumentInterface::IN_BODY) {
@@ -259,14 +263,14 @@ class LanguageBuilder
         return $result;
     }
 
-    private function getInnerSchema(TypeInterface $type, DefinitionsInterface $definitions): ?Dto\Type
+    private function getInnerSchema(PropertyTypeAbstract $type, DefinitionsInterface $definitions): ?Dto\Type
     {
-        if ($type instanceof MapType) {
-            $return = $this->newType($type->getAdditionalProperties(), false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
+        if ($type instanceof MapPropertyType) {
+            $return = $this->newType($type->getSchema(), false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
             $return->isMap = true;
             return $return;
-        } elseif ($type instanceof ArrayType) {
-            $return = $this->newType($type->getItems(), false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
+        } elseif ($type instanceof ArrayPropertyType) {
+            $return = $this->newType($type->getSchema(), false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
             $return->isArray = true;
             return $return;
         } else {
@@ -274,25 +278,8 @@ class LanguageBuilder
         }
     }
 
-    /**
-     * @throws InvalidTypeException
-     * @throws TypeNotFoundException
-     */
-    private function newType(TypeInterface|ContentType $type, bool $optional, DefinitionsInterface $definitions, int $context): Dto\Type
+    private function newType(PropertyTypeAbstract|ContentType $type, bool $optional, DefinitionsInterface $definitions, int $context): Dto\Type
     {
-        if ($type instanceof ReferenceType) {
-            // in case we have a reference type we take a look at the reference, normally this is a struct type but in
-            // some special cases we need to extract the type
-            $refType = $definitions->getType($type->getRef());
-            if ($refType instanceof ReferenceType) {
-                $refType = $definitions->getType($refType->getRef());
-            }
-
-            if (!$refType instanceof StructType && !$refType instanceof MapType && !$refType instanceof AnyType) {
-                throw new InvalidTypeException('A reference can only point to a struct or map type, got: ' . get_class($refType) . ' for reference: ' . $type->getRef());
-            }
-        }
-
         if ($type instanceof ContentType) {
             $dataType = $this->typeGenerator->getContentType($type, $context);
             $docType = $dataType;
@@ -311,27 +298,19 @@ class LanguageBuilder
     /**
      * @throws GeneratorException
      */
-    private function resolveImport(TypeInterface $type, array &$imports): void
+    private function resolveImport(PropertyTypeAbstract $type, array &$imports): void
     {
-        if ($type instanceof ReferenceType) {
-            $this->buildImport($type->getRef(), $imports);
+        if ($type instanceof ReferencePropertyType) {
+            $this->buildImport($type->getTarget(), $imports);
             if ($type->getTemplate()) {
                 foreach ($type->getTemplate() as $typeRef) {
                     $this->buildImport($typeRef, $imports);
                 }
             }
-        } elseif ($type instanceof MapType && $type->getAdditionalProperties() instanceof TypeInterface) {
-            $this->resolveImport($type->getAdditionalProperties(), $imports);
-        } elseif ($type instanceof ArrayType && $type->getItems() instanceof TypeInterface) {
-            $this->resolveImport($type->getItems(), $imports);
-        } elseif ($type instanceof UnionType && $type->getOneOf()) {
-            foreach ($type->getOneOf() as $item) {
-                $this->resolveImport($item, $imports);
-            }
-        } elseif ($type instanceof IntersectionType) {
-            foreach ($type->getAllOf() as $item) {
-                $this->resolveImport($item, $imports);
-            }
+        } elseif ($type instanceof MapPropertyType && $type->getSchema() instanceof PropertyTypeAbstract) {
+            $this->resolveImport($type->getSchema(), $imports);
+        } elseif ($type instanceof ArrayPropertyType && $type->getSchema() instanceof PropertyTypeAbstract) {
+            $this->resolveImport($type->getSchema(), $imports);
         }
     }
 

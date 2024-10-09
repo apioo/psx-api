@@ -42,15 +42,15 @@ use PSX\Schema\Type;
  */
 #[Description('Test description')]
 #[Path('/foo/:fooId')]
-#[PathParam(name: 'fooId', type: Type::STRING, required: true)]
+#[PathParam(name: 'fooId', type: Type::STRING)]
 class TestController
 {
     #[Get]
     #[Description('file://' . __DIR__ . '/description.md')]
     #[QueryParam(name: "foo", type: Type::STRING, description: "Test")]
-    #[QueryParam(name: "bar", type: Type::STRING, required: true)]
-    #[QueryParam(name: "baz", type: Type::STRING, enum: ["foo", "bar"])]
-    #[QueryParam(name: "boz", type: Type::STRING, pattern: "[A-z]+")]
+    #[QueryParam(name: "bar", type: Type::STRING)]
+    #[QueryParam(name: "baz", type: Type::STRING)]
+    #[QueryParam(name: "boz", type: Type::STRING)]
     #[QueryParam(name: "integer", type: Type::INTEGER)]
     #[QueryParam(name: "number", type: Type::NUMBER)]
     #[QueryParam(name: "date", type: Type::STRING, format: Format::DATETIME)]

@@ -4,6 +4,6 @@
  */
 
 import {Entry} from "./Entry";
-export interface EntryCollection {
+export class EntryCollection {
     entry?: Array<Entry>
 }

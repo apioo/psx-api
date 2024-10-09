@@ -73,7 +73,7 @@ class TypeAPI implements GeneratorInterface, ConfigurationAwareInterface
     private function generateDefinitions(DefinitionsInterface $definitions): ?array
     {
         $generator = new Generator\TypeSchema();
-        $schema = $generator->toArray(TypeFactory::getAny(), $definitions);
+        $schema = $generator->toArray($definitions, null);
 
         return $schema['definitions'] ?? null;
     }

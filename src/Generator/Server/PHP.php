@@ -25,6 +25,8 @@ use PSX\Api\OperationInterface;
 use PSX\Schema\ContentType;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
+use PSX\Schema\Type\PropertyTypeAbstract;
+use PSX\Schema\Type\ReferencePropertyType;
 use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\TypeInterface;
 
@@ -119,9 +121,9 @@ class PHP extends ServerAbstract
         return $controller;
     }
 
-    protected function generateArgumentPath(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string
+    protected function generateArgumentPath(string $rawName, string $variableName, string $type, PropertyTypeAbstract|ContentType $argumentType): string
     {
-        if ($argumentType instanceof ReferenceType) {
+        if ($argumentType instanceof ReferencePropertyType) {
             $type = 'Model\\' . $type;
         }
 
@@ -132,9 +134,9 @@ class PHP extends ServerAbstract
         }
     }
 
-    protected function generateArgumentQuery(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string
+    protected function generateArgumentQuery(string $rawName, string $variableName, string $type, PropertyTypeAbstract|ContentType $argumentType): string
     {
-        if ($argumentType instanceof ReferenceType) {
+        if ($argumentType instanceof ReferencePropertyType) {
             $type = 'Model\\' . $type;
         }
 
@@ -145,9 +147,9 @@ class PHP extends ServerAbstract
         }
     }
 
-    protected function generateArgumentHeader(string $rawName, string $variableName, string $type, TypeInterface|ContentType $argumentType): string
+    protected function generateArgumentHeader(string $rawName, string $variableName, string $type, PropertyTypeAbstract|ContentType $argumentType): string
     {
-        if ($argumentType instanceof ReferenceType) {
+        if ($argumentType instanceof ReferencePropertyType) {
             $type = 'Model\\' . $type;
         }
 
@@ -158,18 +160,18 @@ class PHP extends ServerAbstract
         }
     }
 
-    protected function generateArgumentBody(string $variableName, string $type, TypeInterface|ContentType $argumentType): string
+    protected function generateArgumentBody(string $variableName, string $type, PropertyTypeAbstract|ContentType $argumentType): string
     {
-        if ($argumentType instanceof ReferenceType) {
+        if ($argumentType instanceof ReferencePropertyType) {
             $type = 'Model\\' . $type;
         }
 
         return '#[Body] ' . $type . ' $' . $variableName;
     }
 
-    protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, TypeInterface|ContentType $returnType): string
+    protected function generateMethod(string $operationName, OperationInterface $operation, array $arguments, string $type, PropertyTypeAbstract|ContentType $returnType): string
     {
-        if ($returnType instanceof ReferenceType) {
+        if ($returnType instanceof ReferencePropertyType) {
             $type = 'Model\\' . $type;
         }
 

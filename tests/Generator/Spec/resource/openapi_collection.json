@@ -1,7 +1,18 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "PSX",
+    "title": "Sample Pet Store App",
+    "description": "This is a sample server for a pet store.",
+    "termsOfService": "http://example.com/terms/",
+    "contact": {
+      "name": "API Support",
+      "url": "http://www.example.com/support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
     "version": "1"
   },
   "servers": [
@@ -208,14 +219,11 @@
             "type": "integer"
           },
           "title": {
-            "type": "string",
-            "pattern": "[A-z]+",
-            "minLength": 3,
-            "maxLength": 16
+            "type": "string"
           },
           "date": {
-            "format": "date-time",
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -240,20 +248,13 @@
             "type": "integer"
           },
           "title": {
-            "type": "string",
-            "pattern": "[A-z]+",
-            "minLength": 3,
-            "maxLength": 16
+            "type": "string"
           },
           "date": {
-            "format": "date-time",
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
           }
-        },
-        "required": [
-          "title",
-          "date"
-        ]
+        }
       },
       "EntryMessage": {
         "type": "object",
@@ -266,6 +267,31 @@
           }
         }
       }
+    },
+    "securitySchemes": {
+      "OAuth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "http://api.phpsx.org/authorization",
+            "tokenUrl": "http://api.phpsx.org/token",
+            "scopes": {
+              "foo": "Foo sope",
+              "bar": "Bar scope"
+            }
+          }
+        }
+      }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "foo",
+      "description": "Foo tag"
+    },
+    {
+      "name": "bar",
+      "description": "Boo tag"
+    }
+  ]
 }

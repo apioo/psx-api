@@ -51,11 +51,16 @@ use PSX\OpenAPI\SecurityScheme;
 use PSX\OpenAPI\SecuritySchemes;
 use PSX\OpenAPI\Server;
 use PSX\OpenAPI\Tag;
+use PSX\Schema\Definitions;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
 use PSX\Schema\Parser\Popo\Dumper;
 use PSX\Schema\Type\ArrayType;
+use PSX\Schema\Type\ArrayTypeInterface;
 use PSX\Schema\Type\MapType;
+use PSX\Schema\Type\MapTypeInterface;
+use PSX\Schema\Type\PropertyTypeAbstract;
+use PSX\Schema\Type\ReferencePropertyType;
 use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
@@ -128,7 +133,7 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
         $server = new Server();
         $server->setUrl($baseUrl);
 
-        $result = $this->generator->toArray(TypeFactory::getAny(), $definitions);
+        $result = $this->generator->toArray($definitions, null);
 
         $schemas = new Schemas();
         foreach ($result['definitions'] as $name => $schema) {
@@ -231,17 +236,12 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
         return $pathItem;
     }
 
-    protected function newParameter(TypeInterface $type, bool $required, DefinitionsInterface $definitions): Parameter
+    protected function newParameter(PropertyTypeAbstract $type, bool $required, DefinitionsInterface $definitions): Parameter
     {
-        $schema = $this->generator->toArray($type, $definitions);
-        if (isset($schema['definitions'])) {
-            unset($schema['definitions']);
-        }
-
         $param = new Parameter();
         $param->setDescription($type->getDescription());
         $param->setRequired($required);
-        $param->setSchema($schema);
+        $param->setSchema($this->generator->toProperty($type, $definitions));
 
         return $param;
     }
@@ -268,22 +268,22 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
 
     private function resolveSchema(TypeInterface $type, DefinitionsInterface $definitions): \stdClass
     {
-        if ($type instanceof ReferenceType) {
+        if ($type instanceof ReferencePropertyType) {
             return (object) [
-                '$ref' => '#/components/schemas/' . $type->getRef(),
+                '$ref' => '#/components/schemas/' . $type->getTarget(),
             ];
-        } elseif ($type instanceof MapType) {
+        } elseif ($type instanceof MapTypeInterface) {
             return (object) [
                 'type' => 'object',
-                'additionalProperties' => $this->resolveSchema($type->getAdditionalProperties(), $definitions),
+                'additionalProperties' => $this->resolveSchema($type->getSchema(), $definitions),
             ];
-        } elseif ($type instanceof ArrayType) {
+        } elseif ($type instanceof ArrayTypeInterface) {
             return (object) [
                 'type' => 'array',
-                'items' => $this->resolveSchema($type->getItems(), $definitions),
+                'items' => $this->resolveSchema($type->getSchema(), $definitions),
             ];
         } else {
-            return (object) $this->generator->toArray($type, $definitions);
+            return (object) $this->generator->toArray($definitions, null);
         }
     }
 

@@ -7,8 +7,8 @@
 namespace Sdkgen\Client\Tests\Generated;
 
 /**
- * @extends \PSX\Record\Record<TestObject>
+ * @extends \ArrayObject<string, TestObject>
  */
-class TestMapObject extends \PSX\Record\Record
+class TestMapObject extends \ArrayObject
 {
 }

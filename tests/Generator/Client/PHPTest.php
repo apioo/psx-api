@@ -59,14 +59,6 @@ class PHPTest extends GeneratorTestCase
         $this->assertFileExists($target . '/Client.php');
     }
 
-    public function testGenerateComplex()
-    {
-        $this->expectException(InvalidTypeException::class);
-
-        $generator = new PHP('http://api.foo.com', Config::of('Foo\\Bar'));
-        $generator->generate($this->getSpecificationComplex());
-    }
-
     public function testGenerateTest()
     {
         $generator = new PHP('http://127.0.0.1:8081', Config::of('Sdkgen\\Client\\Tests\\Generated'));

@@ -33,7 +33,6 @@ class Create extends SchemaAbstract
 {
     public function build(): void
     {
-        $entry = $this->modify(Entry::class, 'EntryCreate');
-        $entry->setRequired(['title', 'date']);
+        $this->modify(Entry::class, 'EntryCreate');
     }
 }

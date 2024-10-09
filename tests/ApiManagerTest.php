@@ -24,6 +24,7 @@ use PSX\Api\Exception\InvalidApiException;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\Parser\Attribute\TestController;
 use PSX\Schema\SchemaManager;
+use PSX\Schema\Type\Factory\PropertyTypeFactory;
 
 /**
  * ApiManagerTest
@@ -70,8 +71,8 @@ class ApiManagerTest extends ApiManagerTestCase
         $schema = $manager->getSchema(__DIR__ . '/Parser/schema/schema.json');
         $builder->addDefinitions($schema->getDefinitions());
 
-        $operation = $builder->addOperation('my.operation', 'GET', '/foo', 200, $schema->getType());
-        $operation->addArgument('payload', 'body', $schema->getType());
+        $operation = $builder->addOperation('my.operation', 'GET', '/foo', 200, PropertyTypeFactory::getReference($schema->getRoot()));
+        $operation->addArgument('payload', 'body', PropertyTypeFactory::getReference($schema->getRoot()));
         $operation->setDescription('My operation description');
         $operation->setSecurity(['foo']);
         $operation->setTags(['my_tag']);

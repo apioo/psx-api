@@ -26,8 +26,10 @@ use PSX\Api\OperationInterface;
 use PSX\Api\OperationsInterface;
 use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
+use PSX\Schema\ContentType;
 use PSX\Schema\Inspector\ChangelogGenerator as SchemaChangelogGenerator;
 use PSX\Schema\Inspector\SemVer;
+use PSX\Schema\Type\PropertyTypeAbstract;
 
 /**
  * ChangelogGenerator
@@ -179,7 +181,7 @@ class ChangelogGenerator
             yield SemVer::PATCH => $this->getMessageChanged(array_merge($path, ['in']), $left->getIn(), $right->getIn());
         }
 
-        yield from $this->changelogGenerator->generateType($left->getSchema(), $right->getSchema(), implode('.', $path));
+        yield from $this->generateSchema($left->getSchema(), $right->getSchema(), $path);
     }
 
     private function generateResponse(Operation\Response $left, Operation\Response $right, array $path): \Generator
@@ -188,7 +190,22 @@ class ChangelogGenerator
             yield SemVer::PATCH => $this->getMessageChanged(array_merge($path, ['code']), $left->getCode(), $right->getCode());
         }
 
-        yield from $this->changelogGenerator->generateType($left->getSchema(), $right->getSchema(), implode('.', $path));
+        yield from $this->generateSchema($left->getSchema(), $right->getSchema(), $path);
+    }
+
+    private function generateSchema(ContentType|PropertyTypeAbstract $leftSchema, ContentType|PropertyTypeAbstract $rightSchema, array $path): \Generator
+    {
+        if ($leftSchema instanceof ContentType && $rightSchema instanceof ContentType) {
+            if ($leftSchema->toString() !== $rightSchema->toString()) {
+                yield SemVer::MAJOR => $this->getMessageChanged(array_merge($path, ['contentType']), $leftSchema->toString(), $rightSchema->toString());
+            }
+        } elseif ($leftSchema instanceof ContentType && $rightSchema instanceof PropertyTypeAbstract) {
+            yield SemVer::MAJOR => $this->getMessageChanged(array_merge($path, ['contentType']), $leftSchema->toString(), 'schema');
+        } elseif ($leftSchema instanceof PropertyTypeAbstract && $rightSchema instanceof ContentType) {
+            yield SemVer::MAJOR => $this->getMessageChanged(array_merge($path, ['contentType']), 'schema', $rightSchema->toString());
+        } else {
+            yield from $this->changelogGenerator->generatePropertyType($leftSchema, $rightSchema, implode('.', $path));
+        }
     }
 
     private function getMessageAdded(array $path, string $type = 'Operation'): string

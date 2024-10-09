@@ -33,7 +33,6 @@ class Update extends SchemaAbstract
 {
     public function build(): void
     {
-        $entry = $this->modify(Entry::class, 'EntryUpdate');
-        $entry->setRequired(['id']);
+        $this->modify(Entry::class, 'EntryUpdate');
     }
 }

@@ -33,7 +33,6 @@ class Patch extends SchemaAbstract
 {
     public function build(): void
     {
-        $entry = $this->modify(Entry::class, 'EntryPatch');
-        $entry->setRequired(['id']);
+        $this->modify(Entry::class, 'EntryPatch');
     }
 }

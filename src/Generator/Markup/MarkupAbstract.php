@@ -93,7 +93,7 @@ abstract class MarkupAbstract implements GeneratorInterface, ConfigurationAwareI
 
     protected function generateSchema(DefinitionsInterface $definitions): string
     {
-        $schema = new Schema(TypeFactory::getAny(), $definitions);
+        $schema = new Schema($definitions, null);
         $return = $this->generator->generate($schema);
 
         return $return;

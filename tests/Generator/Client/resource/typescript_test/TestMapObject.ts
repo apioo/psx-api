@@ -4,4 +4,5 @@
  */
 
 import {TestObject} from "./TestObject";
-export type TestMapObject = Record<string, TestObject>;
+export class TestMapObject extends Map<string, TestObject> {
+}

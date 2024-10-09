@@ -6,7 +6,7 @@
 import {TestObject} from "./TestObject";
 import {TestMapScalar} from "./TestMapScalar";
 import {TestMapObject} from "./TestMapObject";
-export interface TestRequest {
+export class TestRequest {
     int?: number
     float?: number
     string?: string

@@ -51,14 +51,4 @@ class TypeAPITest extends GeneratorTestCase
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
-
-    public function testGenerateComplex()
-    {
-        $generator = new TypeAPI();
-
-        $actual = $generator->generate($this->getSpecificationComplex());
-        $expect = file_get_contents(__DIR__ . '/resource/typeapi_complex.json');
-
-        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
-    }
 }

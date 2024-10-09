@@ -24,7 +24,8 @@ use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\ContentType;
 use PSX\Schema\DefinitionsInterface;
-use PSX\Schema\TypeInterface;
+use PSX\Schema\Type\DefinitionTypeAbstract;
+use PSX\Schema\Type\PropertyTypeAbstract;
 
 /**
  * SpecificationBuilderInterface
@@ -39,11 +40,11 @@ interface SpecificationBuilderInterface
 
     public function setSecurity(SecurityInterface $security): void;
 
-    public function addOperation(string $operationId, string $method, string $path, int $statusCode, TypeInterface|ContentType $schema): OperationBuilderInterface;
+    public function addOperation(string $operationId, string $method, string $path, int $statusCode, PropertyTypeAbstract|ContentType $schema): OperationBuilderInterface;
 
     public function addDefinitions(DefinitionsInterface $definitions): self;
 
-    public function addType(string $name, TypeInterface $schema): self;
+    public function addType(string $name, DefinitionTypeAbstract $schema): self;
 
     public function getSpecification(): SpecificationInterface;
 }

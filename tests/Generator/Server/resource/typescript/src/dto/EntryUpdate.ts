@@ -3,8 +3,8 @@
  * {@link https://sdkgen.app}
  */
 
-export interface EntryUpdate {
-    id: number
+export class EntryUpdate {
+    id?: number
     userId?: number
     title?: string
     date?: string

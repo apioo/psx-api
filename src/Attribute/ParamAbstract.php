@@ -34,14 +34,7 @@ abstract class ParamAbstract
         public string $name,
         public Type $type,
         public ?string $description = null,
-        public ?bool $required = null,
-        public ?array $enum = null,
-        public ?int $minLength = null,
-        public ?int $maxLength = null,
-        public ?string $pattern = null,
         public ?Format $format = null,
-        public ?int $minimum = null,
-        public ?int $maximum = null
     )
     {
     }
