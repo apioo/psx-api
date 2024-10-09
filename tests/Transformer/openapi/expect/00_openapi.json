@@ -147,6 +147,20 @@
   },
   "components": {
     "schemas": {
+      "Inline0062e6f7": {
+        "type": "struct",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          }
+        }
+      },
       "Pet": {
         "type": "struct",
         "properties": {
@@ -161,11 +175,29 @@
           }
         }
       },
+      "Inlined62a5ccb": {
+        "type": "array",
+        "schema": {
+          "type": "reference",
+          "target": "Pet"
+        }
+      },
       "Pets": {
         "type": "array",
         "schema": {
           "type": "reference",
           "target": "Pet"
+        }
+      },
+      "Inlinee870fe0d": {
+        "type": "struct",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          }
         }
       },
       "Error": {
