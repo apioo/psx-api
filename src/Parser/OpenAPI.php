@@ -54,6 +54,7 @@ use PSX\OpenAPI\SecuritySchemes;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Exception\InvalidSchemaException;
 use PSX\Schema\Exception\TypeNotFoundException;
+use PSX\Schema\Exception\UnknownTypeException;
 use PSX\Schema\Inspector\Hash;
 use PSX\Schema\Parser as SchemaParser;
 use PSX\Schema\Parser\ContextInterface;
@@ -62,10 +63,12 @@ use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Type\ArrayType;
 use PSX\Schema\Type\ArrayTypeInterface;
+use PSX\Schema\Type\DefinitionTypeAbstract;
 use PSX\Schema\Type\Factory\PropertyTypeFactory;
 use PSX\Schema\Type\IntersectionType;
 use PSX\Schema\Type\MapType;
 use PSX\Schema\Type\MapTypeInterface;
+use PSX\Schema\Type\PropertyTypeAbstract;
 use PSX\Schema\Type\ReferencePropertyType;
 use PSX\Schema\Type\ReferenceType;
 use PSX\Schema\Type\StructDefinitionType;
@@ -376,8 +379,9 @@ class OpenAPI implements ParserInterface
 
     /**
      * @throws InvalidSchemaException
+     * @throws UnknownTypeException
      */
-    private function getSchemaFromMediaTypes(MediaTypes $mediaTypes): ?TypeInterface
+    private function getSchemaFromMediaTypes(MediaTypes $mediaTypes): ?PropertyTypeAbstract
     {
         $mediaType = $mediaTypes['application/json'] ?? null;
         if (!$mediaType instanceof MediaType) {
@@ -389,9 +393,12 @@ class OpenAPI implements ParserInterface
             return null;
         }
 
-        $type = $this->schemaParser->parsePropertyType($schema);
-
-        return $this->transformInlineStruct($type);
+        try {
+            return $this->schemaParser->parsePropertyType($schema);
+        } catch (UnknownTypeException $e) {
+            $type = $this->schemaParser->parseDefinitionType($schema);
+            return $this->transformInlineStruct($type);
+        }
     }
 
     /**
@@ -400,30 +407,14 @@ class OpenAPI implements ParserInterface
      *
      * @throws InvalidSchemaException
      */
-    private function transformInlineStruct(TypeInterface $type): TypeInterface
+    private function transformInlineStruct(DefinitionTypeAbstract $type): PropertyTypeAbstract
     {
-        if ($type instanceof StructDefinitionType) {
-            // we have an inline struct type we automatically add this ot the definitions, since we have no name we generate
-            // it based on the type, this should motivate users to move the definition to the components section
-            $typeName = 'Inline' . substr($this->hashInspector->generateByType($type), 0, 8);
-            $this->definitions->addType($typeName, $type);
+        // we have an inline struct type we automatically add this ot the definitions, since we have no name we generate
+        // it based on the type, this should motivate users to move the definition to the components section
+        $typeName = 'Inline' . substr($this->hashInspector->generateByType($type), 0, 8);
+        $this->definitions->addType($typeName, $type);
 
-            return TypeFactory::getReference($typeName);
-        } elseif ($type instanceof MapTypeInterface) {
-            $schema = $type->getSchema();
-            if ($schema instanceof TypeInterface) {
-                $r = $this->transformInlineStruct($schema);
-                return TypeFactory::getMap($r);
-            }
-        } elseif ($type instanceof ArrayTypeInterface) {
-            $schema = $type->getSchema();
-            if ($schema instanceof TypeInterface) {
-                $r = $this->transformInlineStruct($schema);
-                return TypeFactory::getArray($r);
-            }
-        }
-
-        return $type;
+        return PropertyTypeFactory::getReference($typeName);
     }
 
     private function resolveReference(string $reference)

@@ -91,15 +91,15 @@ class OpenAPITest extends ParserTestCase
         $this->assertTrue($operation->getArguments()->isEmpty());
 
         $this->assertEquals(200, $operation->getReturn()->getCode());
-        $this->assertEquals(['$ref' => 'Inline01fd4b61'], $operation->getReturn()->getSchema()->toArray());
+        $this->assertEquals(['type' => 'reference', 'target' => 'Inline01fd4b61'], $operation->getReturn()->getSchema()->toArray());
 
         $this->assertCount(0, $operation->getThrows());
 
         $this->assertEquals([
-            'type' => 'object',
+            'type' => 'struct',
             'properties' => [
-                'success' => TypeFactory::getBoolean(),
-                'message' => TypeFactory::getString(),
+                'success' => PropertyTypeFactory::getBoolean(),
+                'message' => PropertyTypeFactory::getString(),
             ],
         ], $definitions->getType('Inline01fd4b61')->toArray());
     }

@@ -77,7 +77,7 @@ class OpenAPI
                 if ($schema instanceof \stdClass) {
                     $result = $this->transformer->transform($schema);
 
-                    $response->content->{'application/json'}->schema = ['$ref' => $result->{'$ref'}];
+                    $response->content->{'application/json'}->schema = ['$ref' => $result->{'root'}];
 
                     foreach ($result->definitions as $name => $type) {
                         $spec->components->schemas->{$name} = $type;
