@@ -25,6 +25,7 @@ use PSX\Api\ApiManager;
 use PSX\Api\Parser\Attribute\Builder;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Transformer\OpenAPI;
+use PSX\Schema\ObjectMapper;
 use PSX\Schema\SchemaManager;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Yaml\Yaml;

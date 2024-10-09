@@ -63,6 +63,10 @@ class OpenAPI
             }
 
             foreach ($methods as $operation) {
+                if (!$operation instanceof \stdClass) {
+                    continue;
+                }
+
                 $this->transformOperation($operation, $spec);
             }
         }
@@ -75,12 +79,27 @@ class OpenAPI
             foreach ($responses as $statusCode => $response) {
                 $schema = $response->content->{'application/json'}->schema ?? null;
                 if ($schema instanceof \stdClass) {
-                    $result = $this->transformer->transform($schema);
+                    $ref = $schema->{'$ref'} ?? null;
+                    if (!empty($ref)) {
+                        $ref = str_replace('#/definitions/', '', $ref);
+                        $ref = str_replace('#/$defs/', '', $ref);
+                        $ref = str_replace('#/components/schemas/', '', $ref);
 
-                    $response->content->{'application/json'}->schema = ['$ref' => $result->{'root'}];
+                        $response->content->{'application/json'}->schema = [
+                            'type' => 'reference',
+                            'target' => $ref,
+                        ];
+                    } else {
+                        $result = $this->transformer->transform($schema);
 
-                    foreach ($result->definitions as $name => $type) {
-                        $spec->components->schemas->{$name} = $type;
+                        $response->content->{'application/json'}->schema = [
+                            'type' => 'reference',
+                            'target' => $result->{'root'},
+                        ];
+
+                        foreach ($result->definitions as $name => $type) {
+                            $spec->components->schemas->{$name} = $type;
+                        }
                     }
                 }
             }
