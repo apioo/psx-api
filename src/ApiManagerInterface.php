@@ -21,7 +21,7 @@
 namespace PSX\Api;
 
 use PSX\Api\Builder\SpecificationBuilderInterface;
-use PSX\Api\Exception\InvalidApiException;
+use PSX\Api\Exception\ApiException;
 use PSX\Schema\Parser\ContextInterface;
 
 /**
@@ -50,7 +50,7 @@ interface ApiManagerInterface
      *
      * If the source is a simple string the manager tries to guess the fitting source uri format
      *
-     * @throws InvalidApiException
+     * @throws ApiException
      */
     public function getApi(string $source, ?ContextInterface $context = null): SpecificationInterface;
 

@@ -63,9 +63,6 @@ class ApiManager implements ApiManagerInterface
         $this->parsers[$scheme] = $parser;
     }
 
-    /**
-     * @throws ApiException
-     */
     public function getApi(string $source, ?ContextInterface $context = null): SpecificationInterface
     {
         $item = null;
