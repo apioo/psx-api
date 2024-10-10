@@ -27,6 +27,6 @@ namespace PSX\Api\Exception;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class InvalidOperationException extends \Exception
+class InvalidOperationException extends ApiException
 {
 }

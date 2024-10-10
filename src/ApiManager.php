@@ -23,6 +23,7 @@ namespace PSX\Api;
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\Builder\SpecificationBuilder;
 use PSX\Api\Builder\SpecificationBuilderInterface;
+use PSX\Api\Exception\ApiException;
 use PSX\Api\Exception\InvalidApiException;
 use PSX\Api\Parser\Attribute\BuilderInterface;
 use PSX\Schema\Parser\ContextInterface;
@@ -41,6 +42,9 @@ class ApiManager implements ApiManagerInterface
     private CacheItemPoolInterface $cache;
     private bool $debug;
 
+    /**
+     * @var array<string, ParserInterface>
+     */
     private array $parsers = [];
 
     public function __construct(SchemaManagerInterface $schemaManager, BuilderInterface $builder, ?CacheItemPoolInterface $cache = null, bool $debug = false)
@@ -59,6 +63,9 @@ class ApiManager implements ApiManagerInterface
         $this->parsers[$scheme] = $parser;
     }
 
+    /**
+     * @throws ApiException
+     */
     public function getApi(string $source, ?ContextInterface $context = null): SpecificationInterface
     {
         $item = null;

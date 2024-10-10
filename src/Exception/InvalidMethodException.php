@@ -27,6 +27,6 @@ namespace PSX\Api\Exception;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class InvalidMethodException extends \Exception
+class InvalidMethodException extends ApiException
 {
 }

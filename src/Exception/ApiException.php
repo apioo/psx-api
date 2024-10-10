@@ -21,12 +21,12 @@
 namespace PSX\Api\Exception;
 
 /**
- * OperationNotFoundException
+ * ApiException
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class OperationNotFoundException extends ApiException
+class ApiException extends \Exception
 {
 }
