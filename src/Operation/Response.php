@@ -54,7 +54,7 @@ class Response implements ResponseInterface, \JsonSerializable
     public function jsonSerialize(): array
     {
         if ($this->schema instanceof ContentType) {
-            $contentType = $this->schema->value;
+            $contentType = $this->schema->toString();
             $schema = null;
         } else {
             $contentType = null;
