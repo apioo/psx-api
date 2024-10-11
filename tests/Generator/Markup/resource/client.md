@@ -6,44 +6,44 @@ client.delete(name: string, type: string): void
 client.patch(name: string, type: string, payload: Array<EntryPatch>): Array<EntryMessage> throws EntryMessage, Array<EntryMessage>
 
 
-export class EntryCollection {
+interface EntryCollection {
     entry?: Array<Entry>
 }
 
-export class Entry {
+interface Entry {
     id?: number
     userId?: number
     title?: string
     date?: string
 }
 
-export class EntryMessage {
+interface EntryMessage {
     success?: boolean
     message?: string
 }
 
-export class EntryCreate {
+interface EntryCreate {
     id?: number
     userId?: number
     title?: string
     date?: string
 }
 
-export class EntryUpdate {
+interface EntryUpdate {
     id?: number
     userId?: number
     title?: string
     date?: string
 }
 
-export class EntryDelete {
+interface EntryDelete {
     id?: number
     userId?: number
     title?: string
     date?: string
 }
 
-export class EntryPatch {
+interface EntryPatch {
     id?: number
     userId?: number
     title?: string

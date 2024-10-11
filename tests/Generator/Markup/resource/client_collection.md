@@ -7,23 +7,23 @@ client.bar().find(foo: string): EntryCollection
 client.bar().put(payload: EntryCreate): EntryMessage
 
 
-export class EntryCollection {
+interface EntryCollection {
     entry?: Array<Entry>
 }
 
-export class Entry {
+interface Entry {
     id?: number
     userId?: number
     title?: string
     date?: string
 }
 
-export class EntryMessage {
+interface EntryMessage {
     success?: boolean
     message?: string
 }
 
-export class EntryCreate {
+interface EntryCreate {
     id?: number
     userId?: number
     title?: string

@@ -3,7 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-export class EntryPatch {
+export interface EntryPatch {
     id?: number
     userId?: number
     title?: string

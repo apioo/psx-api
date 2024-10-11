@@ -3,7 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-export class EntryDelete {
+export interface EntryDelete {
     id?: number
     userId?: number
     title?: string

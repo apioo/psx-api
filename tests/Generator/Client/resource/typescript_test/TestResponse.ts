@@ -5,7 +5,7 @@
 
 import {TestMapScalar} from "./TestMapScalar";
 import {TestRequest} from "./TestRequest";
-export class TestResponse {
+export interface TestResponse {
     args?: TestMapScalar
     data?: string
     files?: TestMapScalar

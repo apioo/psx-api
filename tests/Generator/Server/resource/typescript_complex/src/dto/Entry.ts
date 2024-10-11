@@ -3,7 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-export class Entry {
+export interface Entry {
     id?: number
     userId?: number
     title?: string

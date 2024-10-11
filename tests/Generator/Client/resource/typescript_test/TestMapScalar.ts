@@ -3,5 +3,5 @@
  * {@link https://sdkgen.app}
  */
 
-export class TestMapScalar extends Map<string, string> {
+export interface TestMapScalar extends Record<string, string> {
 }
