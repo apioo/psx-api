@@ -41,7 +41,7 @@ class DevLifterTest extends GeneratorTestCase
         $lifter = new DevLifter();
 
         $actual = $lifter->elevate('0.1.0', $left, $right);
-        $expect = '0.1.1';
+        $expect = '0.2.0';
 
         $this->assertEquals($expect, $actual);
     }
