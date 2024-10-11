@@ -56,7 +56,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('GET', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, EntryCollection::class);
+            $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromClass(EntryCollection::class));
 
             return $data;
         } catch (ClientException $e) {
@@ -100,7 +100,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('POST', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, EntryMessage::class);
+            $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromClass(EntryMessage::class));
 
             return $data;
         } catch (ClientException $e) {
@@ -110,13 +110,13 @@ class Client extends ClientAbstract
             $statusCode = $e->getResponse()->getStatusCode();
 
             if ($statusCode === 400) {
-                $data = $this->parser->parse((string) $body, EntryMessage::class);
+                $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromClass(EntryMessage::class));
 
                 throw new EntryMessageException($data);
             }
 
             if ($statusCode === 500) {
-                $data = $this->parser->parse((string) $body, EntryMessage::class);
+                $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromClass(EntryMessage::class));
 
                 throw new EntryMessageException($data);
             }
@@ -157,7 +157,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('PUT', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, EntryMessage::class, isMap: true);
+            $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromType('\PSX\Record\Record<EntryMessage>', __NAMESPACE__));
 
             return $data;
         } catch (ClientException $e) {
@@ -167,13 +167,13 @@ class Client extends ClientAbstract
             $statusCode = $e->getResponse()->getStatusCode();
 
             if ($statusCode === 400) {
-                $data = $this->parser->parse((string) $body, EntryMessage::class);
+                $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromClass(EntryMessage::class));
 
                 throw new EntryMessageException($data);
             }
 
             if ($statusCode === 500) {
-                $data = $this->parser->parse((string) $body, EntryMessage::class, isMap: true);
+                $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromType('\PSX\Record\Record<EntryMessage>', __NAMESPACE__));
 
                 throw new MapEntryMessageException($data);
             }
@@ -251,7 +251,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('PATCH', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, EntryMessage::class, isArray: true);
+            $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromType('array<EntryMessage>', __NAMESPACE__));
 
             return $data;
         } catch (ClientException $e) {
@@ -261,13 +261,13 @@ class Client extends ClientAbstract
             $statusCode = $e->getResponse()->getStatusCode();
 
             if ($statusCode === 400) {
-                $data = $this->parser->parse((string) $body, EntryMessage::class);
+                $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromClass(EntryMessage::class));
 
                 throw new EntryMessageException($data);
             }
 
             if ($statusCode === 500) {
-                $data = $this->parser->parse((string) $body, EntryMessage::class, isArray: true);
+                $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromType('array<EntryMessage>', __NAMESPACE__));
 
                 throw new ArrayEntryMessageException($data);
             }

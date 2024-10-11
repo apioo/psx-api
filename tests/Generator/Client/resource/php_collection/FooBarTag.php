@@ -37,7 +37,7 @@ class FooBarTag extends TagAbstract
             $response = $this->httpClient->request('GET', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, EntryCollection::class);
+            $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromClass(EntryCollection::class));
 
             return $data;
         } catch (ClientException $e) {
@@ -77,7 +77,7 @@ class FooBarTag extends TagAbstract
             $response = $this->httpClient->request('POST', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, EntryMessage::class);
+            $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromClass(EntryMessage::class));
 
             return $data;
         } catch (ClientException $e) {
@@ -87,13 +87,13 @@ class FooBarTag extends TagAbstract
             $statusCode = $e->getResponse()->getStatusCode();
 
             if ($statusCode === 400) {
-                $data = $this->parser->parse((string) $body, EntryMessage::class);
+                $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromClass(EntryMessage::class));
 
                 throw new EntryMessageException($data);
             }
 
             if ($statusCode === 500) {
-                $data = $this->parser->parse((string) $body, EntryMessage::class);
+                $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromClass(EntryMessage::class));
 
                 throw new EntryMessageException($data);
             }

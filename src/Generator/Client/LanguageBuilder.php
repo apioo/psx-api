@@ -37,17 +37,10 @@ use PSX\Schema\Generator\Type;
 use PSX\Schema\Generator\Type\GeneratorInterface as TypeGeneratorInterface;
 use PSX\Schema\Generator\TypeAwareInterface;
 use PSX\Schema\GeneratorInterface;
-use PSX\Schema\Type\AnyType;
 use PSX\Schema\Type\ArrayPropertyType;
-use PSX\Schema\Type\ArrayType;
-use PSX\Schema\Type\IntersectionType;
 use PSX\Schema\Type\MapPropertyType;
-use PSX\Schema\Type\MapType;
 use PSX\Schema\Type\PropertyTypeAbstract;
 use PSX\Schema\Type\ReferencePropertyType;
-use PSX\Schema\Type\ReferenceType;
-use PSX\Schema\Type\StructType;
-use PSX\Schema\Type\UnionType;
 use PSX\Schema\TypeInterface;
 use PSX\Schema\TypeUtil;
 
@@ -199,13 +192,12 @@ class LanguageBuilder
             if (in_array($operation->getReturn()->getCode(), [200, 201, 202])) {
                 $returnSchema = $operation->getReturn()->getSchema();
                 $returnType = $this->newType($returnSchema, false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
-                $innerSchema = $returnSchema instanceof TypeInterface ? $this->getInnerSchema($returnSchema, $definitions) : null;
 
                 $return = new Dto\Response(
                     $operation->getReturn()->getCode(),
                     $returnType,
                     null,
-                    $innerSchema,
+                    $returnSchema instanceof MapPropertyType || $returnSchema instanceof ArrayPropertyType,
                     $returnSchema instanceof ContentType ? $returnSchema->toString() : null,
                     $returnSchema instanceof ContentType ? $returnSchema->getShape() : null,
                 );
@@ -220,12 +212,11 @@ class LanguageBuilder
                 $throwSchema = $throw->getSchema();
 
                 $exceptionImports = [];
-                if ($throwSchema instanceof TypeInterface) {
+                if ($throwSchema instanceof PropertyTypeAbstract) {
                     $this->resolveImport($throwSchema, $exceptionImports);
                 }
 
                 $exceptionType = $this->newType($throwSchema, false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
-                $innerSchema = $throwSchema instanceof TypeInterface ? $this->getInnerSchema($throwSchema, $definitions) : null;
 
                 $exceptionClassName = $this->naming->buildExceptionClassNameByType($throwSchema);
                 $exceptions[$exceptionClassName] = new Dto\Exception($exceptionClassName, $exceptionType, 'The server returned an error', $exceptionImports);
@@ -234,7 +225,7 @@ class LanguageBuilder
                     $throw->getCode(),
                     $exceptionType,
                     $exceptionClassName,
-                    $innerSchema,
+                    $throwSchema instanceof MapPropertyType || $throwSchema instanceof ArrayPropertyType,
                     $throwSchema instanceof ContentType ? $throwSchema->toString() : null,
                     $throwSchema instanceof ContentType ? $throwSchema->getShape() : null,
                 );
@@ -261,21 +252,6 @@ class LanguageBuilder
         }
 
         return $result;
-    }
-
-    private function getInnerSchema(PropertyTypeAbstract $type, DefinitionsInterface $definitions): ?Dto\Type
-    {
-        if ($type instanceof MapPropertyType) {
-            $return = $this->newType($type->getSchema(), false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
-            $return->isMap = true;
-            return $return;
-        } elseif ($type instanceof ArrayPropertyType) {
-            $return = $this->newType($type->getSchema(), false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
-            $return->isArray = true;
-            return $return;
-        } else {
-            return null;
-        }
     }
 
     private function newType(PropertyTypeAbstract|ContentType $type, bool $optional, DefinitionsInterface $definitions, int $context): Dto\Type

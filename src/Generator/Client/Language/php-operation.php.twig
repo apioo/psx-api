@@ -94,12 +94,6 @@
 {% elseif payload.contentShape == 'text/plain' or payload.contentShape == 'application/xml' %}
             {% if in_throw %}    {% endif %}$data = (string) $body;
 {% else %}
-{% if payload.innerSchema.isMap %}
-            {% if in_throw %}    {% endif %}$data = $this->parser->parse((string) $body, {{ payload.innerSchema.type }}::class, isMap: true);
-{% elseif payload.innerSchema.isArray %}
-            {% if in_throw %}    {% endif %}$data = $this->parser->parse((string) $body, {{ payload.innerSchema.type }}::class, isArray: true);
-{% else %}
-            {% if in_throw %}    {% endif %}$data = $this->parser->parse((string) $body, {{ payload.schema.type }}::class);
-{% endif %}
+            {% if in_throw %}    {% endif %}$data = $this->parser->parse((string) $body, {% if payload.isMapOrArray %}\PSX\Schema\SchemaSource::fromType('{{ payload.schema.docType|raw }}', __NAMESPACE__){% else %}\PSX\Schema\SchemaSource::fromClass({{ payload.schema.type|raw }}::class){% endif %});
 {% endif %}
 {% endmacro %}

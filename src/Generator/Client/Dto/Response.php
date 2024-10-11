@@ -33,7 +33,7 @@ class Response
         public int $code,
         public Type $schema,
         public ?string $className = null,
-        public ?Type $innerSchema = null,
+        public ?bool $isMapOrArray = null,
         public ?string $contentType = null,
         public ?string $contentShape = null,
     )

@@ -39,7 +39,7 @@ class Client extends ClientAbstract
             $response = $this->httpClient->request('GET', $url, $options);
             $body = $response->getBody();
 
-            $data = $this->parser->parse((string) $body, \External\Bar\MyType::class);
+            $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromClass(\External\Bar\MyType::class));
 
             return $data;
         } catch (ClientException $e) {
@@ -49,7 +49,7 @@ class Client extends ClientAbstract
             $statusCode = $e->getResponse()->getStatusCode();
 
             if ($statusCode === 500) {
-                $data = $this->parser->parse((string) $body, \External\Bar\MyType::class);
+                $data = $this->parser->parse((string) $body, \PSX\Schema\SchemaSource::fromClass(\External\Bar\MyType::class));
 
                 throw new ImportMyTypeException($data);
             }
