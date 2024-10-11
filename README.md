@@ -5,9 +5,9 @@ This library provides an attribute parser to dynamically generate a [TypeAPI](ht
 from any controller (code-first). Based on the specification it is then possible to generate client SDKs or
 an OpenAPI specification.
 
-There is also a hosted version of this [code generator](https://typeapi.org/generator) where you can test and play
-with the generated code. If you need a CLI binary to generate code you can also take a look at the [SDKgen](https://sdkgen.app/)
-project which provides several ways to directly integrate the code generator.
+We provide also a hosted version of this [code generator](https://typeapi.org/generator).
+For more integration options you can also take a look at the [SDKgen](https://sdkgen.app/) project
+which provides a CLI binary or GitHub action to integrate the code generator.
 
 ## Usage
 
