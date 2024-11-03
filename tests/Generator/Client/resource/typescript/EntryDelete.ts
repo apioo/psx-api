@@ -9,3 +9,4 @@ export interface EntryDelete {
     title?: string
     date?: string
 }
+

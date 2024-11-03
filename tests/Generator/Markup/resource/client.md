@@ -6,6 +6,7 @@ client.delete(name: string, type: string): void
 client.patch(name: string, type: string, payload: Array<EntryPatch>): Array<EntryMessage> throws EntryMessage, Array<EntryMessage>
 
 
+
 interface EntryCollection {
     entry?: Array<Entry>
 }
@@ -49,3 +50,4 @@ interface EntryPatch {
     title?: string
     date?: string
 }
+

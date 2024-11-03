@@ -7,6 +7,7 @@ client.bar().find(foo: string): EntryCollection
 client.bar().put(payload: EntryCreate): EntryMessage
 
 
+
 interface EntryCollection {
     entry?: Array<Entry>
 }
@@ -29,3 +30,4 @@ interface EntryCreate {
     title?: string
     date?: string
 }
+

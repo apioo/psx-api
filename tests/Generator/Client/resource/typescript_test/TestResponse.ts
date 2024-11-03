@@ -5,6 +5,7 @@
 
 import {TestMapScalar} from "./TestMapScalar";
 import {TestRequest} from "./TestRequest";
+
 export interface TestResponse {
     args?: TestMapScalar
     data?: string
@@ -14,3 +15,4 @@ export interface TestResponse {
     json?: TestRequest
     method?: string
 }
+

@@ -9,3 +9,4 @@ export interface EntryPatch {
     title?: string
     date?: string
 }
+

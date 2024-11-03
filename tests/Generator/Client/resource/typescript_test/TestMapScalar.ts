@@ -5,3 +5,4 @@
 
 export interface TestMapScalar extends Record<string, string> {
 }
+

@@ -9,3 +9,4 @@ export interface EntryUpdate {
     title?: string
     date?: string
 }
+
