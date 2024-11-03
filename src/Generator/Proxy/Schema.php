@@ -49,7 +49,7 @@ class Schema implements GeneratorInterface
 
     public function generate(SpecificationInterface $specification): Generator\Code\Chunks|string
     {
-        $schema = new \PSX\Schema\Schema(TypeFactory::getAny(), $specification->getDefinitions());
+        $schema = new \PSX\Schema\Schema($specification->getDefinitions(), null);
         $generator = $this->factory->getGenerator($this->type, $this->config);
 
         $result = $generator->generate($schema);
