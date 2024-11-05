@@ -20,9 +20,7 @@
 
 namespace PSX\Api\Tests\Generator\Client;
 
-use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\PHP;
-use PSX\Api\Generator\Client\TypeScript;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
 use PSX\Schema\Generator\Config;
 
