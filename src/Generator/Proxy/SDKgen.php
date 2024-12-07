@@ -87,18 +87,29 @@ class SDKgen implements GeneratorInterface, ConfigurationAwareInterface
         }
 
         if (isset($data->chunks) && $data->chunks instanceof \stdClass) {
-            $chunks = new Generator\Code\Chunks();
-            foreach ($data->chunks as $identifier => $code) {
-                if (!empty($identifier) && !empty($code)) {
-                    $chunks->append($identifier, $code);
-                }
-            }
-
-            return $chunks;
+            return $this->buildChunks($data->chunks);
         } elseif (isset($data->output) && is_string($data->output)) {
             return $data->output;
         } else {
             throw new GeneratorException('Could not generate SDK, received an invalid response');
         }
+    }
+
+    private function buildChunks(\stdClass $chunks): Generator\Code\Chunks
+    {
+        $result = new Generator\Code\Chunks();
+        foreach ($chunks as $identifier => $code) {
+            if (empty($identifier) || empty($code)) {
+                continue;
+            }
+
+            if ($code instanceof \stdClass) {
+                $result->append($identifier, $this->buildChunks($code));
+            } else {
+                $result->append($identifier, $code);
+            }
+        }
+
+        return $result;
     }
 }
