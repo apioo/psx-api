@@ -340,7 +340,7 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
     private function getBodyArgument(OperationInterface $operation): ?Argument
     {
         $arguments = $operation->getArguments();
-        foreach ($arguments->getAll() as $argumentName => $argument) {
+        foreach ($arguments->getAll() as $argument) {
             if ($argument->getIn() === Argument::IN_BODY) {
                 return $argument;
             }
@@ -369,7 +369,16 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
         $result[strval($operation->getReturn()->getCode())] = $this->getResponse($operation->getReturn(), $definitions);
 
         foreach ($operation->getThrows() as $throw) {
-            $result[strval($throw->getCode())] = $this->getResponse($throw, $definitions);
+            if ($throw->getCode() === 999) {
+                $result['4XX'] = $this->getResponse($throw, $definitions);
+                $result['5XX'] = $this->getResponse($throw, $definitions);
+            } elseif ($throw->getCode() === 499) {
+                $result['4XX'] = $this->getResponse($throw, $definitions);
+            } elseif ($throw->getCode() === 599) {
+                $result['5XX'] = $this->getResponse($throw, $definitions);
+            } else {
+                $result[strval($throw->getCode())] = $this->getResponse($throw, $definitions);
+            }
         }
 
         return $result;
