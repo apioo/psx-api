@@ -42,15 +42,9 @@ use PSX\Schema\Generator\TypeAwareInterface;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\Schema;
 use PSX\Schema\Type\ArrayPropertyType;
-use PSX\Schema\Type\ArrayType;
-use PSX\Schema\Type\IntersectionType;
 use PSX\Schema\Type\MapPropertyType;
-use PSX\Schema\Type\MapType;
 use PSX\Schema\Type\PropertyTypeAbstract;
 use PSX\Schema\Type\ReferencePropertyType;
-use PSX\Schema\Type\ReferenceType;
-use PSX\Schema\Type\UnionType;
-use PSX\Schema\TypeInterface;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
