@@ -27,8 +27,6 @@ use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
 use PSX\Schema\Type\PropertyTypeAbstract;
 use PSX\Schema\Type\ReferencePropertyType;
-use PSX\Schema\Type\ReferenceType;
-use PSX\Schema\TypeInterface;
 
 /**
  * PHP
