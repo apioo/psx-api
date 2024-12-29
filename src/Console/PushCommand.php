@@ -22,8 +22,6 @@ namespace PSX\Api\Console;
 
 use Composer\InstalledVersions;
 use PSX\Api\Generator\ConfigurationAwareInterface;
-use PSX\Api\Generator\Spec\OpenAPI;
-use PSX\Api\Generator\Spec\TypeAPI;
 use PSX\Api\GeneratorFactory;
 use PSX\Api\Repository\LocalRepository;
 use PSX\Api\Scanner\FilterFactoryInterface;
