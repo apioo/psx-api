@@ -44,8 +44,9 @@ use PSX\Schema\Parser\Context\FilesystemContext;
 use PSX\Schema\Parser\ContextInterface;
 use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\Type;
-use PSX\Schema\TypeInterface;
 use ReflectionClass;
+use ReflectionMethod;
+use ReflectionParameter;
 
 /**
  * Attribute
@@ -76,7 +77,7 @@ class Attribute implements ParserInterface
             $controller = new ReflectionClass(str_replace('.', '\\', $schema));
             $basePath   = dirname($controller->getFileName());
 
-            $rootMeta = Meta::fromAttributes($controller->getAttributes());
+            $rootMeta = $this->parseClassAttributes($controller);
             $specification = new Specification();
 
             $this->parseMethods($controller, $specification, $basePath, $rootMeta);
@@ -97,7 +98,7 @@ class Attribute implements ParserInterface
     private function parseMethods(ReflectionClass $controller, SpecificationInterface $specification, string $basePath, Meta $rootMeta): void
     {
         foreach ($controller->getMethods() as $method) {
-            $meta = Meta::fromAttributes($method->getAttributes());
+            $meta = $this->parseMethodAttributes($method);
             $meta->merge($rootMeta);
 
             if ($meta->isExcluded()) {
@@ -251,6 +252,16 @@ class Attribute implements ParserInterface
         return $result;
     }
 
+    protected function parseClassAttributes(ReflectionClass $controller): Meta
+    {
+        return Meta::fromAttributes($controller->getAttributes());
+    }
+
+    protected function parseMethodAttributes(ReflectionMethod $method): Meta
+    {
+        return Meta::fromAttributes($method->getAttributes());
+    }
+
     /**
      * @throws InvalidSchemaException
      */
@@ -267,7 +278,7 @@ class Attribute implements ParserInterface
         return Type\Factory\PropertyTypeFactory::getReference($schema->getRoot());
     }
 
-    private function getParameter(Attr\ParamAbstract $param): TypeInterface
+    private function getParameter(Attr\ParamAbstract $param): Type\PropertyTypeAbstract
     {
         $type = match ($param->type) {
             Type::INTEGER => Type\Factory\PropertyTypeFactory::getInteger(),
@@ -338,7 +349,7 @@ class Attribute implements ParserInterface
         return null;
     }
 
-    private function inspectTypeHints(\ReflectionMethod $method, Meta $meta): void
+    private function inspectTypeHints(ReflectionMethod $method, Meta $meta): void
     {
         $missingPathNames = $this->getMissingPathNames($meta);
         $pathNames = $this->getParamNames($meta->getPathParams());
@@ -414,7 +425,7 @@ class Attribute implements ParserInterface
     /**
      * @throws ParserException
      */
-    private function getFromAttribute(\ReflectionParameter $parameter, \ReflectionMethod $method): Attr\PathParam|Attr\QueryParam|Attr\HeaderParam|Attr\Incoming|null
+    private function getFromAttribute(ReflectionParameter $parameter, ReflectionMethod $method): Attr\PathParam|Attr\QueryParam|Attr\HeaderParam|Attr\Incoming|null
     {
         $attributes = $parameter->getAttributes();
         foreach ($attributes as $attribute) {
