@@ -106,7 +106,7 @@ class Meta
         }
     }
 
-    public function merge(Meta $meta)
+    public function merge(Meta $meta): void
     {
         if ($this->exclude === null) {
             $this->exclude = $meta->getExclude();
