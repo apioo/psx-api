@@ -137,7 +137,7 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
         $result = $this->generator->toArray($definitions, null);
 
         $schemas = new Schemas();
-        foreach ($result['definitions'] as $name => $schema) {
+        foreach ($result['definitions'] ?? [] as $name => $schema) {
             $schemas[$name] = $schema;
         }
 
@@ -265,12 +265,19 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
             $mediaTypes = new MediaTypes();
             $mediaTypes['application/json'] = $mediaType;
         } else {
-            $schema = (object) [
-                'type' => 'string',
-            ];
+            if ($type->getShape() === ContentType::JSON) {
+                $schema = (object) [
+                    'type' => 'object',
+                    'additionalProperties' => true,
+                ];
+            } else {
+                $schema = (object) [
+                    'type' => 'string',
+                ];
 
-            if ($type->getShape() === ContentType::BINARY) {
-                $schema->format = 'binary';
+                if ($type->getShape() === ContentType::BINARY) {
+                    $schema->format = 'binary';
+                }
             }
 
             $mediaType = new MediaType();
