@@ -51,6 +51,7 @@ use PSX\OpenAPI\SecurityScheme;
 use PSX\OpenAPI\SecuritySchemes;
 use PSX\OpenAPI\Server;
 use PSX\OpenAPI\Tag;
+use PSX\Schema\ContentType;
 use PSX\Schema\Definitions;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
@@ -255,13 +256,29 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
         return $tag;
     }
 
-    private function getMediaTypes(TypeInterface $type, DefinitionsInterface $definitions): MediaTypes
+    private function getMediaTypes(TypeInterface|ContentType $type, DefinitionsInterface $definitions): MediaTypes
     {
-        $mediaType = new MediaType();
-        $mediaType->setSchema($this->resolveSchema($type, $definitions));
+        if ($type instanceof TypeInterface) {
+            $mediaType = new MediaType();
+            $mediaType->setSchema($this->resolveSchema($type, $definitions));
 
-        $mediaTypes = new MediaTypes();
-        $mediaTypes['application/json'] = $mediaType;
+            $mediaTypes = new MediaTypes();
+            $mediaTypes['application/json'] = $mediaType;
+        } else {
+            $schema = (object) [
+                'type' => 'string',
+            ];
+
+            if ($type->getShape() === ContentType::BINARY) {
+                $schema->format = 'binary';
+            }
+
+            $mediaType = new MediaType();
+            $mediaType->setSchema($schema);
+
+            $mediaTypes = new MediaTypes();
+            $mediaTypes[$type->toString()] = $mediaType;
+        }
 
         return $mediaTypes;
     }
