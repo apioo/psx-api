@@ -143,8 +143,12 @@ abstract class ServerAbstract implements GeneratorInterface
     abstract protected function getModelPath(): string;
     abstract protected function getFileExtension(): string;
 
+    /**
+     * @param array<string, string> $imports
+     */
     abstract protected function generateHeader(File $file, array $imports): string;
     abstract protected function generateFooter(File $file): string;
+
     abstract protected function generateArgumentPath(string $rawName, string $variableName, string $type, PropertyTypeAbstract|ContentType $argumentType): string;
     abstract protected function generateArgumentQuery(string $rawName, string $variableName, string $type, PropertyTypeAbstract|ContentType $argumentType): string;
     abstract protected function generateArgumentHeader(string $rawName, string $variableName, string $type, PropertyTypeAbstract|ContentType $argumentType): string;
