@@ -95,18 +95,14 @@ class PHP extends ServerAbstract
         $controller.= "\n";
         $controller.= 'use App\Model;' . "\n";
         $controller.= 'use PSX\Api\Attribute\Body;' . "\n";
-        $controller.= 'use PSX\Api\Attribute\Delete;' . "\n";
-        $controller.= 'use PSX\Api\Attribute\Get;' . "\n";
+        $controller.= 'use PSX\Api\Attribute\Header;' . "\n";
         $controller.= 'use PSX\Api\Attribute\Param;' . "\n";
-        $controller.= 'use PSX\Api\Attribute\Patch;' . "\n";
-        $controller.= 'use PSX\Api\Attribute\Path;' . "\n";
-        $controller.= 'use PSX\Api\Attribute\Post;' . "\n";
-        $controller.= 'use PSX\Api\Attribute\Put;' . "\n";
         $controller.= 'use PSX\Api\Attribute\Query;' . "\n";
         $controller.= 'use PSX\Api\Attribute\StatusCode;' . "\n";
-        $controller.= 'use PSX\Framework\Controller\ControllerAbstract;' . "\n";
+        $controller.= 'use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;' . "\n";
+        $controller.= 'use Symfony\Component\Routing\Attribute\Route;' . "\n";
         $controller.= "\n";
-        $controller.= 'class ' . $controllerClass . ' extends ControllerAbstract' . "\n";
+        $controller.= 'class ' . $controllerClass . ' extends AbstractController' . "\n";
         $controller.= '{' . "\n";
 
         return $controller;
@@ -173,10 +169,7 @@ class PHP extends ServerAbstract
             $type = 'Model\\' . $type;
         }
 
-        $methodName = ucfirst(strtolower($operation->getMethod()));
-
-        $method = '    #[' . $methodName . ']' . "\n";
-        $method.= '    #[Path(\'' . $operation->getPath() . '\')]' . "\n";
+        $method = '    #[Route(\'' . $operation->getPath() . '\', methods: [\'' . $operation->getMethod() . '\'])]' . "\n";
         $method.= '    #[StatusCode(' . $operation->getReturn()->getCode() . ')]' . "\n";
         $method.= '    public function ' . $operationName . '(' . implode(', ', $arguments) . '): ' . $type . "\n";
         $method.= '    {' . "\n";
