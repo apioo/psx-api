@@ -41,19 +41,19 @@ class PHP extends ServerAbstract
     protected function newGenerator(): SchemaGeneratorInterface
     {
         $config = new Generator\Config();
-        $config->put(Generator\Config::NAMESPACE, 'App\\Model');
+        $config->put(Generator\Config::NAMESPACE, !empty($this->namespace) ? $this->namespace . '\\Model' : 'Model');
 
         return new Generator\Php($config);
     }
 
     protected function getControllerPath(): string
     {
-        return 'src/Controller';
+        return 'Controller';
     }
 
     protected function getModelPath(): string
     {
-        return 'src/Model';
+        return 'Model';
     }
 
     protected function getFileExtension(): string
@@ -83,7 +83,14 @@ class PHP extends ServerAbstract
 
     protected function generateHeader(File $file, array $imports): string
     {
-        $namespace = ['App', 'Controller'];
+        if (!empty($this->namespace)) {
+            $namespace = array_merge(explode('\\', $this->namespace), ['Controller']);
+            $modelNamespace = $this->namespace . '\\Model';
+        } else {
+            $namespace = ['Controller'];
+            $modelNamespace = 'Model';
+        }
+
         $folder = $file->getFolder();
         while ($folder !== null && $folder->getName() !== '.') {
             $namespace[] = $this->normalizer->class($folder->getName());
@@ -94,7 +101,7 @@ class PHP extends ServerAbstract
 
         $controller = 'namespace ' . implode('\\', $namespace). ';' . "\n";
         $controller.= "\n";
-        $controller.= 'use App\Model;' . "\n";
+        $controller.= 'use ' . $modelNamespace . ';' . "\n";
         $controller.= 'use PSX\Api\Attribute\Body;' . "\n";
         $controller.= 'use PSX\Api\Attribute\Header;' . "\n";
         $controller.= 'use PSX\Api\Attribute\Param;' . "\n";

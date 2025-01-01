@@ -46,12 +46,12 @@ class TypeScript extends ServerAbstract
 
     protected function getControllerPath(): string
     {
-        return 'src/controller';
+        return 'controller';
     }
 
     protected function getModelPath(): string
     {
-        return 'src/dto';
+        return 'dto';
     }
 
     protected function getFileExtension(): string

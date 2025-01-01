@@ -22,6 +22,7 @@ namespace PSX\Api\Tests\Generator\Server;
 
 use PSX\Api\Generator\Server\PHP;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
+use PSX\Schema\Generator\Config;
 
 /**
  * PHPTest
@@ -41,23 +42,23 @@ class PHPTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/src/Controller/App.php');
-        $this->assertFileExists($target . '/src/Model/Entry.php');
+        $this->assertFileExists($target . '/Controller/App.php');
+        $this->assertFileExists($target . '/Model/Entry.php');
     }
 
     public function testGenerateCollection()
     {
-        $generator = new PHP();
+        $generator = new PHP(config: Config::of('My\\App'));
 
         $result = $generator->generate($this->getSpecificationCollection());
         $target = __DIR__ . '/resource/php_complex';
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/src/Controller/Foo/Bar.php');
-        $this->assertFileExists($target . '/src/Controller/Foo/Baz.php');
-        $this->assertFileExists($target . '/src/Controller/Bar.php');
-        $this->assertFileExists($target . '/src/Model/Entry.php');
+        $this->assertFileExists($target . '/Controller/Foo/Bar.php');
+        $this->assertFileExists($target . '/Controller/Foo/Baz.php');
+        $this->assertFileExists($target . '/Controller/Bar.php');
+        $this->assertFileExists($target . '/Model/Entry.php');
     }
 
     public function testGenerateContentType()
@@ -69,6 +70,6 @@ class PHPTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/src/Controller/App.php');
+        $this->assertFileExists($target . '/Controller/App.php');
     }
 }

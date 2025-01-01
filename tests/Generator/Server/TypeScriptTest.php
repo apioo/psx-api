@@ -41,8 +41,8 @@ class TypeScriptTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/src/controller/app.controller.ts');
-        $this->assertFileExists($target . '/src/dto/Entry.ts');
+        $this->assertFileExists($target . '/controller/app.controller.ts');
+        $this->assertFileExists($target . '/dto/Entry.ts');
     }
 
     public function testGenerateCollection()
@@ -54,10 +54,10 @@ class TypeScriptTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/src/controller/foo/bar.controller.ts');
-        $this->assertFileExists($target . '/src/controller/foo/baz.controller.ts');
-        $this->assertFileExists($target . '/src/controller/bar.controller.ts');
-        $this->assertFileExists($target . '/src/dto/Entry.ts');
+        $this->assertFileExists($target . '/controller/foo/bar.controller.ts');
+        $this->assertFileExists($target . '/controller/foo/baz.controller.ts');
+        $this->assertFileExists($target . '/controller/bar.controller.ts');
+        $this->assertFileExists($target . '/dto/Entry.ts');
     }
 
     public function testGenerateContentType()
@@ -69,6 +69,6 @@ class TypeScriptTest extends GeneratorTestCase
 
         $this->writeChunksToFolder($result, $target);
 
-        $this->assertFileExists($target . '/src/controller/app.controller.ts');
+        $this->assertFileExists($target . '/controller/app.controller.ts');
     }
 }
