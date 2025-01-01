@@ -17,14 +17,14 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class Bar extends AbstractController
 {
-    #[Route('/bar/:foo', methods: ['GET'])]
+    #[Route('/bar/{foo}', methods: ['GET'])]
     #[StatusCode(200)]
     public function find(#[Param] string $foo): Model\EntryCollection
     {
         // @TODO implement method
     }
 
-    #[Route('/bar/:foo', methods: ['POST'])]
+    #[Route('/bar/{foo}', methods: ['POST'])]
     #[StatusCode(201)]
     public function put(#[Body] Model\EntryCreate $payload): Model\EntryMessage
     {

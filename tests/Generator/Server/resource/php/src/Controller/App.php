@@ -17,35 +17,35 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class App extends AbstractController
 {
-    #[Route('/foo/:name/:type', methods: ['GET'])]
+    #[Route('/foo/{name}/{type}', methods: ['GET'])]
     #[StatusCode(200)]
     public function get(#[Param] string $name, #[Param] string $type, #[Query] int $startIndex, #[Query] float $float, #[Query] bool $boolean, #[Query] \PSX\DateTime\LocalDate $date, #[Query] \PSX\DateTime\LocalDateTime $datetime, #[Query] Model\Entry $args): Model\EntryCollection
     {
         // @TODO implement method
     }
 
-    #[Route('/foo/:name/:type', methods: ['POST'])]
+    #[Route('/foo/{name}/{type}', methods: ['POST'])]
     #[StatusCode(201)]
     public function create(#[Param] string $name, #[Param] string $type, #[Body] Model\EntryCreate $payload): Model\EntryMessage
     {
         // @TODO implement method
     }
 
-    #[Route('/foo/:name/:type', methods: ['PUT'])]
+    #[Route('/foo/{name}/{type}', methods: ['PUT'])]
     #[StatusCode(200)]
     public function update(#[Param] string $name, #[Param] string $type, #[Body] \PSX\Record\Record $payload): \PSX\Record\Record
     {
         // @TODO implement method
     }
 
-    #[Route('/foo/:name/:type', methods: ['DELETE'])]
+    #[Route('/foo/{name}/{type}', methods: ['DELETE'])]
     #[StatusCode(204)]
     public function delete(#[Param] string $name, #[Param] string $type, #[Body] Model\EntryDelete $payload): Model\EntryMessage
     {
         // @TODO implement method
     }
 
-    #[Route('/foo/:name/:type', methods: ['PATCH'])]
+    #[Route('/foo/{name}/{type}', methods: ['PATCH'])]
     #[StatusCode(200)]
     public function patch(#[Param] string $name, #[Param] string $type, #[Body] array $payload): array
     {

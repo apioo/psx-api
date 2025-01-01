@@ -17,14 +17,14 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class Baz extends AbstractController
 {
-    #[Route('/bar/$year<[0-9]+>', methods: ['GET'])]
+    #[Route('/bar/{year}', methods: ['GET'])]
     #[StatusCode(200)]
     public function get(#[Param] string $year): Model\EntryCollection
     {
         // @TODO implement method
     }
 
-    #[Route('/bar/$year<[0-9]+>', methods: ['POST'])]
+    #[Route('/bar/{year}', methods: ['POST'])]
     #[StatusCode(201)]
     public function create(#[Body] Model\EntryCreate $payload): Model\EntryMessage
     {

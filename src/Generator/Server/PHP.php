@@ -22,6 +22,7 @@ namespace PSX\Api\Generator\Server;
 
 use PSX\Api\Generator\Server\Dto\File;
 use PSX\Api\OperationInterface;
+use PSX\Api\Util\Inflection;
 use PSX\Schema\ContentType;
 use PSX\Schema\Generator;
 use PSX\Schema\GeneratorInterface as SchemaGeneratorInterface;
@@ -169,7 +170,9 @@ class PHP extends ServerAbstract
             $type = 'Model\\' . $type;
         }
 
-        $method = '    #[Route(\'' . $operation->getPath() . '\', methods: [\'' . $operation->getMethod() . '\'])]' . "\n";
+        $path = Inflection::convertPlaceholderToCurly($operation->getPath());
+
+        $method = '    #[Route(\'' . $path . '\', methods: [\'' . $operation->getMethod() . '\'])]' . "\n";
         $method.= '    #[StatusCode(' . $operation->getReturn()->getCode() . ')]' . "\n";
         $method.= '    public function ' . $operationName . '(' . implode(', ', $arguments) . '): ' . $type . "\n";
         $method.= '    {' . "\n";
