@@ -25,7 +25,6 @@ use PSX\Api\Operation\ArgumentInterface;
 use PSX\Api\Security\HttpBearer;
 use PSX\Api\SpecificationInterface;
 use PSX\Api\Tests\ApiManagerTestCase;
-use PSX\Api\Tests\Generator\Schema\TestMapScalar;
 use PSX\Schema\ContentType;
 use PSX\Schema\Definitions;
 use PSX\Schema\Format;
@@ -33,9 +32,6 @@ use PSX\Schema\Generator\Code\Chunks;
 use PSX\Schema\Type\Factory\DefinitionTypeFactory;
 use PSX\Schema\Type\Factory\PropertyTypeFactory;
 use PSX\Schema\Type\ReferencePropertyType;
-use PSX\Schema\Type\StructType;
-use PSX\Schema\TypeFactory;
-use PSX\Schema\TypeInterface;
 
 /**
  * GeneratorTestCase
