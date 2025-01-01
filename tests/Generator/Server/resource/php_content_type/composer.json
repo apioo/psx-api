@@ -1,32 +1,67 @@
 {
-  "name": "psx/psx",
-  "type": "project",
-  "description": "PHP REST API Framework",
-  "keywords": ["API", "Framework", "REST"],
-  "homepage": "https://phpsx.org",
-  "license": "Apache-2.0",
-  "authors": [
-    {
-      "name": "Christoph Kappestein",
-      "email": "christoph.kappestein@gmail.com",
-      "homepage": "https://chrisk.app/"
+    "type": "project",
+    "license": "proprietary",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.2",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "psx/api-bundle": "^0.1",
+        "symfony/console": "7.2.*",
+        "symfony/dotenv": "7.2.*",
+        "symfony/flex": "^2",
+        "symfony/framework-bundle": "7.2.*",
+        "symfony/runtime": "7.2.*",
+        "symfony/yaml": "7.2.*"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "symfony/flex": true,
+            "symfony/runtime": true
+        },
+        "bump-after-update": true,
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "replace": {
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-php74": "*",
+        "symfony/polyfill-php80": "*",
+        "symfony/polyfill-php81": "*",
+        "symfony/polyfill-php82": "*"
+    },
+    "scripts": {
+        "auto-scripts": {
+            "cache:clear": "symfony-cmd",
+            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+        },
+        "post-install-cmd": [
+            "@auto-scripts"
+        ],
+        "post-update-cmd": [
+            "@auto-scripts"
+        ]
+    },
+    "conflict": {
+        "symfony/symfony": "*"
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false,
+            "require": "7.2.*"
+        }
     }
-  ],
-  "require": {
-    "php": ">=8.1",
-    "psx/framework": "^7.0"
-  },
-  "require-dev": {
-    "vimeo/psalm": "^5.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "App\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "App\\Tests\\": "tests/"
-    }
-  }
 }

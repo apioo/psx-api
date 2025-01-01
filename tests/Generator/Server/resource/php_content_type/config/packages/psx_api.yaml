@@ -1,0 +1,4 @@
+psx_api:
+  base_url: 'https://api.acme.com'
+  sdkgen_client_id: ''
+  sdkgen_client_secret: ''

@@ -1,0 +1,20 @@
+{
+  "definitions": {
+    "Student": {
+      "description": "A simple student struct",
+      "type": "struct",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "age": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "root": "Student"
+}

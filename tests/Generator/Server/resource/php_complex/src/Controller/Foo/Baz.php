@@ -8,29 +8,23 @@ namespace App\Controller\Foo;
 
 use App\Model;
 use PSX\Api\Attribute\Body;
-use PSX\Api\Attribute\Delete;
-use PSX\Api\Attribute\Get;
+use PSX\Api\Attribute\Header;
 use PSX\Api\Attribute\Param;
-use PSX\Api\Attribute\Patch;
-use PSX\Api\Attribute\Path;
-use PSX\Api\Attribute\Post;
-use PSX\Api\Attribute\Put;
 use PSX\Api\Attribute\Query;
 use PSX\Api\Attribute\StatusCode;
-use PSX\Framework\Controller\ControllerAbstract;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Attribute\Route;
 
-class Baz extends ControllerAbstract
+class Baz extends AbstractController
 {
-    #[Get]
-    #[Path('/bar/$year<[0-9]+>')]
+    #[Route('/bar/$year<[0-9]+>', methods: ['GET'])]
     #[StatusCode(200)]
     public function get(#[Param] string $year): Model\EntryCollection
     {
         // @TODO implement method
     }
 
-    #[Post]
-    #[Path('/bar/$year<[0-9]+>')]
+    #[Route('/bar/$year<[0-9]+>', methods: ['POST'])]
     #[StatusCode(201)]
     public function create(#[Body] Model\EntryCreate $payload): Model\EntryMessage
     {

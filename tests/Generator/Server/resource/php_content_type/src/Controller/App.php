@@ -8,61 +8,51 @@ namespace App\Controller;
 
 use App\Model;
 use PSX\Api\Attribute\Body;
-use PSX\Api\Attribute\Delete;
-use PSX\Api\Attribute\Get;
+use PSX\Api\Attribute\Header;
 use PSX\Api\Attribute\Param;
-use PSX\Api\Attribute\Patch;
-use PSX\Api\Attribute\Path;
-use PSX\Api\Attribute\Post;
-use PSX\Api\Attribute\Put;
 use PSX\Api\Attribute\Query;
 use PSX\Api\Attribute\StatusCode;
-use PSX\Framework\Controller\ControllerAbstract;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Attribute\Route;
 
-class App extends ControllerAbstract
+class App extends AbstractController
 {
-    #[Post]
-    #[Path('/binary')]
+    #[Route('/binary', methods: ['POST'])]
     #[StatusCode(200)]
     public function binary(#[Body] \Psr\Http\Message\StreamInterface $body): \Psr\Http\Message\StreamInterface
     {
         // @TODO implement method
     }
 
-    #[Post]
-    #[Path('/form')]
+    #[Route('/form', methods: ['POST'])]
     #[StatusCode(200)]
     public function form(#[Body] \PSX\Data\Body\Form $body): \PSX\Data\Body\Form
     {
         // @TODO implement method
     }
 
-    #[Post]
-    #[Path('/json')]
+    #[Route('/json', methods: ['POST'])]
     #[StatusCode(200)]
     public function json(#[Body] \PSX\Data\Body\Json $body): \PSX\Data\Body\Json
     {
         // @TODO implement method
     }
 
-    #[Post]
-    #[Path('/multipart')]
+    #[Route('/multipart', methods: ['POST'])]
     #[StatusCode(200)]
     public function multipart(#[Body] \PSX\Data\Body\Multipart $body): \PSX\Data\Body\Multipart
     {
         // @TODO implement method
     }
 
-    #[Post]
-    #[Path('/text')]
+    #[Route('/text', methods: ['POST'])]
     #[StatusCode(200)]
     public function text(#[Body] string $body): string
     {
         // @TODO implement method
     }
 
-    #[Post]
-    #[Path('/xml')]
+    #[Route('/xml', methods: ['POST'])]
     #[StatusCode(200)]
     public function xml(#[Body] string $body): string
     {

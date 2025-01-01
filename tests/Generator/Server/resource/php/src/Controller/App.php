@@ -8,53 +8,44 @@ namespace App\Controller;
 
 use App\Model;
 use PSX\Api\Attribute\Body;
-use PSX\Api\Attribute\Delete;
-use PSX\Api\Attribute\Get;
+use PSX\Api\Attribute\Header;
 use PSX\Api\Attribute\Param;
-use PSX\Api\Attribute\Patch;
-use PSX\Api\Attribute\Path;
-use PSX\Api\Attribute\Post;
-use PSX\Api\Attribute\Put;
 use PSX\Api\Attribute\Query;
 use PSX\Api\Attribute\StatusCode;
-use PSX\Framework\Controller\ControllerAbstract;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Attribute\Route;
 
-class App extends ControllerAbstract
+class App extends AbstractController
 {
-    #[Get]
-    #[Path('/foo/:name/:type')]
+    #[Route('/foo/:name/:type', methods: ['GET'])]
     #[StatusCode(200)]
     public function get(#[Param] string $name, #[Param] string $type, #[Query] int $startIndex, #[Query] float $float, #[Query] bool $boolean, #[Query] \PSX\DateTime\LocalDate $date, #[Query] \PSX\DateTime\LocalDateTime $datetime, #[Query] Model\Entry $args): Model\EntryCollection
     {
         // @TODO implement method
     }
 
-    #[Post]
-    #[Path('/foo/:name/:type')]
+    #[Route('/foo/:name/:type', methods: ['POST'])]
     #[StatusCode(201)]
     public function create(#[Param] string $name, #[Param] string $type, #[Body] Model\EntryCreate $payload): Model\EntryMessage
     {
         // @TODO implement method
     }
 
-    #[Put]
-    #[Path('/foo/:name/:type')]
+    #[Route('/foo/:name/:type', methods: ['PUT'])]
     #[StatusCode(200)]
     public function update(#[Param] string $name, #[Param] string $type, #[Body] \PSX\Record\Record $payload): \PSX\Record\Record
     {
         // @TODO implement method
     }
 
-    #[Delete]
-    #[Path('/foo/:name/:type')]
+    #[Route('/foo/:name/:type', methods: ['DELETE'])]
     #[StatusCode(204)]
     public function delete(#[Param] string $name, #[Param] string $type, #[Body] Model\EntryDelete $payload): Model\EntryMessage
     {
         // @TODO implement method
     }
 
-    #[Patch]
-    #[Path('/foo/:name/:type')]
+    #[Route('/foo/:name/:type', methods: ['PATCH'])]
     #[StatusCode(200)]
     public function patch(#[Param] string $name, #[Param] string $type, #[Body] array $payload): array
     {
