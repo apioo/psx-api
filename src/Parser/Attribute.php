@@ -378,14 +378,14 @@ class Attribute implements ParserInterface
                 $queryParams[] = $meta->getQueryParams()[$queryNames[$parameter->getName()]];
             } elseif (in_array($parameter->getName(), $missingPathNames)) {
                 // in case the path contains a variable path fragment which is no yet mapped through a path param
-                $args = $this->getParamArgsFromType($parameter->getName(), $parameter->getType(), true);
+                $args = $this->getParamArgsFromType($parameter->getName(), $parameter->getType());
                 if (!empty($args)) {
                     $pathParams[] = new Attr\PathParam(...$args);
                 }
             } else {
                 // in all other cases the parameter is either a query parameter in case it is a scalar value or a body
                 // parameter in case it is a class
-                $args = $this->getParamArgsFromType($parameter->getName(), $parameter->getType(), false);
+                $args = $this->getParamArgsFromType($parameter->getName(), $parameter->getType());
                 if (!empty($args)) {
                     $queryParams[] = new Attr\QueryParam(...$args);
                 } elseif (!$meta->hasIncoming() && in_array($meta->getMethod()->method, ['POST', 'PUT', 'PATCH'])) {
@@ -430,7 +430,7 @@ class Attribute implements ParserInterface
         $attributes = $parameter->getAttributes();
         foreach ($attributes as $attribute) {
             $param = $attribute->newInstance();
-            $args = $this->getParamArgsFromType($parameter->getName(), $parameter->getType(), !$parameter->isOptional());
+            $args = $this->getParamArgsFromType($parameter->getName(), $parameter->getType());
             if (empty($args)) {
                 continue;
             }
@@ -507,7 +507,7 @@ class Attribute implements ParserInterface
         return $result;
     }
 
-    private function getParamArgsFromType(string $name, ?\ReflectionType $type, bool $required, ?array $enum = null): ?array
+    private function getParamArgsFromType(string $name, ?\ReflectionType $type): ?array
     {
         if (!$type instanceof \ReflectionNamedType) {
             // @TODO maybe handle union type

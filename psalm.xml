@@ -14,4 +14,14 @@
             <directory name="src/Generator/Server/Template" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <UnusedClass errorLevel="suppress" />
+        <UnusedForeachValue errorLevel="suppress" />
+        <UnusedVariable errorLevel="suppress" />
+        <UnusedClosureParam errorLevel="suppress" />
+        <UnusedProperty errorLevel="suppress" />
+        <PossiblyUnusedMethod errorLevel="suppress" />
+        <PossiblyUnusedReturnValue errorLevel="suppress" />
+        <PossiblyUnusedProperty errorLevel="suppress" />
+    </issueHandlers>
 </psalm>

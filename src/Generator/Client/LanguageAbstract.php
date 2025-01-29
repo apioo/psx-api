@@ -104,7 +104,6 @@ abstract class LanguageAbstract implements GeneratorInterface, ConfigurationAwar
         }
 
         foreach ($client->exceptions as $exception) {
-            /** @var Dto\Exception $exception */
             $code = $this->engine->render($this->getExceptionTemplate(), [
                 'namespace' => $this->namespace,
                 'className' => $exception->className,
@@ -208,7 +207,6 @@ abstract class LanguageAbstract implements GeneratorInterface, ConfigurationAwar
                 $imports = array_merge($imports, $operation->imports);
             }
 
-            /** @var Tag $tag */
             $operations = $this->engine->render($this->getOperationTemplate(), [
                 'className' => $tag->className,
                 'operations' => $tag->operations,

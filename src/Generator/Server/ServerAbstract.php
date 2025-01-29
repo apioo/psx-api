@@ -20,7 +20,6 @@
 
 namespace PSX\Api\Generator\Server;
 
-use PSX\Api\Exception\InvalidTypeException;
 use PSX\Api\Generator\Client\Util\Naming;
 use PSX\Api\Generator\ConfigurationTrait;
 use PSX\Api\Generator\Server\Dto\Context;
@@ -32,7 +31,7 @@ use PSX\Api\OperationInterface;
 use PSX\Api\SpecificationInterface;
 use PSX\Schema\ContentType;
 use PSX\Schema\DefinitionsInterface;
-use PSX\Schema\Exception\TypeNotFoundException;
+use PSX\Schema\Exception\GeneratorException;
 use PSX\Schema\Generator;
 use PSX\Schema\Generator\Code\Chunks;
 use PSX\Schema\Generator\Normalizer\NormalizerInterface;
@@ -133,7 +132,7 @@ abstract class ServerAbstract implements GeneratorInterface
         }
 
         foreach ($folder->getFiles() as $name => $file) {
-            $content = $this->generateControllerFile($file, $specification);
+            $content = $this->generateControllerFile($file);
 
             $chunks->append($this->buildControllerFileName($name) . '.' . $this->getFileExtension(), $content);
         }
@@ -181,10 +180,9 @@ abstract class ServerAbstract implements GeneratorInterface
     }
 
     /**
-     * @throws InvalidTypeException
-     * @throws TypeNotFoundException
+     * @throws GeneratorException
      */
-    protected function newType(PropertyTypeAbstract|ContentType $type, DefinitionsInterface $definitions, int $context): Dto\Type
+    protected function newType(PropertyTypeAbstract|ContentType $type, int $context): Dto\Type
     {
         if ($type instanceof ContentType) {
             $dataType = $this->typeGenerator->getContentType($type, $context);
@@ -213,7 +211,7 @@ abstract class ServerAbstract implements GeneratorInterface
         }
     }
 
-    private function generateControllerFile(File $file, SpecificationInterface $specification): string
+    private function generateControllerFile(File $file): string
     {
         $controller = '';
         $imports = [];
@@ -224,7 +222,7 @@ abstract class ServerAbstract implements GeneratorInterface
                 $rawName = $argumentName;
                 $variableName = $this->normalizer->argument($argumentName);
                 $argumentType = $argument->getSchema();
-                $type = $this->newType($argumentType, $specification->getDefinitions(), Type\GeneratorInterface::CONTEXT_SERVER | Type\GeneratorInterface::CONTEXT_REQUEST);
+                $type = $this->newType($argumentType, Type\GeneratorInterface::CONTEXT_SERVER | Type\GeneratorInterface::CONTEXT_REQUEST);
 
                 if ($argument->getIn() === ArgumentInterface::IN_PATH) {
                     $args[] = $this->generateArgumentPath($rawName, $variableName, $type->type, $argumentType);
@@ -242,7 +240,7 @@ abstract class ServerAbstract implements GeneratorInterface
             }
 
             $returnType = $operation->getReturn()->getSchema();
-            $type = $this->newType($returnType, $specification->getDefinitions(), Type\GeneratorInterface::CONTEXT_SERVER | Type\GeneratorInterface::CONTEXT_RESPONSE);
+            $type = $this->newType($returnType, Type\GeneratorInterface::CONTEXT_SERVER | Type\GeneratorInterface::CONTEXT_RESPONSE);
 
             if ($returnType instanceof PropertyTypeAbstract) {
                 $this->resolveImport($returnType, $imports);

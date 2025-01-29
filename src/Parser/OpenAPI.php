@@ -349,7 +349,6 @@ class OpenAPI implements ParserInterface
         }
 
         foreach ($responses as $statusCode => $response) {
-            /** @var \PSX\OpenAPI\Response $response */
             $statusCode = (int) $statusCode;
             if ($statusCode >= $start && $statusCode < $end) {
                 $mediaTypes = $response->getContent();
@@ -431,12 +430,6 @@ class OpenAPI implements ParserInterface
         } else {
             throw new \RuntimeException('Could not resolve reference ' . $reference);
         }
-    }
-
-    private function parseOpenAPI(string $data): void
-    {
-
-
     }
 
     private function getFirstSecurityScopes(array $security): ?array
