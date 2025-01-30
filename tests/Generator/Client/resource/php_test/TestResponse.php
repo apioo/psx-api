@@ -16,63 +16,63 @@ class TestResponse implements \JsonSerializable, \PSX\Record\RecordableInterface
     protected ?TestMapScalar $headers = null;
     protected ?TestRequest $json = null;
     protected ?string $method = null;
-    public function setArgs(?TestMapScalar $args) : void
+    public function setArgs(?TestMapScalar $args): void
     {
         $this->args = $args;
     }
-    public function getArgs() : ?TestMapScalar
+    public function getArgs(): ?TestMapScalar
     {
         return $this->args;
     }
-    public function setData(?string $data) : void
+    public function setData(?string $data): void
     {
         $this->data = $data;
     }
-    public function getData() : ?string
+    public function getData(): ?string
     {
         return $this->data;
     }
-    public function setFiles(?TestMapScalar $files) : void
+    public function setFiles(?TestMapScalar $files): void
     {
         $this->files = $files;
     }
-    public function getFiles() : ?TestMapScalar
+    public function getFiles(): ?TestMapScalar
     {
         return $this->files;
     }
-    public function setForm(?TestMapScalar $form) : void
+    public function setForm(?TestMapScalar $form): void
     {
         $this->form = $form;
     }
-    public function getForm() : ?TestMapScalar
+    public function getForm(): ?TestMapScalar
     {
         return $this->form;
     }
-    public function setHeaders(?TestMapScalar $headers) : void
+    public function setHeaders(?TestMapScalar $headers): void
     {
         $this->headers = $headers;
     }
-    public function getHeaders() : ?TestMapScalar
+    public function getHeaders(): ?TestMapScalar
     {
         return $this->headers;
     }
-    public function setJson(?TestRequest $json) : void
+    public function setJson(?TestRequest $json): void
     {
         $this->json = $json;
     }
-    public function getJson() : ?TestRequest
+    public function getJson(): ?TestRequest
     {
         return $this->json;
     }
-    public function setMethod(?string $method) : void
+    public function setMethod(?string $method): void
     {
         $this->method = $method;
     }
-    public function getMethod() : ?string
+    public function getMethod(): ?string
     {
         return $this->method;
     }
-    public function toRecord() : \PSX\Record\RecordInterface
+    public function toRecord(): \PSX\Record\RecordInterface
     {
         /** @var \PSX\Record\Record<mixed> $record */
         $record = new \PSX\Record\Record();
@@ -85,7 +85,7 @@ class TestResponse implements \JsonSerializable, \PSX\Record\RecordableInterface
         $record->put('method', $this->method);
         return $record;
     }
-    public function jsonSerialize() : object
+    public function jsonSerialize(): object
     {
         return (object) $this->toRecord()->getAll();
     }

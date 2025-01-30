@@ -30,7 +30,7 @@ export class AppController {
 
   @Put('/foo/:name/:type')
   @HttpCode(200)
-  update(@Param('name') name: string, @Param('type') type: string, @Body() payload: Map<string, EntryUpdate>): Map<string, EntryMessage> {
+  update(@Param('name') name: string, @Param('type') type: string, @Body() payload: Record<string, EntryUpdate>): Record<string, EntryMessage> {
     // @TODO implement method
     return {};
   }

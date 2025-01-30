@@ -13,39 +13,39 @@ class EntryPatch implements \JsonSerializable, \PSX\Record\RecordableInterface
     protected ?int $userId = null;
     protected ?string $title = null;
     protected ?\PSX\DateTime\LocalDateTime $date = null;
-    public function setId(?int $id) : void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
-    public function getId() : ?int
+    public function getId(): ?int
     {
         return $this->id;
     }
-    public function setUserId(?int $userId) : void
+    public function setUserId(?int $userId): void
     {
         $this->userId = $userId;
     }
-    public function getUserId() : ?int
+    public function getUserId(): ?int
     {
         return $this->userId;
     }
-    public function setTitle(?string $title) : void
+    public function setTitle(?string $title): void
     {
         $this->title = $title;
     }
-    public function getTitle() : ?string
+    public function getTitle(): ?string
     {
         return $this->title;
     }
-    public function setDate(?\PSX\DateTime\LocalDateTime $date) : void
+    public function setDate(?\PSX\DateTime\LocalDateTime $date): void
     {
         $this->date = $date;
     }
-    public function getDate() : ?\PSX\DateTime\LocalDateTime
+    public function getDate(): ?\PSX\DateTime\LocalDateTime
     {
         return $this->date;
     }
-    public function toRecord() : \PSX\Record\RecordInterface
+    public function toRecord(): \PSX\Record\RecordInterface
     {
         /** @var \PSX\Record\Record<mixed> $record */
         $record = new \PSX\Record\Record();
@@ -55,7 +55,7 @@ class EntryPatch implements \JsonSerializable, \PSX\Record\RecordableInterface
         $record->put('date', $this->date);
         return $record;
     }
-    public function jsonSerialize() : object
+    public function jsonSerialize(): object
     {
         return (object) $this->toRecord()->getAll();
     }

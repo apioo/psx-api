@@ -27,115 +27,115 @@ class TestRequest implements \JsonSerializable, \PSX\Record\RecordableInterface
     protected ?TestMapScalar $mapScalar = null;
     protected ?TestMapObject $mapObject = null;
     protected ?TestObject $object = null;
-    public function setInt(?int $int) : void
+    public function setInt(?int $int): void
     {
         $this->int = $int;
     }
-    public function getInt() : ?int
+    public function getInt(): ?int
     {
         return $this->int;
     }
-    public function setFloat(?float $float) : void
+    public function setFloat(?float $float): void
     {
         $this->float = $float;
     }
-    public function getFloat() : ?float
+    public function getFloat(): ?float
     {
         return $this->float;
     }
-    public function setString(?string $string) : void
+    public function setString(?string $string): void
     {
         $this->string = $string;
     }
-    public function getString() : ?string
+    public function getString(): ?string
     {
         return $this->string;
     }
-    public function setBool(?bool $bool) : void
+    public function setBool(?bool $bool): void
     {
         $this->bool = $bool;
     }
-    public function getBool() : ?bool
+    public function getBool(): ?bool
     {
         return $this->bool;
     }
-    public function setDateString(?\PSX\DateTime\LocalDate $dateString) : void
+    public function setDateString(?\PSX\DateTime\LocalDate $dateString): void
     {
         $this->dateString = $dateString;
     }
-    public function getDateString() : ?\PSX\DateTime\LocalDate
+    public function getDateString(): ?\PSX\DateTime\LocalDate
     {
         return $this->dateString;
     }
-    public function setDateTimeString(?\PSX\DateTime\LocalDateTime $dateTimeString) : void
+    public function setDateTimeString(?\PSX\DateTime\LocalDateTime $dateTimeString): void
     {
         $this->dateTimeString = $dateTimeString;
     }
-    public function getDateTimeString() : ?\PSX\DateTime\LocalDateTime
+    public function getDateTimeString(): ?\PSX\DateTime\LocalDateTime
     {
         return $this->dateTimeString;
     }
-    public function setTimeString(?\PSX\DateTime\LocalTime $timeString) : void
+    public function setTimeString(?\PSX\DateTime\LocalTime $timeString): void
     {
         $this->timeString = $timeString;
     }
-    public function getTimeString() : ?\PSX\DateTime\LocalTime
+    public function getTimeString(): ?\PSX\DateTime\LocalTime
     {
         return $this->timeString;
     }
     /**
      * @param array<string>|null $arrayScalar
      */
-    public function setArrayScalar(?array $arrayScalar) : void
+    public function setArrayScalar(?array $arrayScalar): void
     {
         $this->arrayScalar = $arrayScalar;
     }
     /**
      * @return array<string>|null
      */
-    public function getArrayScalar() : ?array
+    public function getArrayScalar(): ?array
     {
         return $this->arrayScalar;
     }
     /**
      * @param array<TestObject>|null $arrayObject
      */
-    public function setArrayObject(?array $arrayObject) : void
+    public function setArrayObject(?array $arrayObject): void
     {
         $this->arrayObject = $arrayObject;
     }
     /**
      * @return array<TestObject>|null
      */
-    public function getArrayObject() : ?array
+    public function getArrayObject(): ?array
     {
         return $this->arrayObject;
     }
-    public function setMapScalar(?TestMapScalar $mapScalar) : void
+    public function setMapScalar(?TestMapScalar $mapScalar): void
     {
         $this->mapScalar = $mapScalar;
     }
-    public function getMapScalar() : ?TestMapScalar
+    public function getMapScalar(): ?TestMapScalar
     {
         return $this->mapScalar;
     }
-    public function setMapObject(?TestMapObject $mapObject) : void
+    public function setMapObject(?TestMapObject $mapObject): void
     {
         $this->mapObject = $mapObject;
     }
-    public function getMapObject() : ?TestMapObject
+    public function getMapObject(): ?TestMapObject
     {
         return $this->mapObject;
     }
-    public function setObject(?TestObject $object) : void
+    public function setObject(?TestObject $object): void
     {
         $this->object = $object;
     }
-    public function getObject() : ?TestObject
+    public function getObject(): ?TestObject
     {
         return $this->object;
     }
-    public function toRecord() : \PSX\Record\RecordInterface
+    public function toRecord(): \PSX\Record\RecordInterface
     {
         /** @var \PSX\Record\Record<mixed> $record */
         $record = new \PSX\Record\Record();
@@ -153,7 +153,7 @@ class TestRequest implements \JsonSerializable, \PSX\Record\RecordableInterface
         $record->put('object', $this->object);
         return $record;
     }
-    public function jsonSerialize() : object
+    public function jsonSerialize(): object
     {
         return (object) $this->toRecord()->getAll();
     }

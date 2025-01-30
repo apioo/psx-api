@@ -10,22 +10,22 @@ namespace Foo\Bar;
 class MySchema implements \JsonSerializable, \PSX\Record\RecordableInterface
 {
     protected ?\External\Bar\MyType $foo = null;
-    public function setFoo(?\External\Bar\MyType $foo) : void
+    public function setFoo(?\External\Bar\MyType $foo): void
     {
         $this->foo = $foo;
     }
-    public function getFoo() : ?\External\Bar\MyType
+    public function getFoo(): ?\External\Bar\MyType
     {
         return $this->foo;
     }
-    public function toRecord() : \PSX\Record\RecordInterface
+    public function toRecord(): \PSX\Record\RecordInterface
     {
         /** @var \PSX\Record\Record<mixed> $record */
         $record = new \PSX\Record\Record();
         $record->put('foo', $this->foo);
         return $record;
     }
-    public function jsonSerialize() : object
+    public function jsonSerialize(): object
     {
         return (object) $this->toRecord()->getAll();
     }

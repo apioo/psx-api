@@ -114,12 +114,12 @@ export class Client extends ClientAbstract {
     }
 
     /**
-     * @returns {Promise<Map<string, EntryMessage>>}
+     * @returns {Promise<Record<string, EntryMessage>>}
      * @throws {EntryMessageException}
      * @throws {MapEntryMessageException}
      * @throws {ClientException}
      */
-    public async update(name: string, type: string, payload: Map<string, EntryUpdate>): Promise<Map<string, EntryMessage>> {
+    public async update(name: string, type: string, payload: Record<string, EntryUpdate>): Promise<Record<string, EntryMessage>> {
         const url = this.parser.url('/foo/:name/:type', {
             'name': name,
             'type': type,
@@ -138,7 +138,7 @@ export class Client extends ClientAbstract {
         };
 
         try {
-            const response = await this.httpClient.request<Map<string, EntryMessage>>(params);
+            const response = await this.httpClient.request<Record<string, EntryMessage>>(params);
             return response.data;
         } catch (error) {
             if (error instanceof ClientException) {
