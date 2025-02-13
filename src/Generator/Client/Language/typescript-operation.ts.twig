@@ -17,7 +17,7 @@
 {% endfor %}
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: '{{ operation.method }}',
             headers: {
@@ -37,40 +37,36 @@
                 '{{ realName }}',
 {% endfor %}
             ]),
-{% if operation.return.contentShape == 'application/octet-stream' %}
-            responseType: 'arraybuffer',
-{% elseif operation.return.contentShape == 'application/json' %}
-            responseType: 'json',
-{% elseif operation.return.contentShape == 'text/plain' or operation.return.contentShape == 'application/xml' %}
-            responseType: 'text',
-{% endif %}
 {% if operation.bodyName %}
             data: {{ operation.bodyName }}
 {% endif %}
         };
 
-        try {
-            const response = await this.httpClient.request{% if operation.return %}<{{ operation.return.schema.type|raw }}>{% endif %}(params);
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
 {% if operation.return %}
-            return response.data;
+            return {{ _self.response(operation.return, false) }};
 {% endif %}
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-{% for code, throw in operation.throws %}
-                if ({% if code == 999 %}statusCode >= 0 && statusCode <= 999{% elseif code == 499 %}statusCode >= 400 && statusCode <= 499{% elseif code == 599 %}statusCode >= 500 && statusCode <= 599{% else %}statusCode === {{ code }}{% endif %}) {
-                    throw new {{ throw.className|raw }}(error.response.data);
-                }
-
-{% endfor %}
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
         }
-    }
+
+        const statusCode = response.status;
+{% for code, throw in operation.throws %}
+        if ({% if code == 999 %}statusCode >= 0 && statusCode <= 999{% elseif code == 499 %}statusCode >= 400 && statusCode <= 499{% elseif code == 599 %}statusCode >= 500 && statusCode <= 599{% else %}statusCode === {{ code }}{% endif %}) {
+            throw new {{ throw.className|raw }}({{ _self.response(throw, true) }});
+        }
 
 {% endfor %}
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+    }
+{% endfor %}
+
+
+{% macro response(payload) %}
+{% if payload.contentShape == 'application/octet-stream' %}
+await response.arrayBuffer(){% elseif payload.contentShape == 'application/x-www-form-urlencoded' %}
+new URLSearchParams(await response.formData() as any){% elseif payload.contentShape == 'application/json' %}
+await response.json(){% elseif payload.contentShape == 'multipart/form-data' %}
+await response.formData(){% elseif payload.contentShape == 'text/plain' or payload.contentShape == 'application/xml' %}
+await response.text(){% else %}
+await response.json() as {{ payload.schema.type|raw }}{% endif %}
+{% endmacro %}

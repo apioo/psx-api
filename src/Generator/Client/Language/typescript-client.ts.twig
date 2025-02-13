@@ -1,5 +1,4 @@
-import axios, {AxiosRequestConfig} from "axios";
-import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
+import {ClientAbstract, CredentialsInterface, TokenStoreInterface, HttpRequest} from "sdkgen-client"
 {% if security.type == 'httpBasic' %}
 import {HttpBasic} from "sdkgen-client"
 {% elseif security.type == 'httpBearer' %}

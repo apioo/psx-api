@@ -3,8 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-import axios, {AxiosRequestConfig} from "axios";
-import {ClientAbstract, CredentialsInterface, TokenStoreInterface} from "sdkgen-client"
+import {ClientAbstract, CredentialsInterface, TokenStoreInterface, HttpRequest} from "sdkgen-client"
 import {Anonymous} from "sdkgen-client"
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
@@ -21,7 +20,7 @@ export class Client extends ClientAbstract {
         const url = this.parser.url('/anything', {
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: 'GET',
             headers: {
@@ -31,25 +30,19 @@ export class Client extends ClientAbstract {
             ]),
         };
 
-        try {
-            const response = await this.httpClient.request<MyType>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                if (statusCode === 500) {
-                    throw new ImportMyTypeException(error.response.data);
-                }
-
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
+            return await response.json() as MyType;
         }
+
+        const statusCode = response.status;
+        if (statusCode === 500) {
+            throw new ImportMyTypeException(await response.json() as MyType);
+        }
+
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
     }
+
 
 
 

@@ -3,8 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-import axios, {AxiosRequestConfig} from "axios";
-import {TagAbstract} from "sdkgen-client"
+import {TagAbstract, HttpRequest} from "sdkgen-client"
 import {ClientException, UnknownStatusCodeException} from "sdkgen-client";
 
 import {BinaryException} from "./BinaryException";
@@ -28,7 +27,7 @@ export class ProductTag extends TagAbstract {
         const url = this.parser.url('/anything', {
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: 'GET',
             headers: {
@@ -41,22 +40,14 @@ export class ProductTag extends TagAbstract {
             ]),
         };
 
-        try {
-            const response = await this.httpClient.request<TestResponse>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
+            return await response.json() as TestResponse;
         }
-    }
 
+        const statusCode = response.status;
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+    }
     /**
      * Creates a new product
      *
@@ -68,7 +59,7 @@ export class ProductTag extends TagAbstract {
         const url = this.parser.url('/anything', {
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: 'POST',
             headers: {
@@ -80,26 +71,18 @@ export class ProductTag extends TagAbstract {
             data: payload
         };
 
-        try {
-            const response = await this.httpClient.request<TestResponse>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                if (statusCode === 500) {
-                    throw new TestResponseException(error.response.data);
-                }
-
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
+            return await response.json() as TestResponse;
         }
-    }
 
+        const statusCode = response.status;
+        if (statusCode === 500) {
+            throw new TestResponseException(await response.json() as TestResponse);
+        }
+
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+    }
     /**
      * Updates an existing product
      *
@@ -111,7 +94,7 @@ export class ProductTag extends TagAbstract {
             'id': id,
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: 'PUT',
             headers: {
@@ -123,22 +106,14 @@ export class ProductTag extends TagAbstract {
             data: payload
         };
 
-        try {
-            const response = await this.httpClient.request<TestResponse>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
+            return await response.json() as TestResponse;
         }
-    }
 
+        const statusCode = response.status;
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+    }
     /**
      * Patches an existing product
      *
@@ -150,7 +125,7 @@ export class ProductTag extends TagAbstract {
             'id': id,
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: 'PATCH',
             headers: {
@@ -162,22 +137,14 @@ export class ProductTag extends TagAbstract {
             data: payload
         };
 
-        try {
-            const response = await this.httpClient.request<TestResponse>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
+            return await response.json() as TestResponse;
         }
-    }
 
+        const statusCode = response.status;
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+    }
     /**
      * Deletes an existing product
      *
@@ -189,7 +156,7 @@ export class ProductTag extends TagAbstract {
             'id': id,
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: 'DELETE',
             headers: {
@@ -199,22 +166,14 @@ export class ProductTag extends TagAbstract {
             ]),
         };
 
-        try {
-            const response = await this.httpClient.request<TestResponse>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
+            return await response.json() as TestResponse;
         }
-    }
 
+        const statusCode = response.status;
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+    }
     /**
      * Test binary content type
      *
@@ -226,7 +185,7 @@ export class ProductTag extends TagAbstract {
         const url = this.parser.url('/anything/binary', {
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: 'POST',
             headers: {
@@ -238,26 +197,18 @@ export class ProductTag extends TagAbstract {
             data: payload
         };
 
-        try {
-            const response = await this.httpClient.request<TestResponse>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                if (statusCode === 500) {
-                    throw new BinaryException(error.response.data);
-                }
-
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
+            return await response.json() as TestResponse;
         }
-    }
 
+        const statusCode = response.status;
+        if (statusCode === 500) {
+            throw new BinaryException(await response.arrayBuffer());
+        }
+
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+    }
     /**
      * Test form content type
      *
@@ -269,7 +220,7 @@ export class ProductTag extends TagAbstract {
         const url = this.parser.url('/anything/form', {
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: 'POST',
             headers: {
@@ -281,26 +232,18 @@ export class ProductTag extends TagAbstract {
             data: payload
         };
 
-        try {
-            const response = await this.httpClient.request<TestResponse>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                if (statusCode === 500) {
-                    throw new FormException(error.response.data);
-                }
-
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
+            return await response.json() as TestResponse;
         }
-    }
 
+        const statusCode = response.status;
+        if (statusCode === 500) {
+            throw new FormException(new URLSearchParams(await response.formData() as any));
+        }
+
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+    }
     /**
      * Test json content type
      *
@@ -312,7 +255,7 @@ export class ProductTag extends TagAbstract {
         const url = this.parser.url('/anything/json', {
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: 'POST',
             headers: {
@@ -324,26 +267,18 @@ export class ProductTag extends TagAbstract {
             data: payload
         };
 
-        try {
-            const response = await this.httpClient.request<TestResponse>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                if (statusCode === 500) {
-                    throw new JsonException(error.response.data);
-                }
-
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
+            return await response.json() as TestResponse;
         }
-    }
 
+        const statusCode = response.status;
+        if (statusCode === 500) {
+            throw new JsonException(await response.json());
+        }
+
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+    }
     /**
      * Test json content type
      *
@@ -355,7 +290,7 @@ export class ProductTag extends TagAbstract {
         const url = this.parser.url('/anything/multipart', {
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: 'POST',
             headers: {
@@ -366,26 +301,18 @@ export class ProductTag extends TagAbstract {
             data: payload
         };
 
-        try {
-            const response = await this.httpClient.request<TestResponse>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                if (statusCode === 500) {
-                    throw new MultipartException(error.response.data);
-                }
-
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
+            return await response.json() as TestResponse;
         }
-    }
 
+        const statusCode = response.status;
+        if (statusCode === 500) {
+            throw new MultipartException(await response.formData());
+        }
+
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+    }
     /**
      * Test text content type
      *
@@ -397,7 +324,7 @@ export class ProductTag extends TagAbstract {
         const url = this.parser.url('/anything/text', {
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: 'POST',
             headers: {
@@ -409,26 +336,18 @@ export class ProductTag extends TagAbstract {
             data: payload
         };
 
-        try {
-            const response = await this.httpClient.request<TestResponse>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                if (statusCode === 500) {
-                    throw new TextException(error.response.data);
-                }
-
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
+            return await response.json() as TestResponse;
         }
-    }
 
+        const statusCode = response.status;
+        if (statusCode === 500) {
+            throw new TextException(await response.text());
+        }
+
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
+    }
     /**
      * Test xml content type
      *
@@ -440,7 +359,7 @@ export class ProductTag extends TagAbstract {
         const url = this.parser.url('/anything/xml', {
         });
 
-        let params: AxiosRequestConfig = {
+        let request: HttpRequest = {
             url: url,
             method: 'POST',
             headers: {
@@ -452,25 +371,19 @@ export class ProductTag extends TagAbstract {
             data: payload
         };
 
-        try {
-            const response = await this.httpClient.request<TestResponse>(params);
-            return response.data;
-        } catch (error) {
-            if (error instanceof ClientException) {
-                throw error;
-            } else if (axios.isAxiosError(error) && error.response) {
-                const statusCode = error.response.status;
-
-                if (statusCode === 500) {
-                    throw new XmlException(error.response.data);
-                }
-
-                throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
-            } else {
-                throw new ClientException('An unknown error occurred: ' + String(error));
-            }
+        const response = await this.httpClient.request(request);
+        if (response.ok) {
+            return await response.json() as TestResponse;
         }
+
+        const statusCode = response.status;
+        if (statusCode === 500) {
+            throw new XmlException(await response.text());
+        }
+
+        throw new UnknownStatusCodeException('The server returned an unknown status code: ' + statusCode);
     }
+
 
 
 }
