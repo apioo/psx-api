@@ -121,11 +121,21 @@ class PushCommand extends Command
         $accessToken = $this->obtainAccessToken($clientId, $clientSecret);
         $userName = $this->obtainUserName($accessToken);
 
-        $this->importDocument($accessToken, $userName, $name, $result);
+        try {
+            $this->importDocument($accessToken, $userName, $name, $result);
 
-        $output->writeln('Document import Successful!');
+            $output->writeln('Document import Successful!');
 
-        return Command::SUCCESS;
+            return Command::SUCCESS;
+        } catch (\Throwable $e) {
+            $output->writeln($e->getMessage());
+            if ($output->isVerbose()) {
+                $output->writeln('Document:');
+                $output->writeln($result);
+            }
+
+            return Command::FAILURE;
+        }
     }
 
     private function importDocument(string $accessToken, string $user, string $document, string $spec): void
