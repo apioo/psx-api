@@ -214,6 +214,9 @@ class LanguageBuilder
                 $exceptionImports = [];
                 if ($throwSchema instanceof PropertyTypeAbstract) {
                     $this->resolveImport($throwSchema, $exceptionImports);
+                    foreach ($exceptionImports as $file => $class) {
+                        $imports[$file] = $class;
+                    }
                 }
 
                 $exceptionType = $this->newType($throwSchema, false, $definitions, Type\GeneratorInterface::CONTEXT_CLIENT | Type\GeneratorInterface::CONTEXT_RESPONSE);
