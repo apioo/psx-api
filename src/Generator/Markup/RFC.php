@@ -35,6 +35,6 @@ class RFC implements GeneratorInterface
 {
     public function generate(SpecificationInterface $specification): Chunks|string
     {
-        // TODO: Implement generate() method.
+        return '';
     }
 }

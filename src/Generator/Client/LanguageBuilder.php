@@ -186,7 +186,7 @@ class LanguageBuilder
                 $bodyContentShape = null;
             }
 
-            $arguments = array_merge($path, $body !== null ? [$bodyName => $body] : [], $query);
+            $arguments = array_merge($path, $bodyName !== null && $body !== null ? [$bodyName => $body] : [], $query);
 
             $return = null;
             if (in_array($operation->getReturn()->getCode(), [200, 201, 202])) {
@@ -202,7 +202,7 @@ class LanguageBuilder
                     $returnSchema instanceof ContentType ? $returnSchema->getShape() : null,
                 );
 
-                if ($returnSchema instanceof TypeInterface) {
+                if ($returnSchema instanceof PropertyTypeAbstract) {
                     $this->resolveImport($returnSchema, $imports);
                 }
             }
@@ -310,6 +310,10 @@ class LanguageBuilder
         }
     }
 
+    /**
+     * @psalm-suppress InvalidReturnStatement
+     * @psalm-suppress InvalidReturnType
+     */
     private function groupOperations(OperationsInterface $operations): array
     {
         $result = [];

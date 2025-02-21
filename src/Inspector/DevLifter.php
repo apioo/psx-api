@@ -40,6 +40,6 @@ class DevLifter
         $changes = abs($rightCount - $leftCount);
         $percentage = ($changes * 100) / $rightCount;
 
-        return $percentage;
+        return (int) $percentage;
     }
 }
