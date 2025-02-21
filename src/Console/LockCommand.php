@@ -79,7 +79,12 @@ class LockCommand extends Command
                 throw new LockException('Provided an invalid lock goal, must be either "generate" or "verify"');
             }
         } catch (BreakingChangesException $e) {
-            $output->writeln('Error: ' . $e->getMessage());
+            $output->writeln('The API contains the following breaking changes, please revert these changes.');
+            $output->writeln('To keep these changes you need to update the API lock file.');
+
+            foreach ($e->getChanges() as $change) {
+                $output->writeln('* ' . $change);
+            }
 
             return self::FAILURE;
         } catch (LockException $e) {
