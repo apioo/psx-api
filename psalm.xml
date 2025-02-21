@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <psalm
-    errorLevel="8"
+    errorLevel="6"
     resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    findUnusedCode="false"
+    findUnusedIssueHandlerSuppression="false"
+    ensureOverrideAttribute="false"
 >
     <projectFiles>
         <directory name="src" />
@@ -15,13 +18,8 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
-        <UnusedClass errorLevel="suppress" />
-        <UnusedForeachValue errorLevel="suppress" />
-        <UnusedVariable errorLevel="suppress" />
-        <UnusedClosureParam errorLevel="suppress" />
-        <UnusedProperty errorLevel="suppress" />
-        <PossiblyUnusedMethod errorLevel="suppress" />
-        <PossiblyUnusedReturnValue errorLevel="suppress" />
-        <PossiblyUnusedProperty errorLevel="suppress" />
+        <InvalidOperand errorLevel="suppress" />
+        <ClassMustBeFinal errorLevel="suppress" />
+        <ImplicitToStringCast errorLevel="suppress" />
     </issueHandlers>
 </psalm>
