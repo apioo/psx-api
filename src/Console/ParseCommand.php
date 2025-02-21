@@ -86,7 +86,7 @@ class ParseCommand extends Command
         $content = $generator->generate($specification);
 
         if ($content instanceof Chunks) {
-            $content->writeTo($dir . '/sdk-' . $format .  '.zip');
+            $content->writeToZip($dir . '/sdk-' . $format .  '.zip');
         } else {
             file_put_contents($dir . '/output-' . $format . '.' . $extension, $content);
         }

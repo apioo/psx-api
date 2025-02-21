@@ -47,9 +47,6 @@ class ChangelogGenerator
         $this->changelogGenerator = new SchemaChangelogGenerator();
     }
 
-    /**
-     * @throws OperationNotFoundException
-     */
     public function generate(SpecificationInterface $left, SpecificationInterface $right): \Generator
     {
         if ($left->getBaseUrl() !== $right->getBaseUrl()) {
@@ -90,9 +87,6 @@ class ChangelogGenerator
         }
     }
 
-    /**
-     * @throws OperationNotFoundException
-     */
     private function generateCollection(OperationsInterface $left, OperationsInterface $right): \Generator
     {
         foreach ($left->getAll() as $name => $operation) {
