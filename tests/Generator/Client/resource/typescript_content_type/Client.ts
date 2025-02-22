@@ -29,6 +29,7 @@ export class Client extends ClientAbstract {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/octet-stream',
+                'Accept': 'application/octet-stream',
             },
             params: this.parser.query({
             }, [
@@ -62,6 +63,7 @@ export class Client extends ClientAbstract {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/x-www-form-urlencoded',
             },
             params: this.parser.query({
             }, [
@@ -95,6 +97,7 @@ export class Client extends ClientAbstract {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
             },
             params: this.parser.query({
             }, [
@@ -127,6 +130,7 @@ export class Client extends ClientAbstract {
             url: url,
             method: 'POST',
             headers: {
+                'Accept': 'multipart/form-data',
             },
             params: this.parser.query({
             }, [
@@ -160,6 +164,7 @@ export class Client extends ClientAbstract {
             method: 'POST',
             headers: {
                 'Content-Type': 'text/plain',
+                'Accept': 'text/plain',
             },
             params: this.parser.query({
             }, [
@@ -193,6 +198,7 @@ export class Client extends ClientAbstract {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/xml',
+                'Accept': 'application/xml',
             },
             params: this.parser.query({
             }, [

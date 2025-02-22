@@ -27,6 +27,9 @@
 {% elseif operation.bodyName %}
                 'Content-Type': 'application/json',
 {% endif %}
+{% if operation.return.contentType %}
+                'Accept': '{{ operation.return.contentType }}',
+{% endif %}
             },
             params: this.parser.query({
 {% for name, realName in operation.queryNames %}

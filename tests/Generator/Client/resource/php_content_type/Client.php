@@ -31,6 +31,7 @@ class Client extends ClientAbstract
         $options = [
             'headers' => [
                 'Content-Type' => 'application/octet-stream',
+                'Accept' => 'application/octet-stream',
             ],
             'query' => $this->parser->query([
             ], [
@@ -77,6 +78,7 @@ class Client extends ClientAbstract
         $options = [
             'headers' => [
                 'Content-Type' => 'application/x-www-form-urlencoded',
+                'Accept' => 'application/x-www-form-urlencoded',
             ],
             'query' => $this->parser->query([
             ], [
@@ -125,6 +127,7 @@ class Client extends ClientAbstract
         $options = [
             'headers' => [
                 'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
             ],
             'query' => $this->parser->query([
             ], [
@@ -170,6 +173,7 @@ class Client extends ClientAbstract
 
         $options = [
             'headers' => [
+                'Accept' => 'multipart/form-data',
             ],
             'query' => $this->parser->query([
             ], [
@@ -218,6 +222,7 @@ class Client extends ClientAbstract
         $options = [
             'headers' => [
                 'Content-Type' => 'text/plain',
+                'Accept' => 'text/plain',
             ],
             'query' => $this->parser->query([
             ], [
@@ -264,6 +269,7 @@ class Client extends ClientAbstract
         $options = [
             'headers' => [
                 'Content-Type' => 'application/xml',
+                'Accept' => 'application/xml',
             ],
             'query' => $this->parser->query([
             ], [
