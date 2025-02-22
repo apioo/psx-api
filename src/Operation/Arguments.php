@@ -21,8 +21,6 @@
 namespace PSX\Api\Operation;
 
 use PSX\Api\Exception\ArgumentNotFoundException;
-use PSX\Api\Exception\InvalidArgumentException;
-use PSX\Schema\Type\StructType;
 
 /**
  * Arguments
