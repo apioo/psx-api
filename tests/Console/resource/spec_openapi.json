@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://foo.com/"
+      "url": "http://foo.com"
     }
   ],
   "paths": {

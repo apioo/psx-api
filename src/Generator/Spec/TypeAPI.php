@@ -55,7 +55,7 @@ class TypeAPI implements GeneratorInterface, ConfigurationAwareInterface
 
         $baseUrl = $this->getBaseUrl($specification);
         if (!empty($baseUrl)) {
-            $data['baseUrl'] = $baseUrl;
+            $data['baseUrl'] = rtrim($baseUrl, '/');
         }
 
         $security = $this->getSecurity($specification);

@@ -127,7 +127,9 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
         $info->setVersion($this->apiVersion);
 
         $server = new Server();
-        $server->setUrl($baseUrl);
+        if (!empty($baseUrl)) {
+            $server->setUrl(rtrim($baseUrl, '/'));
+        }
 
         $result = $this->generator->toArray($definitions, null);
 
