@@ -28,7 +28,6 @@ use PSX\Api\SpecificationInterface;
 use PSX\Json\Parser;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
-use PSX\Schema\TypeFactory;
 
 /**
  * TypeAPI

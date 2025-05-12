@@ -52,18 +52,13 @@ use PSX\OpenAPI\SecuritySchemes;
 use PSX\OpenAPI\Server;
 use PSX\OpenAPI\Tag;
 use PSX\Schema\ContentType;
-use PSX\Schema\Definitions;
 use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
 use PSX\Schema\Parser\Popo\Dumper;
-use PSX\Schema\Type\ArrayType;
 use PSX\Schema\Type\ArrayTypeInterface;
-use PSX\Schema\Type\MapType;
 use PSX\Schema\Type\MapTypeInterface;
 use PSX\Schema\Type\PropertyTypeAbstract;
 use PSX\Schema\Type\ReferencePropertyType;
-use PSX\Schema\Type\ReferenceType;
-use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 
 /**
