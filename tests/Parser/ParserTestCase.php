@@ -64,7 +64,7 @@ abstract class ParserTestCase extends ApiManagerTestCase
         $this->assertEquals('query', $arguments->get('number')->getIn());
         $this->assertEquals(['type' => 'number'], $arguments->get('number')->getSchema()->toArray());
         $this->assertEquals('query', $arguments->get('date')->getIn());
-        $this->assertEquals(['type' => 'string', 'format' => Format::DATETIME], $arguments->get('date')->getSchema()->toArray());
+        $this->assertEquals(['type' => 'string', 'format' => Format::DATETIME->value], $arguments->get('date')->getSchema()->toArray());
         $this->assertEquals('query', $arguments->get('boolean')->getIn());
         $this->assertEquals(['type' => 'boolean'], $arguments->get('boolean')->getSchema()->toArray());
         $this->assertEquals('query', $arguments->get('string')->getIn());
