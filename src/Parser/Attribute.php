@@ -269,6 +269,8 @@ class Attribute implements ParserInterface
     {
         if ($annotation->schema instanceof ContentType) {
             return $annotation->schema;
+        } elseif (is_string($annotation->schema) && ContentType::isValid($annotation->schema)) {
+            return ContentType::from($annotation->schema);
         }
 
         $schema = $this->schemaManager->getSchema($annotation->schema, new FilesystemContext($basePath));
