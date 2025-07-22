@@ -205,7 +205,7 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
             $schemes[$authName] = $scheme;
         }
 
-        if (count($schemes->getProperties()) > 0) {
+        if (!$schemes->isEmpty()) {
             $components->setSecuritySchemes($schemes);
         }
     }
@@ -213,7 +213,11 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
     protected function buildPathItem(array $operations, DefinitionsInterface $definitions): PathItem
     {
         $pathItem = new PathItem();
-        $pathItem->setParameters($this->getPathParameters($operations, $definitions));
+
+        $parameters = $this->getPathParameters($operations, $definitions);
+        if (!empty($parameters)) {
+            $pathItem->setParameters($parameters);
+        }
 
         foreach ($operations as $config) {
             [$method, $operationId, $operation] = $config;
