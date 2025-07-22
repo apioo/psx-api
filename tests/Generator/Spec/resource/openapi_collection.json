@@ -87,8 +87,7 @@
             }
           }
         }
-      },
-      "parameters": []
+      }
     },
     "/bar/{foo}": {
       "get": {
