@@ -3,9 +3,9 @@ schema {
 }
 
 type Query {
-  foo.bar.get(): EntryCollection
-  bar.find(foo: String): EntryCollection
-  foo.baz.get(year: String): EntryCollection
+  fooBarGet(): EntryCollection
+  barFind(foo: String): EntryCollection
+  fooBazGet(year: String): EntryCollection
 }
 
 type EntryCollection {

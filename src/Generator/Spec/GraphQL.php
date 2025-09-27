@@ -23,15 +23,9 @@ namespace PSX\Api\Generator\Spec;
 use PSX\Api\Generator\ConfigurationAwareInterface;
 use PSX\Api\Generator\ConfigurationTrait;
 use PSX\Api\GeneratorInterface;
-use PSX\Api\Operation\Argument;
-use PSX\Api\Operation\ArgumentInterface;
-use PSX\Api\Operation\Arguments;
 use PSX\Api\OperationInterface;
-use PSX\Api\SecurityInterface;
 use PSX\Api\SpecificationInterface;
-use PSX\Json\Parser;
 use PSX\Schema\ContentType;
-use PSX\Schema\DefinitionsInterface;
 use PSX\Schema\Generator;
 use PSX\Schema\Schema;
 use PSX\Schema\Type\PropertyTypeAbstract;
@@ -89,14 +83,18 @@ class GraphQL implements GeneratorInterface, ConfigurationAwareInterface
 
     private function toArguments(string $operationName, OperationInterface $operation): string
     {
+        $methodName = $this->generator->getNormalizer()->method($operationName);
+
         $arguments = [];
         foreach ($operation->getArguments()->getAll() as $argumentName => $argument) {
+            $argumentName = $this->generator->getNormalizer()->argument($argumentName);
+
             $arguments[] = $argumentName . ': ' . $this->toType($argument->getSchema());
         }
 
         $return = $this->toType($operation->getReturn()->getSchema());
 
-        return $operationName . '(' . implode(', ', $arguments) . '): ' . $return;
+        return $methodName . '(' . implode(', ', $arguments) . '): ' . $return;
     }
 
     private function toType(ContentType|TypeInterface $schema): ?string
