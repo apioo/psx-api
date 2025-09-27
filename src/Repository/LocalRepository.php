@@ -42,8 +42,10 @@ class LocalRepository implements RepositoryInterface
     public const MARKUP_HTML = 'markup-html';
     public const MARKUP_MARKDOWN = 'markup-markdown';
 
-    public const SPEC_TYPEAPI = 'spec-typeapi';
+    public const SPEC_GRAPHQL = 'spec-graphql';
     public const SPEC_OPENAPI = 'spec-openapi';
+    public const SPEC_OPENRPC = 'spec-openrpc';
+    public const SPEC_TYPEAPI = 'spec-typeapi';
 
     public function getAll(): array
     {
@@ -91,14 +93,26 @@ class LocalRepository implements RepositoryInterface
             'text/markdown'
         );
 
-        $result[self::SPEC_TYPEAPI] = new GeneratorConfig(
-            fn(?string $baseUrl, ?Config $config) => new Generator\Spec\TypeAPI($baseUrl),
-            'json',
-            'application/json'
+        $result[self::SPEC_GRAPHQL] = new GeneratorConfig(
+            fn(?string $baseUrl, ?Config $config) => new Generator\Spec\GraphQL($baseUrl),
+            'graphql',
+            'application/graphql'
         );
 
         $result[self::SPEC_OPENAPI] = new GeneratorConfig(
             fn(?string $baseUrl, ?Config $config) => new Generator\Spec\OpenAPI(1, $baseUrl),
+            'json',
+            'application/json'
+        );
+
+        $result[self::SPEC_OPENRPC] = new GeneratorConfig(
+            fn(?string $baseUrl, ?Config $config) => new Generator\Spec\OpenRPC(1, $baseUrl),
+            'json',
+            'application/json'
+        );
+
+        $result[self::SPEC_TYPEAPI] = new GeneratorConfig(
+            fn(?string $baseUrl, ?Config $config) => new Generator\Spec\TypeAPI($baseUrl),
             'json',
             'application/json'
         );

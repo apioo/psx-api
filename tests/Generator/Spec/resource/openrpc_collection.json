@@ -1,0 +1,188 @@
+{
+  "openrpc": "1.3.0",
+  "info": {
+    "title": "Sample Pet Store App",
+    "description": "This is a sample server for a pet store.",
+    "termsOfService": "http://example.com/terms/",
+    "contact": {
+      "name": "API Support",
+      "url": "http://www.example.com/support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1"
+  },
+  "servers": [
+    {
+      "url": "http://api.phpsx.org"
+    }
+  ],
+  "methods": [
+    {
+      "name": "foo.bar.get",
+      "description": "Returns a collection",
+      "params": [],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/EntryCollection"
+        }
+      }
+    },
+    {
+      "name": "foo.bar.create",
+      "description": "",
+      "params": [
+        {
+          "name": "payload",
+          "schema": {
+            "$ref": "#/components/schemas/EntryCreate"
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/EntryMessage"
+        }
+      }
+    },
+    {
+      "name": "bar.find",
+      "description": "Returns a collection",
+      "params": [
+        {
+          "name": "foo",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/EntryCollection"
+        }
+      }
+    },
+    {
+      "name": "bar.put",
+      "description": "",
+      "params": [
+        {
+          "name": "payload",
+          "schema": {
+            "$ref": "#/components/schemas/EntryCreate"
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/EntryMessage"
+        }
+      }
+    },
+    {
+      "name": "foo.baz.get",
+      "description": "Returns a collection",
+      "params": [
+        {
+          "name": "year",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/EntryCollection"
+        }
+      }
+    },
+    {
+      "name": "foo.baz.create",
+      "description": "",
+      "params": [
+        {
+          "name": "payload",
+          "schema": {
+            "$ref": "#/components/schemas/EntryCreate"
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/EntryMessage"
+        }
+      }
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Entry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "EntryCollection": {
+        "type": "object",
+        "properties": {
+          "entry": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Entry"
+            }
+          }
+        }
+      },
+      "EntryCreate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "EntryMessage": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

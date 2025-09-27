@@ -1,0 +1,326 @@
+{
+  "openrpc": "1.3.0",
+  "info": {
+    "title": "PSX",
+    "version": "1"
+  },
+  "servers": [
+    {
+      "url": "http://api.phpsx.org"
+    }
+  ],
+  "methods": [
+    {
+      "name": "get",
+      "description": "Returns a collection",
+      "params": [
+        {
+          "name": "name",
+          "schema": {
+            "description": "Name parameter",
+            "type": "string"
+          }
+        },
+        {
+          "name": "type",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "startIndex",
+          "schema": {
+            "description": "startIndex parameter",
+            "type": "integer"
+          }
+        },
+        {
+          "name": "float",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "boolean",
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "date",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "datetime",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        {
+          "name": "args",
+          "schema": {
+            "$ref": "#/components/schemas/Entry"
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/EntryCollection"
+        }
+      }
+    },
+    {
+      "name": "create",
+      "description": "",
+      "params": [
+        {
+          "name": "name",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "type",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "payload",
+          "schema": {
+            "$ref": "#/components/schemas/EntryCreate"
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/EntryMessage"
+        }
+      }
+    },
+    {
+      "name": "update",
+      "description": "",
+      "params": [
+        {
+          "name": "name",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "type",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "payload",
+          "schema": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/EntryUpdate"
+            }
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/components/schemas/EntryMessage"
+          }
+        }
+      }
+    },
+    {
+      "name": "delete",
+      "description": "",
+      "params": [
+        {
+          "name": "name",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "type",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "payload",
+          "schema": {
+            "$ref": "#/components/schemas/EntryDelete"
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "$ref": "#/components/schemas/EntryMessage"
+        }
+      }
+    },
+    {
+      "name": "patch",
+      "description": "",
+      "params": [
+        {
+          "name": "name",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "type",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "payload",
+          "schema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EntryPatch"
+            }
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntryMessage"
+          }
+        }
+      }
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Entry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "EntryCollection": {
+        "type": "object",
+        "properties": {
+          "entry": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Entry"
+            }
+          }
+        }
+      },
+      "EntryCreate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "EntryDelete": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "EntryMessage": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "EntryPatch": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "EntryUpdate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

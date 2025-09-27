@@ -1,0 +1,58 @@
+schema {
+  query: Query
+}
+
+type Query {
+  get(name: String, type: String, startIndex: Int, float: Float, boolean: Boolean, date: String, datetime: String, args: Entry): EntryCollection
+}
+
+type EntryCollection {
+    entry: [Entry]
+}
+
+
+type Entry {
+    id: Int
+    userId: Int
+    title: String
+    date: String
+}
+
+
+type EntryMessage {
+    success: Boolean
+    message: String
+}
+
+
+type EntryCreate {
+    id: Int
+    userId: Int
+    title: String
+    date: String
+}
+
+
+type EntryUpdate {
+    id: Int
+    userId: Int
+    title: String
+    date: String
+}
+
+
+type EntryDelete {
+    id: Int
+    userId: Int
+    title: String
+    date: String
+}
+
+
+type EntryPatch {
+    id: Int
+    userId: Int
+    title: String
+    date: String
+}
+

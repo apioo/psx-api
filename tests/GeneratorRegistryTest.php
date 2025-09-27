@@ -58,8 +58,10 @@ class GeneratorRegistryTest extends TestCase
             [LocalRepository::MARKUP_HTML],
             [LocalRepository::MARKUP_MARKDOWN],
 
-            [LocalRepository::SPEC_TYPEAPI],
+            [LocalRepository::SPEC_GRAPHQL],
             [LocalRepository::SPEC_OPENAPI],
+            [LocalRepository::SPEC_OPENRPC],
+            [LocalRepository::SPEC_TYPEAPI],
         ];
     }
 }

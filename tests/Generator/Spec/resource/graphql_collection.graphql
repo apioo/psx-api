@@ -1,0 +1,36 @@
+schema {
+  query: Query
+}
+
+type Query {
+  foo.bar.get(): EntryCollection
+  bar.find(foo: String): EntryCollection
+  foo.baz.get(year: String): EntryCollection
+}
+
+type EntryCollection {
+    entry: [Entry]
+}
+
+
+type Entry {
+    id: Int
+    userId: Int
+    title: String
+    date: String
+}
+
+
+type EntryMessage {
+    success: Boolean
+    message: String
+}
+
+
+type EntryCreate {
+    id: Int
+    userId: Int
+    title: String
+    date: String
+}
+
