@@ -1,9 +1,12 @@
+scalar JSON
+scalar JSONObject
+
 schema {
   query: Query
 }
 
 type Query {
-  fooBarGet(): EntryCollection
+  fooBarGet: EntryCollection
   barFind(foo: String): EntryCollection
   fooBazGet(year: String): EntryCollection
 }

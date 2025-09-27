@@ -58,6 +58,9 @@ class GraphQL implements GeneratorInterface, ConfigurationAwareInterface
 
         $result = '';
 
+        $result.= 'scalar JSON' . "\n";
+        $result.= 'scalar JSONObject' . "\n";
+        $result.= "\n";
         $result.= 'schema {' . "\n";
         $result.= '  query: Query' . "\n";
         $result.= '}' . "\n";
@@ -92,9 +95,11 @@ class GraphQL implements GeneratorInterface, ConfigurationAwareInterface
             $arguments[] = $argumentName . ': ' . $this->toType($argument->getSchema());
         }
 
+        $args = count($arguments) > 0 ? '(' . implode(', ', $arguments) . ')' : '';
+
         $return = $this->toType($operation->getReturn()->getSchema());
 
-        return $methodName . '(' . implode(', ', $arguments) . '): ' . $return;
+        return $methodName . $args . ': ' . $return;
     }
 
     private function toType(ContentType|TypeInterface $schema): ?string
