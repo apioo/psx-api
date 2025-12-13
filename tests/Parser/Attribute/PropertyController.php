@@ -30,8 +30,8 @@ use PSX\Api\Attribute\Path;
 use PSX\Api\Attribute\Query;
 use PSX\Api\Tests\Parser\Model\Incoming;
 use PSX\Api\Tests\Parser\Model\Outgoing;
-use PSX\DateTime\DateTime;
 use PSX\DateTime\DayOfWeek;
+use PSX\DateTime\LocalDateTime;
 
 /**
  * PropertyController
@@ -52,7 +52,7 @@ class PropertyController
         #[Query] string $foo,
         #[Query] int $integer,
         #[Query] float $number,
-        #[Query] DateTime $date,
+        #[Query] LocalDateTime $date,
         #[Query] bool $boolean,
         #[Query] string $string,
         #[Query] DayOfWeek $dayOfWeek,

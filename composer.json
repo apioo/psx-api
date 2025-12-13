@@ -26,8 +26,7 @@
   "require-dev": {
     "phpunit/phpunit": "^12.0",
     "phpstan/phpstan": "^2.1",
-    "psx/data": "^7.0",
-    "psx/datetime": "^3.0"
+    "psx/data": "^7.0"
   },
   "autoload": {
     "psr-4": {
