@@ -1,7 +1,7 @@
 {
   "name": "psx/api",
   "description": "Parse and generate API specification formats",
-  "keywords": ["api", "specification", "openapi", "raml", "swagger"],
+  "keywords": ["api", "specification", "openapi", "raml", "swagger", "typeapi"],
   "homepage": "https://phpsx.org",
   "license": "Apache-2.0",
   "authors": [
