@@ -30,6 +30,7 @@ use PSX\Http\Client\ClientInterface;
 use PSX\Http\Client\PostRequest;
 use PSX\Schema\Generator;
 use PSX\Uri\Uri;
+use stdClass;
 
 /**
  * SDKgen
@@ -82,11 +83,11 @@ class SDKgen implements GeneratorInterface, ConfigurationAwareInterface
         }
 
         $data = json_decode((string) $response->getBody());
-        if (!$data instanceof \stdClass) {
+        if (!$data instanceof stdClass) {
             throw new GeneratorException('Could not generate SDK, received an invalid JSON payload');
         }
 
-        if (isset($data->chunks) && $data->chunks instanceof \stdClass) {
+        if (isset($data->chunks) && $data->chunks instanceof stdClass) {
             return $this->buildChunks($data->chunks);
         } elseif (isset($data->output) && is_string($data->output)) {
             return $data->output;
@@ -95,15 +96,15 @@ class SDKgen implements GeneratorInterface, ConfigurationAwareInterface
         }
     }
 
-    private function buildChunks(\stdClass $chunks): Generator\Code\Chunks
+    private function buildChunks(stdClass $chunks): Generator\Code\Chunks
     {
         $result = new Generator\Code\Chunks();
-        foreach ($chunks as $identifier => $code) {
+        foreach (get_object_vars($chunks) as $identifier => $code) {
             if (empty($identifier) || empty($code)) {
                 continue;
             }
 
-            if ($code instanceof \stdClass) {
+            if ($code instanceof stdClass) {
                 $result->append($identifier, $this->buildChunks($code));
             } else {
                 $result->append($identifier, $code);

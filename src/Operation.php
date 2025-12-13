@@ -168,7 +168,7 @@ class Operation implements OperationInterface, \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return array_filter([
+        return [
             'path' => $this->path,
             'method' => $this->method,
             'return' => $this->return,
@@ -179,8 +179,6 @@ class Operation implements OperationInterface, \JsonSerializable
             'security' => $this->security,
             'authorization' => $this->authorization,
             'tags' => $this->tags,
-        ], static function ($value) {
-            return $value !== null;
-        });
+        ];
     }
 }

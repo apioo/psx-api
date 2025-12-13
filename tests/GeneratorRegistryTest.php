@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use PSX\Api\GeneratorFactory;
 use PSX\Api\GeneratorInterface;
@@ -34,9 +35,7 @@ use PSX\Api\Repository\LocalRepository;
  */
 class GeneratorRegistryTest extends TestCase
 {
-    /**
-     * @dataProvider typeProvider
-     */
+    #[DataProvider('typeProvider')]
     public function testGetGenerator($type)
     {
         $factory = GeneratorFactory::fromLocal('http://foo.com')->factory();
@@ -45,7 +44,7 @@ class GeneratorRegistryTest extends TestCase
         $this->assertInstanceOf(GeneratorInterface::class, $generator);
     }
 
-    public function typeProvider(): array
+    public static function typeProvider(): array
     {
         return [
             [LocalRepository::CLIENT_PHP],

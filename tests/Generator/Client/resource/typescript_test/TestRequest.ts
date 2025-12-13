@@ -3,9 +3,9 @@
  * {@link https://sdkgen.app}
  */
 
-import {TestObject} from "./TestObject";
-import {TestMapScalar} from "./TestMapScalar";
-import {TestMapObject} from "./TestMapObject";
+import type {TestObject} from "./TestObject";
+import type {TestMapScalar} from "./TestMapScalar";
+import type {TestMapObject} from "./TestMapObject";
 
 export interface TestRequest {
     int?: number

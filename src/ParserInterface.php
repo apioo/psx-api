@@ -21,6 +21,7 @@
 namespace PSX\Api;
 
 use PSX\Api\Exception\ParserException;
+use PSX\Schema\Parser\ContextInterface;
 
 /**
  * The parser reads an arbitrary schema format and returns a specification object
@@ -36,5 +37,5 @@ interface ParserInterface
      *
      * @throws ParserException
      */
-    public function parse(string $schema): SpecificationInterface;
+    public function parse(string $schema, ?ContextInterface $context = null): SpecificationInterface;
 }

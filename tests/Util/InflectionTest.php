@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Resource\Util;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use PSX\Api\Util\Inflection;
 
@@ -32,15 +33,13 @@ use PSX\Api\Util\Inflection;
  */
 class InflectionTest extends TestCase
 {
-    /**
-     * @dataProvider convertPlaceholderToCurlyProvider
-     */
+    #[DataProvider('convertPlaceholderToCurlyProvider')]
     public function testConvertPlaceholderToCurly(string $expect, string $route)
     {
         $this->assertEquals($expect, Inflection::convertPlaceholderToCurly($route));
     }
 
-    public function convertPlaceholderToCurlyProvider(): array
+    public static function convertPlaceholderToCurlyProvider(): array
     {
         return [
             ['/foo', '/foo'],
@@ -59,15 +58,13 @@ class InflectionTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider convertPlaceholderToColonProvider
-     */
+    #[DataProvider('convertPlaceholderToColonProvider')]
     public function testConvertPlaceholderToColon(string $expect, string $route)
     {
         $this->assertEquals($expect, Inflection::convertPlaceholderToColon($route));
     }
 
-    public function convertPlaceholderToColonProvider(): array
+    public static function convertPlaceholderToColonProvider(): array
     {
         return [
             ['/foo', '/foo'],
@@ -77,15 +74,13 @@ class InflectionTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider extractPlaceholderNamesProvider
-     */
+    #[DataProvider('extractPlaceholderNamesProvider')]
     public function testExtractPlaceholderNames(string $path, array $names)
     {
         $this->assertEquals($names, Inflection::extractPlaceholderNames($path));
     }
 
-    public function extractPlaceholderNamesProvider(): array
+    public static function extractPlaceholderNamesProvider(): array
     {
         return [
             ['/foo', []],

@@ -3,7 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-import {TestObject} from "./TestObject";
+import type {TestObject} from "./TestObject";
 
 export interface TestMapObject extends Record<string, TestObject> {
 }

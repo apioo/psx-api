@@ -102,7 +102,7 @@ class OpenRPC extends ApiAbstract implements ConfigurationAwareInterface
             $info->setLicense($license);
         }
 
-        $info->setVersion($this->apiVersion);
+        $info->setVersion((string) $this->apiVersion);
 
         $server = new Server();
         if (!empty($baseUrl)) {

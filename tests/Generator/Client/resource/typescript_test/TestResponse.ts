@@ -3,8 +3,8 @@
  * {@link https://sdkgen.app}
  */
 
-import {TestMapScalar} from "./TestMapScalar";
-import {TestRequest} from "./TestRequest";
+import type {TestMapScalar} from "./TestMapScalar";
+import type {TestRequest} from "./TestRequest";
 
 export interface TestResponse {
     args?: TestMapScalar

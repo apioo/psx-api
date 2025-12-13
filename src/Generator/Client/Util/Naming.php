@@ -72,6 +72,7 @@ class Naming
                 ContentType::MULTIPART => 'MultipartException',
                 ContentType::TEXT => 'TextException',
                 ContentType::XML => 'XmlException',
+                default => throw new InvalidTypeException('Could not get exception name for shape: ' . $type->getShape()),
             };
         } elseif ($type instanceof ReferencePropertyType) {
             return $this->normalizer->class($type->getTarget(), 'Exception');

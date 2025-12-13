@@ -3,7 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-import {MyType} from "../foo";
+import type {MyType} from "../foo";
 
 export interface MySchema {
     foo?: MyType

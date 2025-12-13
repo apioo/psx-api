@@ -21,6 +21,7 @@
 namespace PSX\Api\Transformer;
 
 use PSX\Schema\Transformer\JsonSchema;
+use stdClass;
 
 /**
  * Converts all schema aspects of an OpenAPI specification to TypeSchema
@@ -42,7 +43,7 @@ class OpenAPI
      * Transform the provided OpenAPI spec, note we execute this transformation directly on the provided object so the
      * provided schema will change after calling this method, this is done to handle also large OpenAPI specs
      */
-    public function transform(\stdClass $schema): \stdClass
+    public function transform(stdClass $schema): stdClass
     {
         $this->transformSchemas($schema);
         $this->transformOperations($schema);
@@ -50,20 +51,20 @@ class OpenAPI
         return $schema;
     }
 
-    private function transformOperations(\stdClass $spec): void
+    private function transformOperations(stdClass $spec): void
     {
         $paths = $spec->paths ?? null;
-        if (!$paths instanceof \stdClass) {
+        if (!$paths instanceof stdClass) {
             return;
         }
 
-        foreach ($paths as $methods) {
-            if (!$methods instanceof \stdClass) {
+        foreach (get_object_vars($paths) as $methods) {
+            if (!$methods instanceof stdClass) {
                 continue;
             }
 
-            foreach ($methods as $operation) {
-                if (!$operation instanceof \stdClass) {
+            foreach (get_object_vars($methods) as $operation) {
+                if (!$operation instanceof stdClass) {
                     continue;
                 }
 
@@ -72,13 +73,13 @@ class OpenAPI
         }
     }
 
-    public function transformOperation(\stdClass $operation, \stdClass $spec): void
+    public function transformOperation(stdClass $operation, stdClass $spec): void
     {
         $responses = $operation->responses ?? null;
-        if ($responses instanceof \stdClass) {
-            foreach ($responses as $statusCode => $response) {
+        if ($responses instanceof stdClass) {
+            foreach (get_object_vars($responses) as $statusCode => $response) {
                 $schema = $response->content->{'application/json'}->schema ?? null;
-                if ($schema instanceof \stdClass) {
+                if ($schema instanceof stdClass) {
                     $ref = $schema->{'$ref'} ?? null;
                     if (!empty($ref)) {
                         $ref = str_replace('#/definitions/', '', $ref);
@@ -106,16 +107,16 @@ class OpenAPI
         }
     }
 
-    private function transformSchemas(\stdClass $spec): void
+    private function transformSchemas(stdClass $spec): void
     {
         $schemas = $spec->components->schemas ?? null;
-        if (!$schemas instanceof \stdClass) {
+        if (!$schemas instanceof stdClass) {
             return;
         }
 
         $result = $this->transformer->transform((object) ['definitions' => $schemas]);
 
-        $spec->components->schemas = new \stdClass();
+        $spec->components->schemas = new stdClass();
         foreach ($result->definitions as $name => $type) {
             $spec->components->schemas->{$name} = $type;
         }

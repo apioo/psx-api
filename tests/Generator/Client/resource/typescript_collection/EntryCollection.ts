@@ -3,7 +3,7 @@
  * {@link https://sdkgen.app}
  */
 
-import {Entry} from "./Entry";
+import type {Entry} from "./Entry";
 
 export interface EntryCollection {
     entry?: Array<Entry>

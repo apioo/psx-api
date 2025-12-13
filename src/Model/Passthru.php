@@ -41,7 +41,7 @@ class Passthru extends Record
         return $this->accessor->isReadable($this->payload, $key);
     }
 
-    public static function fromPayload(mixed $payload): iterable
+    public static function fromPayload(mixed $payload): self
     {
         if ($payload instanceof \stdClass) {
             $properties = (array) $payload;

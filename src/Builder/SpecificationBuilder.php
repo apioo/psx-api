@@ -39,7 +39,7 @@ use PSX\Schema\TypeInterface;
  */
 class SpecificationBuilder implements SpecificationBuilderInterface
 {
-    private SpecificationInterface $specification;
+    private Specification $specification;
 
     public function __construct()
     {

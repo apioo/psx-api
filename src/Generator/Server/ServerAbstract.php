@@ -274,9 +274,13 @@ abstract class ServerAbstract implements GeneratorInterface
 
     protected function getFileName(string $identifier): string
     {
-        $identifier = $this->generator->getNormalizer()->file($identifier);
+        if ($this->generator instanceof NormalizerAwareInterface) {
+            $identifier = $this->generator->getNormalizer()->file($identifier);
 
-        return $identifier . '.' . $this->getFileExtension();
+            return $identifier . '.' . $this->getFileExtension();
+        } else {
+            return $identifier;
+        }
     }
 
     protected function getFileContent(string $code, string $identifier): string

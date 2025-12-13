@@ -124,7 +124,7 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
             $info->setLicense($license);
         }
 
-        $info->setVersion($this->apiVersion);
+        $info->setVersion((string) $this->apiVersion);
 
         $server = new Server();
         if (!empty($baseUrl)) {
@@ -439,7 +439,7 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
         }
 
         $responses = $this->getResponses($operation, $definitions);
-        if (!empty($responses)) {
+        if (!$responses->isEmpty()) {
             $result->setResponses($responses);
         }
 

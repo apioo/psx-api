@@ -42,7 +42,7 @@ use PSX\Api\Attribute\Tags;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class Meta
+final class Meta
 {
     private ?Description $description = null;
     private ?Exclude $exclude = null;

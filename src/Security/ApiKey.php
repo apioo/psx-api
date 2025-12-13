@@ -52,13 +52,11 @@ class ApiKey implements SecurityInterface
 
     public function toArray(): array
     {
-        return array_filter([
+        return [
             'type' => self::TYPE_API_KEY,
             'name' => $this->name,
             'in' => $this->in,
-        ], function($value){
-            return $value !== null;
-        });
+        ];
     }
 
     public function jsonSerialize(): array

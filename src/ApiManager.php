@@ -109,7 +109,7 @@ class ApiManager implements ApiManagerInterface
         return new SpecificationBuilder();
     }
 
-    private function guessSchemeFromSource(string $source): ?string
+    private function guessSchemeFromSource(string $source): string
     {
         if (class_exists($source)) {
             return 'php://' . str_replace('\\', '.', $source);

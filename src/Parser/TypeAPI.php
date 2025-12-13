@@ -37,6 +37,7 @@ use PSX\Schema\Parser as SchemaParser;
 use PSX\Schema\Parser\ContextInterface;
 use PSX\Schema\SchemaManagerInterface;
 use PSX\Schema\TypeFactory;
+use stdClass;
 
 /**
  * TypeAPI
@@ -61,7 +62,7 @@ class TypeAPI implements ParserInterface
     {
         try {
             $data = Parser::decode($schema);
-            if (!$data instanceof \stdClass) {
+            if (!$data instanceof stdClass) {
                 throw new ParserException('Provided schema must be an object');
             }
 
@@ -74,7 +75,7 @@ class TypeAPI implements ParserInterface
     /**
      * @throws ParserException
      */
-    public function parseObject(\stdClass $data, ?ContextInterface $context = null): SpecificationInterface
+    public function parseObject(stdClass $data, ?ContextInterface $context = null): SpecificationInterface
     {
         try {
             $schema = $this->schemaParser->parseSchema($data, $context);
@@ -82,12 +83,12 @@ class TypeAPI implements ParserInterface
             $definitions = $schema->getDefinitions();
 
             $operations = new Operations();
-            if (isset($data->operations) && $data->operations instanceof \stdClass) {
+            if (isset($data->operations) && $data->operations instanceof stdClass) {
                 $operations = $this->parseOperations($data->operations);
             }
 
             $security = null;
-            if (isset($data->security) && $data->security instanceof \stdClass) {
+            if (isset($data->security) && $data->security instanceof stdClass) {
                 $security = $this->parseSecurity($data->security);
             }
 
@@ -107,11 +108,11 @@ class TypeAPI implements ParserInterface
      * @throws InvalidSchemaException
      * @throws InvalidArgumentException
      */
-    private function parseOperations(\stdClass $operations): OperationsInterface
+    private function parseOperations(stdClass $operations): OperationsInterface
     {
         $return = new Operations();
-        foreach ($operations as $name => $operation) {
-            if ($operation instanceof \stdClass) {
+        foreach (get_object_vars($operations) as $name => $operation) {
+            if ($operation instanceof stdClass) {
                 $return->add($name, $this->parseOperation($operation));
             }
         }
@@ -123,7 +124,7 @@ class TypeAPI implements ParserInterface
      * @throws InvalidSchemaException
      * @throws InvalidArgumentException
      */
-    private function parseOperation(\stdClass $operation): Operation
+    private function parseOperation(stdClass $operation): Operation
     {
         $method = $operation->method ?? null;
         $path = $operation->path ?? null;
@@ -137,13 +138,13 @@ class TypeAPI implements ParserInterface
             throw new ParserException('Property "path" must be a string and not empty');
         }
 
-        if (!$return instanceof \stdClass) {
+        if (!$return instanceof stdClass) {
             $return = null;
         }
 
         $result = new Operation($method, $path, $this->parseReturn($return));
 
-        if (isset($operation->arguments) && $operation->arguments instanceof \stdClass) {
+        if (isset($operation->arguments) && $operation->arguments instanceof stdClass) {
             $result->setArguments($this->parseArguments($operation->arguments));
         }
 
@@ -178,9 +179,9 @@ class TypeAPI implements ParserInterface
      * @throws ParserException
      * @throws InvalidSchemaException
      */
-    private function parseReturn(?\stdClass $data): Operation\Response
+    private function parseReturn(?stdClass $data): Operation\Response
     {
-        if ($data instanceof \stdClass) {
+        if ($data instanceof stdClass) {
             return $this->parseResponse($data);
         } else {
             return new Operation\Response(204, TypeFactory::getAny());
@@ -192,11 +193,11 @@ class TypeAPI implements ParserInterface
      * @throws InvalidSchemaException
      * @throws InvalidArgumentException
      */
-    private function parseArguments(\stdClass $data): Operation\Arguments
+    private function parseArguments(stdClass $data): Operation\Arguments
     {
         $return = new Operation\Arguments();
-        foreach ($data as $name => $argument) {
-            if ($argument instanceof \stdClass) {
+        foreach (get_object_vars($data) as $name => $argument) {
+            if ($argument instanceof stdClass) {
                 $return->add($name, $this->parseArgument($argument));
             }
         }
@@ -208,7 +209,7 @@ class TypeAPI implements ParserInterface
      * @throws ParserException
      * @throws InvalidSchemaException
      */
-    private function parseArgument(\stdClass $data): Operation\Argument
+    private function parseArgument(stdClass $data): Operation\Argument
     {
         $in = $data->in ?? null;
         if (empty($in) || !is_string($in)) {
@@ -220,7 +221,7 @@ class TypeAPI implements ParserInterface
             $type = ContentType::from($contentType);
         } else {
             $schema = $data->schema ?? null;
-            if (!$schema instanceof \stdClass) {
+            if (!$schema instanceof stdClass) {
                 throw new ParserException('Property "schema" must be an object');
             }
 
@@ -243,7 +244,7 @@ class TypeAPI implements ParserInterface
     {
         $return = [];
         foreach ($data as $throw) {
-            if ($throw instanceof \stdClass) {
+            if ($throw instanceof stdClass) {
                 $return[] = $this->parseResponse($throw);
             }
         }
@@ -255,7 +256,7 @@ class TypeAPI implements ParserInterface
      * @throws ParserException
      * @throws InvalidSchemaException
      */
-    private function parseResponse(\stdClass $data): Operation\Response
+    private function parseResponse(stdClass $data): Operation\Response
     {
         $code = $data->code ?? 200;
         if (empty($code) || !is_int($code)) {
@@ -267,7 +268,7 @@ class TypeAPI implements ParserInterface
             $type = ContentType::from($contentType);
         } else {
             $schema = $data->schema ?? null;
-            if (!$schema instanceof \stdClass) {
+            if (!$schema instanceof stdClass) {
                 throw new ParserException('Property "schema" must be an object');
             }
 
@@ -280,7 +281,7 @@ class TypeAPI implements ParserInterface
     /**
      * @throws ParserException
      */
-    private function parseSecurity(\stdClass $data): ?SecurityInterface
+    private function parseSecurity(stdClass $data): ?SecurityInterface
     {
         $type = $data->type ?? null;
         if (!is_string($type)) {

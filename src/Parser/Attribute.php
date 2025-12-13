@@ -27,6 +27,7 @@ use PSX\Api\Exception\InvalidArgumentException;
 use PSX\Api\Exception\ParserException;
 use PSX\Api\Model\Passthru;
 use PSX\Api\Operation;
+use PSX\Api\OperationInterface;
 use PSX\Api\Parser\Attribute\BuilderInterface;
 use PSX\Api\Parser\Attribute\Meta;
 use PSX\Api\ParserInterface;
@@ -142,8 +143,8 @@ class Attribute implements ParserInterface
                 $operation->setDescription($this->resolveDescription($meta->getDescription()));
             }
 
-            if ($meta->getDeprecated() instanceof Attr\Deprecated) {
-                $operation->setStability($meta->getDeprecated()->deprecated);
+            if ($meta->getDeprecated() instanceof Attr\Deprecated && $meta->getDeprecated()->deprecated === true) {
+                $operation->setStability(OperationInterface::STABILITY_DEPRECATED);
             }
 
             if ($meta->getSecurity() instanceof Attr\Security) {
@@ -289,11 +290,9 @@ class Attribute implements ParserInterface
             default => Type\Factory\PropertyTypeFactory::getString(),
         };
 
-        if ($type instanceof Type\PropertyTypeAbstract) {
-            $description = $param->description;
-            if ($description !== null) {
-                $type->setDescription($description);
-            }
+        $description = $param->description;
+        if ($description !== null) {
+            $type->setDescription($description);
         }
 
         if ($type instanceof Type\StringPropertyType) {
@@ -419,7 +418,7 @@ class Attribute implements ParserInterface
         if (!$meta->hasOutgoing()) {
             $schema = $this->getSchemaFromTypeHint($method->getReturnType());
             if (!empty($schema) && ($schema instanceof ContentType || class_exists($schema))) {
-                $meta->addOutgoing(new Attr\Outgoing($meta->getStatusCode()?->code ?? 200, $schema));
+                $meta->addOutgoing(new Attr\Outgoing($meta->getStatusCode()->code ?? 200, $schema));
             }
         }
     }

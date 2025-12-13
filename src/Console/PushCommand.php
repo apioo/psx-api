@@ -32,6 +32,7 @@ use PSX\Http\Client\ClientInterface;
 use PSX\Http\Client\GetRequest;
 use PSX\Http\Client\PostRequest;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -104,6 +105,7 @@ class PushCommand extends Command
         }
 
         $result = (string) $generator->generate($spec);
+        /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
 
         if (empty($clientId)) {

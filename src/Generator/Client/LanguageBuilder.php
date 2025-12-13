@@ -54,7 +54,6 @@ use PSX\Schema\TypeUtil;
  */
 class LanguageBuilder
 {
-    private GeneratorInterface $generator;
     private TypeGeneratorInterface $typeGenerator;
     private NormalizerInterface $normalizer;
     private Naming $naming;
@@ -62,7 +61,6 @@ class LanguageBuilder
 
     public function __construct(GeneratorInterface $generator, Naming $naming, array $mapping)
     {
-        $this->generator = $generator;
         $this->naming = $naming;
         $this->mapping = $mapping;
 
@@ -322,6 +320,7 @@ class LanguageBuilder
 
             $last = &$result;
             foreach ($parts as $partName) {
+                /** @phpstan-ignore isset.offset */
                 if (!isset($last[$partName])) {
                     $last[$partName] = [];
                 }

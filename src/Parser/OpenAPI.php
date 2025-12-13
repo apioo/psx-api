@@ -26,6 +26,7 @@ use PSX\Api\Operation;
 use PSX\Api\Operation\Argument;
 use PSX\Api\Operation\Arguments;
 use PSX\Api\Operation\Response;
+use PSX\Api\OperationInterface;
 use PSX\Api\Operations;
 use PSX\Api\OperationsInterface;
 use PSX\Api\ParserInterface;
@@ -64,10 +65,11 @@ use PSX\Schema\SchemaTraverser;
 use PSX\Schema\Type\DefinitionTypeAbstract;
 use PSX\Schema\Type\Factory\PropertyTypeFactory;
 use PSX\Schema\Type\PropertyTypeAbstract;
-use PSX\Schema\Type\ReferencePropertyType;
 use PSX\Schema\TypeFactory;
 use PSX\Schema\TypeInterface;
 use PSX\Schema\Visitor\TypeVisitor;
+use RuntimeException;
+use stdClass;
 
 /**
  * OpenAPI
@@ -96,7 +98,7 @@ class OpenAPI implements ParserInterface
     {
         try {
             $data = Parser::decode($schema);
-            if (!$data instanceof \stdClass) {
+            if (!$data instanceof stdClass) {
                 throw new ParserException('Provided schema must be an object');
             }
 
@@ -109,7 +111,7 @@ class OpenAPI implements ParserInterface
     /**
      * @throws ParserException
      */
-    public function parseObject(\stdClass $data, ?ContextInterface $context = null): SpecificationInterface
+    public function parseObject(stdClass $data, ?ContextInterface $context = null): SpecificationInterface
     {
         try {
             $this->definitions = $this->schemaParser->parseSchema($data, $context)->getDefinitions();
@@ -177,8 +179,8 @@ class OpenAPI implements ParserInterface
                 $result->setDescription($operation->getSummary());
             }
 
-            if ($operation->getDeprecated() !== null) {
-                $result->setStability($operation->getDeprecated());
+            if ($operation->getDeprecated() === true) {
+                $result->setStability(OperationInterface::STABILITY_DEPRECATED);
             }
 
             if ($operation->getSecurity() !== null) {
@@ -220,6 +222,7 @@ class OpenAPI implements ParserInterface
         }
 
         foreach ($securitySchemas as $securityObject) {
+            /** @phpstan-ignore instanceof.alwaysTrue */
             if (!$securityObject instanceof SecurityScheme) {
                 continue;
             }
@@ -293,10 +296,6 @@ class OpenAPI implements ParserInterface
             return $this->parseParameter($in, $this->resolveReference($data->getRef()));
         }
 
-        if (!$data instanceof Parameter) {
-            throw new \RuntimeException('Not a parameter provided');
-        }
-
         $name = $data->getName();
         $type = PropertyTypeFactory::getString();
 
@@ -305,7 +304,7 @@ class OpenAPI implements ParserInterface
             $required = $data->getRequired() ?? false;
 
             $schema = $data->getSchema();
-            if ($schema instanceof \stdClass) {
+            if ($schema instanceof stdClass) {
                 $type = $this->schemaParser->parsePropertyType($schema);
             }
         }
@@ -376,7 +375,7 @@ class OpenAPI implements ParserInterface
         }
 
         $schema = $mediaType->getSchema();
-        if (!$schema instanceof \stdClass) {
+        if (!$schema instanceof stdClass) {
             return null;
         }
 
@@ -428,7 +427,7 @@ class OpenAPI implements ParserInterface
         } elseif ($type === 'callbacks') {
             return $this->document->getComponents()->getCallbacks()->getProperty($name);
         } else {
-            throw new \RuntimeException('Could not resolve reference ' . $reference);
+            throw new RuntimeException('Could not resolve reference ' . $reference);
         }
     }
 

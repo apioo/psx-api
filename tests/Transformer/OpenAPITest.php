@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Tests\Transformer;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use PSX\Api\ApiManager;
 use PSX\Api\Parser\Attribute\Builder;
@@ -39,9 +40,7 @@ use Symfony\Component\Yaml\Yaml;
  */
 class OpenAPITest extends TestCase
 {
-    /**
-     * @dataProvider transformProvider
-     */
+    #[DataProvider('transformProvider')]
     public function testConvert(string $file)
     {
         $schema = file_get_contents(__DIR__ . '/openapi/actual/' . $file);
@@ -62,7 +61,7 @@ class OpenAPITest extends TestCase
         $this->assertInstanceOf(SpecificationInterface::class, $spec);
     }
 
-    public function transformProvider(): array
+    public static function transformProvider(): array
     {
         $result = [];
         $tests = scandir(__DIR__ . '/openapi/actual');
