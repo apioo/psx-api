@@ -1,0 +1,11 @@
+parameters:
+	level: 5
+	treatPhpDocTypesAsCertain: false
+	paths:
+		- src
+		- tests
+	excludePaths:
+		- tests/Generator/Client/resource/*
+		- tests/Generator/Markup/resource/*
+		- tests/Generator/Server/resource/*
+		- tests/Generator/Spec/resource/*
