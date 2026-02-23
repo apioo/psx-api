@@ -179,13 +179,13 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
                     $flow->setRefreshUrl($refreshUrl);
                 }
 
+                $result = new Scopes();
                 if (!empty($scopes)) {
-                    $result = new Scopes();
                     foreach ($scopes as $name => $title) {
                         $result[$name] = $title;
                     }
-                    $flow->setScopes($result);
                 }
+                $flow->setScopes($result);
 
                 if ($flowType == self::FLOW_AUTHORIZATION_CODE) {
                     $flows->setAuthorizationCode($flow);
