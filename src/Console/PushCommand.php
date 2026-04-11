@@ -21,7 +21,7 @@
 namespace PSX\Api\Console;
 
 use PSX\Api\Exception\PublishException;
-use PSX\Api\TypeHub\Publisher;
+use PSX\Api\TypeHub\PublisherInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
@@ -39,7 +39,7 @@ use Symfony\Component\Console\Question\Question;
  */
 class PushCommand extends Command
 {
-    public function __construct(private readonly Publisher $publisher)
+    public function __construct(private readonly PublisherInterface $publisher)
     {
         parent::__construct();
     }
