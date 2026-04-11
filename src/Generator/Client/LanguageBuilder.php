@@ -308,10 +308,6 @@ class LanguageBuilder
         }
     }
 
-    /**
-     * @psalm-suppress InvalidReturnStatement
-     * @psalm-suppress InvalidReturnType
-     */
     private function groupOperations(OperationsInterface $operations): array
     {
         $result = [];
@@ -320,7 +316,6 @@ class LanguageBuilder
 
             $last = &$result;
             foreach ($parts as $partName) {
-                /** @phpstan-ignore isset.offset */
                 if (!isset($last[$partName])) {
                     $last[$partName] = [];
                 }
