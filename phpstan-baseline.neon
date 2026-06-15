@@ -1,0 +1,7 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Instanceof between PSX\\Schema\\Type\\PropertyTypeAbstract and PSX\\Schema\\Type\\PropertyTypeAbstract will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/Inspector/ChangelogGenerator.php
