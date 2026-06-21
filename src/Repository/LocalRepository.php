@@ -119,4 +119,18 @@ class LocalRepository implements RepositoryInterface
 
         return $result;
     }
+
+    public static function getAvailableTypes(): array
+    {
+        return [
+            self::MARKUP_CLIENT,
+            self::MARKUP_HTML,
+            self::MARKUP_MARKDOWN,
+
+            self::SPEC_GRAPHQL,
+            self::SPEC_OPENAPI,
+            self::SPEC_OPENRPC,
+            self::SPEC_TYPEAPI,
+        ];
+    }
 }

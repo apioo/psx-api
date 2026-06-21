@@ -60,10 +60,16 @@ class SDKgenRepository implements RepositoryInterface
             $accessToken = $this->obtainAccessToken($clientId, $clientSecret);
         }
 
+        $localAvailableTypes = LocalRepository::getAvailableTypes();
+
         $return = [];
         $types = $this->getTypes($accessToken);
         foreach ($types as $type) {
             [$name, $fileExtension, $mime] = $type;
+
+            if (in_array($name, $localAvailableTypes)) {
+                continue;
+            }
 
             $return[$name] = new GeneratorConfig(
                 fn(?string $baseUrl, ?Config $config) => new Generator\Proxy\SDKgen($this->httpClient, $accessToken, $name, $baseUrl, $config),
