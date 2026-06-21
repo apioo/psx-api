@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Repository;
 
+use DateInterval;
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\Generator;
 use PSX\Api\Repository\SDKgen\ConfigInterface;
@@ -28,6 +29,7 @@ use PSX\Http\Client\ClientInterface;
 use PSX\Http\Client\GetRequest;
 use PSX\Http\Client\PostRequest;
 use PSX\Schema\Generator\Config;
+use stdClass;
 
 /**
  * SDKgenRepository
@@ -51,15 +53,11 @@ class SDKgenRepository implements RepositoryInterface
 
     public function getAll(): array
     {
+        $accessToken = null;
         $clientId = $this->config->getClientId();
         $clientSecret = $this->config->getClientSecret();
-        if (empty($clientId) || empty($clientSecret)) {
-            return [];
-        }
-
-        $accessToken = $this->obtainAccessToken($clientId, $clientSecret);
-        if (empty($accessToken)) {
-            return [];
+        if (!empty($clientId) && !empty($clientSecret)) {
+            $accessToken = $this->obtainAccessToken($clientId, $clientSecret);
         }
 
         $return = [];
@@ -77,24 +75,29 @@ class SDKgenRepository implements RepositoryInterface
         return $return;
     }
 
-    private function getTypes(string $accessToken): array
+    private function getTypes(?string $accessToken): array
     {
         $item = $this->cache->getItem('psx-api-generator-types');
         if ($item->isHit()) {
             return $item->get();
         }
 
-        $response = $this->httpClient->request(new GetRequest('https://api.sdkgen.app/types', [
-            'Authorization' => 'Bearer ' . $accessToken,
+        $headers = [
             'Accept' => 'application/json',
-        ]));
+        ];
+
+        if (!empty($accessToken)) {
+            $headers['Authorization'] = 'Bearer ' . $accessToken;
+        }
+
+        $response = $this->httpClient->request(new GetRequest('https://api.sdkgen.app/types', $headers));
 
         if ($response->getStatusCode() !== 200) {
             return [];
         }
 
         $data = json_decode((string) $response->getBody());
-        if (!$data instanceof \stdClass) {
+        if (!$data instanceof stdClass) {
             return [];
         }
 
@@ -104,7 +107,7 @@ class SDKgenRepository implements RepositoryInterface
         }
 
         $item->set($types);
-        $item->expiresAfter(new \DateInterval('P7D'));
+        $item->expiresAfter(new DateInterval('P7D'));
         $this->cache->save($item);
 
         return $types;
@@ -119,7 +122,7 @@ class SDKgenRepository implements RepositoryInterface
 
         $data = [];
         foreach ($types as $type) {
-            if (!$type instanceof \stdClass) {
+            if (!$type instanceof stdClass) {
                 continue;
             }
 
@@ -156,7 +159,7 @@ class SDKgenRepository implements RepositoryInterface
         }
 
         $data = json_decode((string) $response->getBody());
-        if (!$data instanceof \stdClass) {
+        if (!$data instanceof stdClass) {
             return null;
         }
 

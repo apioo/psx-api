@@ -45,11 +45,11 @@ class SDKgen implements GeneratorInterface, ConfigurationAwareInterface
     use ConfigurationTrait;
 
     private ClientInterface $httpClient;
-    private string $accessToken;
+    private ?string $accessToken;
     private string $type;
     private ?Generator\Config $config;
 
-    public function __construct(ClientInterface $httpClient, string $accessToken, string $type, ?string $baseUrl = null, ?Generator\Config $config = null)
+    public function __construct(ClientInterface $httpClient, ?string $accessToken, string $type, ?string $baseUrl = null, ?Generator\Config $config = null)
     {
         $this->httpClient = $httpClient;
         $this->accessToken = $accessToken;
@@ -72,15 +72,16 @@ class SDKgen implements GeneratorInterface, ConfigurationAwareInterface
             'config' => $this->config?->toString(),
         ]);
 
-        $response = $this->httpClient->request(new PostRequest($uri, [
-            'Authorization' => 'Bearer ' . $this->accessToken,
+        $headers = [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
-        ], $body));
+        ];
 
-        if ($response->getStatusCode() !== 200) {
-            throw new GeneratorException('Could not generate SDK, got an HTTP response: ' . $response->getStatusCode());
+        if (!empty($this->accessToken)) {
+            $headers['Authorization'] = 'Bearer ' . $this->accessToken;
         }
+
+        $response = $this->httpClient->request(new PostRequest($uri, $headers, $body));
 
         $data = json_decode((string) $response->getBody());
         if (!$data instanceof stdClass) {
@@ -91,8 +92,10 @@ class SDKgen implements GeneratorInterface, ConfigurationAwareInterface
             return $this->buildChunks($data->chunks);
         } elseif (isset($data->output) && is_string($data->output)) {
             return $data->output;
+        } elseif (isset($data->success) && $data->success === false && isset($data->message) && is_string($data->message)) {
+            throw new GeneratorException('Could not generate SDK, got: ' . $data->message);
         } else {
-            throw new GeneratorException('Could not generate SDK, received an invalid response');
+            throw new GeneratorException('Could not generate SDK, received an invalid response ' . $response->getStatusCode());
         }
     }
 
