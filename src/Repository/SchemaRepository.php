@@ -42,7 +42,7 @@ class SchemaRepository implements RepositoryInterface
             $result['model-' . $type] = new GeneratorConfig(
                 fn(?string $baseUrl, ?Config $config) => new Generator\Proxy\Schema($type, $config),
                 $this->getFileExtensionForType($type),
-                'text/plain'
+                $this->getMimeForType($type)
             );
         }
 
@@ -73,6 +73,33 @@ class SchemaRepository implements RepositoryInterface
             GeneratorFactory::TYPE_TYPESCHEMA => 'json',
             GeneratorFactory::TYPE_VISUALBASIC => 'vb',
             default => 'txt',
+        };
+    }
+
+    private function getMimeForType(string $type): string
+    {
+        return match($type) {
+            GeneratorFactory::TYPE_CSHARP => 'application/csharp',
+            GeneratorFactory::TYPE_GO => 'application/go',
+            GeneratorFactory::TYPE_GRAPHQL => 'application/graphql',
+            GeneratorFactory::TYPE_HTML => 'text/html',
+            GeneratorFactory::TYPE_JAVA => 'application/java',
+            GeneratorFactory::TYPE_JSONSCHEMA => 'application/json',
+            GeneratorFactory::TYPE_JSONSCHEMA_ANTHROPIC => 'application/json',
+            GeneratorFactory::TYPE_JSONSCHEMA_GEMINI => 'application/json',
+            GeneratorFactory::TYPE_JSONSCHEMA_OPENAI => 'application/json',
+            GeneratorFactory::TYPE_KOTLIN => 'application/kotlin',
+            GeneratorFactory::TYPE_MARKDOWN => 'text/markdown',
+            GeneratorFactory::TYPE_PHP => 'application/php',
+            GeneratorFactory::TYPE_PROTOBUF => 'application/protobuf',
+            GeneratorFactory::TYPE_PYTHON => 'application/python',
+            GeneratorFactory::TYPE_RUBY => 'application/ruby',
+            GeneratorFactory::TYPE_RUST => 'application/rust',
+            GeneratorFactory::TYPE_SWIFT => 'application/swift',
+            GeneratorFactory::TYPE_TYPESCRIPT => 'application/typescript',
+            GeneratorFactory::TYPE_TYPESCHEMA => 'application/json',
+            GeneratorFactory::TYPE_VISUALBASIC => 'application/visualbasic',
+            default => 'text/plain',
         };
     }
 }
