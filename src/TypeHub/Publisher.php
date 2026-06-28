@@ -21,6 +21,7 @@
 namespace PSX\Api\TypeHub;
 
 use Composer\InstalledVersions;
+use Psr\Cache\CacheItemPoolInterface;
 use PSX\Api\Exception\GeneratorException;
 use PSX\Api\Exception\PublishException;
 use PSX\Api\Generator\ConfigurationAwareInterface;
@@ -46,12 +47,14 @@ use function json_encode;
 class Publisher implements PublisherInterface
 {
     private const TYPEHUB_URL = 'https://api.typehub.cloud';
+    private const TOKEN_CACHE_KEY = 'psx-typehub-token';
 
     public function __construct(
         private readonly ScannerInterface $scanner,
         private readonly GeneratorFactory $factory,
         private readonly FilterFactoryInterface $filterFactory,
-        private readonly ClientInterface $client
+        private readonly ClientInterface $client,
+        private readonly CacheItemPoolInterface $cache,
     ) {
     }
 
@@ -92,6 +95,61 @@ class Publisher implements PublisherInterface
         $userName = $this->obtainUserName($accessToken);
 
         $this->importDocument($accessToken, $userName, $name, $result);
+    }
+
+    public function changelog(string $name, string $clientId, string $clientSecret): Changelog
+    {
+        $accessToken = $this->obtainAccessToken($clientId, $clientSecret);
+        $userName = $this->obtainUserName($accessToken);
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $accessToken,
+            'Content-Type' => 'application/json',
+            'User-Agent' => 'PSX API ' . InstalledVersions::getVersion('psx/api'),
+        ];
+
+        $request  = new PostRequest(self::TYPEHUB_URL . '/document/' . $userName . '/' . $name . '/changelog', $headers);
+        $response = $this->client->request($request);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new PublishException('Could not obtain changelog, the server returned a wrong status code: ' . $response->getStatusCode() . ' - ' . $response->getBody());
+        }
+
+        $data = json_decode((string) $response->getBody());
+        if (!$data instanceof stdClass) {
+            throw new PublishException('Could not obtain changelog, the server returned invalid JSON data');
+        }
+
+        return Changelog::from($data);
+    }
+
+    public function tag(string $name, string $clientId, string $clientSecret): void
+    {
+        $accessToken = $this->obtainAccessToken($clientId, $clientSecret);
+        $userName = $this->obtainUserName($accessToken);
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $accessToken,
+            'Content-Type' => 'application/json',
+            'User-Agent' => 'PSX API ' . InstalledVersions::getVersion('psx/api'),
+        ];
+
+        $request  = new PostRequest(self::TYPEHUB_URL . '/document/' . $userName . '/' . $name . '/tag', $headers);
+        $response = $this->client->request($request);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new PublishException('Could not create tag, the server returned a wrong status code: ' . $response->getStatusCode() . ' - ' . $response->getBody());
+        }
+
+        $data = json_decode((string) $response->getBody());
+        if (!$data instanceof stdClass) {
+            throw new PublishException('Could not create tag, the server returned invalid JSON data');
+        }
+
+        $success = $data->success ?? false;
+        if ($success === false) {
+            throw new PublishException('Could not create tag, the server returned a wrong response: ' . json_encode($data, \JSON_PRETTY_PRINT));
+        }
     }
 
     /**
@@ -141,6 +199,11 @@ class Publisher implements PublisherInterface
      */
     private function obtainAccessToken(string $user, string $password): string
     {
+        $item = $this->cache->getItem(self::TOKEN_CACHE_KEY);
+        if ($item->isHit()) {
+            return $item->get();
+        }
+
         $headers = [
             'Authorization' => 'Basic ' . base64_encode($user . ':' . $password),
             'Content-Type' => 'application/x-www-form-urlencoded',
@@ -165,6 +228,10 @@ class Publisher implements PublisherInterface
         if (empty($accessToken) || !is_string($accessToken)) {
             throw new PublishException('Could not obtain access token');
         }
+
+        $item->expiresAfter($data->expires_in ?? 3600);
+        $item->set($accessToken);
+        $this->cache->save($item);
 
         return $accessToken;
     }

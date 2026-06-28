@@ -45,4 +45,19 @@ interface PublisherInterface
      * @throws PublishException
      */
     public function publish(string $name, string $clientId, string $clientSecret, ?string $filterName = null, bool $standalone = false): void;
+
+    /**
+     * Generates a changelog which shows the diff between the current version and the latest tag
+     *
+     * @throws PublishException
+     */
+    public function changelog(string $name, string $clientId, string $clientSecret): Changelog;
+
+    /**
+     * Creates a tag for the current version
+     *
+     * @throws PublishException
+     */
+    public function tag(string $name, string $clientId, string $clientSecret): void;
+
 }
