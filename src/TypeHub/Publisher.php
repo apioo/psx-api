@@ -137,7 +137,8 @@ class Publisher implements PublisherInterface
         $request  = new PostRequest(self::TYPEHUB_URL . '/document/' . $userName . '/' . $name . '/tag', $headers);
         $response = $this->client->request($request);
 
-        if ($response->getStatusCode() !== 200) {
+        $successful = $response->getStatusCode() >= 200 && $response->getStatusCode() < 300;
+        if (!$successful) {
             throw new PublishException('Could not create tag, the server returned a wrong status code: ' . $response->getStatusCode() . ' - ' . $response->getBody());
         }
 
