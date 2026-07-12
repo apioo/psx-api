@@ -58,6 +58,6 @@ interface PublisherInterface
      *
      * @throws PublishException
      */
-    public function tag(string $name, string $clientId, string $clientSecret): void;
+    public function tag(string $name, string $clientId, string $clientSecret): Tag;
 
 }

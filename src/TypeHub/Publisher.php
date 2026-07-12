@@ -123,7 +123,7 @@ class Publisher implements PublisherInterface
         return Changelog::from($data);
     }
 
-    public function tag(string $name, string $clientId, string $clientSecret): void
+    public function tag(string $name, string $clientId, string $clientSecret): Tag
     {
         $accessToken = $this->obtainAccessToken($clientId, $clientSecret);
         $userName = $this->obtainUserName($accessToken);
@@ -151,6 +151,8 @@ class Publisher implements PublisherInterface
         if ($success === false) {
             throw new PublishException('Could not create tag, the server returned a wrong response: ' . json_encode($data, \JSON_PRETTY_PRINT));
         }
+
+        return Tag::from($data);
     }
 
     /**
