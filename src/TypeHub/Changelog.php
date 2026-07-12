@@ -31,14 +31,11 @@ use stdClass;
  */
 class Changelog
 {
-    /**
-     * @param array<string>|null $changelog
-     */
     public function __construct(
         public mixed $master,
         public mixed $tag,
         public ?string $version,
-        public ?array $changelog,
+        public ?string $changelog,
     ) {
     }
 
@@ -48,7 +45,7 @@ class Changelog
             $data->master ?? null,
             $data->tag ?? null,
             isset($data->version) && is_string($data->version) ? $data->version : null,
-            isset($data->changelog) && is_array($data->changelog) ? $data->changelog : null,
+            isset($data->changelog) && is_string($data->changelog) ? $data->changelog : null,
         );
     }
 }
