@@ -22,7 +22,10 @@ namespace PSX\Api\Tests\Generator\Spec;
 
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Api\Generator\Spec\OpenAPI;
+use PSX\Api\Generator\Spec\OpenAPI\CallbackExampleLoader;
 use PSX\Api\Tests\Generator\GeneratorTestCase;
+use PSX\OpenAPI\Example;
+use PSX\OpenAPI\Examples;
 
 /**
  * OpenAPITest
@@ -60,6 +63,44 @@ class OpenAPITest extends GeneratorTestCase
 
         $actual = $generator->generate($this->getSpecificationCollection());
         $expect = file_get_contents(__DIR__ . '/resource/openapi_collection.json');
+
+        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
+    }
+
+    public function testGenerateExamples()
+    {
+        $loader = new CallbackExampleLoader(function (OpenAPI\OriginInterface $origin) {
+            $example = null;
+            if ($origin instanceof OpenAPI\RequestBodyOrigin) {
+                if ($origin->operationId === 'create') {
+                    $example = new Example();
+                    $example->setDescription('This is a create request sample');
+                    $example->setValue([
+                        'foo' => 'bar',
+                    ]);
+                }
+            } elseif ($origin instanceof OpenAPI\ResponseOrigin) {
+                if ($origin->operationId === 'update' && $origin->response->getCode() === 200) {
+                    $example = new Example();
+                    $example->setDescription('This is a update response sample');
+                    $example->setExternalValue('https://google.com');
+                }
+            }
+
+            if ($example instanceof Example) {
+                $examples = new Examples();
+                $examples->put('default', $example);
+                return $examples;
+            } else {
+                return null;
+            }
+        });
+
+        $generator = new OpenAPI(1, 'http://api.phpsx.org');
+        $generator->setExampleLoader($loader);
+
+        $actual = $generator->generate($this->getSpecification());
+        $expect = file_get_contents(__DIR__ . '/resource/openapi_examples.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }

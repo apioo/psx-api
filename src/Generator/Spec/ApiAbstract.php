@@ -20,6 +20,7 @@
 
 namespace PSX\Api\Generator\Spec;
 
+use PSX\Api\Generator\Spec\OpenAPI\ExampleLoaderInterface;
 use PSX\Api\GeneratorInterface;
 
 /**
@@ -44,6 +45,7 @@ abstract class ApiAbstract implements GeneratorInterface
     protected ?string $licenseUrl = null;
     protected array $authFlows = [];
     protected array $tags = [];
+    protected ?ExampleLoaderInterface $exampleLoader = null;
 
     /**
      * The title of the application
@@ -130,5 +132,10 @@ abstract class ApiAbstract implements GeneratorInterface
     public function addTag(string $name, string $description): void
     {
         $this->tags[$name] = $description;
+    }
+
+    public function setExampleLoader(ExampleLoaderInterface $exampleLoader): void
+    {
+        $this->exampleLoader = $exampleLoader;
     }
 }

@@ -22,6 +22,9 @@ namespace PSX\Api\Generator\Spec;
 
 use PSX\Api\Generator\ConfigurationAwareInterface;
 use PSX\Api\Generator\ConfigurationTrait;
+use PSX\Api\Generator\Spec\OpenAPI\OriginInterface;
+use PSX\Api\Generator\Spec\OpenAPI\RequestBodyOrigin;
+use PSX\Api\Generator\Spec\OpenAPI\ResponseOrigin;
 use PSX\Api\Operation\Argument;
 use PSX\Api\OperationInterface;
 use PSX\Api\OperationsInterface;
@@ -30,6 +33,7 @@ use PSX\Api\Util\Inflection;
 use PSX\Json\Parser;
 use PSX\OpenAPI\Components;
 use PSX\OpenAPI\Contact;
+use PSX\OpenAPI\Examples;
 use PSX\OpenAPI\Info;
 use PSX\OpenAPI\License;
 use PSX\OpenAPI\MediaType;
@@ -257,11 +261,16 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
         return $tag;
     }
 
-    private function getMediaTypes(TypeInterface|ContentType $type, DefinitionsInterface $definitions): MediaTypes
+    private function getMediaTypes(TypeInterface|ContentType $type, DefinitionsInterface $definitions, OriginInterface $origin): MediaTypes
     {
         if ($type instanceof TypeInterface) {
             $mediaType = new MediaType();
             $mediaType->setSchema($this->resolveSchema($type, $definitions));
+
+            $examples = $this->exampleLoader?->load($origin);
+            if ($examples instanceof Examples && !$examples->isEmpty()) {
+                $mediaType->setExamples($examples);
+            }
 
             $mediaTypes = new MediaTypes();
             $mediaTypes['application/json'] = $mediaType;
@@ -283,6 +292,11 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
 
             $mediaType = new MediaType();
             $mediaType->setSchema($schema);
+
+            $examples = $this->exampleLoader?->load($origin);
+            if ($examples instanceof Examples && !$examples->isEmpty()) {
+                $mediaType->setExamples($examples);
+            }
 
             $mediaTypes = new MediaTypes();
             $mediaTypes[$type->toString()] = $mediaType;
@@ -374,46 +388,51 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
         return null;
     }
 
-    private function getRequestBody(OperationInterface $operation, DefinitionsInterface $definitions): ?RequestBody
+    private function getRequestBody(string $operationId, OperationInterface $operation, DefinitionsInterface $definitions): ?RequestBody
     {
         $argument = $this->getBodyArgument($operation);
         if (!$argument instanceof Argument) {
             return null;
         }
 
+        $origin = new RequestBodyOrigin($operationId, $operation, $argument);
+
         $result = new RequestBody();
-        //$result->setDescription('');
-        $result->setContent($this->getMediaTypes($argument->getSchema(), $definitions));
+        $result->setContent($this->getMediaTypes($argument->getSchema(), $definitions, $origin));
 
         return $result;
     }
 
-    private function getResponses(OperationInterface $operation, DefinitionsInterface $definitions): Responses
+    private function getResponses(string $operationId, OperationInterface $operation, DefinitionsInterface $definitions): Responses
     {
+        $origin = new ResponseOrigin($operationId, $operation, $operation->getReturn());
+
         $result = new Responses();
-        $result[strval($operation->getReturn()->getCode())] = $this->getResponse($operation->getReturn(), $definitions);
+        $result[strval($operation->getReturn()->getCode())] = $this->getResponse($operation->getReturn(), $definitions, $origin);
 
         foreach ($operation->getThrows() as $throw) {
+            $origin = new ResponseOrigin($operationId, $operation, $throw);
+
             if ($throw->getCode() === 999) {
-                $result['4XX'] = $this->getResponse($throw, $definitions);
-                $result['5XX'] = $this->getResponse($throw, $definitions);
+                $result['4XX'] = $this->getResponse($throw, $definitions, $origin);
+                $result['5XX'] = $this->getResponse($throw, $definitions, $origin);
             } elseif ($throw->getCode() === 499) {
-                $result['4XX'] = $this->getResponse($throw, $definitions);
+                $result['4XX'] = $this->getResponse($throw, $definitions, $origin);
             } elseif ($throw->getCode() === 599) {
-                $result['5XX'] = $this->getResponse($throw, $definitions);
+                $result['5XX'] = $this->getResponse($throw, $definitions, $origin);
             } else {
-                $result[strval($throw->getCode())] = $this->getResponse($throw, $definitions);
+                $result[strval($throw->getCode())] = $this->getResponse($throw, $definitions, $origin);
             }
         }
 
         return $result;
     }
 
-    private function getResponse(\PSX\Api\Operation\Response $response, DefinitionsInterface $definitions): Response
+    private function getResponse(\PSX\Api\Operation\Response $response, DefinitionsInterface $definitions, OriginInterface $origin): Response
     {
         $result = new Response();
         $result->setDescription('');
-        $result->setContent($this->getMediaTypes($response->getSchema(), $definitions));
+        $result->setContent($this->getMediaTypes($response->getSchema(), $definitions, $origin));
 
         return $result;
     }
@@ -433,12 +452,12 @@ class OpenAPI extends ApiAbstract implements ConfigurationAwareInterface
             $result->setParameters($queryParameters);
         }
 
-        $requestBody = $this->getRequestBody($operation, $definitions);
+        $requestBody = $this->getRequestBody($operationId, $operation, $definitions);
         if ($requestBody instanceof RequestBody) {
             $result->setRequestBody($requestBody);
         }
 
-        $responses = $this->getResponses($operation, $definitions);
+        $responses = $this->getResponses($operationId, $operation, $definitions);
         if (!$responses->isEmpty()) {
             $result->setResponses($responses);
         }
