@@ -47,6 +47,8 @@ interface ApiManagerInterface
      *    Resolves the specification from a class containing attributes describing the specification
      *  - file:///path/to/a/file.json
      *    Resolves the specification by parsing an TypeAPI or OpenAPI file
+     *  - typehub://apioo:software@0.1.2
+     *    Resolves the specification from TypeHub, this would i.e. resolve the schema https://typehub.cloud/d/apioo/software
      *
      * If the source is a simple string the manager tries to guess the fitting source uri format
      *
