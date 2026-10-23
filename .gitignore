@@ -1,0 +1,5 @@
+/tests/Console/output/
+/tests/api.lock
+/vendor/
+composer.lock
+
