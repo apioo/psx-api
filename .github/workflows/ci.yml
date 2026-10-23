@@ -12,7 +12,7 @@ jobs:
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.4
+          php-version: 8.5
           coverage: none
       - name: Composer install
         run: composer install --no-interaction --no-ansi --no-progress
@@ -26,6 +26,7 @@ jobs:
         php-versions:
          - 8.3
          - 8.4
+         - 8.5
     steps:
       - name: Checkout
         uses: actions/checkout@v4
