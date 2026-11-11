@@ -33,7 +33,7 @@ class {{ className }} extends ClientAbstract
 {% else %}
         return new self('{{ baseUrl }}', new Credentials\HttpBasic($userName, $password));
 {% endif %}
-    }}
+    }
 {% elseif security.type == 'httpBearer' %}
     public static function build({% if not baseUrl %}string $baseUrl, {% endif %}string $token): self
     {
